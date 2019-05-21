@@ -1,4 +1,4 @@
-#include "../ENTT/single_include/entt/entt.hpp"
+#include <entt.hpp>
 
 struct position {
 	float x;
