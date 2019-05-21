@@ -12,3 +12,14 @@ Will be able to compile at 32 bit, but might have to re download GLEW
 
 ENTT DOC
 https://skypjack.github.io/entt/
+
+
+---GLFW---
+Version 3.3
+64 bit
+
+---GLEW---
+Version 2.1.0
+copied the glew32.dll to the lib/release/x64 folder
+Spammed x64 glew32 dll in debug and release folder
+Might have to add more places for it
