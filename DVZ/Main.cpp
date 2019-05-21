@@ -1,5 +1,6 @@
 #include <entt.hpp>
-
+#include <gl/glew.h>
+#include <GLFW/glfw3.h>
 struct position {
 	float x;
 	float y;
