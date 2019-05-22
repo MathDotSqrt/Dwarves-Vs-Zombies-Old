@@ -3,7 +3,9 @@
 #include <GLFW/glfw3.h>
 #include <iostream>
 #include "VBO.h"
+#include "VAO.h"
 #include "macrologger.h"
+#include "Shader.h"
 
 const static unsigned int DEFAULT_WIDTH = 1024, DEFAULT_HEIGHT = 768;
 const static char* TITLE = "Dwavres Vs Zombies";
@@ -55,6 +57,14 @@ int main(void) {
 	VBO vbo(GL_ARRAY_BUFFER);
 	vbo.bufferData(sizeof(vertex_buffer_data), (void*)vertex_buffer_data, GL_STATIC_DRAW);
 	vbo.disposeAll();
+	Shader::GLSLShader *shader = Shader::getShader("test");
+	shader->use();
+	shader->dispose();
+
+	Shader::GLSLShader *shader2 = Shader::getShader("test");
+	shader->use();
+
+	Shader::disposeAll();
 
 	glfwSetInputMode(window, GLFW_STICKY_KEYS, GL_TRUE);
 	do {

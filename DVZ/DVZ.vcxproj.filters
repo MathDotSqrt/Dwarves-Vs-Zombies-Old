@@ -19,6 +19,9 @@
     <Filter Include="Source Files\Graphics">
       <UniqueIdentifier>{aa8fdc78-aa77-49e1-9599-aedae3e9e2c6}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Resource Files\Shaders">
+      <UniqueIdentifier>{e6d17608-000c-47dc-a954-bfcbac538e8c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\ENTT\single_include\entt\entt.hpp">
@@ -33,6 +36,9 @@
     <ClInclude Include="macrologger.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Shader.h">
+      <Filter>Header Files\Graphics</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -44,5 +50,16 @@
     <ClCompile Include="VBO.cpp">
       <Filter>Source Files\Graphics</Filter>
     </ClCompile>
+    <ClCompile Include="Shader.cpp">
+      <Filter>Source Files\Graphics</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="test.vert">
+      <Filter>Resource Files\Shaders</Filter>
+    </None>
+    <None Include="test.frag">
+      <Filter>Resource Files\Shaders</Filter>
+    </None>
   </ItemGroup>
 </Project>
