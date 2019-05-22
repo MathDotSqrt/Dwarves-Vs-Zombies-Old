@@ -2,12 +2,19 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include <iostream>
+#include "VBO.h"
 
 const static unsigned int DEFAULT_WIDTH = 1024, DEFAULT_HEIGHT = 768;
 const static char* TITLE = "Dwavres Vs Zombies";
 
+static const GLfloat vertex_buffer_data[] = {
+   -1.0f, -1.0f, 0.0f,
+   1.0f, -1.0f, 0.0f,
+   0.0f,  1.0f, 0.0f,
+};
+
 GLFWwindow* initGLFW() {
-	//glewExperimental = true;										//Used to be needed for core profile?
+	glewExperimental = GL_TRUE;										//Used to be needed for core profile?
 	if (!glfwInit()) {
 		fprintf(stderr, "Failed to init GLFW\n");					
 		exit(-1);
@@ -28,7 +35,7 @@ GLFWwindow* initGLFW() {
 		exit(-1);
 	}
 
-	glfwMakeContextCurrent(window);
+	glfwMakeContextCurrent(window);									//Displays window and makes it active
 	return window;
 }
 
@@ -44,14 +51,20 @@ int main(void) {
 	GLFWwindow *window = initGLFW();
 	initGLEW();
 
-	glfwSetInputMode(window, GLFW_STICKY_KEYS, GL_TRUE);
+	VBO vbo(GL_ARRAY_BUFFER);
+	vbo.bufferData(sizeof(vertex_buffer_data), (void*)vertex_buffer_data, GL_STATIC_DRAW);
 
+
+
+	glfwSetInputMode(window, GLFW_STICKY_KEYS, GL_TRUE);
 	do {
 		glClear(GL_COLOR_BUFFER_BIT);
 
 		glfwSwapBuffers(window);
 		glfwPollEvents();
 	} while (glfwGetKey(window, GLFW_KEY_ESCAPE) != GLFW_PRESS && glfwWindowShouldClose(window) == 0);
+	
+	glfwTerminate();
 
 	return 0;
 }

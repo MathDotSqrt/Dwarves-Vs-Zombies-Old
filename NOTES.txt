@@ -13,6 +13,7 @@ Will be able to compile at 32 bit, but might have to re download GLEW
 ENTT DOC
 https://skypjack.github.io/entt/
 
+--TODO consider making graphics code into a separate project as a library
 
 ---GLFW---
 Version 3.3
