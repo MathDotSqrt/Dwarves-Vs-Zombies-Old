@@ -6,6 +6,8 @@ VBO::VBO(GLenum bufferType){
 	glGenBuffers(1, &this->vboID);
 
 	VBO::vbos.push_back(this->vboID);
+
+	LOG_DEBUG("Generated VBO ID: %d", this->vboID);
 }
 
 
@@ -31,10 +33,14 @@ void VBO::dispose() {
 
 	//removes a vbo from the vbo list
 	VBO::vbos.erase(std::remove(VBO::vbos.begin(), VBO::vbos.end(), this->vboID), vbos.end());
+
+	LOG_DEBUG("Deleted VBO ID: %d", this->vboID);
 }
 
 void VBO::disposeAll() {
 	glDeleteBuffers(VBO::vbos.size(), VBO::vbos.data());
+
+	LOG_DEBUG("Deleted %d VBOs ", VBO::vbos.size());
 }
 
 std::vector<GLuint> VBO::vbos;

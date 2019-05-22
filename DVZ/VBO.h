@@ -3,7 +3,7 @@
 #include <GL/glew.h>
 #include <vector>
 #include <algorithm>
-
+#include "macrologger.h"
 
 class VBO
 {

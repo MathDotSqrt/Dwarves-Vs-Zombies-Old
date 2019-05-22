@@ -17,7 +17,7 @@ static const GLfloat vertex_buffer_data[] = {
 GLFWwindow* initGLFW() {
 	glewExperimental = GL_TRUE;										//Used to be needed for core profile?
 	if (!glfwInit()) {
-		fprintf(stderr, "Failed to init GLFW\n");					
+		LOG_ERROR("Failed to init GLFW");
 		exit(-1);
 	}
 
@@ -31,7 +31,7 @@ GLFWwindow* initGLFW() {
 	window = glfwCreateWindow(DEFAULT_WIDTH, DEFAULT_HEIGHT, TITLE, NULL, NULL);
 
 	if (window == NULL) {
-		fprintf(stderr, "Failed to open GLFW window. Probably has to do with opengl 3.3 not being supported\n");
+		LOG_ERROR("Failed to open GLFW window. Probably has to do with opengl 3.3 not being supported");
 		glfwTerminate();
 		exit(-1);
 	}
@@ -42,7 +42,7 @@ GLFWwindow* initGLFW() {
 
 void initGLEW() {
 	if (glewInit() != GLEW_OK) {
-		fprintf(stderr, "Failed to init GLEW\n");
+		LOG_ERROR("Failed to init GLEW");
 
 		exit(-2);
 	}
@@ -54,9 +54,7 @@ int main(void) {
 
 	VBO vbo(GL_ARRAY_BUFFER);
 	vbo.bufferData(sizeof(vertex_buffer_data), (void*)vertex_buffer_data, GL_STATIC_DRAW);
-	vbo.dispose();
-
-	LOG_ERROR("Test me baby %d", 69);
+	vbo.disposeAll();
 
 	glfwSetInputMode(window, GLFW_STICKY_KEYS, GL_TRUE);
 	do {

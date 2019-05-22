@@ -1,2 +1,5 @@
-﻿  main.cpp
+﻿  VAO.cpp
+c:\users\chris\desktop\dwarves vs zombies\dwarves-vs-zombies\dvz\vao.cpp(33): warning C4267: 'argument': conversion from 'size_t' to 'GLsizei', possible loss of data
+c:\users\chris\desktop\dwarves vs zombies\dwarves-vs-zombies\dvz\vao.cpp(35): warning C4477: 'fprintf' : format string '%d' requires an argument of type 'int', but variadic argument 6 has type 'unsigned __int64'
+  c:\users\chris\desktop\dwarves vs zombies\dwarves-vs-zombies\dvz\vao.cpp(35): note: consider using '%zd' in the format string
   DVZ.vcxproj -> C:\Users\Chris\Desktop\Dwarves Vs Zombies\Dwarves-Vs-Zombies\x64\Debug\DVZ.exe

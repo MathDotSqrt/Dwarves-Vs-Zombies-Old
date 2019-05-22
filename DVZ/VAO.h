@@ -1,6 +1,7 @@
 #pragma once
 #include <vector>
 #include <algorithm>
+#include "macrologger.h"
 
 #include <GL/glew.h>
 
