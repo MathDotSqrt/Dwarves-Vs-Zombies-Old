@@ -3,6 +3,7 @@
 #include <GLFW/glfw3.h>
 #include <iostream>
 #include "VBO.h"
+#include "macrologger.h"
 
 const static unsigned int DEFAULT_WIDTH = 1024, DEFAULT_HEIGHT = 768;
 const static char* TITLE = "Dwavres Vs Zombies";
@@ -53,8 +54,9 @@ int main(void) {
 
 	VBO vbo(GL_ARRAY_BUFFER);
 	vbo.bufferData(sizeof(vertex_buffer_data), (void*)vertex_buffer_data, GL_STATIC_DRAW);
+	vbo.dispose();
 
-
+	LOG_ERROR("Test me baby %d", 69);
 
 	glfwSetInputMode(window, GLFW_STICKY_KEYS, GL_TRUE);
 	do {
