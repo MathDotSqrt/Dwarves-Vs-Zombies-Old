@@ -6,6 +6,7 @@
 #include "VAO.h"
 #include "macrologger.h"
 #include "Shader.h"
+#include <SOIL.h>
 
 const static unsigned int DEFAULT_WIDTH = 1024, DEFAULT_HEIGHT = 768;
 const static char* TITLE = "Dwavres Vs Zombies";
@@ -82,7 +83,6 @@ int main(void) {
 	glEnableVertexAttribArray(posAttrib);
 	glEnableVertexAttribArray(colAttrib);
 	
-
 	ebo.bind();
 	glfwSetInputMode(window, GLFW_STICKY_KEYS, GL_TRUE);
 	do {
