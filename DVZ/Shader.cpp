@@ -29,6 +29,45 @@ GLSLShader::~GLSLShader(){
 	}
 }
 
+GLint GLSLShader::getUniformLocation(string uniformName) {
+	//if shader has been deleted on the card then there is no
+	//uniform name to find
+	if (!this->isValid()) {
+		return -1;
+	}
+	
+	GLint location;
+
+	//iterator for the uniforms map that searches for uniformName 
+	map<string, GLint>::iterator it = this->uniforms.find(uniformName);
+
+	//if iterator could not find uniform name
+	if (it == this->uniforms.end()) {
+		//find shader uniform location given the name
+		location = glGetUniformLocation(this->programID, uniformName.c_str());
+		//store it within the map, to make subsequent searches way faster
+		this->uniforms[uniformName] = location;
+	}
+	//if iterator found the uniform name with in the map
+	else {
+		//set location the the value of the uniformName key
+		location = it->second;
+	}
+
+	return location;
+}
+
+void GLSLShader::setUniform3f(string uniformName, glm::vec3 vec3) {
+	setUniform3f(uniformName, vec3.x, vec3.y, vec3.z);
+}
+
+void GLSLShader::setUniform3f(string uniformName, float x, float y, float z) {
+	GLint uniformLocation = getUniformLocation(uniformName);
+
+	if(uniformLocation != -1)
+		glUniform3f(uniformLocation, x, y, z);
+}
+
 void GLSLShader::dispose() {
 	glDetachShader(this->programID, this->vertexID);
 	glDeleteShader(this->vertexID);
@@ -44,14 +83,15 @@ void GLSLShader::dispose() {
 	glDeleteProgram(this->programID);
 
 	if (this->hasGeometryShader) {
-		LOG_INFO("Disposed %s: {ProgramID %d, VertexID %d, GeometryID %d, Fragment %d]",
+		LOG_INFO("Disposed %s: {ProgramID %d, VertexID %d, GeometryID %d, Fragment %d}",
 			this->name.c_str(), this->programID, this->vertexID, this->geometryID, this->fragmentID);
 	}
 	else {
-		LOG_INFO("Disposed %s: {ProgramID %d, VertexID %d, Fragment %d]",
+		LOG_INFO("Disposed %s: {ProgramID %d, VertexID %d, Fragment %d}",
 			this->name.c_str(), this->programID, this->vertexID, this->fragmentID);
 	}
 
+	this->uniforms.clear();
 	this->m_isValid = false;
 }
 

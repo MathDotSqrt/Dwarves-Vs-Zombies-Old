@@ -1,5 +1,6 @@
 #pragma once
 #include <GL/glew.h>
+#include <vec3.hpp>
 #include <map>
 #include <string>
 #include <cstdio>
@@ -28,13 +29,22 @@ namespace Shader {
 		}
 
 		inline void use() {
-			if(this->isValid()) 
+			if (this->isValid())
 				glUseProgram(this->programID);
 		}
+
+		inline GLuint getAttrib(const char *attrib) {
+			return glGetAttribLocation(this->programID, attrib);
+		}
+
+		GLint getUniformLocation(string uniformName);
+
+		void setUniform3f(string uniformName, glm::vec3 vec3);
+		void setUniform3f(string uniformName, float x, float y, float z);
+
 		void dispose();
 
 	private:
-
 		const string name;
 		const GLuint programID;
 		const GLuint vertexID;
@@ -42,6 +52,7 @@ namespace Shader {
 		const GLuint fragmentID;
 		const bool hasGeometryShader;
 
+		map<string, GLint> uniforms;
 		bool m_isValid;
 
 		GLSLShader(string name, GLuint programID, GLuint vertexID, GLuint fragmentID);
