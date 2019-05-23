@@ -1,2 +1,3 @@
 ﻿  main.cpp
+c:\users\chris\desktop\dwarves vs zombies\dwarves-vs-zombies\dvz\tex.h(55): warning C4091: 'static ': ignored on left of 'TEX::Builder' when no variable is declared
   DVZ.vcxproj -> C:\Users\Chris\Desktop\Dwarves Vs Zombies\Dwarves-Vs-Zombies\x64\Debug\DVZ.exe

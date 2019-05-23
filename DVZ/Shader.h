@@ -39,6 +39,8 @@ namespace Shader {
 
 		GLint getUniformLocation(string uniformName);
 
+		void setUniform1i(string uniformName, int i);
+
 		void setUniform3f(string uniformName, glm::vec3 vec3);
 		void setUniform3f(string uniformName, float x, float y, float z);
 
