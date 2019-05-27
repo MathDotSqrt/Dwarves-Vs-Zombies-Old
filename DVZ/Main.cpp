@@ -7,6 +7,8 @@
 #include "macrologger.h"
 #include "Shader.h"
 #include "TEX.h"
+#include "GameStateManager.h"
+#include "TestState.h"
 #define STB_IMAGE_IMPLEMENTATION //stb_image requires this for some fucking reason
 #include <stb_image.h>
 
@@ -49,18 +51,36 @@ void initGLEW() {
 }
 
 static const GLfloat vertex_buffer_data[] = {
-   -1, -1, 0.0f, 1, 0, 0, 0, 1,
-   -1, 1, 0.0f, 0, 1, 0, 0, 0,
-   1,  -1, 0.0f, 0, 0, 1, 1, 1,
-   1, 1, 0.0f, 1, 1, 1, 1, 0
+   -1, -1, 0, 1, 0, 0, 0, 1,
+   -1, 1, 0, 0, 1, 0, 0, 0,
+   1,  -1, 0, 0, 0, 1, 1, 1,
+   1, 1, 0, 1, 1, 1, 1, 0
 };
 
 static const GLuint elements[] = {
-	0, 1, 2,
-	1, 2, 3
+	1, 2, 3,
+	0, 1, 2
 };
 
 int main(void) {
+
+	GameStateManager gsm;
+	gsm.enterState(GameState::getInstance<TestState>(&gsm));
+	gsm.update();
+	gsm.update();
+	gsm.update();
+	gsm.popCurrentState();
+	gsm.update();
+	gsm.update();
+	gsm.update();
+	gsm.popCurrentState();
+	gsm.update();
+	gsm.update();
+	gsm.update();
+
+
+
+
 	GLFWwindow *window = initGLFW();
 	initGLEW();
 
@@ -113,6 +133,5 @@ int main(void) {
 	ebo.unbind();
 	vao.unbind();
 	glfwTerminate();
-
 	return 0;
 }

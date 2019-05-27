@@ -224,7 +224,7 @@ string Shader::Internal::readFile(string filename, bool isRquired) {
 
 void Shader::disposeAll() {
 	LOG_INFO("Disposing all shaders...");
-	map<string, GLSLShader*>::iterator it = shaderMap.begin();
+	unordered_map<string, GLSLShader*>::iterator it = shaderMap.begin();
 	while (it != shaderMap.end()) {
 		delete it->second;
 		it++;

@@ -20,6 +20,7 @@ public:
 	void bindActiveTexture(int unit);
 	void unbind();
 
+	//todo figure out if making this static actually does anything
 	static class Builder {
 	private:
 		friend class TEX;

@@ -1,6 +1,7 @@
 #pragma once
 #include <GL/glew.h>
 #include <vec3.hpp>
+#include <unordered_map>
 #include <map>
 #include <string>
 #include <cstdio>
@@ -64,7 +65,7 @@ namespace Shader {
 
 	
 	namespace Internal {
-		static map<string, GLSLShader*> shaderMap;
+		static unordered_map<string, GLSLShader*> shaderMap;
 
 		GLuint linkProgram(GLuint vertexID, GLuint geometryID, GLuint fragmentID);
 		GLuint compileShader(string src, GLenum shaderType);
