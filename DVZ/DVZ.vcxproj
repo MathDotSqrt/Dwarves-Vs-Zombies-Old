@@ -132,6 +132,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="DemoState.cpp" />
     <ClCompile Include="ExampleState.cpp" />
     <ClCompile Include="GameState.cpp" />
     <ClCompile Include="GameStateManager.cpp" />
@@ -145,6 +146,7 @@
   <ItemGroup>
     <ClInclude Include="..\ENTT\single_include\entt\entt.hpp" />
     <ClInclude Include="..\STD\stb_image.h" />
+    <ClInclude Include="DemoState.h" />
     <ClInclude Include="ExampleState.h" />
     <ClInclude Include="GameState.h" />
     <ClInclude Include="GameStateManager.h" />

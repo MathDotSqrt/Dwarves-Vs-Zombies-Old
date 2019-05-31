@@ -27,6 +27,6 @@ public:
 
 	void disposeAllStates();
 
-	void update();
+	void update(float delta);
 };
 

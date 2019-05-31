@@ -1,12 +1,7 @@
 #include <stdio.h>
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
-#include <iostream>
-#include "VBO.h"
-#include "VAO.h"
 #include "macrologger.h"
-#include "Shader.h"
-#include "TEX.h"
 #include "GameStateManager.h"
 #include "TestState.h"
 #define STB_IMAGE_IMPLEMENTATION //stb_image requires this for some fucking reason
@@ -50,88 +45,37 @@ void initGLEW() {
 	}
 }
 
-static const GLfloat vertex_buffer_data[] = {
-   -1, -1, 0, 1, 0, 0, 0, 1,
-   -1, 1, 0, 0, 1, 0, 0, 0,
-   1,  -1, 0, 0, 0, 1, 1, 1,
-   1, 1, 0, 1, 1, 1, 1, 0
-};
-
-static const GLuint elements[] = {
-	1, 2, 3,
-	0, 1, 2
-};
-
 int main(void) {
+	GLFWwindow *window = initGLFW();
+	initGLEW();
+	glfwSetInputMode(window, GLFW_STICKY_KEYS, GL_TRUE);
+
 
 	GameStateManager gsm;
 	gsm.enterState(GameState::getInstance<TestState>(&gsm));
-	gsm.update();
-	gsm.update();
-	gsm.update();
-	gsm.popCurrentState();
-	gsm.update();
-	gsm.update();
-	gsm.update();
-	gsm.popCurrentState();
-	gsm.update();
-	gsm.update();
-	gsm.update();
 
-
-
-
-	GLFWwindow *window = initGLFW();
-	initGLEW();
-
-	Shader::GLSLShader *shader = Shader::getShader("test");
-	GLuint posAttrib = shader->getAttrib("vert_pos");
-	GLuint colAttrib = shader->getAttrib("vert_col");
-	GLuint texAttrib = shader->getAttrib("vert_tex_coord");
-
-	VAO vao;
-	vao.bind();
-
-	VBO vbo(GL_ARRAY_BUFFER);
-	vbo.bufferData(sizeof(vertex_buffer_data), (void*)vertex_buffer_data, GL_STATIC_DRAW);
-	vbo.bind();
-
-	VBO ebo(GL_ELEMENT_ARRAY_BUFFER);
-	ebo.bufferData(sizeof(elements), (void*)elements, GL_STATIC_DRAW);
-	glVertexAttribPointer(posAttrib, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), 0);
-	glVertexAttribPointer(colAttrib, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
-	glVertexAttribPointer(texAttrib, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
-	vbo.unbind();
-
-	TEX texture1 = TEX::Builder("test.png").nearest()->clampToEdge()->mipmapNearest()->buildTexture();
-	TEX texture2 = TEX::Builder("checker.jpg").linear()->clampToEdge()->buildTexture();
-	
-	shader->use();
-
-	texture1.bindActiveTexture(0);
-	texture2.bindActiveTexture(1);
-
-	shader->setUniform1i("tex1", 0);
-	shader->setUniform1i("tex2", 1);
-
-	glEnableVertexAttribArray(posAttrib);
-	glEnableVertexAttribArray(colAttrib);
-	glEnableVertexAttribArray(texAttrib);
-	
-	ebo.bind();
-	glfwSetInputMode(window, GLFW_STICKY_KEYS, GL_TRUE);
+	int numFrames = 0;
+	double lastTime = glfwGetTime();
+	double currentTime = glfwGetTime();
+	double delta = 1/60.0;
 	do {
-		glClear(GL_COLOR_BUFFER_BIT);
-		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+		currentTime = glfwGetTime();
+		gsm.update(delta);
+
+		numFrames++;
+
+		if (currentTime - lastTime >= 1.0){
+			LOG_INFO("Seconds per Frame: %f", 1000.0 / numFrames);
+
+			numFrames = 0;
+			lastTime += 1.0;
+		}
 
 		glfwSwapBuffers(window);
-
 		glfwPollEvents();
+		delta = glfwGetTime() - currentTime;
 	} while (glfwGetKey(window, GLFW_KEY_ESCAPE) != GLFW_PRESS && glfwWindowShouldClose(window) == 0);
-	texture1.unbind();
-	texture2.unbind();
-	ebo.unbind();
-	vao.unbind();
+	
 	glfwTerminate();
 	return 0;
 }

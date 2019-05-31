@@ -37,6 +37,6 @@ void ExampleState::revealing() {
 
 }
 
-void ExampleState::update() {
+void ExampleState::update(float delta) {
 	LOG_INFO("ExampleState: update()");
 }

@@ -48,7 +48,7 @@ public:
 	virtual void obscuring() = 0;
 	virtual void revealing() = 0;
 
-	virtual void update() = 0;
+	virtual void update(float delta) = 0;
 
 	bool isInitalized();
 };

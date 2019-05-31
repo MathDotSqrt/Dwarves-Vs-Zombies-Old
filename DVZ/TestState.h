@@ -7,15 +7,15 @@ public:
 	TestState(GameStateManager *gsm) : GameState(gsm) {}
 	~TestState();
 
-	virtual void init();
-	virtual void cleanUp();
+	virtual void init() override;
+	virtual void cleanUp() override;
 
-	virtual void entered();
-	virtual void leaving();
+	virtual void entered() override;
+	virtual void leaving() override;
 
-	virtual void obscuring();
-	virtual void revealing();
+	virtual void obscuring() override;
+	virtual void revealing() override;
 
-	virtual void update();
+	virtual void update(float delta) override;
 };
 

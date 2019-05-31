@@ -63,11 +63,11 @@ void GameStateManager::popCurrentState() {
 	}
 }
 
-void GameStateManager::update() {
+void GameStateManager::update(float delta) {
 	vector<GameState*> currentStates = this->getCurrentGameStates();
 
 	for (GameState *state : currentStates) {
-		state->update();
+		state->update(delta);
 	}
 }
 

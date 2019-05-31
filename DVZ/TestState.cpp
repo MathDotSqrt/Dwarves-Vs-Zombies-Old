@@ -11,8 +11,6 @@ TestState::~TestState()
 void TestState::init() {
 	LOG_INFO("TestState: init()");
 	this->m_isInitalized = true;
-
-
 }
 
 void TestState::cleanUp() {
@@ -22,12 +20,6 @@ void TestState::cleanUp() {
 
 void TestState::entered() {
 	LOG_INFO("TestState: entered()");
-
-	if (test == false) {
-		test = true;
-		gsm->enterState(GameState::getInstance<ExampleState>(gsm));
-	}
-
 }
 
 void TestState::leaving() {
@@ -45,7 +37,7 @@ void TestState::revealing() {
 
 }
 
-void TestState::update() {
-	LOG_INFO("TestState: update()");
+void TestState::update(float delta) {
+	LOG_INFO("TestState: update(%lf)", delta * 60);
 
 }
