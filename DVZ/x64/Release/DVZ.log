@@ -1,9 +1,7 @@
-﻿  TestState.cpp
-  main.cpp
-c:\users\chris\desktop\dwarves vs zombies\dwarves-vs-zombies\dvz\main.cpp(62): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+﻿  GameState.cpp
   Generating code
-  10 of 711 functions ( 1.4%) were compiled, the rest were copied from previous compilation.
-    0 functions were new in current compilation
-    0 functions had inline decision re-evaluated but remain unchanged
+  16 of 846 functions ( 1.9%) were compiled, the rest were copied from previous compilation.
+    1 functions were new in current compilation
+    1 functions had inline decision re-evaluated but remain unchanged
   Finished generating code
   DVZ.vcxproj -> C:\Users\Chris\Desktop\Dwarves Vs Zombies\Dwarves-Vs-Zombies\x64\Release\DVZ.exe

@@ -45,26 +45,26 @@ void initGLEW() {
 	}
 }
 
-int main(void) {
+void run() {
 	GLFWwindow *window = initGLFW();
 	initGLEW();
 	glfwSetInputMode(window, GLFW_STICKY_KEYS, GL_TRUE);
 
-
-	GameStateManager gsm;
-	gsm.enterState(GameState::getInstance<TestState>(&gsm));
+	entt::registry engine;
+	GameStateManager gsm(engine);
+	gsm.enterState<TestState>();
 
 	int numFrames = 0;
 	double lastTime = glfwGetTime();
 	double currentTime = glfwGetTime();
-	double delta = 1/60.0;
+	double delta = 1 / 60.0;
 	do {
 		currentTime = glfwGetTime();
 		gsm.update(delta);
 
 		numFrames++;
 
-		if (currentTime - lastTime >= 1.0){
+		if (currentTime - lastTime >= 1.0) {
 			LOG_INFO("Seconds per Frame: %f", 1000.0 / numFrames);
 
 			numFrames = 0;
@@ -75,7 +75,13 @@ int main(void) {
 		glfwPollEvents();
 		delta = glfwGetTime() - currentTime;
 	} while (glfwGetKey(window, GLFW_KEY_ESCAPE) != GLFW_PRESS && glfwWindowShouldClose(window) == 0);
-	
+
+	gsm.disposeAllStates();
+
 	glfwTerminate();
+}
+
+int main(void) {
+	run();
 	return 0;
 }

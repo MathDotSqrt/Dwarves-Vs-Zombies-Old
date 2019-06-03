@@ -2,11 +2,10 @@
 
 
 
-System::System()
-{
+System::System(unsigned int priority) : priority(priority) {
+
 }
 
 
-System::~System()
-{
+System::~System() {
 }

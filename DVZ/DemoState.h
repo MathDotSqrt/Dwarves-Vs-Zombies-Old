@@ -21,12 +21,12 @@ public:
 	~DemoState();
 
 	// Inherited via GameState
-	virtual void init() override;
-	virtual void cleanUp() override;
-	virtual void entered() override;
-	virtual void leaving() override;
-	virtual void obscuring() override;
-	virtual void revealing() override;
-	virtual void update(float delta) override;
+	virtual void init(entt::registry &engine) override;
+	virtual void cleanUp(entt::registry &engine) override;
+	virtual void entered(entt::registry &engine) override;
+	virtual void leaving(entt::registry &engine) override;
+	virtual void obscuring(entt::registry &engine) override;
+	virtual void revealing(entt::registry &engine) override;
+	virtual void update(entt::registry &engine, float delta) override;
 };
 

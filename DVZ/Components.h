@@ -19,10 +19,12 @@ struct ScaleComponent {
 
 struct TransformationComponent {
 	mat4 mat;
+	bool flag;
 };
-
+//registry.on_replace<position>().disconnect<&my_free_function>();
 struct ParentComponent {
-	mat4 parent_transform;
+	mat4 local_transform;
 	entity parent;
-	
+	bool needsTransformUpdate;
+	//some listener pointer
 };

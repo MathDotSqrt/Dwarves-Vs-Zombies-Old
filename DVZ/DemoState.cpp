@@ -7,9 +7,9 @@ DemoState::~DemoState()
 {
 }
 
-void DemoState::init()
+void DemoState::init(entt::registry &engine)
 {
-	const GLfloat vertex_buffer_data[] = {
+	/*const GLfloat vertex_buffer_data[] = {
 	   -1, -1, 0, 1, 0, 0, 0, 1,
 	   -1, 1, 0, 0, 1, 0, 0, 0,
 	   1,  -1, 0, 0, 0, 1, 1, 1,
@@ -55,30 +55,30 @@ void DemoState::init()
 	glEnableVertexAttribArray(colAttrib);
 	glEnableVertexAttribArray(texAttrib);
 
-	ebo->bind();
+	ebo->bind();*/
 }
 
-void DemoState::cleanUp(){
+void DemoState::cleanUp(entt::registry &engine){
 	
 }
 
-void DemoState::entered()
+void DemoState::entered(entt::registry &engine)
 {
 }
 
-void DemoState::leaving()
+void DemoState::leaving(entt::registry &engine)
 {
 }
 
-void DemoState::obscuring()
+void DemoState::obscuring(entt::registry &engine)
 {
 }
 
-void DemoState::revealing()
+void DemoState::revealing(entt::registry &engine)
 {
 }
 
-void DemoState::update(float delta) {
+void DemoState::update(entt::registry &engine, float delta) {
 	glClear(GL_COLOR_BUFFER_BIT);
-	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+	//glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 }

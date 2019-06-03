@@ -27,17 +27,17 @@
 #if LOG_LEVEL >= ERROR_LEVEL
 #define LOG_ERROR(message, ...) PRINT(LOG_FMT message NEW_LINE, LOG_ARGS(ERROR_TAG), __VA_ARGS__)
 #else
-#define LOG_ERROR(message, args...)
+#define LOG_ERROR(message, ...)
 #endif
 
 #if LOG_LEVEL >= INFO_LEVEL
 #define LOG_INFO(message, ...) PRINT(LOG_FMT message NEW_LINE, LOG_ARGS(INFO_TAG), __VA_ARGS__)
 #else
-#define LOG_INFO(message, args...)
+#define LOG_INFO(message, ...)
 #endif
 
 #if LOG_LEVEL >= DEBUG_LEVEL
 #define LOG_DEBUG(message, ...) PRINT(LOG_FMT message NEW_LINE, LOG_ARGS(DEBUG_TAG), __VA_ARGS__)
 #else
-#define LOG_DEBUG(message, args...)
+#define LOG_DEBUG(message, ...)
 #endif

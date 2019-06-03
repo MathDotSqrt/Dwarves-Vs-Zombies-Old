@@ -138,7 +138,10 @@
     <ClCompile Include="GameStateManager.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Shader.cpp" />
+    <ClCompile Include="System.cpp" />
+    <ClCompile Include="SystemManager.cpp" />
     <ClCompile Include="TestState.cpp" />
+    <ClCompile Include="TestSystem.cpp" />
     <ClCompile Include="TEX.cpp" />
     <ClCompile Include="VAO.cpp" />
     <ClCompile Include="VBO.cpp" />
@@ -146,13 +149,17 @@
   <ItemGroup>
     <ClInclude Include="..\ENTT\single_include\entt\entt.hpp" />
     <ClInclude Include="..\STD\stb_image.h" />
+    <ClInclude Include="Components.h" />
     <ClInclude Include="DemoState.h" />
     <ClInclude Include="ExampleState.h" />
     <ClInclude Include="GameState.h" />
     <ClInclude Include="GameStateManager.h" />
     <ClInclude Include="macrologger.h" />
     <ClInclude Include="Shader.h" />
+    <ClInclude Include="System.h" />
+    <ClInclude Include="SystemManager.h" />
     <ClInclude Include="TestState.h" />
+    <ClInclude Include="TestSystem.h" />
     <ClInclude Include="TEX.h" />
     <ClInclude Include="VAO.h" />
     <ClInclude Include="VBO.h" />

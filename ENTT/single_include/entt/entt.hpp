@@ -1,4 +1,5 @@
 // #include "core/algorithm.hpp"
+#pragma once //chris trenkov
 #ifndef ENTT_CORE_ALGORITHM_HPP
 #define ENTT_CORE_ALGORITHM_HPP
 

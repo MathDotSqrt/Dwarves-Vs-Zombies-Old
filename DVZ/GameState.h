@@ -2,19 +2,26 @@
 #include <unordered_map>
 #include <typeindex>
 #include <typeinfo>
+#include <entt.hpp>
 #include "GameStateManager.h"
+#include "SystemManager.h"
 #include "macrologger.h"
 
 class GameState {
+	friend class GameStateManager;
+
 private:
 	static unordered_map<std::type_index, GameState*> gameStateInstances;
+	static void deleteAllInstances();
 
 protected:
 	GameStateManager *gsm;
+	SystemManager *systemManager;
+
 	bool m_isInitalized = false;
 
 public:
-	GameState(GameStateManager *gsm) : gsm(gsm) {}
+	GameState(GameStateManager *gsm);
 	~GameState();
 
 	template<class T>
@@ -39,16 +46,16 @@ public:
 		}
 	}
 
-	virtual void init() = 0;
-	virtual void cleanUp() = 0;
+	virtual void init(entt::registry &engine) = 0;
+	virtual void cleanUp(entt::registry &engine) = 0;
 	
-	virtual void entered() = 0;
-	virtual void leaving() = 0;
+	virtual void entered(entt::registry &engine) = 0;
+	virtual void leaving(entt::registry &engine) = 0;
 
-	virtual void obscuring() = 0;
-	virtual void revealing() = 0;
+	virtual void obscuring(entt::registry &engine) = 0;
+	virtual void revealing(entt::registry &engine) = 0;
 
-	virtual void update(float delta) = 0;
+	virtual void update(entt::registry &engine, float delta) = 0;
 
 	bool isInitalized();
 };
