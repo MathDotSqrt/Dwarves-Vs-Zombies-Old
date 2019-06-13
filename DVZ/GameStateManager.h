@@ -3,15 +3,13 @@
 #include <entt.hpp>
 
 class GameState;
+class ConcurrentGameState;
 using namespace std;
 
 class GameStateManager {
 private:
 	entt::registry &engine;
-	vector<vector<GameState*>> gameStateStack;
-
-	GameState* getTopGameState();
-	vector<GameState*> getCurrentGameStates();
+	vector<GameState*> gameStateStack;
 
 public:
 	GameStateManager(entt::registry &engine);
@@ -20,13 +18,7 @@ public:
 	void initState(GameState *state);
 	void cleanUpState(GameState *state);
 
-	void stackState(GameState *state);
 	void enterState(GameState *state);
-
-	template<typename STATE>
-	void stackState() {
-		this->stackState(GameState::getInstance<STATE>(this));
-	}
 
 	template<typename STATE>
 	void enterState() {

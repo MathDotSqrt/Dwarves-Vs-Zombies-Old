@@ -17,8 +17,8 @@
 
 #define NEW_LINE "\n"
 
-#define LOG_FMT             "%s | %-7s | %-15s | %s:%d | "
-#define LOG_ARGS(LOG_TAG)   __TIME__, LOG_TAG, _FILE, __FUNCTION__, __LINE__
+#define LOG_FMT             "%-4s | %-15s | %s:%d | "
+#define LOG_ARGS(LOG_TAG)   LOG_TAG, _FILE, __FUNCTION__, __LINE__
 
 
 #define PRINT(format, ...) fprintf (stderr, format, __VA_ARGS__)

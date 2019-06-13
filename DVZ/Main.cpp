@@ -3,11 +3,12 @@
 #include <GLFW/glfw3.h>
 #include "macrologger.h"
 #include "GameStateManager.h"
-#include "TestState.h"
+#include "MainState.h"
 #define STB_IMAGE_IMPLEMENTATION //stb_image requires this for some fucking reason
 #include <stb_image.h>
 
-
+#include "Components.h"
+#include "Engine.h"
 const static unsigned int DEFAULT_WIDTH = 1024, DEFAULT_HEIGHT = 768;
 const static char* TITLE = "Dwavres Vs Zombies";
 
@@ -52,7 +53,7 @@ void run() {
 
 	entt::registry engine;
 	GameStateManager gsm(engine);
-	gsm.enterState<TestState>();
+	gsm.enterState<MainState>();
 
 	int numFrames = 0;
 	double lastTime = glfwGetTime();

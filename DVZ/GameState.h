@@ -16,11 +16,11 @@ private:
 
 protected:
 	GameStateManager *gsm;
-	SystemManager *systemManager;
 
 	bool m_isInitalized = false;
 
 public:
+	//DO NOT USE
 	GameState(GameStateManager *gsm);
 	~GameState();
 
@@ -46,16 +46,13 @@ public:
 		}
 	}
 
-	virtual void init(entt::registry &engine) = 0;
-	virtual void cleanUp(entt::registry &engine) = 0;
+	virtual void init() = 0;
+	virtual void cleanUp() = 0;
 	
-	virtual void entered(entt::registry &engine) = 0;
-	virtual void leaving(entt::registry &engine) = 0;
+	virtual void entered() = 0;
+	virtual void leaving() = 0;
 
-	virtual void obscuring(entt::registry &engine) = 0;
-	virtual void revealing(entt::registry &engine) = 0;
-
-	virtual void update(entt::registry &engine, float delta) = 0;
+	virtual void update(float delta) = 0;
 
 	bool isInitalized();
 };

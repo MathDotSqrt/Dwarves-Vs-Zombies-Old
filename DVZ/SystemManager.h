@@ -19,6 +19,6 @@ public:
 
 	void updateSystems(entt::registry &engine, float delta);
 
-	void deleteAllSystems(entt::registry &engine);
+	void deleteAllActiveSystems(entt::registry &engine);
 };
 

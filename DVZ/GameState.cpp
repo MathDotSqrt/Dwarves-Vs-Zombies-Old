@@ -1,12 +1,12 @@
 #include "GameState.h"
 
 GameState::GameState(GameStateManager *gsm) : gsm(gsm) {
-	this->systemManager = new SystemManager();
+	//this->systemManager = new SystemManager();
 }
 
 GameState::~GameState() {
-	LOG_INFO("GAY");
-	delete this->systemManager;
+	//LOG_INFO("GAY");
+	//delete this->systemManager;
 }
 
 bool GameState::isInitalized() {

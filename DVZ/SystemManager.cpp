@@ -31,7 +31,7 @@ void SystemManager::updateSystems(entt::registry &engine, float delta) {
 	}
 }
 
-void SystemManager::deleteAllSystems(entt::registry &engine) {
+void SystemManager::deleteAllActiveSystems(entt::registry &engine) {
 	for (System *system : this->systems) {
 		this->removeSystem(engine, system);
 
