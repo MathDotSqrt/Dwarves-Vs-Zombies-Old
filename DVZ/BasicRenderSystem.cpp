@@ -4,6 +4,8 @@
 #include "Shader.h"
 #include "Components.h"
 #include "macrologger.h"
+#include "glm.hpp"
+#include <gtx/transform.hpp>
 
 BasicRenderSystem::BasicRenderSystem(Scene *scene, int priority) : System(priority) {
 	this->scene = scene;
