@@ -1,6 +1,9 @@
 #pragma once
 #include <glm.hpp>
 #include "entt.hpp"
+#include "VAO.h"
+#include "VBO.h"
+#include "Shader.h"
 
 using namespace entt;
 using namespace glm;
@@ -17,14 +20,15 @@ struct ScaleComponent {
 	vec3 scale;
 };
 
-struct TransformationComponent {
-	mat4 mat;
-	bool flag;
+struct VelocityComponent {
+	vec3 vel;
 };
-//registry.on_replace<position>().disconnect<&my_free_function>();
-struct ParentComponent {
-	mat4 local_transform;
-	entity parent;
-	bool needsTransformUpdate;
-	//some listener pointer
+
+struct RenderInstanceComponent {
+	unsigned int instanceID;
+};
+
+struct BasicRenderComponent {
+	VAO vao;
+	Shader::GLSLShader *shader;
 };

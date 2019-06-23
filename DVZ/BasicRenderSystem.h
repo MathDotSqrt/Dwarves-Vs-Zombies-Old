@@ -1,11 +1,14 @@
 #pragma once
 #include "System.h"
 #include "entt.hpp"
+#include "Scene.h"
 
-class BasicRenderSystem : public System
-{
+class BasicRenderSystem : public System {
+private:
+	Scene *scene;
+
 public:
-	BasicRenderSystem(int priority);
+	BasicRenderSystem(Scene *scene, int priority);
 	~BasicRenderSystem();
 
 	void addedToEngine(entt::registry &engine);

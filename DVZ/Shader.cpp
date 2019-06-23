@@ -68,6 +68,10 @@ void GLSLShader::setUniform3f(string uniformName, glm::vec3 vec3) {
 	setUniform3f(uniformName, vec3.x, vec3.y, vec3.z);
 }
 
+void GLSLShader::setUniform3f(string uniformName, float vec[3]) {
+	setUniform3f(uniformName, vec[0], vec[1], vec[2]);
+}
+
 void GLSLShader::setUniform3f(string uniformName, float x, float y, float z) {
 	GLint uniformLocation = getUniformLocation(uniformName);
 
@@ -103,7 +107,6 @@ void GLSLShader::dispose() {
 }
 
 GLSLShader* Shader::getShader(string name) {
-	LOG_INFO("Getting shader: %s", name.c_str());
 	GLSLShader* shader = shaderMap[name];
 
 	if (shader == nullptr) {
@@ -122,6 +125,7 @@ GLSLShader* Shader::getShader(string name) {
 }
 
 GLSLShader* Shader::createShader(string shaderName) {	
+	//string preamble = readFile("preamble.glsl");
 	string vertexSrc = readFile(shaderName + VERTEX_EXT);
 	string fragmentSrc = readFile(shaderName + FRAGMENT_EXT);
 	string geometrySrc = readFile(shaderName + GEOMETRY_EXT, false);

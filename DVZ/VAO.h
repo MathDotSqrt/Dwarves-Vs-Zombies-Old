@@ -5,8 +5,7 @@
 
 #include <GL/glew.h>
 
-class VAO
-{
+class VAO {
 public:
 	VAO();
 	~VAO();

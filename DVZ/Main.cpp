@@ -3,7 +3,7 @@
 #include <GLFW/glfw3.h>
 #include "macrologger.h"
 #include "GameStateManager.h"
-#include "MainState.h"
+#include "PlayState.h"
 #define STB_IMAGE_IMPLEMENTATION //stb_image requires this for some fucking reason
 #include <stb_image.h>
 
@@ -18,13 +18,12 @@ GLFWwindow* initGLFW() {
 		LOG_ERROR("Failed to init GLFW");
 		exit(-1);
 	}
-
+	glfwWindowHint(GLFW_DOUBLEBUFFER, GL_TRUE);						//Double Buffering
 	glfwWindowHint(GLFW_SAMPLES, 4);								//Anti Aliasing
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);					//Opengl version 3.3
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);			//To make macOS happy (Probably won't port)
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);	//We don't want old opengl
-
 	GLFWwindow *window;
 	window = glfwCreateWindow(DEFAULT_WIDTH, DEFAULT_HEIGHT, TITLE, NULL, NULL);
 
@@ -35,6 +34,7 @@ GLFWwindow* initGLFW() {
 	}
 
 	glfwMakeContextCurrent(window);									//Displays window and makes it active
+	glfwSwapInterval(0);											//Disables VSync
 	return window;
 }
 
@@ -53,7 +53,7 @@ void run() {
 
 	entt::registry engine;
 	GameStateManager gsm(engine);
-	gsm.enterState<MainState>();
+	gsm.enterState<PlayState>();
 
 	int numFrames = 0;
 	double lastTime = glfwGetTime();
@@ -66,12 +66,11 @@ void run() {
 		numFrames++;
 
 		if (currentTime - lastTime >= 1.0) {
-			LOG_INFO("Seconds per Frame: %f", 1000.0 / numFrames);
+			LOG_INFO("Milliseconds per Frame: %f", 1000.0 / numFrames);
 
 			numFrames = 0;
 			lastTime += 1.0;
 		}
-
 		glfwSwapBuffers(window);
 		glfwPollEvents();
 		delta = glfwGetTime() - currentTime;

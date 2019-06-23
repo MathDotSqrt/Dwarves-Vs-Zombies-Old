@@ -1,8 +1,19 @@
 #pragma once
 #include "GameState.h"
 #include "GameStateManager.h"
-class PlayState : public GameState
-{
+#include "entt.hpp"
+#include "SystemManager.h"
+#include "Scene.h"
+#include "OpenGLRenderer.h"
+
+class PlayState : public GameState {
+private:
+	entt::registry engine;
+	SystemManager manager;
+
+	Scene scene;
+	OpenGLRenderer renderer;
+
 public:
 	PlayState(GameStateManager *gsm);
 	~PlayState();

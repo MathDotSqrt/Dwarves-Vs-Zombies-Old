@@ -34,6 +34,12 @@ namespace Shader {
 				glUseProgram(this->programID);
 		}
 
+		inline void end() {
+			if (this->isValid()) {
+				glUseProgram(0);
+			}
+		}
+
 		inline GLuint getAttrib(const char *attrib) {
 			return glGetAttribLocation(this->programID, attrib);
 		}
@@ -43,6 +49,7 @@ namespace Shader {
 		void setUniform1i(string uniformName, int i);
 
 		void setUniform3f(string uniformName, glm::vec3 vec3);
+		void setUniform3f(string uniformName, float vec[3]);
 		void setUniform3f(string uniformName, float x, float y, float z);
 
 		void dispose();

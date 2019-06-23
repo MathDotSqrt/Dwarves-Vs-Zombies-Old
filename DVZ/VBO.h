@@ -5,8 +5,7 @@
 #include <algorithm>
 #include "macrologger.h"
 
-class VBO
-{
+class VBO {
 public:
 	VBO(GLenum);
 	~VBO();
