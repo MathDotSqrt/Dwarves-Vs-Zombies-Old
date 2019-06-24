@@ -1,5 +1,8 @@
 #pragma once
 #include "Geometry.h"
+
+namespace Graphics {
+
 class QuadGeometry : public Geometry
 {
 public:
@@ -9,4 +12,6 @@ public:
 private:
 	void init();
 };
+
+}
 

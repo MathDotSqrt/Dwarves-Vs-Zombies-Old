@@ -34,14 +34,14 @@ void MainState::entered() {
 	LOG_INFO("MainState: entered()");
 	float vertices[] = { 0.0f, 0.5f, 0.5f, -0.5f, -0.5f, -0.5f }; 
 
-	VAO model;
+	Graphics::VAO model;
 	model.bind();
 
-	Shader::GLSLShader *shader = Shader::getShader("basic_shader");
+	Graphics::Shader::GLSLShader *shader = Graphics::Shader::getShader("basic_shader");
 
 	GLuint posAttrib = shader->getAttrib("vert_pos");
 
-	VBO vert(GL_ARRAY_BUFFER);
+	Graphics::VBO vert(GL_ARRAY_BUFFER);
 	vert.bufferData(sizeof(vertices), vertices, GL_STATIC_DRAW);
 	vert.bind();
 	glVertexAttribPointer(posAttrib, 2, GL_FLOAT, GL_FALSE, 0, 0);

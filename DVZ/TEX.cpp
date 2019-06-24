@@ -1,6 +1,6 @@
 #include "TEX.h"
 
-
+using namespace Graphics;
 
 TEX::TEX(Builder *builder) : 
 	texID(builder->texID),

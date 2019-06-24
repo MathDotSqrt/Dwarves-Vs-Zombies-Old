@@ -5,6 +5,8 @@
 #include <algorithm>
 #include "macrologger.h"
 
+namespace Graphics {
+
 class VBO {
 public:
 	VBO(GLenum);
@@ -23,4 +25,6 @@ private:
 	GLuint bufferType;
 
 };
+
+}
 

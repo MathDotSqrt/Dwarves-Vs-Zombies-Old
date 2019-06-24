@@ -8,6 +8,8 @@
 
 using namespace std;
 
+namespace Graphics{
+
 class OpenGLRenderer {
 private:
 	unordered_map<int, vector<int>> renderables;
@@ -22,4 +24,4 @@ public:
 
 
 };
-
+}

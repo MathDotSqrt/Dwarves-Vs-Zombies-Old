@@ -5,10 +5,10 @@
 
 class BasicRenderSystem : public System {
 private:
-	Scene *scene;
+	Graphics::Scene *scene;
 
 public:
-	BasicRenderSystem(Scene *scene, int priority);
+	BasicRenderSystem(Graphics::Scene *scene, int priority);
 	~BasicRenderSystem();
 
 	void addedToEngine(entt::registry &engine);

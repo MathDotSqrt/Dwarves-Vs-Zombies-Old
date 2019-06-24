@@ -11,8 +11,8 @@ private:
 	entt::registry engine;
 	SystemManager manager;
 
-	Scene scene;
-	OpenGLRenderer renderer;
+	Graphics::Scene scene;
+	Graphics::OpenGLRenderer renderer;
 
 public:
 	PlayState(GameStateManager *gsm);

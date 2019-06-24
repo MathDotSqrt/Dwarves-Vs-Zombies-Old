@@ -29,6 +29,6 @@ struct RenderInstanceComponent {
 };
 
 struct BasicRenderComponent {
-	VAO vao;
-	Shader::GLSLShader *shader;
+	Graphics::VAO vao;
+	Graphics::Shader::GLSLShader *shader;
 };

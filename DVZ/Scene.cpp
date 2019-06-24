@@ -1,10 +1,12 @@
 #include "Scene.h"
 
+using namespace Graphics;
+
 Scene::Scene() {
-	this->materialCache = PackedFreeList<Material>(500);
-	this->meshCache = PackedFreeList<Mesh>(500);
-	this->transformationCache = PackedFreeList<Transformation>(500);
-	this->instanceCache = PackedFreeList<Instance>(500);
+	this->materialCache = Util::PackedFreeList<Material>(500);
+	this->meshCache = Util::PackedFreeList<Mesh>(500);
+	this->transformationCache = Util::PackedFreeList<Transformation>(500);
+	this->instanceCache = Util::PackedFreeList<Instance>(500);
 }
 
 

@@ -9,12 +9,12 @@
 
 class DemoState : public GameState {
 private:
-	Shader::GLSLShader *shader;
-	VAO *vao;
-	VBO *vbo;
-	VBO *ebo;
-	TEX *texture1;
-	TEX *texture2;
+	Graphics::Shader::GLSLShader *shader;
+	Graphics::VAO *vao;
+	Graphics::VBO *vbo;
+	Graphics::VBO *ebo;
+	Graphics::TEX *texture1;
+	Graphics::TEX *texture2;
 
 public:
 	DemoState(GameStateManager *gsm) : GameState(gsm) {}

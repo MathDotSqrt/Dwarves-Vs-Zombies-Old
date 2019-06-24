@@ -1,5 +1,7 @@
 #include "Geometry.h"
 
+using namespace Graphics;
+
 Geometry::Geometry() {}
 
 Geometry::Geometry(VAO vao, int vertexCount) {

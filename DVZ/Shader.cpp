@@ -1,6 +1,7 @@
 #include "Shader.h"
 #include <gtc/type_ptr.hpp>
 
+using namespace Graphics;
 using namespace Shader;
 using namespace Shader::Internal;
 

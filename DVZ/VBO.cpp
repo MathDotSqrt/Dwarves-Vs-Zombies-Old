@@ -1,5 +1,6 @@
 #include "VBO.h"
 
+using namespace Graphics;
 
 VBO::VBO(GLenum bufferType){
 	this->bufferType = bufferType;

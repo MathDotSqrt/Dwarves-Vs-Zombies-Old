@@ -7,6 +7,8 @@
 #include <cassert>
 #include <utility>
 
+namespace Util {
+
 template<class T>
 class PackedFreeList {
 	// used to extract the allocation index from an object id
@@ -336,4 +338,6 @@ typename PackedFreeList<T>::iterator end(const PackedFreeList<T>& fl) {
 template<class T>
 void swap(PackedFreeList<T>& a, PackedFreeList<T>& b) {
 	a.swap(b);
+}
+
 }

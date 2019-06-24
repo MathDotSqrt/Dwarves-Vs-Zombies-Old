@@ -6,6 +6,8 @@
 
 using namespace std;
 
+namespace Graphics {
+
 class TEX {
 
 public:
@@ -59,3 +61,4 @@ private:
 	TEX(Builder *builder);
 };
 
+}

@@ -3,6 +3,7 @@
 #include "VAO.h"
 #include "VBO.h"
 
+namespace Graphics {
 
 class Geometry {
 protected:
@@ -17,4 +18,4 @@ public:
 	VAO getVAO();
 	int getVertexCount();
 };
-
+}

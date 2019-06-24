@@ -2,6 +2,8 @@
 #include "preamble.glsl"
 #include "macrologger.h"
 
+using namespace Graphics;
+
 QuadGeometry::QuadGeometry() {
 	this->init();
 }

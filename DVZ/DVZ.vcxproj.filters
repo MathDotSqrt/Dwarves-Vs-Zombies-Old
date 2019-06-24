@@ -99,12 +99,6 @@
     <ClInclude Include="OpenGLRenderer.h">
       <Filter>Header Files\Graphics</Filter>
     </ClInclude>
-    <ClInclude Include="Material.h">
-      <Filter>Header Files\Graphics</Filter>
-    </ClInclude>
-    <ClInclude Include="BasicMaterial.h">
-      <Filter>Header Files\Graphics</Filter>
-    </ClInclude>
     <ClInclude Include="Scene.h">
       <Filter>Header Files\Graphics</Filter>
     </ClInclude>
@@ -168,12 +162,6 @@
       <Filter>Source Files\Systems</Filter>
     </ClCompile>
     <ClCompile Include="OpenGLRenderer.cpp">
-      <Filter>Source Files\Graphics</Filter>
-    </ClCompile>
-    <ClCompile Include="Material.cpp">
-      <Filter>Source Files\Graphics</Filter>
-    </ClCompile>
-    <ClCompile Include="BasicMaterial.cpp">
       <Filter>Source Files\Graphics</Filter>
     </ClCompile>
     <ClCompile Include="Scene.cpp">

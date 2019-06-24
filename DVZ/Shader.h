@@ -14,8 +14,7 @@
 #define FRAGMENT_EXT ".frag"
 
 using namespace std;
-
-namespace Shader {
+namespace Graphics { namespace Shader {
 	
 
 	class GLSLShader {
@@ -89,5 +88,4 @@ namespace Shader {
 	GLSLShader* createShader(string shaderName);
 
 	void disposeAll();
-}
-
+}}

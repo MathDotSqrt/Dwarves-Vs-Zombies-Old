@@ -6,6 +6,8 @@
 #include "gtx/transform.hpp"
 #include "gtx/quaternion.hpp"
 
+using namespace Graphics;
+
 OpenGLRenderer::OpenGLRenderer() {
 }
 

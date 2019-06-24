@@ -22,7 +22,7 @@ void PlayState::init() {
 	this->manager.addSystem(engine, new BasicRenderSystem(&this->scene, 0));
 
 
-	QuadGeometry quad;
+	Graphics::QuadGeometry quad;
 
 	for (int i = 0; i < 500; i++) {
 		glm::vec3 pos(rand(), rand(), 0);

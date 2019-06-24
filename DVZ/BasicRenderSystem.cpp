@@ -8,7 +8,7 @@
 #include <gtx/transform.hpp>
 #include <gtx/quaternion.hpp>
 
-BasicRenderSystem::BasicRenderSystem(Scene *scene, int priority) : System(priority) {
+BasicRenderSystem::BasicRenderSystem(Graphics::Scene *scene, int priority) : System(priority) {
 	this->scene = scene;
 }
 

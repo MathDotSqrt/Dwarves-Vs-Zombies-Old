@@ -3,6 +3,8 @@
 #include "Geometry.h"
 #include "PackedFreeList.h"
 
+namespace Graphics  {
+
 struct Material {
 	float color[3];
 };
@@ -32,10 +34,10 @@ struct Camera {
 class Scene {
 
 public:
-	PackedFreeList<Material> materialCache;
-	PackedFreeList<Mesh> meshCache;
-	PackedFreeList<Transformation> transformationCache;
-	PackedFreeList<Instance> instanceCache;
+	Util::PackedFreeList<Material> materialCache;
+	Util::PackedFreeList<Mesh> meshCache;
+	Util::PackedFreeList<Transformation> transformationCache;
+	Util::PackedFreeList<Instance> instanceCache;
 
 	Camera mainCamera;
 
@@ -47,4 +49,4 @@ public:
 	unsigned int createBasicMesh(Geometry model, float r, float g, float b);
 	unsigned int createInstance(unsigned int meshID, glm::vec3 position, glm::vec3 rotation, glm::vec3 scale);
 };
-
+}

@@ -4,6 +4,7 @@
 #include "macrologger.h"
 
 #include <GL/glew.h>
+namespace Graphics {
 
 class VAO {
 public:
@@ -20,4 +21,6 @@ private:
 
 	GLuint vaoID;
 };
+
+}
 
