@@ -30,9 +30,10 @@ void PlayState::init() {
 
 		unsigned int meshID = this->scene.createBasicMesh(quad, pos.x, pos.y, pos.z);
 
-		unsigned int instanceID = this->scene.createInstance(meshID, pos, glm::vec3(.1, .1, .1));
+		unsigned int instanceID = this->scene.createInstance(meshID, pos, pos, glm::vec3(.1, .1, .1));
 		auto entityID = engine.create();
 		this->engine.assign<PositionComponent>(entityID, pos);
+		this->engine.assign<RotationComponent>(entityID, pos);
 		this->engine.assign<ScaleComponent>(entityID, glm::vec3(.1, .1, .1));
 		this->engine.assign<VelocityComponent>(entityID, -pos);
 		this->engine.assign<RenderInstanceComponent>(entityID, instanceID);

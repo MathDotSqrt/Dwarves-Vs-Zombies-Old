@@ -1,12 +1,10 @@
 #include "Scene.h"
 
-
-
 Scene::Scene() {
-	this->materialCache = PackedFreeList<Material>(2000);
-	this->meshCache = PackedFreeList<Mesh>(2000);
-	this->transformationCache = PackedFreeList<Transformation>(2000);
-	this->instanceCache = PackedFreeList<Instance>(2000);
+	this->materialCache = PackedFreeList<Material>(500);
+	this->meshCache = PackedFreeList<Mesh>(500);
+	this->transformationCache = PackedFreeList<Transformation>(500);
+	this->instanceCache = PackedFreeList<Instance>(500);
 }
 
 
@@ -28,11 +26,12 @@ unsigned int Scene::createBasicMesh(Geometry model, float r, float g, float b) {
 	return newMeshID;
 }
 
-unsigned int Scene::createInstance(unsigned int meshID, glm::vec3 pos, glm::vec3 scale) {
-	Transformation newTransformation = { pos , scale};
+unsigned int Scene::createInstance(unsigned int meshID, glm::vec3 position, glm::vec3 rotation, glm::vec3 scale) {
+	Transformation newTransformation = { position, rotation, scale };
 	unsigned int transformationID = this->transformationCache.insert(newTransformation);
 
 	Instance newInstance = { meshID, transformationID };
 	unsigned int instanceID = this->instanceCache.insert(newInstance);
 	return instanceID;
 }
+

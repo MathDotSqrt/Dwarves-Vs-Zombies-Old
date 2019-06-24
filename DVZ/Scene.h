@@ -14,6 +14,7 @@ struct Mesh {
 
 struct Transformation {
 	glm::vec3 position;
+	glm::vec3 rotation;
 	glm::vec3 scale;
 };
 
@@ -44,7 +45,6 @@ public:
 
 
 	unsigned int createBasicMesh(Geometry model, float r, float g, float b);
-	unsigned int createInstance(unsigned int meshID, glm::vec3 pos, glm::vec3 scale);
-
+	unsigned int createInstance(unsigned int meshID, glm::vec3 position, glm::vec3 rotation, glm::vec3 scale);
 };
 

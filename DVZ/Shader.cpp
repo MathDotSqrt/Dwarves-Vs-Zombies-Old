@@ -1,4 +1,5 @@
 #include "Shader.h"
+#include <gtc/type_ptr.hpp>
 
 using namespace Shader;
 using namespace Shader::Internal;
@@ -77,6 +78,20 @@ void GLSLShader::setUniform3f(string uniformName, float x, float y, float z) {
 
 	if(uniformLocation != -1)
 		glUniform3f(uniformLocation, x, y, z);
+}
+
+void GLSLShader::setUniformMat4(string uniformName, glm::mat4 mat, bool transpose) {
+	GLint uniformLocation = getUniformLocation(uniformName);
+
+	if (uniformLocation != -1)
+		glUniformMatrix4fv(uniformLocation, 1, transpose, glm::value_ptr(mat));
+}
+
+void GLSLShader::setUniformMat4(string uniformName, float mat[4 * 4], bool transpose){
+	GLint uniformLocation = getUniformLocation(uniformName);
+
+	if (uniformLocation != -1) 
+		glUniformMatrix4fv(uniformLocation, 1, transpose, mat);
 }
 
 void GLSLShader::dispose() {

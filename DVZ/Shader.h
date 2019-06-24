@@ -1,6 +1,6 @@
 #pragma once
 #include <GL/glew.h>
-#include <vec3.hpp>
+#include <glm.hpp>
 #include <unordered_map>
 #include <map>
 #include <string>
@@ -51,6 +51,9 @@ namespace Shader {
 		void setUniform3f(string uniformName, glm::vec3 vec3);
 		void setUniform3f(string uniformName, float vec[3]);
 		void setUniform3f(string uniformName, float x, float y, float z);
+
+		void setUniformMat4(string uniformName, glm::mat4 mat, bool transpose = GL_FALSE);
+		void setUniformMat4(string uniformName, float mat[4 * 4], bool transpose = GL_FALSE);
 
 		void dispose();
 

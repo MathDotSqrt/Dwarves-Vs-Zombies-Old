@@ -11,14 +11,16 @@ MovementSystem::~MovementSystem() {
 }
 
 void MovementSystem::addedToEngine(entt::registry &engine) {
-	engine.group<PositionComponent, VelocityComponent>();
+	engine.group<PositionComponent, RotationComponent, VelocityComponent>();
 }
 
 void MovementSystem::removedFromEngine(entt::registry &engine) {
 }
 
 void MovementSystem::update(entt::registry &engine, float delta) {
-	engine.group<PositionComponent, VelocityComponent>().each([delta](auto &pos, auto &vel) {
+	engine.group<PositionComponent, RotationComponent, VelocityComponent>().each([delta](auto &pos, auto &rot, auto &vel) {
 		pos.pos += vel.vel * delta;
+
+		rot.rot += vel.vel * delta;
 	});
 }
