@@ -8,11 +8,10 @@ using namespace std;
 
 class GameStateManager {
 private:
-	entt::registry &engine;
 	vector<GameState*> gameStateStack;
 
 public:
-	GameStateManager(entt::registry &engine);
+	GameStateManager();
 	~GameStateManager();
 
 	void initState(GameState *state);

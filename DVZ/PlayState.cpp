@@ -4,8 +4,10 @@
 #include "Components.h"
 #include "MovementSystem.h"
 #include "BasicRenderSystem.h"
-
 #include <cstdlib>  // For srand() and rand()
+#include "OpenGLRenderer.h"
+
+#include "Window.h"
 
 PlayState::PlayState(GameStateManager *gsm) : GameState(gsm) {
 }
@@ -16,34 +18,27 @@ PlayState::~PlayState() {
 
 void PlayState::init() {
 	LOG_INFO("init");
-
-	this->renderer.init();
 	this->manager.addSystem(engine, new MovementSystem(1));
 	this->manager.addSystem(engine, new BasicRenderSystem(&this->scene, 0));
 
-
 	Graphics::QuadGeometry quad;
+	//for (int i = 0; i < 100; i++) {
+		unsigned int meshID = this->scene.createBasicMesh(quad, 1, 0, 1);
+		unsigned int instanceID = this->scene.createInstance(meshID, glm::vec3(0, 0, 0), glm::vec3(0, 0, 0), glm::vec3(.1, .1, .1));
 
-	for (int i = 0; i < 500; i++) {
-		glm::vec3 pos(rand(), rand(), 0);
-		pos /= RAND_MAX;
-
-		unsigned int meshID = this->scene.createBasicMesh(quad, pos.x, pos.y, pos.z);
-
-		unsigned int instanceID = this->scene.createInstance(meshID, pos, pos, glm::vec3(.1, .1, .1));
-		auto entityID = engine.create();
-		this->engine.assign<PositionComponent>(entityID, pos);
-		this->engine.assign<RotationComponent>(entityID, pos);
+		auto entityID = this->engine.create();
+		this->engine.assign<PositionComponent>(entityID, glm::vec3(0, 0, 0));
+		this->engine.assign<RotationComponent>(entityID, glm::vec3(0, 0, 0));
 		this->engine.assign<ScaleComponent>(entityID, glm::vec3(.1, .1, .1));
-		this->engine.assign<VelocityComponent>(entityID, -pos);
+		this->engine.assign<VelocityComponent>(entityID, glm::vec3(0, 0, 0));
+		this->engine.assign<RotationalVelocityComponent>(entityID, glm::vec3(0, 0, 4));
 		this->engine.assign<RenderInstanceComponent>(entityID, instanceID);
-	}
+	//}
 }
 
 void PlayState::cleanUp() {
 	LOG_INFO("cleanUp");
 	this->manager.deleteAllActiveSystems(this->engine);
-
 }
 
 void PlayState::entered() {
@@ -57,7 +52,12 @@ void PlayState::leaving() {
 }
 
 void PlayState::update(float delta) {
+	if (Window::isPressed('w')) {
+		LOG_INFO("TEST");
+	}
+
 	this->manager.updateSystems(this->engine, delta);
 
-	this->renderer.render(&scene);
+	Graphics::OpenGLRenderer::preRender();
+	Graphics::OpenGLRenderer::render(&scene);
 }

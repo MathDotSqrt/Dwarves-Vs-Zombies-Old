@@ -24,11 +24,15 @@ struct VelocityComponent {
 	vec3 vel;
 };
 
+struct RotationalVelocityComponent {
+	vec3 vel;
+};
+
 struct RenderInstanceComponent {
 	unsigned int instanceID;
 };
 
-struct BasicRenderComponent {
-	Graphics::VAO vao;
-	Graphics::Shader::GLSLShader *shader;
+struct CameraInstanceComponent {
+	unsigned int cameraID;
 };
+

@@ -1,42 +1,18 @@
 #include <stdio.h>
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
-#include "macrologger.h"
-#include "GameStateManager.h"
-#include "PlayState.h"
 #define STB_IMAGE_IMPLEMENTATION //stb_image requires this for some fucking reason
 #include <stb_image.h>
-
-#include "Components.h"
+#include "macrologger.h"
+#include "Window.h"
+#include "OpenGLRenderer.h"
 #include "Engine.h"
+#include "GameStateManager.h"
+#include "PlayState.h"
+#include "Components.h"
+
 const static unsigned int DEFAULT_WIDTH = 1024, DEFAULT_HEIGHT = 768;
 const static char* TITLE = "Dwavres Vs Zombies";
-
-GLFWwindow* initGLFW() {
-	glewExperimental = GL_TRUE;										//Used to be needed for core profile?
-	if (!glfwInit()) {
-		LOG_ERROR("Failed to init GLFW");
-		exit(-1);
-	}
-	glfwWindowHint(GLFW_DOUBLEBUFFER, GL_TRUE);						//Double Buffering
-	glfwWindowHint(GLFW_SAMPLES, 4);								//Anti Aliasing
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);					//Opengl version 3.3
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);			//To make macOS happy (Probably won't port)
-	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);	//We don't want old opengl
-	GLFWwindow *window;
-	window = glfwCreateWindow(DEFAULT_WIDTH, DEFAULT_HEIGHT, TITLE, NULL, NULL);
-
-	if (window == NULL) {
-		LOG_ERROR("Failed to open GLFW window. Probably has to do with opengl 3.3 not being supported");
-		glfwTerminate();
-		exit(-1);
-	}
-
-	glfwMakeContextCurrent(window);									//Displays window and makes it active
-	glfwSwapInterval(0);											//Disables VSync
-	return window;
-}
 
 void initGLEW() {
 	if (glewInit() != GLEW_OK) {
@@ -47,12 +23,14 @@ void initGLEW() {
 }
 
 void run() {
-	GLFWwindow *window = initGLFW();
-	initGLEW();
-	glfwSetInputMode(window, GLFW_STICKY_KEYS, GL_TRUE);
+	glewExperimental = GL_TRUE;
+	Window::createWindow(DEFAULT_WIDTH, DEFAULT_HEIGHT, TITLE);
+	Graphics::OpenGLRenderer::init();
+	
+	//LOG_INFO("Created Window %d %d", GameWindow.getWidth(), GameWindow.getHeight());
+	//initGLEW();
 
-	entt::registry engine;
-	GameStateManager gsm(engine);
+	GameStateManager gsm;
 	gsm.enterState<PlayState>();
 
 	int numFrames = 0;
@@ -71,14 +49,13 @@ void run() {
 			numFrames = 0;
 			lastTime += 1.0;
 		}
-		glfwSwapBuffers(window);
-		glfwPollEvents();
+		
 		delta = glfwGetTime() - currentTime;
-	} while (glfwGetKey(window, GLFW_KEY_ESCAPE) != GLFW_PRESS && glfwWindowShouldClose(window) == 0);
+		Window::update();
+	} while (!Window::shouldClose());
 
 	gsm.disposeAllStates();
-
-	glfwTerminate();
+	Window::destroyWindow();
 }
 
 int main(void) {

@@ -2,7 +2,7 @@
 #include "GameState.h"
 #include "GameState.h"
 
-GameStateManager::GameStateManager(entt::registry &engine) : engine(engine){
+GameStateManager::GameStateManager(){
 	
 }
 

@@ -50,7 +50,7 @@ void MainState::entered() {
 
 	
 	entt::entity e = this->engine.create();
-	engine.assign<BasicRenderComponent>(e, model, shader);
+	//engine.assign<BasicRenderComponent>(e, model, shader);
 
 }
 

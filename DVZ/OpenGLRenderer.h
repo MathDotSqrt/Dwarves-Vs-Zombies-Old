@@ -5,23 +5,32 @@
 #include "Scene.h"
 #include "Shader.h"
 
+namespace Graphics {
+	namespace OpenGLRenderer {
+		void init();
+		void resize(int newWidth, int newHeight);
 
-using namespace std;
-
-namespace Graphics{
-
-class OpenGLRenderer {
-private:
-	unordered_map<int, vector<int>> renderables;
-
-public:
-	OpenGLRenderer();
-	~OpenGLRenderer();
-
-	void init();
-	void resize(int width, int height);
-	void render(Scene *scene);
-
-
+		void preRender();
+		void render(Scene *scene);
+	};
 };
-}
+
+//
+//using namespace std;
+//
+//namespace Graphics{
+//
+//class OpenGLRenderer {
+//private:
+//
+//public:
+//	OpenGLRenderer();
+//	~OpenGLRenderer();
+//
+//	void init();
+//	//void resize(int newWidth, int newHeight);
+//	void render(Scene *scene);
+//
+//
+//};
+//}
