@@ -1,36 +1,17 @@
 #pragma once
-#include <GL/glew.h>
-#include <unordered_map>
-#include <vector>
-#include "Scene.h"
-#include "Shader.h"
+#include "IRenderer.h"
 
 namespace Graphics {
-	namespace OpenGLRenderer {
-		void init();
-		void resize(int newWidth, int newHeight);
+class OpenGLRenderer : public IRenderer
+{
+public:
+	OpenGLRenderer();
+	~OpenGLRenderer();
 
-		void preRender();
-		void render(Scene *scene);
-	};
+	void init(Scene *scene) override;
+	void resize(int newWidth, int newHeight) override;
+	void prerender() override;
+	void render() override;
 };
+}
 
-//
-//using namespace std;
-//
-//namespace Graphics{
-//
-//class OpenGLRenderer {
-//private:
-//
-//public:
-//	OpenGLRenderer();
-//	~OpenGLRenderer();
-//
-//	void init();
-//	//void resize(int newWidth, int newHeight);
-//	void render(Scene *scene);
-//
-//
-//};
-//}

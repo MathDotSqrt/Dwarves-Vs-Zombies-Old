@@ -1,11 +1,11 @@
 #include <stdio.h>
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
+
 #define STB_IMAGE_IMPLEMENTATION //stb_image requires this for some fucking reason
 #include <stb_image.h>
 #include "macrologger.h"
 #include "Window.h"
-#include "OpenGLRenderer.h"
 #include "Engine.h"
 #include "GameStateManager.h"
 #include "PlayState.h"
@@ -25,7 +25,8 @@ void initGLEW() {
 void run() {
 	glewExperimental = GL_TRUE;
 	Window::createWindow(DEFAULT_WIDTH, DEFAULT_HEIGHT, TITLE);
-	Graphics::OpenGLRenderer::init();
+	initGLEW();
+
 	
 	//LOG_INFO("Created Window %d %d", GameWindow.getWidth(), GameWindow.getHeight());
 	//initGLEW();

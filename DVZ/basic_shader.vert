@@ -24,5 +24,5 @@ uniform vec3 color = vec3(1, 0, 1);
 void main(){
 
 	frag_color = color;
-	gl_Position = model * vec4(vert_pos, -1, 1);
+	gl_Position = model * vec4(vert_pos, 0, 1);
 }

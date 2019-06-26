@@ -164,6 +164,8 @@
     <ClInclude Include="GameState.h" />
     <ClInclude Include="GameStateManager.h" />
     <ClInclude Include="Geometry.h" />
+    <ClInclude Include="IRenderer.h" />
+    <ClInclude Include="IResizable.h" />
     <ClInclude Include="macrologger.h" />
     <ClInclude Include="MainState.h" />
     <ClInclude Include="MovementSystem.h" />

@@ -1,38 +1,40 @@
 #include "OpenGLRenderer.h"
+#include "Window.h"
 #include "Shader.h"
 #include "preamble.glsl"
-#include <GLFW/glfw3.h>
-#include "Window.h"
 #include "glm.hpp"
-#include "gtx/transform.hpp"
-#include "gtx/quaternion.hpp"
+#include <gtx/transform.hpp>
+#include <gtx/quaternion.hpp>
 
 using namespace Graphics;
 
-void OpenGLRenderer::init() {
-	if (glewInit() != GLEW_OK) {
-		LOG_ERROR("Failed to init GLEW");
+OpenGLRenderer::OpenGLRenderer() {
+}
 
-		exit(-2);
-	}
+
+OpenGLRenderer::~OpenGLRenderer() {
+}
+
+void OpenGLRenderer::init(Scene *scene) {
+	this->scene = scene;
 
 	glClearColor(0, 0, 0, 1);
 	glEnable(GL_DEPTH_TEST);
 
-	Window::addResizeCallback(resize);
-	resize(Window::getWidth(), Window::getHeight());
+	Window::addResizeCallback(this);
+	this->resize(Window::getWidth(), Window::getHeight());
 }
 
 void OpenGLRenderer::resize(int newWidth, int newHeight) {
-	LOG_INFO("Resize (%d, %d)", newWidth, newHeight);
 	glViewport(0, 0, newWidth, newHeight);
 }
 
-void OpenGLRenderer::preRender() {
+void OpenGLRenderer::prerender() {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
 }
 
-void OpenGLRenderer::render(Scene *scene) {
+void OpenGLRenderer::render() {
 	glm::mat4 ident = glm::identity<glm::mat4>();
 	
 	Shader::GLSLShader *shader = Shader::getShader("basic_shader");
@@ -48,7 +50,9 @@ void OpenGLRenderer::render(Scene *scene) {
 
 		glm::quat rot(transformation->rotation);
 		glm::vec3 axis = glm::axis(rot);
+
 		float angle = glm::angle(rot);
+
 		glm::mat4 model;
 
 		model = glm::translate(ident, transformation->position);

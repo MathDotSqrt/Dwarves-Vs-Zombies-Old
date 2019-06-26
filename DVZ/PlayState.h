@@ -4,13 +4,15 @@
 #include "entt.hpp"
 #include "SystemManager.h"
 #include "Scene.h"
+#include "OpenGLRenderer.h"
 
 class PlayState : public GameState {
 private:
+
 	entt::registry engine;
 	SystemManager manager;
-
 	Graphics::Scene scene;
+	Graphics::OpenGLRenderer renderer;
 
 public:
 	PlayState(GameStateManager *gsm);

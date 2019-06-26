@@ -7,11 +7,11 @@ namespace {
 	int width, height;
 	const char *title;
 
-	std::vector<void(*)(int newWidth, int newHeight)> callbacks;
+	std::vector<IResizable*> callbacks;
 
 	void internalResizeCallBack(GLFWwindow *window, int newWidth, int newHeight) {
 		for (auto func : callbacks) {
-			func(newWidth, newHeight);
+			func->resize(newWidth, newHeight);
 		}
 	}
 }
@@ -54,8 +54,8 @@ void Window::update() {
 	glfwPollEvents();
 }
 
-void Window::addResizeCallback(void (*resize_func)(int newWidth, int newHeight)) {
-	callbacks.push_back(resize_func);
+void Window::addResizeCallback(IResizable *resizable) {
+	callbacks.push_back(resizable);
 }
 
 bool Window::isPressed(char c) {

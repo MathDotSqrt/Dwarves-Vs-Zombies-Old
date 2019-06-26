@@ -48,5 +48,6 @@ public:
 
 	unsigned int createBasicMesh(Geometry model, float r, float g, float b);
 	unsigned int createInstance(unsigned int meshID, glm::vec3 position, glm::vec3 rotation, glm::vec3 scale);
+	
 };
 }

@@ -33,6 +33,6 @@ struct RenderInstanceComponent {
 };
 
 struct CameraInstanceComponent {
-	unsigned int cameraID;
+	
 };
 
