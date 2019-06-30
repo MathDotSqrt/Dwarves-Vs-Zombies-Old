@@ -26,28 +26,36 @@ struct Instance {
 };
 
 struct Camera {
-	glm::vec3 position;
-	glm::vec3 rotation;
-	unsigned int viewMatrixID;
+	glm::vec3 eye;
+	glm::vec3 target;
+	glm::vec3 up;
+
+	float fov;
+	float aspect;
+	float near;
+	float far;
 };
 
 class Scene {
+private:
+	unsigned int mainCameraID;
 
 public:
 	Util::PackedFreeList<Material> materialCache;
 	Util::PackedFreeList<Mesh> meshCache;
 	Util::PackedFreeList<Transformation> transformationCache;
 	Util::PackedFreeList<Instance> instanceCache;
-
-	Camera mainCamera;
+	Util::PackedFreeList<Camera> cameraCache;
+	
 
 	Scene();
 	~Scene();
 
-
-
 	unsigned int createBasicMesh(Geometry model, float r, float g, float b);
 	unsigned int createInstance(unsigned int meshID, glm::vec3 position, glm::vec3 rotation, glm::vec3 scale);
-	
+	unsigned int createCameraInstance(Camera camera);
+
+	void setMainCamera(unsigned int cameraID);
+	unsigned int getMainCameraID();
 };
 }

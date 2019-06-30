@@ -24,6 +24,6 @@ void MovementSystem::update(entt::registry &engine, float delta) {
 	});
 
 	engine.group<RotationComponent, RotationalVelocityComponent>().each([delta] (auto &rot, auto &rotVel){
-		rot.rot += rotVel.vel * delta;
+		rot.rot = glm::quat(rotVel.eular * delta) * rot.rot;
 	});
 }

@@ -138,6 +138,7 @@
     <ClCompile Include="GameState.cpp" />
     <ClCompile Include="GameStateManager.cpp" />
     <ClCompile Include="Geometry.cpp" />
+    <ClCompile Include="InputSystem.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MainState.cpp" />
     <ClCompile Include="MovementSystem.cpp" />
@@ -164,6 +165,7 @@
     <ClInclude Include="GameState.h" />
     <ClInclude Include="GameStateManager.h" />
     <ClInclude Include="Geometry.h" />
+    <ClInclude Include="InputSystem.h" />
     <ClInclude Include="IRenderer.h" />
     <ClInclude Include="IResizable.h" />
     <ClInclude Include="macrologger.h" />

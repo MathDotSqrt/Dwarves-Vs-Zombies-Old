@@ -1,5 +1,7 @@
+
 #pragma once
 #include <glm.hpp>
+#include <gtx/quaternion.hpp>
 #include "entt.hpp"
 #include "VAO.h"
 #include "VBO.h"
@@ -13,7 +15,7 @@ struct PositionComponent {
 };
 
 struct RotationComponent {
-	vec3 rot;
+	quat rot;
 };
 
 struct ScaleComponent {
@@ -25,14 +27,22 @@ struct VelocityComponent {
 };
 
 struct RotationalVelocityComponent {
-	vec3 vel;
+	vec3 eular;
 };
+
+struct DirComponent {
+	vec3 forward;
+	vec3 up;
+	vec3 right;
+};
+
+struct InputComponent {};
 
 struct RenderInstanceComponent {
 	unsigned int instanceID;
 };
 
 struct CameraInstanceComponent {
-	
+	unsigned int cameraID;
 };
 

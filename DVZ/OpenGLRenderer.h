@@ -2,8 +2,9 @@
 #include "IRenderer.h"
 
 namespace Graphics {
-class OpenGLRenderer : public IRenderer
-{
+class OpenGLRenderer : public IRenderer {
+private:
+	glm::mat4 perspectiveProjection;
 public:
 	OpenGLRenderer();
 	~OpenGLRenderer();

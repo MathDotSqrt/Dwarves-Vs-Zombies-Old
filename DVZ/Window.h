@@ -6,6 +6,11 @@
 
 
 namespace Window {
+	const unsigned int UP = GLFW_KEY_UP;
+	const unsigned int DOWN = GLFW_KEY_DOWN;
+	const unsigned int LEFT = GLFW_KEY_LEFT;
+	const unsigned int RIGHT = GLFW_KEY_RIGHT;
+	
 	void createWindow(int width, int height, const char *title);
 	void destroyWindow();
 	void update();
@@ -13,6 +18,7 @@ namespace Window {
 	void addResizeCallback(IResizable *resizable);
 
 	bool isPressed(char c);
+	bool isPressed(const unsigned int c);
 
 	bool shouldClose();
 	int getWidth();

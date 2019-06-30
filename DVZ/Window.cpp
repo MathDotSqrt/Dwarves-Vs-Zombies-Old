@@ -62,6 +62,10 @@ bool Window::isPressed(char c) {
 	return glfwGetKey(window, (int)toupper(c)) == GLFW_PRESS;
 }
 
+bool Window::isPressed(const unsigned int c) {
+	return glfwGetKey(window, c) == GLFW_PRESS;
+}
+
 bool Window::shouldClose() {
 	return glfwWindowShouldClose(window);
 }

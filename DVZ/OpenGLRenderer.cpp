@@ -17,6 +17,19 @@ OpenGLRenderer::~OpenGLRenderer() {
 
 void OpenGLRenderer::init(Scene *scene) {
 	this->scene = scene;
+	
+	Camera camera = {
+		glm::vec3(0, 0, 0),
+		glm::vec3(0, 0, -1),
+		glm::vec3(0, 1, 0),
+		70,
+		(double)Window::getWidth() / Window::getHeight(),
+		.1f,
+		1000
+	};
+
+	unsigned int cameraID = this->scene->createCameraInstance(camera);
+	this->scene->setMainCamera(cameraID);
 
 	glClearColor(0, 0, 0, 1);
 	glEnable(GL_DEPTH_TEST);
@@ -26,6 +39,11 @@ void OpenGLRenderer::init(Scene *scene) {
 }
 
 void OpenGLRenderer::resize(int newWidth, int newHeight) {
+	Camera *camera = &scene->cameraCache[scene->getMainCameraID()];
+	camera->aspect = (float)newWidth / newHeight;
+
+	this->perspectiveProjection = glm::perspective(camera->fov, camera->aspect, camera->near, camera->far);
+
 	glViewport(0, 0, newWidth, newHeight);
 }
 
@@ -39,6 +57,10 @@ void OpenGLRenderer::render() {
 	
 	Shader::GLSLShader *shader = Shader::getShader("basic_shader");
 	shader->use();
+
+	Camera *camera = &scene->cameraCache[scene->getMainCameraID()];
+
+	glm::mat4 view = glm::lookAt(camera->eye, camera->eye + camera->target, camera->up);
 
 	for (auto instanceID : scene->instanceCache) {
 		Instance *instance = &scene->instanceCache[instanceID];
@@ -59,7 +81,7 @@ void OpenGLRenderer::render() {
 		model = glm::rotate(model, angle, axis);
 		model = glm::scale(model, transformation->scale);
 
-		shader->setUniformMat4("model", model);
+		shader->setUniformMat4("model", perspectiveProjection * view * model);
 		shader->setUniform3f("color", material->color);
 
 		mesh->model.getVAO().bind();

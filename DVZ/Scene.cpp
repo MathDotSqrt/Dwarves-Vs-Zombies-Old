@@ -7,6 +7,7 @@ Scene::Scene() {
 	this->meshCache = Util::PackedFreeList<Mesh>(500);
 	this->transformationCache = Util::PackedFreeList<Transformation>(500);
 	this->instanceCache = Util::PackedFreeList<Instance>(500);
+	this->cameraCache = Util::PackedFreeList<Camera>(10);
 }
 
 
@@ -37,3 +38,14 @@ unsigned int Scene::createInstance(unsigned int meshID, glm::vec3 position, glm:
 	return instanceID;
 }
 
+unsigned int Scene::createCameraInstance(Camera camera) {
+	return this->cameraCache.insert(camera);
+}
+
+void Scene::setMainCamera(unsigned int cameraID) {
+	this->mainCameraID = cameraID;
+}
+
+unsigned int Scene::getMainCameraID() {
+	return this->mainCameraID;
+}

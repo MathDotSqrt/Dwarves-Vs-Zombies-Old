@@ -19,6 +19,7 @@ BasicRenderSystem::~BasicRenderSystem()
 
 void BasicRenderSystem::addedToEngine(entt::registry &engine) {
 	engine.group<RenderInstanceComponent>(entt::get<PositionComponent, RotationComponent, ScaleComponent>);
+	engine.group<CameraInstanceComponent>(entt::get<PositionComponent, RotationComponent, DirComponent>);
 }
 
 void BasicRenderSystem::removedFromEngine(entt::registry &engine) {
@@ -30,13 +31,25 @@ void BasicRenderSystem::update(entt::registry &engine, float delta) {
 	{
 		auto transformationID = this->scene->instanceCache[instanceComponent.instanceID].transformationID;
 		auto *transformation = &this->scene->transformationCache[transformationID];
-		
 
-		glm::mat4 matrix = glm::identity<glm::mat4>();
+		vec3 a = glm::eulerAngles(rotationComponent.rot);
+		//LOG_INFO("%f %f %f", a.x, a.y, a.z);
 
 		transformation->position = positionComponent.pos;
-		transformation->rotation = rotationComponent.rot;
+		transformation->rotation = glm::eulerAngles(rotationComponent.rot);
 		transformation->scale = scaleComponent.scale;
+	});
+
+	engine.group<CameraInstanceComponent>(entt::get<PositionComponent, RotationComponent, DirComponent>)
+		.each([this](auto &cameraComponent, auto &positionComponent, auto &rotationComponent, auto &dirComponent) 
+	{
+		auto *camera = &this->scene->cameraCache[cameraComponent.cameraID];
+
+		glm::quat orientation = rotationComponent.rot;
+
+		camera->eye = positionComponent.pos;
+		camera->target = orientation * dirComponent.forward;
+		camera->up = orientation * dirComponent.up;
 	});
 	
 }
