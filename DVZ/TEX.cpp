@@ -33,7 +33,7 @@ void TEX::unbind() {
 	glBindTexture(this->textureTarget, 0);
 }
 
-TEX::Builder::Builder(string filename) {
+TEX::Builder::Builder(std::string filename) {
 	this->filename = filename;
 	this->repeat()->nearest()->borderColor(0, 0, 0, 1);
 }

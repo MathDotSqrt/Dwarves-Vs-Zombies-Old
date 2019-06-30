@@ -1,14 +1,14 @@
+#include "GameStateManager.h"
+#include "PlayState.h"
+
 #include <stdio.h>
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
-
 #define STB_IMAGE_IMPLEMENTATION //stb_image requires this for some fucking reason
 #include <stb_image.h>
 #include "macrologger.h"
 #include "Window.h"
-#include "Engine.h"
-#include "GameStateManager.h"
-#include "PlayState.h"
+
 #include "Components.h"
 
 const static unsigned int DEFAULT_WIDTH = 1024, DEFAULT_HEIGHT = 768;

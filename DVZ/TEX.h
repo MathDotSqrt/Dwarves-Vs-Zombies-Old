@@ -4,8 +4,6 @@
 #include "macrologger.h"
 #include <stb_image.h>
 
-using namespace std;
-
 namespace Graphics {
 
 class TEX {
@@ -26,7 +24,7 @@ public:
 	static class Builder {
 	private:
 		friend class TEX;
-		string filename;
+		std::string filename;
 		int width, height;
 
 		GLuint texID;
@@ -42,7 +40,7 @@ public:
 
 		
 	public:
-		Builder(string filename);
+		Builder(std::string filename);
 		~Builder();
 		Builder* repeat();
 		Builder* mirrorRepeat();

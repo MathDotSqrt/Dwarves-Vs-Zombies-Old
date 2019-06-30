@@ -8,6 +8,8 @@
 #include <gtx/transform.hpp>
 #include <gtx/quaternion.hpp>
 
+using namespace glm;
+
 BasicRenderSystem::BasicRenderSystem(Graphics::Scene *scene, int priority) : System(priority) {
 	this->scene = scene;
 }

@@ -11,7 +11,7 @@ class GameState {
 	friend class GameStateManager;
 
 private:
-	static unordered_map<std::type_index, GameState*> gameStateInstances;
+	static std::unordered_map<std::type_index, GameState*> gameStateInstances;
 	static void deleteAllInstances();
 
 protected:
@@ -22,7 +22,7 @@ protected:
 public:
 	//DO NOT USE
 	GameState(GameStateManager *gsm);
-	~GameState();
+	virtual ~GameState() = 0;
 
 	template<class T>
 	static GameState* getInstance(GameStateManager *gsm) {

@@ -1,6 +1,8 @@
 #include "Shader.h"
+#include "macrologger.h"
 #include <gtc/type_ptr.hpp>
 
+using namespace std;
 using namespace Graphics;
 using namespace Shader;
 using namespace Shader::Internal;
@@ -110,11 +112,11 @@ void GLSLShader::dispose() {
 	glDeleteProgram(this->programID);
 
 	if (this->hasGeometryShader) {
-		LOG_INFO("Disposed %s: {ProgramID %d, VertexID %d, GeometryID %d, Fragment %d}",
+		LOG_SHADE("Disposed %s: {ProgramID %d, VertexID %d, GeometryID %d, Fragment %d}",
 			this->name.c_str(), this->programID, this->vertexID, this->geometryID, this->fragmentID);
 	}
 	else {
-		LOG_INFO("Disposed %s: {ProgramID %d, VertexID %d, Fragment %d}",
+		LOG_SHADE("Disposed %s: {ProgramID %d, VertexID %d, Fragment %d}",
 			this->name.c_str(), this->programID, this->vertexID, this->fragmentID);
 	}
 
@@ -126,12 +128,12 @@ GLSLShader* Shader::getShader(string name) {
 	GLSLShader* shader = shaderMap[name];
 
 	if (shader == nullptr) {
-		LOG_INFO("Creating shader: %s", name.c_str());
+		LOG_SHADE("Creating shader: %s", name.c_str());
 		shader = createShader(name);
 		shaderMap[name] = shader;
 	}
 	else if(shader->isValid() == false){
-		LOG_INFO("Recreating shader: %s", name.c_str());
+		LOG_SHADE("Recreating shader: %s", name.c_str());
 		delete shader;
 		shader = createShader(name);
 		shaderMap[name] = shader;
@@ -148,7 +150,7 @@ GLSLShader* Shader::createShader(string shaderName) {
 
 
 	bool hasGeometryShader = geometrySrc != "";
-	LOG_INFO("Compiling shader %s", shaderName.c_str());
+	LOG_SHADE("Compiling shader %s", shaderName.c_str());
 
 	GLuint vertexID = compileShader(vertexSrc, GL_VERTEX_SHADER);
 	GLuint fragmentID = compileShader(fragmentSrc, GL_FRAGMENT_SHADER);
@@ -177,7 +179,7 @@ GLuint Shader::Internal::linkProgram(GLuint vertexID, GLuint geometryID, GLuint 
 		glDeleteProgram(programID);
 	}
 	else {
-		LOG_INFO("(P) Linked program %i", programID);
+		LOG_SHADE("(P) Linked program %i", programID);
 	}
 
 	return programID;
@@ -199,7 +201,7 @@ GLuint Shader::Internal::compileShader(string source, GLenum shaderType) {
 		return 0;
 	}
 	
-	LOG_INFO("OK - Shader ID: (%i)", shaderID);
+	LOG_SHADE("OK - Shader ID: (%i)", shaderID);
 	return shaderID;
 }
 
@@ -208,7 +210,7 @@ void Shader::Internal::getCompilationError(GLuint shader) {
 	glGetShaderiv(shader, GL_INFO_LOG_LENGTH, (GLint *)&infologLength);
 	char* infoLog = (char *)malloc(infologLength);
 	glGetShaderInfoLog(shader, infologLength, NULL, infoLog); // will include terminate char
-	LOG_ERROR("(S) Shader compilation error:\n%s", infoLog);
+	LOG_SHADE("(S) Shader compilation error:\n%s", infoLog);
 	free(infoLog);
 }
 
@@ -243,7 +245,7 @@ string Shader::Internal::readFile(string filename, bool isRquired) {
 }
 
 void Shader::disposeAll() {
-	LOG_INFO("Disposing all shaders...");
+	LOG_SHADE("Disposing all shaders...");
 	unordered_map<string, GLSLShader*>::iterator it = shaderMap.begin();
 	while (it != shaderMap.end()) {
 		delete it->second;

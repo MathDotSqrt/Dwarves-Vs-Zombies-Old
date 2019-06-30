@@ -1,2 +1,4 @@
 ﻿  PlayState.cpp
+c:\program files (x86)\windows kits\10\include\10.0.17763.0\shared\minwindef.h(130): warning C4005: 'APIENTRY': macro redefinition
+  c:\users\chris\desktop\dwarves vs zombies\dwarves-vs-zombies\opengl\glfw-win64\include\glfw\glfw3.h(104): note: see previous definition of 'APIENTRY'
   DVZ.vcxproj -> C:\Users\Chris\Desktop\Dwarves Vs Zombies\Dwarves-Vs-Zombies\x64\Debug\DVZ.exe

@@ -4,11 +4,10 @@
 
 class GameState;
 class ConcurrentGameState;
-using namespace std;
 
 class GameStateManager {
 private:
-	vector<GameState*> gameStateStack;
+	std::vector<GameState*> gameStateStack;
 
 public:
 	GameStateManager();

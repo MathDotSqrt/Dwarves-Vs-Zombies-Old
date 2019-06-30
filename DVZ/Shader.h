@@ -7,20 +7,18 @@
 #include <cstdio>
 #include <fstream>
 #include <exception>
-#include "macrologger.h"
 
 #define VERTEX_EXT ".vert"
 #define GEOMETRY_EXT ".geom"
 #define FRAGMENT_EXT ".frag"
 
-using namespace std;
 namespace Graphics { namespace Shader {
 	
 
 	class GLSLShader {
 	public:
-		friend GLSLShader *getShader(string);
-		friend GLSLShader *createShader(string);
+		friend GLSLShader *getShader(std::string);
+		friend GLSLShader *createShader(std::string);
 		friend void disposeAll();
 
 
@@ -43,49 +41,49 @@ namespace Graphics { namespace Shader {
 			return glGetAttribLocation(this->programID, attrib);
 		}
 
-		GLint getUniformLocation(string uniformName);
+		GLint getUniformLocation(std::string uniformName);
 
-		void setUniform1i(string uniformName, int i);
+		void setUniform1i(std::string uniformName, int i);
 
-		void setUniform3f(string uniformName, glm::vec3 vec3);
-		void setUniform3f(string uniformName, float vec[3]);
-		void setUniform3f(string uniformName, float x, float y, float z);
+		void setUniform3f(std::string uniformName, glm::vec3 vec3);
+		void setUniform3f(std::string uniformName, float vec[3]);
+		void setUniform3f(std::string uniformName, float x, float y, float z);
 
-		void setUniformMat4(string uniformName, glm::mat4 mat, bool transpose = GL_FALSE);
-		void setUniformMat4(string uniformName, float mat[4 * 4], bool transpose = GL_FALSE);
+		void setUniformMat4(std::string uniformName, glm::mat4 mat, bool transpose = GL_FALSE);
+		void setUniformMat4(std::string uniformName, float mat[4 * 4], bool transpose = GL_FALSE);
 
 		void dispose();
 
 	private:
-		const string name;
+		const std::string name;
 		const GLuint programID;
 		const GLuint vertexID;
 		const GLuint geometryID;
 		const GLuint fragmentID;
 		const bool hasGeometryShader;
 
-		map<string, GLint> uniforms;
+		std::map<std::string, GLint> uniforms;
 		bool m_isValid;
 
-		GLSLShader(string name, GLuint programID, GLuint vertexID, GLuint fragmentID);
-		GLSLShader(string name, GLuint programID, GLuint vertexID, GLuint geometryID, GLuint fragmentID);
+		GLSLShader(std::string name, GLuint programID, GLuint vertexID, GLuint fragmentID);
+		GLSLShader(std::string name, GLuint programID, GLuint vertexID, GLuint geometryID, GLuint fragmentID);
 		~GLSLShader();
 	};
 
 	
 	namespace Internal {
-		static unordered_map<string, GLSLShader*> shaderMap;
+		static std::unordered_map<std::string, GLSLShader*> shaderMap;
 
 		GLuint linkProgram(GLuint vertexID, GLuint geometryID, GLuint fragmentID);
-		GLuint compileShader(string src, GLenum shaderType);
+		GLuint compileShader(std::string src, GLenum shaderType);
 
 		void getCompilationError(GLuint shaderID);
 		void getLinkError(GLuint programID);
-		string readFile(string filename, bool isRequired = true);
+		std::string readFile(std::string filename, bool isRequired = true);
 	}
 	
-	GLSLShader* getShader(string shaderName);
-	GLSLShader* createShader(string shaderName);
+	GLSLShader* getShader(std::string shaderName);
+	GLSLShader* createShader(std::string shaderName);
 
 	void disposeAll();
 }}

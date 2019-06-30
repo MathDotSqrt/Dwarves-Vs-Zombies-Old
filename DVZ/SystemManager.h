@@ -3,12 +3,9 @@
 #include <list>
 #include "System.h"
 
-
-using namespace std;
-
 class SystemManager {
 private:
-	list<System*> systems;
+	std::list<System*> systems;
 
 public:
 	SystemManager();

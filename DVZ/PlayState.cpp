@@ -1,3 +1,4 @@
+//#define _HAS_STD_BYTE 0	//Visual Studio preprocessor value to turn off conflicting std::byte and byte for c++ 17
 #include "PlayState.h"
 #include "macrologger.h"
 #include "QuadGeometry.h"
@@ -7,12 +8,16 @@
 #include "BasicRenderSystem.h"
 
 #include "Window.h"
+#include "Client.h"
+//#include "RakPeerInterface.h"
 
 namespace {
 	unsigned int cameraEntityID;
+	Network::Client *client;
 }
 
 PlayState::PlayState(GameStateManager *gsm) : GameState(gsm) {
+
 }
 
 
@@ -20,7 +25,11 @@ PlayState::~PlayState() {
 }
 
 void PlayState::init() {
-	LOG_INFO("init");
+	LOG_STATE("init");
+
+	client = new Network::Client();
+	client->connect("54.224.40.47", 60000);
+
 	this->renderer.init(&this->scene);
 	
 	this->manager.addSystem(engine, new MovementSystem(2));
@@ -49,22 +58,24 @@ void PlayState::init() {
 }
 
 void PlayState::cleanUp() {
-	LOG_INFO("cleanUp");
+	LOG_STATE("cleanUp");
 	this->manager.deleteAllActiveSystems(this->engine);
+
+	delete client;
 }
 
 void PlayState::entered() {
-	LOG_INFO("entered");
+	LOG_STATE("entered");
 
 }
 
 void PlayState::leaving() {
-	LOG_INFO("leaving");
+	LOG_STATE("leaving");
 
 }
 
 void PlayState::update(float delta) {
-
+	client->poll();
 
 	this->manager.updateSystems(this->engine, delta);
 

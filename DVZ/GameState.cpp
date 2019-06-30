@@ -6,7 +6,6 @@ GameState::GameState(GameStateManager *gsm) : gsm(gsm) {
 
 GameState::~GameState() {
 	//LOG_INFO("GAY");
-	//delete this->systemManager;
 }
 
 bool GameState::isInitalized() {
@@ -18,6 +17,7 @@ void GameState::deleteAllInstances() {
 	for (auto it = gameStateInstances.begin(); it != gameStateInstances.end(); it++) {
 		GameState *state = it->second;
 		if (state != nullptr) {
+			state->cleanUp();
 			delete state;
 			LOG_INFO("Deleted state");
 		}
@@ -25,4 +25,4 @@ void GameState::deleteAllInstances() {
 	gameStateInstances.clear();
 }
 
-unordered_map<std::type_index, GameState*> GameState::gameStateInstances;
+std::unordered_map<std::type_index, GameState*> GameState::gameStateInstances;

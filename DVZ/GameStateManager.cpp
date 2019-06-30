@@ -50,6 +50,8 @@ void GameStateManager::update(float delta) {
 }
 
 void GameStateManager::disposeAllStates() {
+	while (this->gameStateStack.size() > 0) this->popCurrentState();
+
 	GameState::deleteAllInstances();
 	this->gameStateStack.clear();
 }
