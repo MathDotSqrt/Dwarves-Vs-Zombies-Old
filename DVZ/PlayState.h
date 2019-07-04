@@ -1,4 +1,5 @@
 #pragma once
+#include "Engine.h"
 #include "GameState.h"
 #include "GameStateManager.h"
 #include "entt.hpp"
@@ -8,11 +9,10 @@
 
 class PlayState : public GameState {
 private:
-
+	Engine e;
 	entt::registry engine;
-	SystemManager manager;
-	Graphics::Scene scene;
-	Graphics::OpenGLRenderer renderer;
+	/*Graphics::Scene scene;
+	Graphics::OpenGLRenderer renderer;*/
 
 public:
 	PlayState(GameStateManager *gsm);

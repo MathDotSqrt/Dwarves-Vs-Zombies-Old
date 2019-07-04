@@ -16,6 +16,7 @@ OpenGLRenderer::~OpenGLRenderer() {
 }
 
 void OpenGLRenderer::init(Scene *scene) {
+	LOG_RENDER("Init");
 	this->scene = scene;
 	
 	Camera camera = {
@@ -23,7 +24,7 @@ void OpenGLRenderer::init(Scene *scene) {
 		glm::vec3(0, 0, -1),
 		glm::vec3(0, 1, 0),
 		70,
-		(double)Window::getWidth() / Window::getHeight(),
+		(float)Window::getWidth() / Window::getHeight(),
 		.1f,
 		1000
 	};
@@ -39,6 +40,7 @@ void OpenGLRenderer::init(Scene *scene) {
 }
 
 void OpenGLRenderer::resize(int newWidth, int newHeight) {
+	LOG_RENDER("Resize (%d, %d)", newWidth, newHeight);
 	Camera *camera = &scene->cameraCache[scene->getMainCameraID()];
 	camera->aspect = (float)newWidth / newHeight;
 

@@ -38,3 +38,7 @@ struct CameraInstanceComponent {
 	unsigned int cameraID;
 };
 
+struct NetworkComponent {
+	unsigned int netID;
+};
+

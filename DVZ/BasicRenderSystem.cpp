@@ -1,4 +1,5 @@
 #include "BasicRenderSystem.h"
+#include "Engine.h"
 #include "VAO.h"
 #include "VBO.h"
 #include "Shader.h"
@@ -10,8 +11,7 @@
 
 using namespace glm;
 
-BasicRenderSystem::BasicRenderSystem(Graphics::Scene *scene, int priority) : System(priority) {
-	this->scene = scene;
+BasicRenderSystem::BasicRenderSystem(int priority) : System(priority) {
 }
 
 
@@ -19,20 +19,21 @@ BasicRenderSystem::~BasicRenderSystem()
 {
 }
 
-void BasicRenderSystem::addedToEngine(entt::registry &engine) {
-	engine.group<RenderInstanceComponent>(entt::get<PositionComponent, RotationComponent, ScaleComponent>);
-	engine.group<CameraInstanceComponent>(entt::get<PositionComponent, RotationComponent, DirComponent>);
+void BasicRenderSystem::addedToEngine(Engine * engine) {
+	engine->group<RenderInstanceComponent>(entt::get<PositionComponent, RotationComponent, ScaleComponent>);
+	engine->group<CameraInstanceComponent>(entt::get<PositionComponent, RotationComponent, DirComponent>);
 }
 
-void BasicRenderSystem::removedFromEngine(entt::registry &engine) {
+void BasicRenderSystem::removedFromEngine(Engine * engine) {
 }
 
-void BasicRenderSystem::update(entt::registry &engine, float delta) {
-	engine.group<RenderInstanceComponent>(entt::get<PositionComponent, RotationComponent, ScaleComponent>)
-		.each([this](auto &instanceComponent, auto &positionComponent, auto &rotationComponent, auto &scaleComponent)
+void BasicRenderSystem::update(Engine * engine, float delta) {
+	engine->group<RenderInstanceComponent>(entt::get<PositionComponent, RotationComponent, ScaleComponent>)
+		.each([engine](auto &instanceComponent, auto &positionComponent, auto &rotationComponent, auto &scaleComponent)
 	{
-		auto transformationID = this->scene->instanceCache[instanceComponent.instanceID].transformationID;
-		auto *transformation = &this->scene->transformationCache[transformationID];
+		Graphics::Scene *scene = engine->getScene();
+		auto transformationID = scene->instanceCache[instanceComponent.instanceID].transformationID;
+		auto *transformation = &scene->transformationCache[transformationID];
 
 		vec3 a = glm::eulerAngles(rotationComponent.rot);
 		//LOG_INFO("%f %f %f", a.x, a.y, a.z);
@@ -42,10 +43,11 @@ void BasicRenderSystem::update(entt::registry &engine, float delta) {
 		transformation->scale = scaleComponent.scale;
 	});
 
-	engine.group<CameraInstanceComponent>(entt::get<PositionComponent, RotationComponent, DirComponent>)
-		.each([this](auto &cameraComponent, auto &positionComponent, auto &rotationComponent, auto &dirComponent) 
+	engine->group<CameraInstanceComponent>(entt::get<PositionComponent, RotationComponent, DirComponent>)
+		.each([engine](auto &cameraComponent, auto &positionComponent, auto &rotationComponent, auto &dirComponent) 
 	{
-		auto *camera = &this->scene->cameraCache[cameraComponent.cameraID];
+		Graphics::Scene *scene = engine->getScene();
+		auto *camera = &scene->cameraCache[cameraComponent.cameraID];
 
 		glm::quat orientation = rotationComponent.rot;
 

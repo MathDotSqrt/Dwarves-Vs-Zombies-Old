@@ -9,6 +9,7 @@
 
 #include "Window.h"
 #include "Client.h"
+
 //#include "RakPeerInterface.h"
 
 namespace {
@@ -27,41 +28,42 @@ PlayState::~PlayState() {
 void PlayState::init() {
 	LOG_STATE("init");
 
-	client = new Network::Client();
-	client->connect("54.224.40.47", 60000);
-
-	this->renderer.init(&this->scene);
+	this->e.connect();
+	Graphics::OpenGLRenderer *renderer = e.getRenderer();
+	Graphics::Scene *scene = e.getScene();
 	
-	this->manager.addSystem(engine, new MovementSystem(2));
-	this->manager.addSystem(engine, new InputSystem(1));
-	this->manager.addSystem(engine, new BasicRenderSystem(&this->scene, 0));
+	
+
+	auto entityID = this->e.create();
+	cameraEntityID = this->e.create();
+
+	this->e.addSystem(new MovementSystem(3));
+	this->e.addSystem(new InputSystem(2));
+	this->e.addSystem(new BasicRenderSystem(0));
+
+
 	Graphics::QuadGeometry quad;
-	unsigned int meshID = this->scene.createBasicMesh(quad, 1, .5, 1);
-	unsigned int instanceID = this->scene.createInstance(meshID, glm::vec3(0, 0, 0), glm::vec3(0, 0, 0), glm::vec3(.1, .1, .1));
+	unsigned int meshID = scene->createBasicMesh(quad, 1, .5, 1);
+	unsigned int instanceID = scene->createInstance(meshID, glm::vec3(0, 0, 0), glm::vec3(0, 0, 0), glm::vec3(.1, .1, .1));
 
-	auto entityID = this->engine.create();
-	this->engine.assign<PositionComponent>(entityID, glm::vec3(0, 0, -1));
-	this->engine.assign<RotationComponent>(entityID, glm::quat(1, 0, 0, 0));
-	this->engine.assign<ScaleComponent>(entityID, glm::vec3(.1, .1, .1));
-	this->engine.assign<VelocityComponent>(entityID, glm::vec3(0, 0, -1));
-	this->engine.assign<RotationalVelocityComponent>(entityID, glm::vec3(1, 0, 1));
-	this->engine.assign<RenderInstanceComponent>(entityID, instanceID);
+	this->e.assign<PositionComponent>(entityID, glm::vec3(0, 0, -1));
+	this->e.assign<RotationComponent>(entityID, glm::quat(1, 0, 0, 0));
+	this->e.assign<ScaleComponent>(entityID, glm::vec3(.1, .1, .1));
+	this->e.assign<VelocityComponent>(entityID, glm::vec3(0, 0, -1));
+	this->e.assign<RotationalVelocityComponent>(entityID, glm::vec3(1, 0, 1));
+	this->e.assign<RenderInstanceComponent>(entityID, instanceID);
 
-	cameraEntityID = this->engine.create();
-	this->engine.assign<PositionComponent>(cameraEntityID, glm::vec3(0, 0, 0));
-	this->engine.assign<RotationComponent>(cameraEntityID, glm::quat(1, 0, 0, 0));
-	this->engine.assign<VelocityComponent>(cameraEntityID, glm::vec3(0, 0, 0));
-	this->engine.assign<RotationalVelocityComponent>(cameraEntityID, glm::vec3(0, 0, 0));
-	this->engine.assign<DirComponent>(cameraEntityID, glm::vec3(0, 0, -1), glm::vec3(0, 1, 0), glm::vec3(1, 0, 0));
-	this->engine.assign<CameraInstanceComponent>(cameraEntityID, this->scene.getMainCameraID());
-	this->engine.assign<InputComponent>(cameraEntityID);
+	this->e.assign<PositionComponent>(cameraEntityID, glm::vec3(0, 0, 0));
+	this->e.assign<RotationComponent>(cameraEntityID, glm::quat(1, 0, 0, 0));
+	this->e.assign<VelocityComponent>(cameraEntityID, glm::vec3(0, 0, 0));
+	this->e.assign<RotationalVelocityComponent>(cameraEntityID, glm::vec3(0, 0, 0));
+	this->e.assign<DirComponent>(cameraEntityID, glm::vec3(0, 0, -1), glm::vec3(0, 1, 0), glm::vec3(1, 0, 0));
+	this->e.assign<CameraInstanceComponent>(cameraEntityID, scene->getMainCameraID());
+	this->e.assign<InputComponent>(cameraEntityID);
 }
 
 void PlayState::cleanUp() {
 	LOG_STATE("cleanUp");
-	this->manager.deleteAllActiveSystems(this->engine);
-
-	delete client;
 }
 
 void PlayState::entered() {
@@ -75,10 +77,5 @@ void PlayState::leaving() {
 }
 
 void PlayState::update(float delta) {
-	client->poll();
-
-	this->manager.updateSystems(this->engine, delta);
-
-	this->renderer.prerender();
-	this->renderer.render();
+	this->e.update(delta);
 }

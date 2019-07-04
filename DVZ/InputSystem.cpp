@@ -1,4 +1,5 @@
 #include "InputSystem.h"
+#include "Engine.h"
 #include "Components.h"
 #include "Window.h"
 
@@ -9,15 +10,15 @@ InputSystem::InputSystem(int priority) : System(priority) {
 InputSystem::~InputSystem() {
 }
 
-void InputSystem::addedToEngine(entt::registry &engine) {
-	engine.group<InputComponent>(entt::get<DirComponent, RotationComponent, VelocityComponent, RotationalVelocityComponent>);
+void InputSystem::addedToEngine(Engine * engine) {
+	engine->group<InputComponent>(entt::get<DirComponent, RotationComponent, VelocityComponent, RotationalVelocityComponent>);
 }
 
-void InputSystem::removedFromEngine(entt::registry &engine) {
+void InputSystem::removedFromEngine(Engine * engine) {
 
 }
 
-void InputSystem::update(entt::registry &engine, float deltaTime) {
+void InputSystem::update(Engine * engine, float deltaTime) {
 	const float SPEED = 3.0f;
 	const float TURN_SPEED = 3.0f;
 
@@ -34,7 +35,7 @@ void InputSystem::update(entt::registry &engine, float deltaTime) {
 	userInput.turn += Window::isPressed(Window::LEFT) ? 1 : 0;
 	userInput.turn -= Window::isPressed(Window::RIGHT) ? 1 : 0;
 
-	engine.group<InputComponent>(entt::get<DirComponent, RotationComponent, VelocityComponent, RotationalVelocityComponent>)
+	engine->group<InputComponent>(entt::get<DirComponent, RotationComponent, VelocityComponent, RotationalVelocityComponent>)
 		.each([deltaTime, SPEED, TURN_SPEED, userInput] (auto &input, auto &dir, auto &rot, auto &vel, auto &rotVel){
 		
 		glm::vec3 userForward = dir.forward * userInput.forward * SPEED;

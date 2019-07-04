@@ -13,5 +13,9 @@ namespace Graphics {
 		virtual void init(Scene *scene) = 0;
 		virtual void prerender() = 0;
 		virtual void render() = 0;
+
+		inline Scene* getScene() {
+			return this->scene;
+		}
 	};
 }

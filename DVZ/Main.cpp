@@ -40,7 +40,7 @@ void run() {
 	double delta = 1 / 60.0;
 	do {
 		currentTime = glfwGetTime();
-		gsm.update(delta);
+		gsm.update((float)delta);
 
 		numFrames++;
 
@@ -51,8 +51,8 @@ void run() {
 			lastTime += 1.0;
 		}
 		
-		delta = glfwGetTime() - currentTime;
 		Window::update();
+		delta = glfwGetTime() - currentTime;
 	} while (!Window::shouldClose());
 
 	gsm.disposeAllStates();
