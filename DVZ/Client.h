@@ -4,8 +4,7 @@
 #include "MessageIdentifiers.h"
 
 namespace Network {
-	class Client
-	{
+	class Client {
 	private:
 		SLNet::RakPeerInterface *peer;
 		SLNet::MessageID getPacketID(SLNet::Packet *packet);
@@ -22,5 +21,7 @@ namespace Network {
 
 		void send(const char* str);
 		void send(float x, float y, float z);
+
+		
 	};
 }

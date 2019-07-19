@@ -7,8 +7,8 @@
 
 namespace Network {
 	enum GamePacketID {
-		ID_SPAWN_PLAYER = ID_USER_PACKET_ENUM + 1, //defines the first enum value to not conflict with network engine
-		ID_PLAYER_POS,
+		ID_PLAYER_POS = ID_USER_PACKET_ENUM + 1,	//defines the first enum value to not conflict with network engine
+		ID_CLIENT_NET_ID							//packet that gives net id for client
 
 	};
 }

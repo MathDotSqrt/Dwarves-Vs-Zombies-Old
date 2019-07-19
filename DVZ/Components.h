@@ -30,6 +30,11 @@ struct DirComponent {
 
 struct InputComponent {};
 
+struct BulletComponent {
+	float timeAlive;
+	float lifeTime;
+};
+
 struct RenderInstanceComponent {
 	unsigned int instanceID;
 };
@@ -40,5 +45,9 @@ struct CameraInstanceComponent {
 
 struct NetworkComponent {
 	unsigned int netID;
+	float delta;
 };
 
+struct ServerGeneratedComponent {
+	unsigned int netID;
+};

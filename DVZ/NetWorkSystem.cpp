@@ -21,6 +21,8 @@ NetWorkSystem::~NetWorkSystem() {
 }
 
 void NetWorkSystem::addedToEngine(Engine * engine) {
+	LOG_SYSTEM("Added to engine");
+
 	this->peer = SLNet::RakPeerInterface::GetInstance();
 	this->peer->Startup(1, &SLNet::SocketDescriptor(), 1);
 	

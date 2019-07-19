@@ -23,5 +23,8 @@
     <ClInclude Include="GamePacketID.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Components.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

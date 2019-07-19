@@ -38,6 +38,12 @@ void Client::poll() {
 		if (id == ID_CONNECTION_REQUEST_ACCEPTED) {
 			LOG_NET("Connected accepted");
 		}
+		/*else if (id == GamePacketID::ID_SPAWN_PLAYER) { 
+			LOG_NET("Spawn player");
+		}*/
+		else if (id == GamePacketID::ID_PLAYER_POS) {
+			LOG_NET("Player move");
+		}
 	}
 
 }

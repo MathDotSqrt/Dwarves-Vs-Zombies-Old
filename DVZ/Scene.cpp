@@ -29,7 +29,7 @@ unsigned int Scene::createBasicMesh(Geometry model, float r, float g, float b) {
 	return newMeshID;
 }
 
-unsigned int Scene::createInstance(unsigned int meshID, glm::vec3 position, glm::vec3 rotation, glm::vec3 scale) {
+unsigned int Scene::createRenderInstance(unsigned int meshID, glm::vec3 position, glm::vec3 rotation, glm::vec3 scale) {
 	Transformation newTransformation = { position, rotation, scale };
 	unsigned int transformationID = this->transformationCache.insert(newTransformation);
 

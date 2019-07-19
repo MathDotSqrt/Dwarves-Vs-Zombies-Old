@@ -25,6 +25,10 @@ struct Instance {
 	unsigned int transformationID;
 };
 
+//annoying bug where RakPeerInterface is redefining these vaiable names
+#undef near
+#undef far
+
 struct Camera {
 	glm::vec3 eye;
 	glm::vec3 target;
@@ -52,7 +56,7 @@ public:
 	~Scene();
 
 	unsigned int createBasicMesh(Geometry model, float r, float g, float b);
-	unsigned int createInstance(unsigned int meshID, glm::vec3 position, glm::vec3 rotation, glm::vec3 scale);
+	unsigned int createRenderInstance(unsigned int meshID, glm::vec3 position, glm::vec3 rotation, glm::vec3 scale);
 	unsigned int createCameraInstance(Camera camera);
 
 	void setMainCamera(unsigned int cameraID);

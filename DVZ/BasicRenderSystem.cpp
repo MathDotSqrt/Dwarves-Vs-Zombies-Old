@@ -20,11 +20,13 @@ BasicRenderSystem::~BasicRenderSystem()
 }
 
 void BasicRenderSystem::addedToEngine(Engine * engine) {
+	LOG_SYSTEM("Added to engine");
 	engine->group<RenderInstanceComponent>(entt::get<PositionComponent, RotationComponent, ScaleComponent>);
 	engine->group<CameraInstanceComponent>(entt::get<PositionComponent, RotationComponent, DirComponent>);
 }
 
 void BasicRenderSystem::removedFromEngine(Engine * engine) {
+	LOG_SYSTEM("Removed from engine");
 }
 
 void BasicRenderSystem::update(Engine * engine, float delta) {

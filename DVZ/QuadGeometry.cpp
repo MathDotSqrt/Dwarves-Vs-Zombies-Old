@@ -41,6 +41,7 @@ void QuadGeometry::init() {
 	vbo.unbind();
 
 	this->vao.unbind();
+	ebo.unbind();
 
 	this->vertexCount = sizeof(elements)/sizeof(*elements);
 

@@ -12,11 +12,11 @@ TestSystem::~TestSystem() {
 }
 
 void TestSystem::addedToEngine(Engine * engine) {
-	LOG_INFO("Added To Engine: TestSystem");
+	LOG_SYSTEM("Added to engine");
 }
 
 void TestSystem::removedFromEngine(Engine * engine) {
-	LOG_INFO("Removed From Engine: TestSystem");
+	LOG_SYSTEM("Removed from engine");
 }
 
 void TestSystem::update(Engine * engine, float delta) {

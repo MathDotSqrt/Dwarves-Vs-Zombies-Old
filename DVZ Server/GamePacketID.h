@@ -6,8 +6,6 @@
 #include "MessageIdentifiers.h"
 
 enum GamePacketID {
-	ID_NEW_PLAYER_CONNECTED = ID_USER_PACKET_ENUM + 1, //defines the first enum value to not conflict with network engine
-	ID_PLAYER_INFO,
-	ID_GAME_MESSAGE,
-	ID_ENTITY_POS
+	ID_PLAYER_POS = ID_USER_PACKET_ENUM + 1,	//defines the first enum value to not conflict with network engine
+	ID_CLIENT_NET_ID							//packet that gives net id for client
 };

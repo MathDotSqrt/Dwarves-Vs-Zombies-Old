@@ -21,5 +21,13 @@ public:
 	bool operator > (const System *system) const {
 		return this->priority > system->priority;
 	}
+
+	struct classcomp {
+		bool operator()(const System *lhs, const System *rhs) const { 
+			return (lhs->priority < rhs->priority); 
+		}
+	};
+
+	unsigned int getPriority();
 };
 
