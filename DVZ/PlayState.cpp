@@ -6,6 +6,7 @@
 #include "MovementSystem.h"
 #include "InputSystem.h"
 #include "BasicRenderSystem.h"
+#include "NetPlayerSystem.h"
 
 PlayState::PlayState(GameStateManager *gsm) : GameState(gsm) {
 
@@ -17,12 +18,14 @@ PlayState::~PlayState() {
 
 void PlayState::init() {
 	LOG_STATE("init");
-	e.attemptConnection("54.224.40.47", 60000);
-	//e.attemptConnection("127.0.0.1", 60000);
+	//e.attemptConnection("54.224.40.47", 60000);
+	e.attemptConnection("127.0.0.1", 60000);
 
-	this->e.addSystem(new MovementSystem(1));
 	this->e.addSystem(new InputSystem(0));
-	this->e.addSystem(new BasicRenderSystem(2));
+	this->e.addSystem(new MovementSystem(1));
+	this->e.addSystem(new NetPlayerSystem(1.0f, 2));
+	
+	this->e.addSystem(new BasicRenderSystem(100));
 	this->e.addPlayer(0, 0, 0);
 
 	entt::entity floor = this->e.create();

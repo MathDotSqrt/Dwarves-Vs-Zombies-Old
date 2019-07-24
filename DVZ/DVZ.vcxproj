@@ -142,9 +142,11 @@
     <ClCompile Include="Geometry.cpp" />
     <ClCompile Include="IEntityListener.cpp" />
     <ClCompile Include="InputSystem.cpp" />
+    <ClCompile Include="IntervalSystem.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MainState.cpp" />
     <ClCompile Include="MovementSystem.cpp" />
+    <ClCompile Include="NetPlayerSystem.cpp" />
     <ClCompile Include="NetWorkSystem.cpp" />
     <ClCompile Include="OpenGLRenderer.cpp" />
     <ClCompile Include="PlayState.cpp" />
@@ -174,12 +176,14 @@
     <ClInclude Include="Geometry.h" />
     <ClInclude Include="IEntityListener.h" />
     <ClInclude Include="InputSystem.h" />
+    <ClInclude Include="IntervalSystem.h" />
     <ClInclude Include="IRenderer.h" />
     <ClInclude Include="IResizable.h" />
     <ClInclude Include="macrologger.h" />
     <ClInclude Include="MainState.h" />
     <ClInclude Include="MovementSystem.h" />
     <ClInclude Include="NetInstanceType.h" />
+    <ClInclude Include="NetPlayerSystem.h" />
     <ClInclude Include="NetWorkSystem.h" />
     <ClInclude Include="OpenGLRenderer.h" />
     <ClInclude Include="PackedFreeList.h" />

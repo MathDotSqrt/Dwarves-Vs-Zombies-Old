@@ -153,6 +153,12 @@
     <ClInclude Include="CubeGeometry.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="IntervalSystem.h">
+      <Filter>Header Files\Systems</Filter>
+    </ClInclude>
+    <ClInclude Include="NetPlayerSystem.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -231,6 +237,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="CubeGeometry.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="IntervalSystem.cpp">
+      <Filter>Source Files\Systems</Filter>
+    </ClCompile>
+    <ClCompile Include="NetPlayerSystem.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
