@@ -12,7 +12,7 @@
 
 
 layout(location = POSITION_ATTRIB_LOCATION)
-	in vec2 vert_pos;
+	in vec3 vert_pos;
 
 
 out vec3 frag_color;
@@ -24,5 +24,5 @@ uniform vec3 color = vec3(1, 0, 1);
 void main(){
 
 	frag_color = color;
-	gl_Position = model * vec4(vert_pos, 0, 1);
+	gl_Position = model * vec4(vert_pos, 1);
 }

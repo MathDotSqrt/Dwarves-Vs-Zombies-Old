@@ -49,6 +49,9 @@
     <Filter Include="Source Files\Network">
       <UniqueIdentifier>{1b7f0465-0ffc-4ea1-9dc4-dfe85863348b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Resource Files\Models">
+      <UniqueIdentifier>{3d27660a-5e4b-444d-944b-591ccb9e18c3}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\ENTT\single_include\entt\entt.hpp">
@@ -150,14 +153,23 @@
     <ClInclude Include="NetInstanceType.h">
       <Filter>Header Files\Network</Filter>
     </ClInclude>
-    <ClInclude Include="CubeGeometry.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="IntervalSystem.h">
       <Filter>Header Files\Systems</Filter>
     </ClInclude>
+    <ClInclude Include="OBJLoader.h">
+      <Filter>Header Files\Util</Filter>
+    </ClInclude>
+    <ClInclude Include="ModelGeometry.h">
+      <Filter>Header Files\Graphics</Filter>
+    </ClInclude>
     <ClInclude Include="NetPlayerSystem.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\Systems</Filter>
+    </ClInclude>
+    <ClInclude Include="CubeGeometry.h">
+      <Filter>Header Files\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="tinyobj.h">
+      <Filter>Header Files\Util</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -236,14 +248,17 @@
     <ClCompile Include="IEntityListener.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="CubeGeometry.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="IntervalSystem.cpp">
       <Filter>Source Files\Systems</Filter>
     </ClCompile>
     <ClCompile Include="NetPlayerSystem.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\Systems</Filter>
+    </ClCompile>
+    <ClCompile Include="ModelGeometry.cpp">
+      <Filter>Source Files\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="CubeGeometry.cpp">
+      <Filter>Source Files\Graphics</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -270,5 +285,21 @@
     <Image Include="checker.jpg">
       <Filter>Resource Files\Textures</Filter>
     </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="dragon.obj">
+      <Filter>Resource Files\Models</Filter>
+    </Text>
+  </ItemGroup>
+  <ItemGroup>
+    <Object Include="..\..\..\tree.obj">
+      <Filter>Resource Files\Models</Filter>
+    </Object>
+    <Object Include="tree.obj">
+      <Filter>Resource Files\Models</Filter>
+    </Object>
+    <Object Include="SpunkWalker.obj">
+      <Filter>Resource Files\Models</Filter>
+    </Object>
   </ItemGroup>
 </Project>

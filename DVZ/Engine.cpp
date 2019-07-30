@@ -12,6 +12,7 @@
 #include "Scene.h"
 #include "OpenGLRenderer.h"
 #include "QuadGeometry.h"
+#include "ModelGeometry.h"
 
 using namespace std;
 
@@ -23,6 +24,8 @@ Engine::Engine() {
 	this->renderer = new Graphics::OpenGLRenderer();
 	this->renderer->init(scene);
 
+	this->main = entt::null;
+	this->model = new Graphics::ModelGeometry("SpunkWalker.obj");;
 }
 
 
@@ -37,6 +40,11 @@ Engine::~Engine(){
 }
 
 entt::entity Engine::addPlayer(float x, float y, float z) {
+	if (this->main != entt::null) {
+		LOG_WARNING("Attempting to make two main entities...");
+		return this->main;
+	}
+	
 	entt::entity id = this->create();
 	this->assign<PositionComponent>(id, glm::vec3(x, y, z));
 	this->assign<RotationComponent>(id, glm::quat(1, 0, 0, 0));
@@ -52,18 +60,19 @@ entt::entity Engine::addPlayer(float x, float y, float z) {
 	return id;
 }
 
+
+
 entt::entity Engine::addNetPlayer(float x, float y, float z) {
 	entt::entity id = this->create();
 
 	this->assign<PositionComponent>(id, glm::vec3(x, y, z));
 	this->assign<RotationComponent>(id, glm::quat(1, 0, 0, 0));
-	this->assign<ScaleComponent>(id, glm::vec3(.1, .1, .1));
+	this->assign<ScaleComponent>(id, glm::vec3(.3, .3, .3));
 	this->assign<VelocityComponent>(id, glm::vec3(0, 0, 0));
 	this->assign<RotationalVelocityComponent>(id, glm::vec3(0, 0, 0));
 	this->assign<NetworkComponent>(id);
 
-	Graphics::QuadGeometry model;
-	unsigned int meshID = this->scene->createBasicMesh(model, 1, 0, 1);
+	unsigned int meshID = this->scene->createBasicMesh(*this->model, 1, 0, 1);
 	unsigned int renderID = this->scene->createRenderInstance(meshID, glm::vec3(0, 0, 0), glm::vec3(0, 0, 0), glm::vec3(1, 1, 1));
 	this->assign<RenderInstanceComponent>(id, renderID);
 
@@ -93,7 +102,7 @@ void Engine::update(float delta) {
 		out.Write((SLNet::MessageID)Network::GamePacketID::ID_PLAYER_POS);
 		out.Write(n.netID);
 		out.Write(p.pos.x);
-		out.Write(p.pos.y);
+		out.Write(p.pos.y - 1);
 		out.Write(p.pos.z);
 		out.Write(eular.x);
 		out.Write(eular.y);
@@ -147,20 +156,7 @@ void Engine::pollNetwork() {
 
 			entt::entity netID;
 			in.Read(netID);
-			entt::entity clientID;
-			if (this->netToClientID.find(netID) == this->netToClientID.end()) {
-				clientID = this->addNetPlayer(0, 0, 0);
-				NetworkComponent &n = this->get<NetworkComponent>(clientID);
-				n.netID = clientID;
-				n.delta = 0;
-
-				netToClientID[netID] = clientID;
-
-				LOG_NET("NEW PLAYER CONNECTED NET ID[%d] CLIENT ID[%d]", netID, clientID);
-			}
-			else {
-				clientID = this->netToClientID[netID];
-			}
+			entt::entity clientID = this->getNetEntity(netID);
 
 			PositionComponent &p = this->get<PositionComponent>(clientID);
 			RotationComponent &r = this->get<RotationComponent>(clientID);
@@ -173,9 +169,28 @@ void Engine::pollNetwork() {
 			in.Read(rot);
 
 			p.pos = glm::vec3(pos.x, pos.y, pos.z);
-			r.rot = glm::quat(glm::vec3(rot.x, rot.y, rot.z));
+			r.rot = glm::quat(glm::vec3(rot.x, rot.y + 3.1415926, rot.z));
 		}
 	}
+}
+
+entt::entity Engine::getNetEntity(entt::entity netID) {
+	entt::entity clientID;
+	if (this->netToClientID.find(netID) == this->netToClientID.end()) {
+		clientID = this->addNetPlayer(0, 0, 0);
+		NetworkComponent &n = this->get<NetworkComponent>(clientID);
+		n.netID = clientID;
+		n.delta = 0;
+
+		netToClientID[netID] = clientID;
+		LOG_NET("NEW PLAYER CONNECTED NET ID[%d] CLIENT ID[%d]", netID, clientID);
+	}
+	else {
+		clientID = this->netToClientID[netID];
+	}
+
+	return clientID;
+
 }
 
 bool Engine::isConnected() {

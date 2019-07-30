@@ -2,6 +2,7 @@
 #include "PlayState.h"
 #include "macrologger.h"
 #include "QuadGeometry.h"
+#include "ModelGeometry.h"
 #include "Components.h"
 #include "MovementSystem.h"
 #include "InputSystem.h"
@@ -23,22 +24,53 @@ void PlayState::init() {
 
 	this->e.addSystem(new InputSystem(0));
 	this->e.addSystem(new MovementSystem(1));
-	this->e.addSystem(new NetPlayerSystem(1.0f, 2));
-	
+	this->e.addSystem(new NetPlayerSystem(.1f, 2));
 	this->e.addSystem(new BasicRenderSystem(100));
 	this->e.addPlayer(0, 0, 0);
-
-	entt::entity floor = this->e.create();
-	this->e.assign<PositionComponent>(floor, glm::vec3(0, -1, 0));
-	this->e.assign<RotationComponent>(floor, glm::quat(glm::vec3(3.1415f / 2, 0, 0)));
-	this->e.assign<ScaleComponent>(floor, glm::vec3(10, 10, 10));
 
 
 	Graphics::QuadGeometry quad;
 	unsigned int meshID = this->e.getScene()->createBasicMesh(quad, 0, 1, 0);
 	unsigned int renderID = this->e.getScene()->createRenderInstance(meshID, glm::vec3(0, -1, 0), glm::vec3(0, 0, 0), glm::vec3(1, 1, 1));
+
+
+	entt::entity floor = this->e.create();
+	this->e.assign<PositionComponent>(floor, glm::vec3(0, -1, 0));
+	this->e.assign<RotationComponent>(floor, glm::quat(glm::vec3(3.1415f / 2, 0, 0)));
+	this->e.assign<ScaleComponent>(floor, glm::vec3(10, 10, 10));
 	this->e.assign<RenderInstanceComponent>(floor, renderID);
 
+
+	Graphics::ModelGeometry dragon("SpunkWalker.obj");
+	//unsigned int meshID2 = this->e.getScene()->createBasicMesh(dragon, 1, 0, 1);
+	//unsigned int renderID2 = this->e.getScene()->createRenderInstance(meshID2);
+
+	//entt::entity obj = this->e.create();
+	//this->e.assign<PositionComponent>(obj, glm::vec3(0, -1, -10));
+	//this->e.assign<RotationComponent>(obj, glm::quat(glm::vec3(0, 0, 0)));
+	//this->e.assign<ScaleComponent>(obj, glm::vec3(.3f, .3f, .3f));
+	//this->e.assign<RotationalVelocityComponent>(obj, glm::vec3(0, 1, 0));
+	//this->e.assign<RenderInstanceComponent>(obj, renderID2);
+
+
+	for (int i = 0; i < 100; i++) {
+		entt::entity obj = this->e.create();
+		this->e.assign<PositionComponent>(obj, glm::vec3(i - 50, -1, -10));
+		this->e.assign<RotationComponent>(obj, glm::quat(glm::vec3(0, 0, 0)));
+		this->e.assign<ScaleComponent>(obj, glm::vec3(.3f, .3f, .3f));
+		this->e.assign<RotationalVelocityComponent>(obj, glm::vec3(0, 1, 0));
+		unsigned int meshID2;
+		if (i % 2 == 0) {
+			meshID2 = this->e.getScene()->createBasicMesh(dragon, i / 100.0f, i / 100.0f, .5f);
+		}
+		else {
+			meshID2 = this->e.getScene()->createNormalMesh(dragon);
+		}
+
+		
+		renderID = this->e.getScene()->createRenderInstance(meshID2);
+		this->e.assign<RenderInstanceComponent>(obj, renderID);
+	}
 }
 
 void PlayState::cleanUp() {

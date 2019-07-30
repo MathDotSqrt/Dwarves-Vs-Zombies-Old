@@ -3,7 +3,7 @@
 #include "entt.hpp"
 #include "RakPeerInterface.h"
 #include "System.h"
-
+#include "ModelGeometry.h"
 
 namespace Graphics {
 	class OpenGLRenderer;
@@ -26,6 +26,8 @@ private:
 	Graphics::Scene *scene;
 	std::set<System*, System::classcomp> systems;
 
+	Graphics::ModelGeometry *model;
+
 	SLNet::MessageID getPacketID(SLNet::Packet *packet);
 
 public:
@@ -42,9 +44,11 @@ public:
 	bool isConnected();
 
 	void pollNetwork();
-	void updateNetSystems(float delta);
+	void sendPacket();
 	
+	entt::entity getNetEntity(entt::entity netID);
 	
+
 	void addSystem(System *system);
 	void removeSystem(System *system);
 	void updateSystems(float delta);
