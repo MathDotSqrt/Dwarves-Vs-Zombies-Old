@@ -2,7 +2,6 @@
 #include <GL/glew.h>
 #include <glm.hpp>
 #include <unordered_map>
-#include <map>
 #include <string>
 #include <cstdio>
 #include <fstream>
@@ -62,7 +61,7 @@ namespace Graphics { namespace Shader {
 		const GLuint fragmentID;
 		const bool hasGeometryShader;
 
-		std::map<std::string, GLint> uniforms;
+		std::unordered_map<std::string, GLint> uniforms;
 		bool m_isValid;
 
 		GLSLShader(std::string name, GLuint programID, GLuint vertexID, GLuint fragmentID);

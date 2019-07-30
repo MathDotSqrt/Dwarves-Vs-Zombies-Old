@@ -43,7 +43,7 @@ GLint GLSLShader::getUniformLocation(string uniformName) {
 	GLint location;
 
 	//iterator for the uniforms map that searches for uniformName 
-	map<string, GLint>::iterator it = this->uniforms.find(uniformName);
+	unordered_map<string, GLint>::iterator it = this->uniforms.find(uniformName);
 
 	//if iterator could not find uniform name
 	if (it == this->uniforms.end()) {
