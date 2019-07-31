@@ -83,6 +83,20 @@ void GLSLShader::setUniform3f(string uniformName, float x, float y, float z) {
 		glUniform3f(uniformLocation, x, y, z);
 }
 
+void GLSLShader::setUniformMat3(string uniformName, glm::mat3 mat, bool transpose) {
+	GLuint uniformLocation = getUniformLocation(uniformName);
+
+	if (uniformLocation != -1)
+		glUniformMatrix3fv(uniformLocation, 1, transpose, glm::value_ptr(mat));
+}
+
+void GLSLShader::setUniformMat3(string uniformName, float mat[3 * 3], bool transpose) {
+	GLuint uniformLocation = getUniformLocation(uniformName);
+
+	if (uniformLocation != -1)
+		glUniformMatrix3fv(uniformLocation, 1, transpose, mat);
+}
+
 void GLSLShader::setUniformMat4(string uniformName, glm::mat4 mat, bool transpose) {
 	GLint uniformLocation = getUniformLocation(uniformName);
 

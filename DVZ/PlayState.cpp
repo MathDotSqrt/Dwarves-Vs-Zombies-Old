@@ -42,20 +42,10 @@ void PlayState::init() {
 
 
 	Graphics::ModelGeometry dragon("SpunkWalker.obj");
-	//unsigned int meshID2 = this->e.getScene()->createBasicMesh(dragon, 1, 0, 1);
-	//unsigned int renderID2 = this->e.getScene()->createRenderInstance(meshID2);
-
-	//entt::entity obj = this->e.create();
-	//this->e.assign<PositionComponent>(obj, glm::vec3(0, -1, -10));
-	//this->e.assign<RotationComponent>(obj, glm::quat(glm::vec3(0, 0, 0)));
-	//this->e.assign<ScaleComponent>(obj, glm::vec3(.3f, .3f, .3f));
-	//this->e.assign<RotationalVelocityComponent>(obj, glm::vec3(0, 1, 0));
-	//this->e.assign<RenderInstanceComponent>(obj, renderID2);
-
 
 	for (int i = 0; i < 100; i++) {
 		entt::entity obj = this->e.create();
-		this->e.assign<PositionComponent>(obj, glm::vec3(i - 50, -1, -10));
+		this->e.assign<PositionComponent>(obj, glm::vec3(i * 5 - 50 * 5, -1, -10));
 		this->e.assign<RotationComponent>(obj, glm::quat(glm::vec3(0, 0, 0)));
 		this->e.assign<ScaleComponent>(obj, glm::vec3(.3f, .3f, .3f));
 		this->e.assign<RotationalVelocityComponent>(obj, glm::vec3(0, 1, 0));

@@ -17,12 +17,12 @@ layout(location = POSITION_ATTRIB_LOCATION)
 
 out vec3 frag_color;
 
-uniform mat4 model;
-uniform vec3 color = vec3(1, 0, 1);
+uniform mat4 MVP;
+uniform vec3 color = vec3(1, 1, 1);
 
 
 void main(){
 
 	frag_color = color;
-	gl_Position = model * vec4(vert_pos, 1);
+	gl_Position = MVP * vec4(vert_pos, 1);
 }

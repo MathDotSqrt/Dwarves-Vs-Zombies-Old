@@ -98,6 +98,8 @@ int OpenGLRenderer::renderBasic(int startIndex, glm::mat4 vp) {
 		return startIndex;
 	}
 
+	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+
 	glm::mat4 ident = glm::identity<glm::mat4>();
 	Shader::GLSLShader *shader = Shader::getShader("basic_shader");
 	shader->use();
@@ -119,7 +121,7 @@ int OpenGLRenderer::renderBasic(int startIndex, glm::mat4 vp) {
 		model = glm::rotate(model, angle, axis);
 		model = glm::scale(model, transformation->scale);
 
-		shader->setUniformMat4("model", vp * model);
+		shader->setUniformMat4("MVP", vp * model);
 		
 		ColorMaterial *material = &scene->colorMaterialCache[mesh->materialInstanceID];
 		shader->setUniform3f("color", material->color);
@@ -133,6 +135,7 @@ int OpenGLRenderer::renderBasic(int startIndex, glm::mat4 vp) {
 
 	shader->end();
 	glBindVertexArray(0);
+	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
 	return index;
 }
@@ -142,10 +145,9 @@ int OpenGLRenderer::renderNormal(int startIndex, glm::mat4 vp) {
 		return startIndex;
 	}
 
-	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
 	glm::mat4 ident = glm::identity<glm::mat4>();
-	Shader::GLSLShader *shader = Shader::getShader("basic_shader");
+	Shader::GLSLShader *shader = Shader::getShader("normal_shader");
 	shader->use();
 
 	int index = startIndex;
@@ -166,12 +168,13 @@ int OpenGLRenderer::renderNormal(int startIndex, glm::mat4 vp) {
 		model = glm::rotate(model, angle, axis);
 		model = glm::scale(model, transformation->scale);
 
-		shader->setUniformMat4("model", vp * model);
-		float color[3] = { 1, .5f, .5f };
-		shader->setUniform3f("color", color);
+		glm::mat3 mat(model);
+		shader->setUniformMat3("inverseTransposeMatrix", glm::inverse(mat), true);
+		shader->setUniformMat4("MVP", vp * model);
 
 		mesh->model.getVAO().bind();
 		glEnableVertexAttribArray(POSITION_ATTRIB_LOCATION);
+		glEnableVertexAttribArray(NORMAL_ATTRIB_LOCATION);
 		glDrawElements(GL_TRIANGLES, mesh->model.getVertexCount(), GL_UNSIGNED_INT, 0);
 
 		index++;
@@ -179,7 +182,6 @@ int OpenGLRenderer::renderNormal(int startIndex, glm::mat4 vp) {
 
 	shader->end();
 	glBindVertexArray(0);
-	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
 	return index;
 }

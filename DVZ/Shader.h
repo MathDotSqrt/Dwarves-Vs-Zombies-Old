@@ -48,6 +48,9 @@ namespace Graphics { namespace Shader {
 		void setUniform3f(std::string uniformName, float vec[3]);
 		void setUniform3f(std::string uniformName, float x, float y, float z);
 
+		void setUniformMat3(std::string uniformName, glm::mat3, bool transpose = GL_FALSE);
+		void setUniformMat3(std::string uniformName, float mat[3 * 3], bool transpose = GL_FALSE);
+
 		void setUniformMat4(std::string uniformName, glm::mat4 mat, bool transpose = GL_FALSE);
 		void setUniformMat4(std::string uniformName, float mat[4 * 4], bool transpose = GL_FALSE);
 

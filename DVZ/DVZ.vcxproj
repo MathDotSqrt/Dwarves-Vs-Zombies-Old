@@ -264,6 +264,8 @@
   <ItemGroup>
     <None Include="basic_shader.frag" />
     <None Include="basic_shader.vert" />
+    <None Include="normal_shader.frag" />
+    <None Include="normal_shader.vert" />
     <None Include="preamble.glsl" />
     <None Include="test.frag" />
     <None Include="test.vert" />
