@@ -52,6 +52,12 @@
     <Filter Include="Resource Files\Models">
       <UniqueIdentifier>{3d27660a-5e4b-444d-944b-591ccb9e18c3}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Voxel">
+      <UniqueIdentifier>{69e8bb14-118c-4d64-bfa9-f786cc441a26}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Voxel">
+      <UniqueIdentifier>{a2079160-f284-4dd8-888d-311fdd931d8c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\ENTT\single_include\entt\entt.hpp">
@@ -311,6 +317,9 @@
       <Filter>Resource Files\Models</Filter>
     </Object>
     <Object Include="SpunkWalker.obj">
+      <Filter>Resource Files\Models</Filter>
+    </Object>
+    <Object Include="cube.obj">
       <Filter>Resource Files\Models</Filter>
     </Object>
   </ItemGroup>

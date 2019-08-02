@@ -2,6 +2,7 @@
 #include "PlayState.h"
 #include "macrologger.h"
 #include "QuadGeometry.h"
+#include "CubeGeometry.h"
 #include "ModelGeometry.h"
 #include "Components.h"
 #include "MovementSystem.h"
@@ -44,8 +45,10 @@ void PlayState::init() {
 	this->e.assign<RenderInstanceComponent>(floor, renderID);
 
 
+	Graphics::ModelGeometry cube("cube.obj");
+
+
 	Graphics::ModelGeometry dragon("dragon.obj");
-	
 
 	for (int i = 0; i < 100; i++) {
 		entt::entity obj = this->e.create();
@@ -56,7 +59,7 @@ void PlayState::init() {
 		unsigned int meshID2;
 		if (i % 3 == 0) {
 			Graphics::ColorMaterial cm = {i / 100.0f, 1 - i / 100.0f, .5f};
-			meshID2 = this->e.getScene()->createMesh(dragon, cm);
+			meshID2 = this->e.getScene()->createMesh(cube, cm);
 		}
 		else if (i % 3 == 1) {
 			Graphics::NormalMaterial nm;

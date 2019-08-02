@@ -27,10 +27,13 @@ void CubeGeometry::init() {
 	VBO vbo(GL_ARRAY_BUFFER);
 	vbo.bufferData(sizeof(verticies), verticies, GL_STATIC_DRAW);
 	vbo.bind();
+	glVertexAttribPointer(POSITION_ATTRIB_LOCATION, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+	vbo.unbind();
 
 	VBO ebo(GL_ELEMENT_ARRAY_BUFFER);
 	ebo.bufferData(sizeof(elements), elements, GL_STATIC_DRAW);
-	glVertexAttribPointer(POSITION_ATTRIB_LOCATION, 3, GL_FLOAT, GL_FALSE, 7 * sizeof(float), (void*)0);
 	ebo.bind();
-	vbo.unbind();
+	vao.unbind();
+	ebo.unbind();
+	
 }
