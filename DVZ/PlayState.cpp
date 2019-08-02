@@ -9,6 +9,7 @@
 #include "InputSystem.h"
 #include "BasicRenderSystem.h"
 #include "NetPlayerSystem.h"
+#include "Chunk.h"
 
 PlayState::PlayState(GameStateManager *gsm) : GameState(gsm) {
 
@@ -23,16 +24,20 @@ void PlayState::init() {
 	//e.attemptConnection("54.224.40.47", 60000);
 	e.attemptConnection("127.0.0.1", 60000);
 
+	/*SYSTEM*/
 	this->e.addSystem(new InputSystem(0));
 	this->e.addSystem(new MovementSystem(1));
 	this->e.addSystem(new NetPlayerSystem(.1f, 2));
 	this->e.addSystem(new BasicRenderSystem(100));
+	/*SYSTEM*/
 
+	/*PLAYER*/
 	entt::entity playerID = this->e.addPlayer(1, 0, 0);
 	unsigned int pointLightInstanceID = this->e.getScene()->createPointLightInstance();
 	this->e.assign<PointLightComponent>(playerID, pointLightInstanceID, glm::vec3(1, 1, 1), 10.0f);
+	/*PLAYER*/
 
-
+	/*FLOOR*/
 	Graphics::QuadGeometry quad;
 	Graphics::BasicLitMaterial c = { {1, 1, 1}, {.5f, .7f, .1f}, 10 };
 	unsigned int meshID = this->e.getScene()->createMesh(quad, c);
@@ -43,13 +48,10 @@ void PlayState::init() {
 	this->e.assign<RotationComponent>(floor, glm::quat(glm::vec3(3.1415f / 2, 0, 0)));
 	this->e.assign<ScaleComponent>(floor, glm::vec3(10, 10, 10));
 	this->e.assign<RenderInstanceComponent>(floor, renderID);
+	/*FLOOR*/
 
-
-	Graphics::ModelGeometry cube("cube.obj");
-
-
-	Graphics::ModelGeometry dragon("dragon.obj");
-
+	/*DRAGONS*/
+	Graphics::ModelGeometry dragon("SpunkWalker.obj");
 	for (int i = 0; i < 100; i++) {
 		entt::entity obj = this->e.create();
 		this->e.assign<PositionComponent>(obj, glm::vec3((i - 50) * 5, -1, -10));
@@ -59,7 +61,7 @@ void PlayState::init() {
 		unsigned int meshID2;
 		if (i % 3 == 0) {
 			Graphics::ColorMaterial cm = {i / 100.0f, 1 - i / 100.0f, .5f};
-			meshID2 = this->e.getScene()->createMesh(cube, cm);
+			meshID2 = this->e.getScene()->createMesh(dragon, cm);
 		}
 		else if (i % 3 == 1) {
 			Graphics::NormalMaterial nm;
@@ -74,6 +76,15 @@ void PlayState::init() {
 		renderID = this->e.getScene()->createRenderInstance(meshID2);
 		this->e.assign<RenderInstanceComponent>(obj, renderID);
 	}
+	/*DRAGONS*/
+
+	/*CHUNKS*/
+	Voxel::Chunk chunk(0, 0, 0);
+	chunk.generateTerrain();
+	chunk.generateMesh();
+	/*CHUNKS*/
+
+
 }
 
 void PlayState::cleanUp() {
