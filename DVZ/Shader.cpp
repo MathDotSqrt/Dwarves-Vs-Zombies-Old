@@ -68,6 +68,13 @@ void GLSLShader::setUniform1i(string uniformName, int i) {
 		glUniform1i(uniformLocation, i);
 }
 
+void GLSLShader::setUniform1f(string uniformName, float f) {
+	GLuint uniformLocation = getUniformLocation(uniformName);
+
+	if (uniformLocation != -1)
+		glUniform1f(uniformLocation, f);
+}
+
 void GLSLShader::setUniform3f(string uniformName, glm::vec3 vec3) {
 	setUniform3f(uniformName, vec3.x, vec3.y, vec3.z);
 }

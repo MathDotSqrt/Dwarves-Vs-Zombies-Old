@@ -43,6 +43,7 @@ namespace Graphics { namespace Shader {
 		GLint getUniformLocation(std::string uniformName);
 
 		void setUniform1i(std::string uniformName, int i);
+		void setUniform1f(std::string uniformName, float f);
 
 		void setUniform3f(std::string uniformName, glm::vec3 vec3);
 		void setUniform3f(std::string uniformName, float vec[3]);

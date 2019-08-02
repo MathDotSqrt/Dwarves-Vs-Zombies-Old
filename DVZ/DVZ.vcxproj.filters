@@ -283,6 +283,12 @@
     <None Include="normal_shader.frag">
       <Filter>Resource Files\Shaders</Filter>
     </None>
+    <None Include="basic_lit_shader.vert">
+      <Filter>Resource Files\Shaders</Filter>
+    </None>
+    <None Include="basic_lit_shader.frag">
+      <Filter>Resource Files\Shaders</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Image Include="test.png">

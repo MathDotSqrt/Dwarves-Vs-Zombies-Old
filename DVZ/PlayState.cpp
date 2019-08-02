@@ -26,13 +26,16 @@ void PlayState::init() {
 	this->e.addSystem(new MovementSystem(1));
 	this->e.addSystem(new NetPlayerSystem(.1f, 2));
 	this->e.addSystem(new BasicRenderSystem(100));
-	this->e.addPlayer(0, 0, 0);
+
+	entt::entity playerID = this->e.addPlayer(1, 0, 0);
+	unsigned int pointLightInstanceID = this->e.getScene()->createPointLightInstance();
+	this->e.assign<PointLightComponent>(playerID, pointLightInstanceID, glm::vec3(1, 1, 1), 10.0f);
 
 
 	Graphics::QuadGeometry quad;
-	unsigned int meshID = this->e.getScene()->createBasicMesh(quad, 0, 1, 0);
-	unsigned int renderID = this->e.getScene()->createRenderInstance(meshID, glm::vec3(0, -1, 0), glm::vec3(0, 0, 0), glm::vec3(1, 1, 1));
-
+	Graphics::BasicLitMaterial c = { {1, 1, 1}, {.5f, .7f, .1f}, 10 };
+	unsigned int meshID = this->e.getScene()->createMesh(quad, c);
+	unsigned int renderID = this->e.getScene()->createRenderInstance(meshID);
 
 	entt::entity floor = this->e.create();
 	this->e.assign<PositionComponent>(floor, glm::vec3(0, -1, 0));
@@ -41,20 +44,27 @@ void PlayState::init() {
 	this->e.assign<RenderInstanceComponent>(floor, renderID);
 
 
-	Graphics::ModelGeometry dragon("SpunkWalker.obj");
+	Graphics::ModelGeometry dragon("dragon.obj");
+	
 
 	for (int i = 0; i < 100; i++) {
 		entt::entity obj = this->e.create();
-		this->e.assign<PositionComponent>(obj, glm::vec3(i * 5 - 50 * 5, -1, -10));
+		this->e.assign<PositionComponent>(obj, glm::vec3((i - 50) * 5, -1, -10));
 		this->e.assign<RotationComponent>(obj, glm::quat(glm::vec3(0, 0, 0)));
 		this->e.assign<ScaleComponent>(obj, glm::vec3(.3f, .3f, .3f));
 		this->e.assign<RotationalVelocityComponent>(obj, glm::vec3(0, 1, 0));
 		unsigned int meshID2;
-		if (i % 2 == 0) {
-			meshID2 = this->e.getScene()->createBasicMesh(dragon, i / 100.0f, i / 100.0f, .5f);
+		if (i % 3 == 0) {
+			Graphics::ColorMaterial cm = {i / 100.0f, 1 - i / 100.0f, .5f};
+			meshID2 = this->e.getScene()->createMesh(dragon, cm);
+		}
+		else if (i % 3 == 1) {
+			Graphics::NormalMaterial nm;
+			meshID2 = this->e.getScene()->createMesh(dragon, nm);
 		}
 		else {
-			meshID2 = this->e.getScene()->createNormalMesh(dragon);
+			Graphics::BasicLitMaterial bm = { {1, 1, 1}, {1, 1, 1}, 100};
+			meshID2 = this->e.getScene()->createMesh(dragon, bm);
 		}
 
 		

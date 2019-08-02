@@ -72,8 +72,9 @@ entt::entity Engine::addNetPlayer(float x, float y, float z) {
 	this->assign<RotationalVelocityComponent>(id, glm::vec3(0, 0, 0));
 	this->assign<NetworkComponent>(id);
 
-	unsigned int meshID = this->scene->createBasicMesh(*this->model, 1, 0, 1);
-	unsigned int renderID = this->scene->createRenderInstance(meshID, glm::vec3(0, 0, 0), glm::vec3(0, 0, 0), glm::vec3(1, 1, 1));
+	Graphics::ColorMaterial c = {1, 0, 1};
+	unsigned int meshID = this->scene->createMesh(*this->model, c);
+	unsigned int renderID = this->scene->createRenderInstance(meshID);
 	this->assign<RenderInstanceComponent>(id, renderID);
 
 	return id;

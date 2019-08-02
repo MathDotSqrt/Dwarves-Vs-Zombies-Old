@@ -22,6 +22,8 @@ BasicRenderSystem::~BasicRenderSystem()
 void BasicRenderSystem::addedToEngine(Engine * engine) {
 	LOG_SYSTEM("Added to engine");
 	engine->group<RenderInstanceComponent>(entt::get<PositionComponent, RotationComponent, ScaleComponent>);
+	engine->group<PointLightComponent>(entt::get<PositionComponent>);
+
 	engine->group<CameraInstanceComponent>(entt::get<PositionComponent, RotationComponent, DirComponent>);
 }
 
@@ -43,6 +45,19 @@ void BasicRenderSystem::update(Engine * engine, float delta) {
 		transformation->position = positionComponent.pos;
 		transformation->rotation = glm::eulerAngles(rotationComponent.rot);
 		transformation->scale = scaleComponent.scale;
+	});
+
+	engine->group<PointLightComponent>(entt::get<PositionComponent>)
+		.each([engine](auto &pointLightComponent, auto &positionComponent) 
+	{
+		Graphics::Scene *scene = engine->getScene();
+		Graphics::PointLight &pointLight = scene->pointLightCache[pointLightComponent.lightInstanceID];
+
+		pointLight.position = positionComponent.pos;
+		pointLight.color[0] = pointLightComponent.color.x;
+		pointLight.color[1] = pointLightComponent.color.y;
+		pointLight.color[2] = pointLightComponent.color.z;
+		pointLight.intensity = pointLightComponent.intensity;
 	});
 
 	engine->group<CameraInstanceComponent>(entt::get<PositionComponent, RotationComponent, DirComponent>)

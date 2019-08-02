@@ -262,6 +262,8 @@
     <ClInclude Include="Window.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="basic_lit_shader.frag" />
+    <None Include="basic_lit_shader.vert" />
     <None Include="basic_shader.frag" />
     <None Include="basic_shader.vert" />
     <None Include="normal_shader.frag" />

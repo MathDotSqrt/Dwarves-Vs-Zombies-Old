@@ -39,6 +39,12 @@ struct RenderInstanceComponent {
 	unsigned int instanceID;
 };
 
+struct PointLightComponent {
+	unsigned int lightInstanceID;
+	glm::vec3 color;
+	float intensity;
+};
+
 struct CameraInstanceComponent {
 	unsigned int cameraID;
 };

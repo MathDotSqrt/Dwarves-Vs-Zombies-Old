@@ -8,8 +8,10 @@
 
 using namespace Graphics;
 
+
 MaterialID ColorMaterial::type = MaterialID::COLOR_MATERIAL_ID;
 MaterialID NormalMaterial::type = MaterialID::NORMAL_MAERIAL_ID;
+MaterialID BasicLitMaterial::type = MaterialID::BASIC_LIT_MATERIAL_ID;
 MaterialID TextureMaterial::type = MaterialID::TEXTURE_MATERIAL_ID;
 
 OpenGLRenderer::OpenGLRenderer() {
@@ -84,11 +86,12 @@ void OpenGLRenderer::render() {
 	Camera *camera = &scene->cameraCache[scene->getMainCameraID()];
 	glm::mat4 view = glm::lookAt(camera->eye, camera->eye + camera->target, camera->up);
 	glm::mat4 vp = perspectiveProjection * view;
+	glm::vec3 camera_position = camera->eye;
 
 	int index = 0;
 	index = renderBasic(index, vp);
-
 	index = renderNormal(index, vp);
+	index = renderBasicLit(index, camera_position, vp);
 
 	//glBindVertexArray(0);
 }
@@ -186,38 +189,66 @@ int OpenGLRenderer::renderNormal(int startIndex, glm::mat4 vp) {
 	return index;
 }
 
-//int OpenGLRenderer::renderBasic(int startKeyIndex, glm::mat4 vp) {
-//	glm::mat4 ident = glm::identity<glm::mat4>();
-//	Shader::GLSLShader *shader = Shader::getShader("basic_shader");
-//	shader->use();
-//	for (auto instanceID : scene->instanceCache) {
-//		Instance *instance = &scene->instanceCache[instanceID];
-//
-//		ColorMesh *mesh = &scene->meshCache[instance->meshID];
-//		Transformation *transformation = &scene->transformationCache[instance->transformationID];
-//
-//		glm::quat rot(transformation->rotation);
-//		glm::vec3 axis = glm::axis(rot);
-//
-//		float angle = glm::angle(rot);
-//
-//		glm::mat4 model;
-//		model = glm::translate(ident, transformation->position);
-//		model = glm::rotate(model, angle, axis);
-//		model = glm::scale(model, transformation->scale);
-//
-//		shader->setUniformMat4("model", vp * model);
-//		
-//		ColorMaterial *material = &scene->colorMaterialCache[mesh->materialID];
-//		shader->setUniform3f("color", material->color);
-//
-//		mesh->model.getVAO().bind();
-//		glEnableVertexAttribArray(POSITION_ATTRIB_LOCATION);
-//		glDrawElements(GL_TRIANGLES, mesh->model.getVertexCount(), GL_UNSIGNED_INT, 0);
-//	}
-//
-//	
-//}
+int OpenGLRenderer::renderBasicLit(int startIndex, glm::vec3 camera_position, glm::mat4 vp) {
+	if (!this->isValidState(startIndex, MaterialID::BASIC_LIT_MATERIAL_ID)) {
+		return startIndex;
+	}
+
+
+	glm::mat4 ident = glm::identity<glm::mat4>();
+	Shader::GLSLShader *shader = Shader::getShader("basic_lit_shader");
+	shader->use();
+
+
+	shader->setUniform3f("camera_pos", camera_position);
+	shader->setUniformMat4("VP", vp);
+
+	PointLight &point = this->scene->pointLightCache[0];
+	shader->setUniform3f("point_light_position", point.position);
+	shader->setUniform3f("point_light_color", point.color);
+	shader->setUniform1f("point_light_intensity", point.intensity);
+
+	int index = startIndex;
+	do {
+		RenderState state = this->getRenderStateFromIndex(index);
+
+		Instance *instance = &scene->instanceCache[state.instanceID];
+		Mesh *mesh = &scene->meshCache[instance->meshID];
+		Transformation *transformation = &scene->transformationCache[instance->transformationID];
+
+		glm::quat rot(transformation->rotation);
+		glm::vec3 axis = glm::axis(rot);
+
+		float angle = glm::angle(rot);
+
+		glm::mat4 model;
+		model = glm::translate(ident, transformation->position);
+		model = glm::rotate(model, angle, axis);
+		model = glm::scale(model, transformation->scale);
+
+		glm::mat3 mat(model);
+		shader->setUniformMat3("inverseTransposeMatrix", glm::inverse(mat), true);
+		shader->setUniformMat4("M", model);
+
+		BasicLitMaterial &material = scene->basicLitMaterialCache[mesh->materialInstanceID];
+		shader->setUniform3f("diffuse_color", material.diffuseColor);
+		shader->setUniform3f("specular_color", material.specularColor);
+		shader->setUniform1f("shinyness", material.shinyness);
+
+
+		mesh->model.getVAO().bind();
+		glEnableVertexAttribArray(POSITION_ATTRIB_LOCATION);
+		glEnableVertexAttribArray(NORMAL_ATTRIB_LOCATION);
+		glDrawElements(GL_TRIANGLES, mesh->model.getVertexCount(), GL_UNSIGNED_INT, 0);
+
+		index++;
+	} while (this->isValidState(index, MaterialID::BASIC_LIT_MATERIAL_ID));
+
+	shader->end();
+	glBindVertexArray(0);
+
+	return index;
+}
 
 bool OpenGLRenderer::isValidState(int sortedStateKeyIndex, MaterialID typeID) {
 	return sortedStateKeyIndex < sortedRenderStateKeys.size()

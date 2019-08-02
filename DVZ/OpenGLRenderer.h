@@ -21,6 +21,7 @@ private:
 
 	int renderBasic(int startKeyIndex, glm::mat4 vp);
 	int renderNormal(int startKeyIndex, glm::mat4 vp);
+	int renderBasicLit(int startKeyIndex, glm::vec3 camera_position, glm::mat4 vp);
 public:
 	OpenGLRenderer();
 	~OpenGLRenderer();

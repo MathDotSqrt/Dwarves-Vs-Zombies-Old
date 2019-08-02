@@ -2,16 +2,17 @@
 
 using namespace Graphics;
 
-//MaterialID ColorMaterial::type;
-//MaterialID NormalMaterial::type;
-//MaterialID TextureMaterial::type;
+Scene::Scene() : 
+	cameraCache(10),
+	instanceCache(5000),
+	transformationCache(5000),
+	meshCache(5000),
+	colorMaterialCache(5000),
+	basicLitMaterialCache(5000),
+	pointLightCache(4)
+	{
 
-Scene::Scene() {
-	this->colorMaterialCache = Util::PackedFreeList<ColorMaterial>(5000);
-	this->meshCache = Util::PackedFreeList<Mesh>(5000);
-	this->transformationCache = Util::PackedFreeList<Transformation>(5000);
-	this->instanceCache = Util::PackedFreeList<Instance>(5000);
-	this->cameraCache = Util::PackedFreeList<Camera>(10);
+
 }
 
 
@@ -19,24 +20,17 @@ Scene::~Scene() {
 
 }
 
-unsigned int Scene::createBasicMesh(Geometry &model, float r, float g, float b) {
-	ColorMaterial c;
-	c.color[0] = r;
-	c.color[1] = g;
-	c.color[2] = b;
-
-	unsigned int materialInstanceID = this->colorMaterialCache.insert(c);
-
-	Mesh newMesh = { model, ColorMaterial::type, materialInstanceID };
-	unsigned int newMeshID = this->meshCache.insert(newMesh);
-	return newMeshID;
+unsigned int Scene::createMaterialInstance(ColorMaterial &material) {
+	return this->colorMaterialCache.insert(material);
 }
 
-unsigned int Scene::createNormalMesh(Geometry &model) {
-	Mesh newMesh = { model, NormalMaterial::type, 0 };
-	unsigned int newMeshID = this->meshCache.insert(newMesh);
-	return newMeshID;
-};
+unsigned int Scene::createMaterialInstance(BasicLitMaterial &material) {
+	return this->basicLitMaterialCache.insert(material);
+}
+
+unsigned int Scene::createMaterialInstance(TextureMaterial &material) {
+	return this->textureMaterialCache.insert(material);
+}
 
 unsigned int Scene::createRenderInstance(unsigned int meshID, Transformation t) {
 	unsigned int transformationID = this->transformationCache.insert(t);
@@ -59,6 +53,15 @@ unsigned int Scene::createRenderInstance(unsigned int meshID) {
 
 unsigned int Scene::createCameraInstance(Camera camera) {
 	return this->cameraCache.insert(camera);
+}
+
+unsigned int Scene::createPointLightInstance(PointLight &p) {
+	return this->pointLightCache.insert(p);
+}
+
+unsigned int Scene::createPointLightInstance() {
+	PointLight p;
+	return this->pointLightCache.insert(p);
 }
 
 void Scene::setMainCamera(unsigned int cameraID) {
