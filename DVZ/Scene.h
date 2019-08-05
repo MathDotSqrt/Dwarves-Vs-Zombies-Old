@@ -18,7 +18,8 @@ typedef enum _MaterialID: unsigned char {
 	COLOR_MATERIAL_ID,
 	NORMAL_MAERIAL_ID,
 	BASIC_LIT_MATERIAL_ID,
-	TEXTURE_MATERIAL_ID
+	TEXTURE_MATERIAL_ID,
+	BLOCK_MATERIAL_ID
 } MaterialID;
 
 struct ColorMaterial {
@@ -43,6 +44,11 @@ struct TextureMaterial {
 	GLuint texID;
 };
 
+struct BlockMaterial {
+	static MaterialID type;
+	float specularColor[3];
+	float shinyness;
+};
 
 struct Mesh {
 	Geometry model;
@@ -96,9 +102,10 @@ public:
 	Util::PackedFreeList<Mesh> meshCache;
 	
 	Util::PackedFreeList<ColorMaterial> colorMaterialCache;
-	Util::PackedFreeList<NormalMaterial> normalMaterialCache;
 	Util::PackedFreeList<BasicLitMaterial> basicLitMaterialCache;
 	Util::PackedFreeList<TextureMaterial> textureMaterialCache;
+	Util::PackedFreeList<BlockMaterial> blockMaterialCache;
+
 
 	Util::PackedFreeList<PointLight> pointLightCache;
 
@@ -121,6 +128,7 @@ public:
 	unsigned int createMaterialInstance(ColorMaterial &material);
 	unsigned int createMaterialInstance(BasicLitMaterial &material);
 	unsigned int createMaterialInstance(TextureMaterial &material);
+	unsigned int createMaterialInstance(BlockMaterial &material);
 
 	unsigned int createRenderInstance(unsigned int meshID, Transformation t);
 	unsigned int createRenderInstance(unsigned int meshID, glm::vec3 position, glm::vec3 rotation, glm::vec3 scale);

@@ -29,13 +29,14 @@ void Chunk::generateTerrain() {
 			for (int x = 0; x < Chunk::CHUNK_SIZE; x++) {
 				if (y > 8)
 					if (x % 8 == 0 && z % 8 == 0 && y % 8 == 0) {
-						this->getBlock(x, y, z) = { BlockType::BLOCK_TYPE_DIRT };
+						this->getBlock(x, y, z) = { BlockType::BLOCK_TYPE_STONE };
 					}
 					else {
 						this->getBlock(x, y, z) = { BlockType::BLOCK_TYPE_DEFAULT };
 					}
 				else if (x % (z + 1) > y) {
 					this->getBlock(x, y, z) = { BlockType::BLOCK_TYPE_DIRT };
+					
 				}
 				else
 					this->getBlock(x, y, z) = {BlockType::BLOCK_TYPE_DEFAULT };
@@ -74,7 +75,7 @@ void Chunk::generateMesh() {
 				if (z < Chunk::CHUNK_SIZE - 1)
 					render.pz = this->getBlock(x, y, z + 1).type == BlockType::BLOCK_TYPE_DEFAULT;
 
-				this->createCube(x, y, z, render);
+				this->createCube(x, y, z, render, this->getBlock(x, y, z).type);
 			}
 		}
 	}
@@ -95,7 +96,7 @@ void Chunk::generateMesh() {
 	this->indexCount = (int)this->indices.size();
 }
 
-void Chunk::createCube(float x, float y, float z, BlockFaceCullTags render) {
+void Chunk::createCube(float x, float y, float z, BlockFaceCullTags render, BlockType type) {
 	constexpr float HALF_WIDTH = BLOCK_RENDER_SIZE / 2.0f;
 	glm::vec3 p0(x - HALF_WIDTH, y - HALF_WIDTH, z + HALF_WIDTH);
 	glm::vec3 p1(x + HALF_WIDTH, y - HALF_WIDTH, z + HALF_WIDTH);
@@ -107,10 +108,20 @@ void Chunk::createCube(float x, float y, float z, BlockFaceCullTags render) {
 	glm::vec3 p6(x - HALF_WIDTH, y + HALF_WIDTH, z - HALF_WIDTH);
 	glm::vec3 p7(x + HALF_WIDTH, y + HALF_WIDTH, z - HALF_WIDTH);
 
-	glm::vec3 c0(1, 1, 1);
-	glm::vec3 c1(1, 0, 0);
-	glm::vec3 c2(0, 1, 0);
-	glm::vec3 c3(0, 0, 1);
+	glm::vec3 c0, c1, c2, c3;
+
+	if (type == BlockType::BLOCK_TYPE_DIRT) {
+		c0 = glm::vec3(.7f, .4f, .4f);
+		c1 = glm::vec3(.7f, .4f, .4f);
+		c2 = glm::vec3(.7f, .4f, .4f);
+		c3 = glm::vec3(.7f, .4f, .4f);
+	}
+	else if(type == BlockType::BLOCK_TYPE_STONE){
+		c0 = glm::vec3(.3f, .3f, .3f);
+		c1 = glm::vec3(.3f, .3f, .3f);
+		c2 = glm::vec3(.3f, .3f, .3f);
+		c3 = glm::vec3(.3f, .3f, .3f);
+	}
 
 	BlockVertex v0, v1, v2, v3;
 

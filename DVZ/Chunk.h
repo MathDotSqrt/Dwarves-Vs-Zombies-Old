@@ -27,7 +27,7 @@ private:
 	Graphics::VBO vbo;
 	Graphics::VBO ebo;
 
-	inline void createCube(float x, float y, float z, BlockFaceCullTags render);
+	inline void createCube(float x, float y, float z, BlockFaceCullTags render, BlockType type);
 	inline void createFace(BlockVertex v0, BlockVertex v1, BlockVertex v2, BlockVertex v3);
 
 public:

@@ -2,6 +2,7 @@
 
 in vec3 frag_pos;
 in vec3 frag_normal;
+in vec3 frag_color;
 
 out vec4 final_color;
 
@@ -11,7 +12,7 @@ uniform vec3 point_light_position;
 uniform vec3 point_light_color = vec3(1, 1, 1);
 uniform float point_light_intensity = 0;
 
-uniform vec3 diffuse_color = vec3(1, 1, 1);
+//uniform vec3 diffuse_color = vec3(1, 1, 1);
 uniform vec3 specular_color = vec3(1, 1, 1);
 uniform float shinyness = 1;
 
@@ -34,7 +35,5 @@ void main(){
 	lightColor += vec3(.03, .03, .03) * 2;
 
 
-	vec3 frag_color = diffuse_color * lightColor;
-
-	final_color = vec4(frag_color, 1);
+	final_color = vec4(frag_color * lightColor, 1);
 }

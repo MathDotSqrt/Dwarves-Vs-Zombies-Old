@@ -34,7 +34,7 @@ void PlayState::init() {
 	/*PLAYER*/
 	entt::entity playerID = this->e.addPlayer(1, 0, 0);
 	unsigned int pointLightInstanceID = this->e.getScene()->createPointLightInstance();
-	this->e.assign<PointLightComponent>(playerID, pointLightInstanceID, glm::vec3(1, 1, 1), 40.0f);
+	this->e.assign<PointLightComponent>(playerID, pointLightInstanceID, glm::vec3(1, 1, 1), 60.0f);
 	/*PLAYER*/
 
 	/*FLOOR*/
@@ -82,7 +82,7 @@ void PlayState::init() {
 	this->chunk.generateTerrain();
 	this->chunk.generateMesh();
 	Graphics::Geometry chunkGeometry(this->chunk.vao, 	this->chunk.indexCount);
-	Graphics::BasicLitMaterial chunkMat = { {.1568f, .4549f, .6510f}, {.95f, .9f, .7f}, 10 };
+	Graphics::BlockMaterial chunkMat = { {.95f, .9f, .7f}, 30 };
 	//Graphics::ColorMaterial chunkMat = { 1, 0, 0 };
 	unsigned int chunkMesh = this->e.getScene()->createMesh(chunkGeometry, chunkMat);
 	Graphics::Transformation t = {glm::vec3(0, 0, 0), glm::vec3(0, 0, 0), glm::vec3(1, 1, 1)};

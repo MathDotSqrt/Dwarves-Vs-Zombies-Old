@@ -9,6 +9,7 @@ Scene::Scene() :
 	meshCache(5000),
 	colorMaterialCache(5000),
 	basicLitMaterialCache(5000),
+	blockMaterialCache(50),
 	pointLightCache(4)
 	{
 
@@ -30,6 +31,10 @@ unsigned int Scene::createMaterialInstance(BasicLitMaterial &material) {
 
 unsigned int Scene::createMaterialInstance(TextureMaterial &material) {
 	return this->textureMaterialCache.insert(material);
+}
+
+unsigned int Scene::createMaterialInstance(BlockMaterial &material) {
+	return this->blockMaterialCache.insert(material);
 }
 
 unsigned int Scene::createRenderInstance(unsigned int meshID, Transformation t) {
