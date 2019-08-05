@@ -96,17 +96,22 @@ void Chunk::generateMesh() {
 	this->indexCount = (int)this->indices.size();
 }
 
-void Chunk::createCube(float x, float y, float z, BlockFaceCullTags render, BlockType type) {
+void Chunk::createCube(int x, int y, int z, BlockFaceCullTags render, BlockType type) {
 	constexpr float HALF_WIDTH = BLOCK_RENDER_SIZE / 2.0f;
-	glm::vec3 p0(x - HALF_WIDTH, y - HALF_WIDTH, z + HALF_WIDTH);
-	glm::vec3 p1(x + HALF_WIDTH, y - HALF_WIDTH, z + HALF_WIDTH);
-	glm::vec3 p2(x + HALF_WIDTH, y + HALF_WIDTH, z + HALF_WIDTH);
-	glm::vec3 p3(x - HALF_WIDTH, y + HALF_WIDTH, z + HALF_WIDTH);
+	
+	float x_ = x * BLOCK_RENDER_SIZE;
+	float y_ = y * BLOCK_RENDER_SIZE;
+	float z_ = z * BLOCK_RENDER_SIZE;
+	
+	glm::vec3 p0(x_ - HALF_WIDTH, y_ - HALF_WIDTH, z_ + HALF_WIDTH);
+	glm::vec3 p1(x_ + HALF_WIDTH, y_ - HALF_WIDTH, z_ + HALF_WIDTH);
+	glm::vec3 p2(x_ + HALF_WIDTH, y_ + HALF_WIDTH, z_ + HALF_WIDTH);
+	glm::vec3 p3(x_ - HALF_WIDTH, y_ + HALF_WIDTH, z_ + HALF_WIDTH);
 
-	glm::vec3 p4(x + HALF_WIDTH, y - HALF_WIDTH, z - HALF_WIDTH);
-	glm::vec3 p5(x - HALF_WIDTH, y - HALF_WIDTH, z - HALF_WIDTH);
-	glm::vec3 p6(x - HALF_WIDTH, y + HALF_WIDTH, z - HALF_WIDTH);
-	glm::vec3 p7(x + HALF_WIDTH, y + HALF_WIDTH, z - HALF_WIDTH);
+	glm::vec3 p4(x_ + HALF_WIDTH, y_ - HALF_WIDTH, z_ - HALF_WIDTH);
+	glm::vec3 p5(x_ - HALF_WIDTH, y_ - HALF_WIDTH, z_ - HALF_WIDTH);
+	glm::vec3 p6(x_ - HALF_WIDTH, y_ + HALF_WIDTH, z_ - HALF_WIDTH);
+	glm::vec3 p7(x_ + HALF_WIDTH, y_ + HALF_WIDTH, z_ - HALF_WIDTH);
 
 	glm::vec3 c0, c1, c2, c3;
 

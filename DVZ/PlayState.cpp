@@ -51,7 +51,7 @@ void PlayState::init() {
 	/*FLOOR*/
 
 	/*DRAGONS*/
-	Graphics::ModelGeometry dragon("SpunkWalker.obj");
+	Graphics::ModelGeometry dragon("tree.obj");
 	for (int i = 0; i < 100; i++) {
 		entt::entity obj = this->e.create();
 		this->e.assign<PositionComponent>(obj, glm::vec3((i - 50) * 5, -1, -10));
@@ -83,10 +83,19 @@ void PlayState::init() {
 	this->chunk.generateMesh();
 	Graphics::Geometry chunkGeometry(this->chunk.vao, 	this->chunk.indexCount);
 	Graphics::BlockMaterial chunkMat = { {.95f, .9f, .7f}, 30 };
-	//Graphics::ColorMaterial chunkMat = { 1, 0, 0 };
+	//Graphics::NormalMaterial chunkMat;
 	unsigned int chunkMesh = this->e.getScene()->createMesh(chunkGeometry, chunkMat);
 	Graphics::Transformation t = {glm::vec3(0, 0, 0), glm::vec3(0, 0, 0), glm::vec3(1, 1, 1)};
 	unsigned int chunkInstance = this->e.getScene()->createRenderInstance(chunkMesh, t);
+
+
+	entt::entity c1 = this->e.create();
+	this->e.assign<PositionComponent>(c1, glm::vec3(0, 0, 0));
+	this->e.assign<RotationComponent>(c1, glm::quat(glm::vec3(0, 0, 0)));
+	this->e.assign<ScaleComponent>(c1, glm::vec3(1, 1, 1));
+	this->e.assign<RotationalVelocityComponent>(c1, glm::vec3(0, 1, 0));
+	this->e.assign<RenderInstanceComponent>(c1, chunkInstance);
+
 	/*CHUNKS*/
 
 

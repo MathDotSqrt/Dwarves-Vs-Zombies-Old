@@ -27,7 +27,7 @@ private:
 	Graphics::VBO vbo;
 	Graphics::VBO ebo;
 
-	inline void createCube(float x, float y, float z, BlockFaceCullTags render, BlockType type);
+	inline void createCube(int x, int y, int z, BlockFaceCullTags render, BlockType type);
 	inline void createFace(BlockVertex v0, BlockVertex v1, BlockVertex v2, BlockVertex v3);
 
 public:
@@ -37,13 +37,11 @@ public:
 	Graphics::VAO vao;
 	int indexCount = 0;
 
-
 	Chunk(int x, int y, int z);
 	~Chunk();
 
 	void generateTerrain();
 	void generateMesh();
-
 
 	inline Block& getBlock(int x, int y, int z);
 };

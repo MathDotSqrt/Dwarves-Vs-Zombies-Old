@@ -39,7 +39,7 @@ void OpenGLRenderer::init(Scene *scene) {
 	unsigned int cameraID = this->scene->createCameraInstance(camera);
 	this->scene->setMainCamera(cameraID);
 
-	glClearColor(0, 0, 0, 1);
+	glClearColor(.1f, .4f, .7f, 1);
 	glEnable(GL_DEPTH_TEST);
 
 	Window::addResizeCallback(this);
