@@ -6,11 +6,13 @@
 #include "SystemManager.h"
 #include "Scene.h"
 #include "OpenGLRenderer.h"
+#include "Chunk.h"
 
 class PlayState : public GameState {
 private:
 	Engine e;
 	entt::registry engine;
+	Voxel::Chunk chunk;
 	/*Graphics::Scene scene;
 	Graphics::OpenGLRenderer renderer;*/
 

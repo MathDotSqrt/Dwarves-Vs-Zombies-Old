@@ -1,4 +1,5 @@
 #pragma once
+#include "glm.hpp"
 
 namespace Voxel {
 	constexpr float BLOCK_RENDER_SIZE = 1.0f;
@@ -13,12 +14,11 @@ namespace Voxel {
 
 	struct Block {
 		BlockType type;
-		bool isAlive;
 	};
 
 	struct BlockVertex {
-		float x, y, z;
-		float nx, ny, nz;
-		float r, g, b;
+		glm::vec3 pos;
+		glm::vec3 norm;
+		glm::vec3 col;
 	};
 }

@@ -6,7 +6,7 @@ Geometry::Geometry() {}
 
 Geometry::Geometry(VAO vao, int vertexCount) {
 	this->vao = vao;
-	this->vertexCount = vertexCount;
+	this->indexCount = vertexCount;
 }
 
 
@@ -18,5 +18,5 @@ VAO Geometry::getVAO() {
 }
 
 int Geometry::getVertexCount() {
-	return vertexCount;
+	return indexCount;
 }

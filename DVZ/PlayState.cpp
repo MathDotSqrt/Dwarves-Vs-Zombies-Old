@@ -11,7 +11,7 @@
 #include "NetPlayerSystem.h"
 #include "Chunk.h"
 
-PlayState::PlayState(GameStateManager *gsm) : GameState(gsm) {
+PlayState::PlayState(GameStateManager *gsm) : GameState(gsm), chunk(0, 0, 0) {
 
 }
 
@@ -34,7 +34,7 @@ void PlayState::init() {
 	/*PLAYER*/
 	entt::entity playerID = this->e.addPlayer(1, 0, 0);
 	unsigned int pointLightInstanceID = this->e.getScene()->createPointLightInstance();
-	this->e.assign<PointLightComponent>(playerID, pointLightInstanceID, glm::vec3(1, 1, 1), 10.0f);
+	this->e.assign<PointLightComponent>(playerID, pointLightInstanceID, glm::vec3(1, 1, 1), 40.0f);
 	/*PLAYER*/
 
 	/*FLOOR*/
@@ -79,9 +79,14 @@ void PlayState::init() {
 	/*DRAGONS*/
 
 	/*CHUNKS*/
-	Voxel::Chunk chunk(0, 0, 0);
-	chunk.generateTerrain();
-	chunk.generateMesh();
+	this->chunk.generateTerrain();
+	this->chunk.generateMesh();
+	Graphics::Geometry chunkGeometry(this->chunk.vao, 	this->chunk.indexCount);
+	Graphics::BasicLitMaterial chunkMat = { {.1568f, .4549f, .6510f}, {.95f, .9f, .7f}, 10 };
+	//Graphics::ColorMaterial chunkMat = { 1, 0, 0 };
+	unsigned int chunkMesh = this->e.getScene()->createMesh(chunkGeometry, chunkMat);
+	Graphics::Transformation t = {glm::vec3(0, 0, 0), glm::vec3(0, 0, 0), glm::vec3(1, 1, 1)};
+	unsigned int chunkInstance = this->e.getScene()->createRenderInstance(chunkMesh, t);
 	/*CHUNKS*/
 
 

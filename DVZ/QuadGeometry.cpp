@@ -44,9 +44,9 @@ void QuadGeometry::init() {
 	ebo.unbind();
 	
 
-	this->vertexCount = sizeof(elements)/sizeof(*elements);
+	this->indexCount = sizeof(elements)/sizeof(*elements);
 
-	LOG_INFO("%d", this->vertexCount);
+	LOG_INFO("%d", this->indexCount);
 }
 
 

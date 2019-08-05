@@ -9,7 +9,7 @@ class Geometry {
 protected:
 	Geometry();
 	VAO vao;
-	int vertexCount;
+	int indexCount;
 
 public:
 	Geometry(VAO vao, int vertexCount);

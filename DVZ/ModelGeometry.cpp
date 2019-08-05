@@ -29,7 +29,7 @@ ModelGeometry::ModelGeometry(std::string filename) {
 	
 	this->vao.unbind();
 	ebo.unbind();
-	this->vertexCount = (int)indicies.size();
+	this->indexCount = (int)indicies.size();
 
 	
 }

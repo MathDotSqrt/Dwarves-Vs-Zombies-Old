@@ -30,7 +30,8 @@ void main(){
 
 	vec3 lightColor = vec3(0, 0, 0);
 	lightColor += point_light_color * lightStrength * light_attenuation * .5;
-	lightColor += point_light_color * specular_color * specularStrength;
+	lightColor += point_light_color * specular_color * specularStrength * light_attenuation;
+	lightColor += vec3(.03, .03, .03);
 
 
 	vec3 frag_color = diffuse_color * lightColor;
