@@ -36,7 +36,4 @@ void main(){
 
 
 	final_color = vec4(frag_color * lightColor, 1);
-
-	if((int(frag_pos.x) % 3) == 0)
-		discard;
 }
