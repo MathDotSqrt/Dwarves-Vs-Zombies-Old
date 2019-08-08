@@ -212,7 +212,6 @@
     <ClCompile Include="PlayState.cpp" />
     <ClCompile Include="QuadGeometry.cpp" />
     <ClCompile Include="Scene.cpp" />
-    <ClCompile Include="Shader.cpp" />
     <ClCompile Include="ShaderSet.cpp" />
     <ClCompile Include="System.cpp" />
     <ClCompile Include="SystemManager.cpp" />
@@ -255,7 +254,6 @@
     <ClInclude Include="PlayState.h" />
     <ClInclude Include="QuadGeometry.h" />
     <ClInclude Include="Scene.h" />
-    <ClInclude Include="Shader.h" />
     <ClInclude Include="ShaderSet.h" />
     <ClInclude Include="System.h" />
     <ClInclude Include="SystemManager.h" />
