@@ -9,7 +9,7 @@
 
 class DemoState : public GameState {
 private:
-	Graphics::Shader::GLSLShader *shader;
+	Graphics::Shader::GLSLProgram *shader;
 	Graphics::VAO *vao;
 	Graphics::VBO *vbo;
 	Graphics::VBO *ebo;

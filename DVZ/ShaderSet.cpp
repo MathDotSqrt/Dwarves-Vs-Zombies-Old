@@ -8,7 +8,7 @@ using namespace Graphics;
 using namespace Shader;
 using namespace Shader::Internal;
 
-GLSLShader::GLSLShader(string name, ProgramID programID, VertexID vertexID, FragmentID fragmentID) :
+GLSLProgram::GLSLProgram(string name, ProgramID programID, VertexID vertexID, FragmentID fragmentID) :
 	name(name),
 	programID(programID),
 	vertexID(vertexID),
@@ -18,7 +18,7 @@ GLSLShader::GLSLShader(string name, ProgramID programID, VertexID vertexID, Frag
 }
 
 
-GLSLShader::GLSLShader(string name, ProgramID programID, VertexID vertexID, GeometryID geometryID, FragmentID fragmentID) :
+GLSLProgram::GLSLProgram(string name, ProgramID programID, VertexID vertexID, GeometryID geometryID, FragmentID fragmentID) :
 	name(name),
 	programID(programID),
 	vertexID(vertexID),
@@ -27,13 +27,13 @@ GLSLShader::GLSLShader(string name, ProgramID programID, VertexID vertexID, Geom
 	this->m_isValid = true;
 }
 
-GLSLShader::~GLSLShader() {
+GLSLProgram::~GLSLProgram() {
 	if (this->isValid()) {
 		this->dispose();
 	}
 }
 
-GLint GLSLShader::getUniformLocation(string uniformName) {
+GLint GLSLProgram::getUniformLocation(string uniformName) {
 	//if shader has been deleted on the card then there is no
 	//uniform name to find
 	if (!this->isValid()) {
@@ -61,64 +61,64 @@ GLint GLSLShader::getUniformLocation(string uniformName) {
 	return location;
 }
 
-void GLSLShader::setUniform1i(string uniformName, int i) {
+void GLSLProgram::setUniform1i(string uniformName, int i) {
 	GLuint uniformLocation = getUniformLocation(uniformName);
 
 	if (uniformLocation != -1)
 		glUniform1i(uniformLocation, i);
 }
 
-void GLSLShader::setUniform1f(string uniformName, float f) {
+void GLSLProgram::setUniform1f(string uniformName, float f) {
 	GLuint uniformLocation = getUniformLocation(uniformName);
 
 	if (uniformLocation != -1)
 		glUniform1f(uniformLocation, f);
 }
 
-void GLSLShader::setUniform3f(string uniformName, glm::vec3 vec3) {
+void GLSLProgram::setUniform3f(string uniformName, glm::vec3 vec3) {
 	setUniform3f(uniformName, vec3.x, vec3.y, vec3.z);
 }
 
-void GLSLShader::setUniform3f(string uniformName, float vec[3]) {
+void GLSLProgram::setUniform3f(string uniformName, float vec[3]) {
 	setUniform3f(uniformName, vec[0], vec[1], vec[2]);
 }
 
-void GLSLShader::setUniform3f(string uniformName, float x, float y, float z) {
+void GLSLProgram::setUniform3f(string uniformName, float x, float y, float z) {
 	GLint uniformLocation = getUniformLocation(uniformName);
 
 	if (uniformLocation != -1)
 		glUniform3f(uniformLocation, x, y, z);
 }
 
-void GLSLShader::setUniformMat3(string uniformName, glm::mat3 mat, bool transpose) {
+void GLSLProgram::setUniformMat3(string uniformName, glm::mat3 mat, bool transpose) {
 	GLuint uniformLocation = getUniformLocation(uniformName);
 
 	if (uniformLocation != -1)
 		glUniformMatrix3fv(uniformLocation, 1, transpose, glm::value_ptr(mat));
 }
 
-void GLSLShader::setUniformMat3(string uniformName, float mat[3 * 3], bool transpose) {
+void GLSLProgram::setUniformMat3(string uniformName, float mat[3 * 3], bool transpose) {
 	GLuint uniformLocation = getUniformLocation(uniformName);
 
 	if (uniformLocation != -1)
 		glUniformMatrix3fv(uniformLocation, 1, transpose, mat);
 }
 
-void GLSLShader::setUniformMat4(string uniformName, glm::mat4 mat, bool transpose) {
+void GLSLProgram::setUniformMat4(string uniformName, glm::mat4 mat, bool transpose) {
 	GLint uniformLocation = getUniformLocation(uniformName);
 
 	if (uniformLocation != -1)
 		glUniformMatrix4fv(uniformLocation, 1, transpose, glm::value_ptr(mat));
 }
 
-void GLSLShader::setUniformMat4(string uniformName, float mat[4 * 4], bool transpose) {
+void GLSLProgram::setUniformMat4(string uniformName, float mat[4 * 4], bool transpose) {
 	GLint uniformLocation = getUniformLocation(uniformName);
 
 	if (uniformLocation != -1)
 		glUniformMatrix4fv(uniformLocation, 1, transpose, mat);
 }
 
-void GLSLShader::dispose() {
+void GLSLProgram::dispose() {
 	glDetachShader(this->programID, this->vertexID);
 	glDeleteShader(this->vertexID);
 
@@ -142,14 +142,14 @@ void GLSLShader::dispose() {
 
 
 
-GLSLShader* Shader::getShaderSet(const std::vector<std::string>& shaderFilenames) {
+GLSLProgram* Shader::getShaderSet(const std::vector<std::string>& shaderFilenames) {
 	if (shaderFilenames.size() <= 1) {
 		return nullptr;
 	}
 	
 	std::string programName = getProgramName(shaderFilenames);
 
-	GLSLShader* program = shaderMap[programName];
+	GLSLProgram* program = shaderMap[programName];
 
 	if (program == nullptr || program->isValid() == false) {
 		LOG_SHADE("Creating program: %s", programName.c_str());
@@ -169,7 +169,7 @@ GLSLShader* Shader::getShaderSet(const std::vector<std::string>& shaderFilenames
 	return program;
 }
 
-GLSLShader* Shader::createShaderSet(const std::vector<std::string>& shaderFilenames) {
+GLSLProgram* Shader::createShaderSet(const std::vector<std::string>& shaderFilenames) {
 	std::vector<std::string> sources;
 	
 	ProgramID programID;
@@ -221,7 +221,7 @@ GLSLShader* Shader::createShaderSet(const std::vector<std::string>& shaderFilena
 		return nullptr;
 	}
 
-	return new GLSLShader(getProgramName(shaderFilenames), programID, vertexID, geometryID, fragmentID);
+	return new GLSLProgram(getProgramName(shaderFilenames), programID, vertexID, geometryID, fragmentID);
 }
 
 std::string Shader::Internal::getProgramName(const std::vector<std::string>& shaders) {
@@ -311,7 +311,7 @@ GLuint Shader::Internal::linkProgram(GLuint vertexID, GLuint geometryID, GLuint 
 
 void Shader::disposeAll() {
 	LOG_SHADE("Disposing all shaders...");
-	unordered_map<string, GLSLShader*>::iterator it = shaderMap.begin();
+	unordered_map<string, GLSLProgram*>::iterator it = shaderMap.begin();
 	while (it != shaderMap.end()) {
 		delete it->second;
 		it++;

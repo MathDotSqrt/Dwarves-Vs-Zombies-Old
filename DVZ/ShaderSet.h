@@ -19,10 +19,10 @@ namespace Graphics { namespace Shader{
 	typedef GLuint FragmentID;
 	typedef GLuint GeometryID;
 
-	class GLSLShader {
+	class GLSLProgram {
 	public:
-		friend GLSLShader *getShaderSet(const std::vector<std::string>& shaders);
-		friend GLSLShader *createShaderSet(const std::vector<std::string>& shaders);
+		friend GLSLProgram *getShaderSet(const std::vector<std::string>& shaders);
+		friend GLSLProgram *createShaderSet(const std::vector<std::string>& shaders);
 		friend void disposeAll();
 
 
@@ -72,14 +72,14 @@ namespace Graphics { namespace Shader{
 		std::unordered_map<std::string, GLint> uniforms;
 		bool m_isValid;
 
-		GLSLShader(std::string name, ProgramID programID, VertexID vertexID, FragmentID fragmentID);
-		GLSLShader(std::string name, ProgramID programID, VertexID vertexID, GeometryID geometryID, FragmentID fragmentID);
-		~GLSLShader();
+		GLSLProgram(std::string name, ProgramID programID, VertexID vertexID, FragmentID fragmentID);
+		GLSLProgram(std::string name, ProgramID programID, VertexID vertexID, GeometryID geometryID, FragmentID fragmentID);
+		~GLSLProgram();
 	};
 
 
 	namespace Internal {
-		static std::unordered_map<std::string, GLSLShader*> shaderMap;
+		static std::unordered_map<std::string, GLSLProgram*> shaderMap;
 
 		std::string getProgramName(const std::vector<std::string>& shaders);
 
@@ -94,8 +94,8 @@ namespace Graphics { namespace Shader{
 		GLuint linkProgram(GLuint vertexID, GLuint geometryID, GLuint fragmentID);
 	}
 
-	GLSLShader* getShaderSet(const std::vector<std::string>& shaders);
-	GLSLShader* createShaderSet(const std::vector<std::string>& shaders);
+	GLSLProgram* getShaderSet(const std::vector<std::string>& shaders);
+	GLSLProgram* createShaderSet(const std::vector<std::string>& shaders);
 
 	void disposeAll();
 

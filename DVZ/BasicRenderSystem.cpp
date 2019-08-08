@@ -2,7 +2,6 @@
 #include "Engine.h"
 #include "VAO.h"
 #include "VBO.h"
-#include "Shader.h"
 #include "Components.h"
 #include "macrologger.h"
 #include "glm.hpp"

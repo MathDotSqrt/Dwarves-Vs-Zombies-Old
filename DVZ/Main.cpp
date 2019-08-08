@@ -1,16 +1,16 @@
+#include <stdio.h>
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
-#include <stdio.h>
 
 #define STB_IMAGE_IMPLEMENTATION //stb_image requires this for some fucking reason
 #include <stb_image.h>
+
 #include "macrologger.h"
 #include "Window.h"
-
 #include "GameStateManager.h"
 #include "PlayState.h"
 #include "Components.h"
-#include "ShaderSet.h"
+
 const static unsigned int DEFAULT_WIDTH = 1024, DEFAULT_HEIGHT = 768;
 const static char* TITLE = "Dwavres Vs Zombies";
 
@@ -26,13 +26,6 @@ void run() {
 	glewExperimental = GL_TRUE;
 	Window::createWindow(DEFAULT_WIDTH, DEFAULT_HEIGHT, TITLE);
 	initGLEW();
-
-	
-	//LOG_INFO("Created Window %d %d", GameWindow.getWidth(), GameWindow.getHeight());
-	//initGLEW();
-
-	Graphics::Shader::GLSLShader *program = Graphics::Shader::getShaderSet({ "basic_shader.vert", "basic_shader.frag" });
-	LOG_ERROR("%p", program);
 
 	GameStateManager gsm;
 	gsm.enterState<PlayState>();
