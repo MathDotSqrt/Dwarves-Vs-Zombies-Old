@@ -6,7 +6,7 @@
 
 #include "VAO.h"
 #include "VBO.h"
-#include "Shader.h"
+#include "ShaderSet.h"
 
 MainState::MainState(GameStateManager *gsm) : GameState(gsm) {
 
@@ -37,7 +37,7 @@ void MainState::entered() {
 	Graphics::VAO model;
 	model.bind();
 
-	Graphics::Shader::GLSLShader *shader = Graphics::Shader::getShader("basic_shader");
+	Graphics::Shader::GLSLShader *shader = Graphics::Shader::getShaderSet({ "basic_shader.vert", "basic_shader.frag"});
 
 	GLuint posAttrib = shader->getAttrib("vert_pos");
 

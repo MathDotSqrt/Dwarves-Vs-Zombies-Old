@@ -8,9 +8,9 @@
 #include <fstream>
 #include <exception>
 
-#define VERTEX_EXT ".vert"
-#define GEOMETRY_EXT ".geom"
-#define FRAGMENT_EXT ".frag"
+#define VERTEX_EXT "vert"
+#define GEOMETRY_EXT "geom"
+#define FRAGMENT_EXT "frag"
 
 namespace Graphics { namespace Shader{
 

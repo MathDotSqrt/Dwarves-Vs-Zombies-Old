@@ -1,7 +1,7 @@
 #pragma once
 #include "GameState.h"
 #include <GL/glew.h>
-#include "Shader.h"
+#include "ShaderSet.h"
 #include "VAO.h"
 #include "VBO.h"
 #include "TEX.h"

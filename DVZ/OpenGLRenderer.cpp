@@ -1,6 +1,6 @@
 #include "OpenGLRenderer.h"
 #include "Window.h"
-#include "Shader.h"
+#include "ShaderSet.h"
 #include "preamble.glsl"
 #include "glm.hpp"
 #include <gtx/transform.hpp>
@@ -106,7 +106,7 @@ int OpenGLRenderer::renderBasic(int startIndex, glm::mat4 vp) {
 	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
 	glm::mat4 ident = glm::identity<glm::mat4>();
-	Shader::GLSLShader *shader = Shader::getShader("basic_shader");
+	Shader::GLSLShader *shader = Shader::getShaderSet({ "basic_shader.vert", "basic_shader.frag" });
 	shader->use();
 	int index = startIndex;
 	do {
@@ -152,7 +152,7 @@ int OpenGLRenderer::renderNormal(int startIndex, glm::mat4 vp) {
 
 
 	glm::mat4 ident = glm::identity<glm::mat4>();
-	Shader::GLSLShader *shader = Shader::getShader("normal_shader");
+	Shader::GLSLShader *shader = Shader::getShaderSet({"normal_shader.vert", "normal_shader.frag"});
 	shader->use();
 
 	int index = startIndex;
@@ -198,7 +198,7 @@ int OpenGLRenderer::renderBasicLit(int startIndex, glm::vec3 camera_position, gl
 
 
 	glm::mat4 ident = glm::identity<glm::mat4>();
-	Shader::GLSLShader *shader = Shader::getShader("basic_lit_shader");
+	Shader::GLSLShader *shader = Shader::getShaderSet({ "basic_lit_shader.vert", "basic_lit_shader.frag" });
 	shader->use();
 
 
@@ -259,7 +259,7 @@ int OpenGLRenderer::renderBasicBlock(int startIndex, glm::vec3 camera_position, 
 
 
 	glm::mat4 ident = glm::identity<glm::mat4>();
-	Shader::GLSLShader *shader = Shader::getShader("chunk_shader");
+	Shader::GLSLShader *shader = Shader::getShaderSet({ "chunk_shader.vert", "chunk_shader.frag" });
 	shader->use();
 
 
