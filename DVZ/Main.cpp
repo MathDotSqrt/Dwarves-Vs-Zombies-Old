@@ -10,7 +10,7 @@
 #include "GameStateManager.h"
 #include "PlayState.h"
 #include "Components.h"
-
+#include "ShaderSet.h"
 const static unsigned int DEFAULT_WIDTH = 1024, DEFAULT_HEIGHT = 768;
 const static char* TITLE = "Dwavres Vs Zombies";
 
@@ -30,6 +30,9 @@ void run() {
 	
 	//LOG_INFO("Created Window %d %d", GameWindow.getWidth(), GameWindow.getHeight());
 	//initGLEW();
+
+	Graphics::Shader::GLSLShader *program = Graphics::Shader::getShaderSet({ "basic_shader.vert", "basic_shader.frag" });
+	LOG_ERROR("%p", program);
 
 	GameStateManager gsm;
 	gsm.enterState<PlayState>();

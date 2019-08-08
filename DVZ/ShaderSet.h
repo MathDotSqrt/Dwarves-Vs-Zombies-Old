@@ -14,10 +14,15 @@
 
 namespace Graphics { namespace Shader{
 
+	typedef GLuint ProgramID;
+	typedef GLuint VertexID;
+	typedef GLuint FragmentID;
+	typedef GLuint GeometryID;
+
 	class GLSLShader {
 	public:
-		friend GLSLShader *getShaderSet(std::string[]);
-		friend GLSLShader *createShaderSet(std::string[]);
+		friend GLSLShader *getShaderSet(const std::vector<std::string>& shaders);
+		friend GLSLShader *createShaderSet(const std::vector<std::string>& shaders);
 		friend void disposeAll();
 
 
@@ -59,33 +64,38 @@ namespace Graphics { namespace Shader{
 
 	private:
 		const std::string name;
-		const GLuint programID;
-		const GLuint vertexID;
-		const GLuint geometryID;
-		const GLuint fragmentID;
-		const bool hasGeometryShader;
+		const ProgramID programID;
+		const VertexID vertexID;
+		const FragmentID fragmentID;
+		const GeometryID geometryID;
 
 		std::unordered_map<std::string, GLint> uniforms;
 		bool m_isValid;
 
-		GLSLShader(std::string name, GLuint programID, GLuint vertexID, GLuint fragmentID);
-		GLSLShader(std::string name, GLuint programID, GLuint vertexID, GLuint geometryID, GLuint fragmentID);
+		GLSLShader(std::string name, ProgramID programID, VertexID vertexID, FragmentID fragmentID);
+		GLSLShader(std::string name, ProgramID programID, VertexID vertexID, GeometryID geometryID, FragmentID fragmentID);
 		~GLSLShader();
 	};
 
+
 	namespace Internal {
 		static std::unordered_map<std::string, GLSLShader*> shaderMap;
+
+		std::string getProgramName(const std::vector<std::string>& shaders);
 
 		GLuint linkProgram(GLuint vertexID, GLuint geometryID, GLuint fragmentID);
 		GLuint compileShader(std::string src, GLenum shaderType);
 
 		void getCompilationError(GLuint shaderID);
 		void getLinkError(GLuint programID);
-		std::string readFile(std::string filename, bool isRequired = true);
+		std::string readFile(std::string filename);
+
+		GLuint compileShader(std::string, GLenum shaderType);
+		GLuint linkProgram(GLuint vertexID, GLuint geometryID, GLuint fragmentID);
 	}
 
-	GLSLShader* getShaderSet(std::string shaderName[]);
-	GLSLShader* createShaderSet(std::string shaderName[]);
+	GLSLShader* getShaderSet(const std::vector<std::string>& shaders);
+	GLSLShader* createShaderSet(const std::vector<std::string>& shaders);
 
 	void disposeAll();
 
