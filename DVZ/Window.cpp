@@ -1,3 +1,7 @@
+#include <GL/glew.h>
+#include <GLFW/glfw3.h>
+#include <vector>
+
 #include "Window.h"
 #include "macrologger.h"
 #include "ctype.h"
