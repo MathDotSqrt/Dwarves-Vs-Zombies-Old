@@ -31,8 +31,15 @@ private:
 	inline void createFace(BlockVertex v0, BlockVertex v1, BlockVertex v2, BlockVertex v3);
 
 public:
-	static constexpr int CHUNK_SIZE = 64;
-	static constexpr float CHUNK_RENDER_SIZE = Chunk::CHUNK_SIZE * BLOCK_RENDER_SIZE;
+	static constexpr int CHUNK_SHIFT_X = 6;
+	static constexpr int CHUNK_SHIFT_Y = 6;
+	static constexpr int CHUNK_SHIFT_Z = 6;
+
+	static constexpr int CHUNK_WIDTH_X = 1 << CHUNK_SHIFT_X;
+	static constexpr int CHUNK_WIDTH_Y = 1 << CHUNK_SHIFT_Y;
+	static constexpr int CHUNK_WIDTH_Z = 1 << CHUNK_SHIFT_Z;
+
+	static constexpr int CHUNK_VOLUME = CHUNK_WIDTH_X * CHUNK_WIDTH_Y * CHUNK_WIDTH_Z;
 
 	Graphics::VAO vao;
 	int indexCount = 0;
