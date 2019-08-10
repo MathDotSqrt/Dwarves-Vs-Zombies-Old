@@ -12,7 +12,6 @@ class PlayState : public GameState {
 private:
 	Engine e;
 	entt::registry engine;
-	Voxel::Chunk chunk;
 	/*Graphics::Scene scene;
 	Graphics::OpenGLRenderer renderer;*/
 

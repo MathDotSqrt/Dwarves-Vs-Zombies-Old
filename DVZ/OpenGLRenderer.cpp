@@ -30,7 +30,7 @@ void OpenGLRenderer::init(Scene *scene) {
 		glm::vec3(0, 0, 0),
 		glm::vec3(0, 0, -1),
 		glm::vec3(0, 1, 0),
-		70,
+		70 * 3.14159f / 180.0f,
 		(float)Window::getWidth() / Window::getHeight(),
 		.1f,
 		1000
@@ -196,11 +196,9 @@ int OpenGLRenderer::renderBasicLit(int startIndex, glm::vec3 camera_position, gl
 		return startIndex;
 	}
 
-
 	glm::mat4 ident = glm::identity<glm::mat4>();
 	Shader::GLSLProgram *shader = Shader::getShaderSet({ "basic_lit_shader.vert", "basic_lit_shader.frag" });
 	shader->use();
-
 
 	shader->setUniform3f("camera_pos", camera_position);
 	shader->setUniformMat4("VP", vp);
@@ -257,7 +255,6 @@ int OpenGLRenderer::renderBasicBlock(int startIndex, glm::vec3 camera_position, 
 		return startIndex;
 	}
 
-
 	glm::mat4 ident = glm::identity<glm::mat4>();
 	Shader::GLSLProgram *shader = Shader::getShaderSet({ "chunk_shader.vert", "chunk_shader.frag" });
 	shader->use();
@@ -294,7 +291,6 @@ int OpenGLRenderer::renderBasicBlock(int startIndex, glm::vec3 camera_position, 
 		shader->setUniformMat4("M", model);
 
 		BlockMaterial &material = scene->blockMaterialCache[mesh->materialInstanceID];
-		//shader->setUniform3f("diffuse_color", material.diffuseColor);
 		shader->setUniform3f("specular_color", material.specularColor);
 		shader->setUniform1f("shinyness", material.shinyness);
 

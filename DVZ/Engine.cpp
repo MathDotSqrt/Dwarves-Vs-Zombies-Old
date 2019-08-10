@@ -13,6 +13,8 @@
 #include "OpenGLRenderer.h"
 #include "QuadGeometry.h"
 #include "ModelGeometry.h"
+#include "ChunkManager.h"
+
 
 using namespace std;
 
@@ -23,6 +25,8 @@ Engine::Engine() {
 	this->scene = new Graphics::Scene();
 	this->renderer = new Graphics::OpenGLRenderer();
 	this->renderer->init(scene);
+
+	this->chunkManager = new Voxel::ChunkManager();
 
 	this->main = entt::null;
 	this->model = new Graphics::ModelGeometry("SpunkWalker.obj");;
@@ -255,6 +259,10 @@ SLNet::MessageID Engine::getPacketID(SLNet::Packet *packet) {
 	else {
 		return packet->data[0];
 	}
+}
+
+Voxel::ChunkManager* Engine::getChunkManager() {
+	return this->chunkManager;
 }
 
 Graphics::OpenGLRenderer* Engine::getRenderer() {

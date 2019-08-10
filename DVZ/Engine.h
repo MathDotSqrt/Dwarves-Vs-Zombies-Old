@@ -10,6 +10,10 @@ namespace Graphics {
 	class Scene;
 }
 
+namespace Voxel {
+	class ChunkManager;
+}
+
 class Engine : public entt::registry{
 private:
 	entt::entity main;
@@ -22,6 +26,7 @@ private:
 
 	std::unordered_map<entt::entity, entt::entity> netToClientID;
 
+	Voxel::ChunkManager *chunkManager;
 	Graphics::OpenGLRenderer *renderer;
 	Graphics::Scene *scene;
 	std::set<System*, System::classcomp> systems;
@@ -56,6 +61,7 @@ public:
 
 
 	SLNet::ConnectionState getConnectionState();
+	Voxel::ChunkManager* getChunkManager();
 	Graphics::OpenGLRenderer* getRenderer();
 	Graphics::Scene* getScene();
 };

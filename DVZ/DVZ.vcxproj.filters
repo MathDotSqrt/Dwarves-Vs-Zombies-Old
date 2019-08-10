@@ -189,6 +189,9 @@
     <ClInclude Include="ZOrderHashSet.h">
       <Filter>Header Files\Util</Filter>
     </ClInclude>
+    <ClInclude Include="ChunkSet.h">
+      <Filter>Header Files\Voxel</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -286,6 +289,9 @@
     </ClCompile>
     <ClCompile Include="ZOrderHashSet.cpp">
       <Filter>Source Files\Util</Filter>
+    </ClCompile>
+    <ClCompile Include="ChunkSet.cpp">
+      <Filter>Source Files\Voxel</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

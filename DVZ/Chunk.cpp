@@ -1,5 +1,6 @@
 #include "Chunk.h"
 #include <assert.h>
+#include <stdlib.h>
 #include "VBO.h"
 #include "preamble.glsl"
 
@@ -13,33 +14,48 @@ Chunk::Chunk(int x, int y, int z) :
 	ebo(GL_ELEMENT_ARRAY_BUFFER){
 
 	data = new Block[Chunk::CHUNK_VOLUME];
+	this->isMeshValid = false;
 }
 
+Chunk::Chunk(int x, int y, int z, Block *data) : 
+	chunk_x(x), 
+	chunk_y(y), 
+	chunk_z(z), 
+	data(data), 
+	vbo(GL_ARRAY_BUFFER), 
+	ebo(GL_ELEMENT_ARRAY_BUFFER){
+	this->isMeshValid = false;
+}
 
 Chunk::~Chunk() {
-	delete data;
+	free(data);
 	this->vao.dispose();
 	this->vbo.dispose();
 	this->ebo.dispose();
 }
 
 void Chunk::generateTerrain() {
-	for (int z = 0; z < Chunk::CHUNK_WIDTH_Z; z++) {
-		for (int y = 0; y < Chunk::CHUNK_WIDTH_Y; y++) {
-			for (int x = 0; x < Chunk::CHUNK_WIDTH_X; x++) {
-				if (y > 8)
+	for (int bz = 0; bz < Chunk::CHUNK_WIDTH_Z; bz++) {
+		for (int by = 0; by < Chunk::CHUNK_WIDTH_Y; by++) {
+			for (int bx = 0; bx < Chunk::CHUNK_WIDTH_X; bx++) {
+
+				int x = this->chunk_x * CHUNK_WIDTH_X + bx;
+				int y = this->chunk_y * CHUNK_WIDTH_Y + by;
+				int z = this->chunk_z * CHUNK_WIDTH_Z + bz;
+
+				if (by > 32)
 					if (x % 8 == 0 && z % 8 == 0 && y % 8 == 0) {
-						this->getBlock(x, y, z) = { BlockType::BLOCK_TYPE_STONE };
+						this->getBlock(bx, by, bz) = { BlockType::BLOCK_TYPE_STONE };
 					}
 					else {
-						this->getBlock(x, y, z) = { BlockType::BLOCK_TYPE_DEFAULT };
+						this->getBlock(bx, by, bz) = { BlockType::BLOCK_TYPE_DEFAULT };
 					}
 				else if (x % (z + 1) > y) {
-					this->getBlock(x, y, z) = { BlockType::BLOCK_TYPE_DIRT };
+					this->getBlock(bx, by, bz) = { BlockType::BLOCK_TYPE_DIRT };
 					
 				}
 				else
-					this->getBlock(x, y, z) = {BlockType::BLOCK_TYPE_DEFAULT };
+					this->getBlock(bx, by, bz) = {BlockType::BLOCK_TYPE_DEFAULT };
 				//if (x == y && y == z) {
 				//	this->getBlock(x, y, z) = { BlockType::BLOCK_TYPE_DIRT };
 				//}
@@ -49,6 +65,8 @@ void Chunk::generateTerrain() {
 			}
 		}
 	}
+
+	this->isMeshValid = false;
 }
 
 void Chunk::generateMesh() {
@@ -94,6 +112,7 @@ void Chunk::generateMesh() {
 	this->ebo.unbind();
 
 	this->indexCount = (int)this->indices.size();
+	this->isMeshValid = true;
 }
 
 void Chunk::createCube(int x, int y, int z, BlockFaceCullTags render, BlockType type) {
@@ -207,9 +226,31 @@ void Chunk::createFace(BlockVertex v0, BlockVertex v1, BlockVertex v2, BlockVert
 	this->indices.push_back(lastIndex + 3);
 }
 
-inline Block& Chunk::getBlock(int x, int y, int z) {
+int Chunk::toIndex(int x, int y, int z) {
+	return x + Chunk::CHUNK_WIDTH_X * (y + Chunk::CHUNK_WIDTH_Y * z);
+}
+
+void Chunk::assertBlockIndex(int x, int y, int z) {
 	assert(x >= 0 && x < Chunk::CHUNK_WIDTH_X);
 	assert(y >= 0 && y < Chunk::CHUNK_WIDTH_Y);
 	assert(z >= 0 && z < Chunk::CHUNK_WIDTH_Z);
-	return data[x + Chunk::CHUNK_WIDTH_X * (y + Chunk::CHUNK_WIDTH_Y * z)];
+}
+
+Block& Chunk::getBlock(int x, int y, int z) {
+	this->assertBlockIndex(x, y, z);
+	return data[this->toIndex(x, y, z)];
+}
+
+void Chunk::setBlock(int x, int y, int z, Block &block) {
+	this->assertBlockIndex(x, y, z);
+	this->data[this->toIndex(x, y, z)] = block;
+	this->isMeshValid = false;
+}
+
+void Chunk::setBlockData(Block *newData) {
+	assert(newData);
+
+	free(this->data);
+	this->data = newData;
+	this->isMeshValid = false;
 }

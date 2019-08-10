@@ -9,9 +9,9 @@
 #include "InputSystem.h"
 #include "BasicRenderSystem.h"
 #include "NetPlayerSystem.h"
-#include "Chunk.h"
+#include "ChunkManager.h"
 
-PlayState::PlayState(GameStateManager *gsm) : GameState(gsm), chunk(0, 0, 0) {
+PlayState::PlayState(GameStateManager *gsm) : GameState(gsm) {
 
 }
 
@@ -79,14 +79,27 @@ void PlayState::init() {
 	/*DRAGONS*/
 
 	/*CHUNKS*/
-	this->chunk.generateTerrain();
-	this->chunk.generateMesh();
-	Graphics::Geometry chunkGeometry(this->chunk.vao, 	this->chunk.indexCount);
-	Graphics::BlockMaterial chunkMat = { {.95f, .9f, .7f}, 30 };
-	//Graphics::NormalMaterial chunkMat;
-	unsigned int chunkMesh = this->e.getScene()->createMesh(chunkGeometry, chunkMat);
-	Graphics::Transformation t = {glm::vec3(0, 0, 0), glm::vec3(0, 0, 0), glm::vec3(1, 1, 1)};
-	unsigned int chunkInstance = this->e.getScene()->createRenderInstance(chunkMesh, t);
+	
+
+	Voxel::ChunkManager *manager = this->e.getChunkManager();
+
+	Graphics::BlockMaterial chunkMat = { {.95f, .5f, .8f}, 30 };
+
+	
+
+	for (int y = 0; y < 10; y++) {
+		for (int x = 0; x < 10; x++) {
+			Voxel::Chunk *chunk = manager->generateChunk(x, y, 0);
+			chunk->generateTerrain();
+			chunk->generateMesh();
+
+			Graphics::Geometry chunkGeometry(chunk->vao, chunk->indexCount);
+			unsigned int chunkMesh = this->e.getScene()->createMesh(chunkGeometry, chunkMat);
+			Graphics::Transformation t = { glm::vec3(x * Voxel::Chunk::CHUNK_RENDER_WIDTH_X, 0, y * Voxel::Chunk::CHUNK_RENDER_WIDTH_Z), glm::vec3(0, 0, 0), glm::vec3(1, 1, 1) };
+			unsigned int chunkInstance = this->e.getScene()->createRenderInstance(chunkMesh, t);
+		}
+	}
+
 	/*CHUNKS*/
 
 
@@ -98,7 +111,6 @@ void PlayState::cleanUp() {
 
 void PlayState::entered() {
 	LOG_STATE("entered");
-
 }
 
 void PlayState::leaving() {
