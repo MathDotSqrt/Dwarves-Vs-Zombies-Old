@@ -126,11 +126,11 @@ public:
 		delete[]((char*)_objects);
 		delete[] _object_alloc_ids;
 		delete[] _allocations;
-		LOG_ERROR("PACKED LIST DELETED");
+		//LOG_ERROR("PACKED LIST DELETED");
 	}
 
 	PackedFreeList(const PackedFreeList& other) {
-		LOG_ERROR("PACKED LIST COPIED");
+		//LOG_ERROR("PACKED LIST COPIED");
 		_num_objects = other._num_objects;
 		_max_objects = other._max_objects;
 		_cap_objects = other._cap_objects;
@@ -159,7 +159,7 @@ public:
 
 	PackedFreeList& operator=(const PackedFreeList& other) {
 		if (this != &other) {
-			LOG_ERROR("PACKED LIST OVERRIDED");
+			//LOG_ERROR("PACKED LIST OVERRIDED");
 			if (_cap_objects < other._max_objects) {
 				this->~PackedFreeList();
 				new (this) PackedFreeList(other);

@@ -29,9 +29,9 @@ private:
 	Graphics::VBO ebo;
 
 public:
-	static constexpr int CHUNK_SHIFT_X = 6;
+	static constexpr int CHUNK_SHIFT_X = 4;
 	static constexpr int CHUNK_SHIFT_Y = 6;
-	static constexpr int CHUNK_SHIFT_Z = 6;
+	static constexpr int CHUNK_SHIFT_Z = 4;
 
 	static constexpr int CHUNK_WIDTH_X = 1 << CHUNK_SHIFT_X;
 	static constexpr int CHUNK_WIDTH_Y = 1 << CHUNK_SHIFT_Y;
@@ -58,16 +58,16 @@ public:
 	void generateMesh();
 
 
-	inline Block& getBlock(int x, int y, int z);
-	inline void setBlock(int x, int y, int z, Block &block);
-	inline void setBlockData(Block *newData);
+	Block& getBlock(int x, int y, int z);
+	void setBlock(int x, int y, int z, Block &block);
+	void setBlockData(Block *newData);
 
 private:
-	inline void createCube(int x, int y, int z, BlockFaceCullTags render, BlockType type);
-	inline void createFace(BlockVertex v0, BlockVertex v1, BlockVertex v2, BlockVertex v3);
+	void createCube(int x, int y, int z, BlockFaceCullTags render, BlockType type);
+	void createFace(BlockVertex v0, BlockVertex v1, BlockVertex v2, BlockVertex v3);
 
-	inline int toIndex(int x, int y, int z);
-	inline void assertBlockIndex(int x, int y, int z);
+	int toIndex(int x, int y, int z);
+	void assertBlockIndex(int x, int y, int z);
 };
 
 }

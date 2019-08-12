@@ -235,6 +235,10 @@ void Engine::deleteAllActiveSystems() {
 	this->systems.clear();
 }
 
+entt::entity Engine::getPlayer() {
+	return this->main;
+}
+
 SLNet::ConnectionState Engine::getConnectionState() {
 	const double delta = 100;	//Only poll every 10th of a second
 	static SLNet::ConnectionState lastState = SLNet::IS_NOT_CONNECTED;

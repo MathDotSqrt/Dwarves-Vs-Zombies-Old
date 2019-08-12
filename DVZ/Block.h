@@ -2,7 +2,7 @@
 #include "glm.hpp"
 
 namespace Voxel {
-	constexpr float BLOCK_RENDER_SIZE = .5f;
+	constexpr float BLOCK_RENDER_SIZE = 1.0f;
 
 	typedef enum _BlockType : unsigned char{
 		BLOCK_TYPE_DEFAULT = 0,
@@ -14,6 +14,14 @@ namespace Voxel {
 
 	struct Block {
 		BlockType type;
+
+		Block() {
+			this->type = BlockType::BLOCK_TYPE_DEFAULT;
+		}
+
+		Block(BlockType type) {
+			this->type = type;
+		}
 	};
 
 	struct BlockVertex {

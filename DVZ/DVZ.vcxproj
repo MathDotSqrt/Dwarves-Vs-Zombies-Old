@@ -193,7 +193,6 @@
     <ClCompile Include="BasicRenderSystem.cpp" />
     <ClCompile Include="Chunk.cpp" />
     <ClCompile Include="ChunkManager.cpp" />
-    <ClCompile Include="ChunkSet.cpp" />
     <ClCompile Include="Client.cpp" />
     <ClCompile Include="CubeGeometry.cpp" />
     <ClCompile Include="DemoState.cpp" />
@@ -221,8 +220,8 @@
     <ClCompile Include="TEX.cpp" />
     <ClCompile Include="VAO.cpp" />
     <ClCompile Include="VBO.cpp" />
+    <ClCompile Include="VoxelSystem.cpp" />
     <ClCompile Include="Window.cpp" />
-    <ClCompile Include="ZOrderHashSet.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\ENTT\single_include\entt\entt.hpp" />
@@ -231,7 +230,6 @@
     <ClInclude Include="Block.h" />
     <ClInclude Include="Chunk.h" />
     <ClInclude Include="ChunkManager.h" />
-    <ClInclude Include="ChunkSet.h" />
     <ClInclude Include="Client.h" />
     <ClInclude Include="Components.h" />
     <ClInclude Include="CubeGeometry.h" />
@@ -267,8 +265,8 @@
     <ClInclude Include="tinyobj.h" />
     <ClInclude Include="VAO.h" />
     <ClInclude Include="VBO.h" />
+    <ClInclude Include="VoxelSystem.h" />
     <ClInclude Include="Window.h" />
-    <ClInclude Include="ZOrderHashSet.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="basic_lit_shader.frag" />

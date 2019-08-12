@@ -106,7 +106,6 @@ public:
 	Util::PackedFreeList<TextureMaterial> textureMaterialCache;
 	Util::PackedFreeList<BlockMaterial> blockMaterialCache;
 
-
 	Util::PackedFreeList<PointLight> pointLightCache;
 
 	Scene();

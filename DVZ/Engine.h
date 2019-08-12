@@ -53,12 +53,12 @@ public:
 	
 	entt::entity getNetEntity(entt::entity netID);
 	
-
 	void addSystem(System *system);
 	void removeSystem(System *system);
 	void updateSystems(float delta);
 	void deleteAllActiveSystems();
 
+	entt::entity getPlayer();
 
 	SLNet::ConnectionState getConnectionState();
 	Voxel::ChunkManager* getChunkManager();

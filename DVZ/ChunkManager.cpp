@@ -91,6 +91,46 @@ bool ChunkManager::isBlockMapped(int x, int y, int z) {
 	return this->isChunkMapped(cx, cy, cz);
 }
 
+Block& ChunkManager::getBlock(float x, float y, float z) {
+	x /= BLOCK_RENDER_SIZE;
+	y /= BLOCK_RENDER_SIZE;
+	z /= BLOCK_RENDER_SIZE;
+
+	return this->getBlock((int)x, (int)y, (int)z);
+}
+
+void ChunkManager::setBlock(float x, float y, float z, Block &block) {
+	x /= BLOCK_RENDER_SIZE;
+	y /= BLOCK_RENDER_SIZE;
+	z /= BLOCK_RENDER_SIZE;
+
+	this->setBlock((int)x, (int)y, (int)z, block);
+}
+
+int ChunkManager::getBlockX(float x) {
+	return (int)(x / BLOCK_RENDER_SIZE);
+}
+
+int ChunkManager::getBlockY(float y) {
+	return (int)(y / BLOCK_RENDER_SIZE);
+}
+
+int ChunkManager::getBlockZ(float z) {
+	return (int)(z / BLOCK_RENDER_SIZE);
+}
+
+int ChunkManager::getChunkX(float x) {
+	return (int)(x / Chunk::CHUNK_RENDER_WIDTH_X);
+}
+
+int ChunkManager::getChunkY(float y) {
+	return (int)(y / Chunk::CHUNK_RENDER_WIDTH_Y);
+}
+
+int ChunkManager::getChunkZ(float z) {
+	return (int)(z / Chunk::CHUNK_RENDER_WIDTH_Z);
+}
+
 int ChunkManager::expand(int x) {
 	x &= 0x3FF;
 	x = (x | (x << 16)) & 4278190335;

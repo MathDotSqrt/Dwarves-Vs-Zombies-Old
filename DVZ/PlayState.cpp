@@ -9,6 +9,7 @@
 #include "InputSystem.h"
 #include "BasicRenderSystem.h"
 #include "NetPlayerSystem.h"
+#include "VoxelSystem.h"
 #include "ChunkManager.h"
 
 PlayState::PlayState(GameStateManager *gsm) : GameState(gsm) {
@@ -21,15 +22,6 @@ PlayState::~PlayState() {
 
 void PlayState::init() {
 	LOG_STATE("init");
-	//e.attemptConnection("54.224.40.47", 60000);
-	e.attemptConnection("127.0.0.1", 60000);
-
-	/*SYSTEM*/
-	this->e.addSystem(new InputSystem(0));
-	this->e.addSystem(new MovementSystem(1));
-	this->e.addSystem(new NetPlayerSystem(.1f, 2));
-	this->e.addSystem(new BasicRenderSystem(100));
-	/*SYSTEM*/
 
 	/*PLAYER*/
 	entt::entity playerID = this->e.addPlayer(1, 0, 0);
@@ -41,13 +33,8 @@ void PlayState::init() {
 	Graphics::QuadGeometry quad;
 	Graphics::BasicLitMaterial c = { {1, 1, 1}, {.5f, .7f, .1f}, 10 };
 	unsigned int meshID = this->e.getScene()->createMesh(quad, c);
-	unsigned int renderID = this->e.getScene()->createRenderInstance(meshID);
-
-	entt::entity floor = this->e.create();
-	this->e.assign<PositionComponent>(floor, glm::vec3(0, -1, 0));
-	this->e.assign<RotationComponent>(floor, glm::quat(glm::vec3(3.1415f / 2, 0, 0)));
-	this->e.assign<ScaleComponent>(floor, glm::vec3(10, 10, 10));
-	this->e.assign<RenderInstanceComponent>(floor, renderID);
+	Graphics::Transformation t = { glm::vec3(0, -1, 0), glm::vec3(3.1415f / 2, 0, 0) , glm::vec3(10, 10, 10) };
+	unsigned int renderID = this->e.getScene()->createRenderInstance(meshID, t);
 	/*FLOOR*/
 
 	/*DRAGONS*/
@@ -71,7 +58,6 @@ void PlayState::init() {
 			Graphics::BasicLitMaterial bm = { {1, 1, 1}, {1, 1, 1}, 100};
 			meshID2 = this->e.getScene()->createMesh(dragon, bm);
 		}
-
 		
 		renderID = this->e.getScene()->createRenderInstance(meshID2);
 		this->e.assign<RenderInstanceComponent>(obj, renderID);
@@ -79,29 +65,29 @@ void PlayState::init() {
 	/*DRAGONS*/
 
 	/*CHUNKS*/
-	
+	//Voxel::ChunkManager *manager = this->e.getChunkManager();
 
-	Voxel::ChunkManager *manager = this->e.getChunkManager();
-
-	Graphics::BlockMaterial chunkMat = { {.95f, .5f, .8f}, 30 };
-
-	
-
-	for (int y = 0; y < 10; y++) {
-		for (int x = 0; x < 10; x++) {
-			Voxel::Chunk *chunk = manager->generateChunk(x, y, 0);
-			chunk->generateTerrain();
-			chunk->generateMesh();
-
-			Graphics::Geometry chunkGeometry(chunk->vao, chunk->indexCount);
-			unsigned int chunkMesh = this->e.getScene()->createMesh(chunkGeometry, chunkMat);
-			Graphics::Transformation t = { glm::vec3(x * Voxel::Chunk::CHUNK_RENDER_WIDTH_X, 0, y * Voxel::Chunk::CHUNK_RENDER_WIDTH_Z), glm::vec3(0, 0, 0), glm::vec3(1, 1, 1) };
-			unsigned int chunkInstance = this->e.getScene()->createRenderInstance(chunkMesh, t);
-		}
-	}
-
+	//Voxel::Chunk *chunk = manager->getChunk(0, 0, 0);
+	//Voxel::Block grass(Voxel::BlockType::BLOCK_TYPE_GRASS);
+	//manager->setBlock(0.0f, 0.0f, 1.0f, grass);
+	//manager->setBlock(1.0f, 0.0f, 1.0f, grass);
+	//manager->setBlock(2.0f, 0.0f, 1.0f, grass);
+	//manager->setBlock(3.0f, 0.0f, 1.0f, grass);
+	//chunk->generateMesh();
 	/*CHUNKS*/
 
+	/*NET*/
+	//e.attemptConnection("54.224.40.47", 60000);	//AWS
+	e.attemptConnection("127.0.0.1", 60000);		//LOCAL
+	/*NET*/
+
+	/*SYSTEM*/
+	this->e.addSystem(new InputSystem(0));
+	this->e.addSystem(new MovementSystem(1));
+	this->e.addSystem(new NetPlayerSystem(.1f, 2));
+	this->e.addSystem(new VoxelSystem(3));
+	this->e.addSystem(new BasicRenderSystem(100));
+	/*SYSTEM*/
 
 }
 

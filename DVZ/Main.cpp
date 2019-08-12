@@ -54,6 +54,7 @@ void run() {
 		delta = glfwGetTime() - currentTime;
 	} while (!Window::shouldClose());
 
+	//TODO ensure that VBO and VAO is getting disposed
 	gsm.disposeAllStates();
 	Window::destroyWindow();
 }

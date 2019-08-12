@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include "VBO.h"
 #include "preamble.glsl"
+#include "macrologger.h"
 
 using namespace Voxel;
 
@@ -32,6 +33,7 @@ Chunk::~Chunk() {
 	this->vao.dispose();
 	this->vbo.dispose();
 	this->ebo.dispose();
+	LOG_VOXEL("Chunk {%d, %d, %d} deleted", this->chunk_x, this->chunk_y, this->chunk_z);
 }
 
 void Chunk::generateTerrain() {
@@ -43,15 +45,20 @@ void Chunk::generateTerrain() {
 				int y = this->chunk_y * CHUNK_WIDTH_Y + by;
 				int z = this->chunk_z * CHUNK_WIDTH_Z + bz;
 
-				if (by > 32)
-					if (x % 8 == 0 && z % 8 == 0 && y % 8 == 0) {
+				if (y > 32)
+					if (x % 4 == 0 && z % 4 == 0 && y % 4 == 0) {
 						this->getBlock(bx, by, bz) = { BlockType::BLOCK_TYPE_STONE };
 					}
 					else {
 						this->getBlock(bx, by, bz) = { BlockType::BLOCK_TYPE_DEFAULT };
 					}
-				else if (x % (z + 1) > y) {
-					this->getBlock(bx, by, bz) = { BlockType::BLOCK_TYPE_DIRT };
+				else if (x % (z * z + 1) > y) {
+					if(y == 32)
+						this->getBlock(bx, by, bz) = { BlockType::BLOCK_TYPE_GRASS };
+					else if((x * (z % (y * y + 1))) % 2 == 0)
+						this->getBlock(bx, by, bz) = { BlockType::BLOCK_TYPE_DIRT };
+					else
+						this->getBlock(bx, by, bz) = { BlockType::BLOCK_TYPE_STONE };
 					
 				}
 				else
@@ -145,6 +152,12 @@ void Chunk::createCube(int x, int y, int z, BlockFaceCullTags render, BlockType 
 		c1 = glm::vec3(.3f, .3f, .3f);
 		c2 = glm::vec3(.3f, .3f, .3f);
 		c3 = glm::vec3(.3f, .3f, .3f);
+	}
+	else if (type == BlockType::BLOCK_TYPE_GRASS) {
+		c0 = glm::vec3(0, 1, 0);
+		c1 = glm::vec3(0, 1, 0);
+		c2 = glm::vec3(0, 1, 0);
+		c3 = glm::vec3(0, 1, 0);
 	}
 
 	BlockVertex v0, v1, v2, v3;
