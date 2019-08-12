@@ -11,6 +11,7 @@ namespace Window {
 	const unsigned int RIGHT = GLFW_KEY_RIGHT;
 	const unsigned int SPACE = GLFW_KEY_SPACE;
 	const unsigned int LSHIFT = GLFW_KEY_LEFT_SHIFT;
+	const unsigned int LCTRL = GLFW_KEY_LEFT_CONTROL;
 	
 	void createWindow(int width, int height, const char *title);
 	void destroyWindow();
