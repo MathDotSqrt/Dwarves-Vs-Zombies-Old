@@ -52,7 +52,7 @@ void Chunk::generateTerrain() {
 					else {
 						this->getBlock(bx, by, bz) = { BlockType::BLOCK_TYPE_DEFAULT };
 					}
-				else if (x % (z * z + 1) > y) {
+				else if ((x * x) % (z * z + 1) > y * y) {
 					if(y == 32)
 						this->getBlock(bx, by, bz) = { BlockType::BLOCK_TYPE_GRASS };
 					else if((x * (z % (y * y + 1))) % 2 == 0)
@@ -159,6 +159,12 @@ void Chunk::createCube(int x, int y, int z, BlockFaceCullTags render, BlockType 
 		c2 = glm::vec3(0, 1, 0);
 		c3 = glm::vec3(0, 1, 0);
 	}
+	else if (type == BlockType::BLOCK_TYPE_PURPLE) {
+		c0 = glm::vec3(.7f, 0, 1);
+		c1 = glm::vec3(.7f, 0, 1);
+		c2 = glm::vec3(.7f, 0, 1);
+		c3 = glm::vec3(.7f, 0, 1);
+	}
 
 	BlockVertex v0, v1, v2, v3;
 
@@ -256,8 +262,11 @@ Block& Chunk::getBlock(int x, int y, int z) {
 
 void Chunk::setBlock(int x, int y, int z, Block &block) {
 	this->assertBlockIndex(x, y, z);
-	this->data[this->toIndex(x, y, z)] = block;
-	this->isMeshValid = false;
+
+	if (this->data[this->toIndex(x, y, z)] != block) {
+		this->data[this->toIndex(x, y, z)] = block;
+		this->isMeshValid = false;
+	}
 }
 
 void Chunk::setBlockData(Block *newData) {

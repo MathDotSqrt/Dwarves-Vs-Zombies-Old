@@ -9,6 +9,7 @@ namespace Voxel {
 		BLOCK_TYPE_STONE,
 		BLOCK_TYPE_DIRT,
 		BLOCK_TYPE_GRASS,
+		BLOCK_TYPE_PURPLE,
 		BLOCK_TYPE_NUM_TYPES
 	} BlockType;
 
@@ -21,6 +22,14 @@ namespace Voxel {
 
 		Block(BlockType type) {
 			this->type = type;
+		}
+
+		bool operator==(const Block &other) {
+			return this->type == other.type;
+		}
+
+		bool operator!=(const Block &other) {
+			return this->type != other.type;
 		}
 	};
 

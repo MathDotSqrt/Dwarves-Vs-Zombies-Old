@@ -3,7 +3,7 @@
 class VoxelSystem : public System {
 
 private:
-	inline static int RENDER_DISTANCE = 10;
+	inline static int RENDER_DISTANCE = 6;
 
 public:
 	VoxelSystem(int priority);

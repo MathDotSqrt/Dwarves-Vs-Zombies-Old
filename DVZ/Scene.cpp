@@ -9,7 +9,7 @@ Scene::Scene() :
 	meshCache(5000),
 	colorMaterialCache(5000),
 	basicLitMaterialCache(5000),
-	blockMaterialCache(500),
+	blockMaterialCache(5000),
 	pointLightCache(4)
 	{
 

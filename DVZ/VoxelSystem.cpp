@@ -80,4 +80,18 @@ void VoxelSystem::update(Engine *engine, float delta) {
 			unsigned int chunkInstance = engine->getScene()->createRenderInstance(chunkMesh, t);
 		}
 	}
+
+	int bx = manager->getBlockX(playerPos.x);
+	int by = manager->getBlockY(playerPos.y);
+	int bz = manager->getBlockZ(playerPos.z);
+
+	if (manager->isBlockMapped(bx, by, bz)) {
+		Voxel::Block b(Voxel::BlockType::BLOCK_TYPE_PURPLE);
+		manager->setBlock(bx, by, bz, b);
+		Voxel::Chunk *chunk = manager->getChunk(chunkX, 0, chunkZ);
+		if (!chunk->needsMeshUpdate()) {
+			chunk->generateMesh();
+		}
+
+	}
 }

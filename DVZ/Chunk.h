@@ -30,7 +30,7 @@ private:
 
 public:
 	static constexpr int CHUNK_SHIFT_X = 4;
-	static constexpr int CHUNK_SHIFT_Y = 6;
+	static constexpr int CHUNK_SHIFT_Y = 8;
 	static constexpr int CHUNK_SHIFT_Z = 4;
 
 	static constexpr int CHUNK_WIDTH_X = 1 << CHUNK_SHIFT_X;
@@ -61,6 +61,10 @@ public:
 	Block& getBlock(int x, int y, int z);
 	void setBlock(int x, int y, int z, Block &block);
 	void setBlockData(Block *newData);
+
+	inline bool needsMeshUpdate() {
+		return this->isMeshValid;
+	}
 
 private:
 	void createCube(int x, int y, int z, BlockFaceCullTags render, BlockType type);
