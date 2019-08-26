@@ -22,6 +22,7 @@ typedef enum _MaterialID: unsigned char {
 	BLOCK_MATERIAL_ID
 } MaterialID;
 
+//todo add reference counter for materials
 struct ColorMaterial {
 	static MaterialID type;
 	float color[3];
@@ -50,6 +51,7 @@ struct BlockMaterial {
 	float shinyness;
 };
 
+//todo add reference count to mesh to delete it when no transformations are applied to it
 struct Mesh {
 	Geometry model;
 	MaterialID typeID;
@@ -138,9 +140,13 @@ public:
 	unsigned int createPointLightInstance(PointLight &p);
 	unsigned int createPointLightInstance();
 
+
+	void removeMaterialInstance(MaterialID materialType, unsigned int materialID);
+	void removeMesh(unsigned int meshID);
+	void removeTransformation(unsigned int transformationID);
+	void removeRenderInstance(unsigned int instanceID);
+
 	void setMainCamera(unsigned int cameraID);
 	unsigned int getMainCameraID();
-
-
 };
 }

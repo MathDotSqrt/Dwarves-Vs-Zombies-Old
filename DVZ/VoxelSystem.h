@@ -12,5 +12,7 @@ public:
 	void addedToEngine(Engine * engine);
 	void removedFromEngine(Engine * engine);
 	void update(Engine * engine, float delta);
+
+	void loadChunk(Engine *engine, int cx, int cy, int cz);
 };
 

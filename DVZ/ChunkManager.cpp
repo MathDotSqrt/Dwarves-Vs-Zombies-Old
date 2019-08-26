@@ -1,5 +1,5 @@
 #include "ChunkManager.h"
-
+#include <string>
 using namespace Voxel;
 
 ChunkManager::ChunkManager()
@@ -9,6 +9,12 @@ ChunkManager::ChunkManager()
 
 ChunkManager::~ChunkManager()
 {
+}
+
+void ChunkManager::removeChunk(int cx, int cy, int cz) {
+	if (this->isChunkMapped(cx, cy, cz)) {
+		this->chunkSet.erase(this->hashcode(cx, cy, cz));
+	}
 }
 
 Chunk* ChunkManager::getChunk(int cx, int cy, int cz) {
@@ -140,6 +146,7 @@ int ChunkManager::expand(int x) {
 	return x;
 }
 
+//todo figure out if this hashcode perserves locality with negative integers
 int ChunkManager::hashcode(int i, int j, int k) {
 	//z order curve
 	return expand(i) + (expand(j) << 1) + (expand(k) << 2);

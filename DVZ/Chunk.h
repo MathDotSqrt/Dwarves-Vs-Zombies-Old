@@ -46,6 +46,8 @@ private:
 	Graphics::VBO vbo;
 	Graphics::VBO ebo;
 
+	unsigned int renderID;
+
 public:
 	
 
@@ -66,6 +68,25 @@ public:
 
 	inline bool needsMeshUpdate() {
 		return this->isMeshValid;
+	}
+
+	inline int getChunkX() {
+		return this->chunk_x;
+	}
+
+	inline int getChunkY() {
+		return this->chunk_y;
+	}
+
+	inline int getChunkZ() {
+		return this->chunk_z;
+	}
+
+	inline void setChunkRenderID(unsigned int renderID) {
+		this->renderID = renderID;
+	}
+	inline unsigned int getChunkRenderID() {
+		return renderID;
 	}
 
 private:

@@ -69,6 +69,47 @@ unsigned int Scene::createPointLightInstance() {
 	return this->pointLightCache.insert(p);
 }
 
+void Scene::removeMaterialInstance(MaterialID typeID, unsigned int materialInstanceID) {
+	switch (typeID) {
+	case MaterialID::COLOR_MATERIAL_ID:
+		this->colorMaterialCache.erase(materialInstanceID);
+		break;
+	case MaterialID::BASIC_LIT_MATERIAL_ID:
+		this->basicLitMaterialCache.erase(materialInstanceID);
+		break;
+	case MaterialID::TEXTURE_MATERIAL_ID:
+		this->textureMaterialCache.erase(materialInstanceID);
+		break;
+	case MaterialID::BLOCK_MATERIAL_ID:
+		this->blockMaterialCache.erase(materialInstanceID);
+		break;
+	default:
+		break;
+	}
+}
+
+void Scene::removeMesh(unsigned int meshID) {
+	Mesh m = this->meshCache[meshID];
+	//todo fix VAO VBO TEX class to follow RAII principles. this is bad code
+	m.model.getVAO().dispose();
+
+	this->removeMaterialInstance(m.typeID, m.materialInstanceID);
+	this->meshCache.erase(meshID);
+}
+
+void Scene::removeTransformation(unsigned int transformationID) {
+	this->transformationCache.erase(transformationID);
+}
+
+void Scene::removeRenderInstance(unsigned int instanceID) {
+	Instance i = this->instanceCache[instanceID];
+	
+	//todo make a reference counter. Other transformations could be pointing to this mesh
+	this->removeMesh(i.meshID);
+	this->removeTransformation(i.transformationID);
+	this->instanceCache.erase(instanceID);
+}
+
 void Scene::setMainCamera(unsigned int cameraID) {
 	this->mainCameraID = cameraID;
 }
