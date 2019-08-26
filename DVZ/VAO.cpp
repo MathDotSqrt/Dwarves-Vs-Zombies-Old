@@ -31,7 +31,7 @@ void VAO::dispose() {
 }
 
 void VAO::disposeAll() {
-	glDeleteVertexArrays((GLsizei)VAO::vaos.size(), VAO::vaos.data());
+	glDeleteVertexArrays(VAO::vaos.size(), VAO::vaos.data());
 
 	LOG_DEBUG("Deleted %d VAOs", VAO::vaos.size());
 }

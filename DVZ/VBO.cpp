@@ -39,7 +39,7 @@ void VBO::dispose() {
 }
 
 void VBO::disposeAll() {
-	glDeleteBuffers((GLsizei)VBO::vbos.size(), VBO::vbos.data());
+	glDeleteBuffers(VBO::vbos.size(), VBO::vbos.data());
 
 	LOG_DEBUG("Deleted %d VBOs ", VBO::vbos.size());
 }
