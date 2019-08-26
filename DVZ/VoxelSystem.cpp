@@ -34,7 +34,7 @@ void VoxelSystem::addedToEngine(Engine *engine) {
 			Graphics::Geometry chunkGeometry(chunk->vao, chunk->indexCount);
 			unsigned int chunkMesh = engine->getScene()->createMesh(chunkGeometry, chunkMat);
 			Graphics::Transformation t = { 
-				glm::vec3(x * Voxel::Chunk::CHUNK_RENDER_WIDTH_X, 0, z * Voxel::Chunk::CHUNK_RENDER_WIDTH_Z), 
+				glm::vec3(x * Voxel::CHUNK_RENDER_WIDTH_X, 0, z * Voxel::CHUNK_RENDER_WIDTH_Z), 
 				glm::vec3(0, 0, 0), 
 				glm::vec3(1, 1, 1) 
 			};
@@ -73,7 +73,7 @@ void VoxelSystem::update(Engine *engine, float delta) {
 			Graphics::Geometry chunkGeometry(chunk->vao, chunk->indexCount);
 			unsigned int chunkMesh = engine->getScene()->createMesh(chunkGeometry, chunkMat);
 			Graphics::Transformation t = {
-				glm::vec3(x * Voxel::Chunk::CHUNK_RENDER_WIDTH_X, 0, z * Voxel::Chunk::CHUNK_RENDER_WIDTH_Z),
+				glm::vec3(x * Voxel::CHUNK_RENDER_WIDTH_X, 0, z * Voxel::CHUNK_RENDER_WIDTH_Z),
 				glm::vec3(0, 0, 0),
 				glm::vec3(1, 1, 1)
 			};

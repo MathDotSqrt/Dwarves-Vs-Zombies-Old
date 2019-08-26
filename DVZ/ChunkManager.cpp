@@ -53,40 +53,40 @@ bool ChunkManager::isChunkMapped(int cx, int cy, int cz) {
 }
 
 Block& ChunkManager::getBlock(int x, int y, int z) {
-	int cx = x >> Chunk::CHUNK_SHIFT_X;
-	int cy = y >> Chunk::CHUNK_SHIFT_Y;
-	int cz = z >> Chunk::CHUNK_SHIFT_Z;
+	int cx = x >> CHUNK_SHIFT_X;
+	int cy = y >> CHUNK_SHIFT_Y;
+	int cz = z >> CHUNK_SHIFT_Z;
 
 	Chunk* chunk = this->getChunk(cx, cy, cz);
 
 	assert(chunk);
 
-	int bx = x & Chunk::CHUNK_BLOCK_POS_MASK_X;
-	int by = y & Chunk::CHUNK_BLOCK_POS_MASK_Y;
-	int bz = z & Chunk::CHUNK_BLOCK_POS_MASK_Z;
+	int bx = x & CHUNK_BLOCK_POS_MASK_X;
+	int by = y & CHUNK_BLOCK_POS_MASK_Y;
+	int bz = z & CHUNK_BLOCK_POS_MASK_Z;
 	return chunk->getBlock(bx, by, bz);
 }
 
 void ChunkManager::setBlock(int x, int y, int z, Block &block) {
-	int cx = x >> Chunk::CHUNK_SHIFT_X;
-	int cy = y >> Chunk::CHUNK_SHIFT_Y;
-	int cz = z >> Chunk::CHUNK_SHIFT_Z;
+	int cx = x >> CHUNK_SHIFT_X;
+	int cy = y >> CHUNK_SHIFT_Y;
+	int cz = z >> CHUNK_SHIFT_Z;
 
 	Chunk* chunk = this->getChunk(cx, cy, cz);
 
 	assert(chunk);
 
-	int bx = x & Chunk::CHUNK_BLOCK_POS_MASK_X;
-	int by = y & Chunk::CHUNK_BLOCK_POS_MASK_Y;
-	int bz = z & Chunk::CHUNK_BLOCK_POS_MASK_Z;
+	int bx = x & CHUNK_BLOCK_POS_MASK_X;
+	int by = y & CHUNK_BLOCK_POS_MASK_Y;
+	int bz = z & CHUNK_BLOCK_POS_MASK_Z;
 
 	chunk->setBlock(bx, by, bz, block);
 }
 
 bool ChunkManager::isBlockMapped(int x, int y, int z) {
-	int cx = x >> Chunk::CHUNK_SHIFT_X;
-	int cy = y >> Chunk::CHUNK_SHIFT_Y;
-	int cz = z >> Chunk::CHUNK_SHIFT_Z;
+	int cx = x >> CHUNK_SHIFT_X;
+	int cy = y >> CHUNK_SHIFT_Y;
+	int cz = z >> CHUNK_SHIFT_Z;
 
 	return this->isChunkMapped(cx, cy, cz);
 }
@@ -120,15 +120,15 @@ int ChunkManager::getBlockZ(float z) {
 }
 
 int ChunkManager::getChunkX(float x) {
-	return (int)(x / Chunk::CHUNK_RENDER_WIDTH_X);
+	return (int)(x / CHUNK_RENDER_WIDTH_X);
 }
 
 int ChunkManager::getChunkY(float y) {
-	return (int)(y / Chunk::CHUNK_RENDER_WIDTH_Y);
+	return (int)(y / CHUNK_RENDER_WIDTH_Y);
 }
 
 int ChunkManager::getChunkZ(float z) {
-	return (int)(z / Chunk::CHUNK_RENDER_WIDTH_Z);
+	return (int)(z / CHUNK_RENDER_WIDTH_Z);
 }
 
 int ChunkManager::expand(int x) {

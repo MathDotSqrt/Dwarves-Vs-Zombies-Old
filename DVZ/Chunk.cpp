@@ -14,7 +14,7 @@ Chunk::Chunk(int x, int y, int z) :
 	vbo(GL_ARRAY_BUFFER),
 	ebo(GL_ELEMENT_ARRAY_BUFFER){
 
-	data = new Block[Chunk::CHUNK_VOLUME];
+	data = new Block[CHUNK_VOLUME];
 	this->isMeshValid = false;
 }
 
@@ -37,9 +37,9 @@ Chunk::~Chunk() {
 }
 
 void Chunk::generateTerrain() {
-	for (int bz = 0; bz < Chunk::CHUNK_WIDTH_Z; bz++) {
-		for (int by = 0; by < Chunk::CHUNK_WIDTH_Y; by++) {
-			for (int bx = 0; bx < Chunk::CHUNK_WIDTH_X; bx++) {
+	for (int bz = 0; bz < CHUNK_WIDTH_Z; bz++) {
+		for (int by = 0; by < CHUNK_WIDTH_Y; by++) {
+			for (int bx = 0; bx < CHUNK_WIDTH_X; bx++) {
 
 				int x = this->chunk_x * CHUNK_WIDTH_X + bx;
 				int y = this->chunk_y * CHUNK_WIDTH_Y + by;
@@ -79,9 +79,9 @@ void Chunk::generateTerrain() {
 void Chunk::generateMesh() {
 	this->verticies.clear();
 	this->indices.clear();
-	for (int z = 0; z < Chunk::CHUNK_WIDTH_Z; z++) {
-		for (int y = 0; y < Chunk::CHUNK_WIDTH_Y; y++) {
-			for (int x = 0; x < Chunk::CHUNK_WIDTH_X; x++) {
+	for (int z = 0; z < CHUNK_WIDTH_Z; z++) {
+		for (int y = 0; y < CHUNK_WIDTH_Y; y++) {
+			for (int x = 0; x < CHUNK_WIDTH_X; x++) {
 				if (this->getBlock(x, y, z).type == BlockType::BLOCK_TYPE_DEFAULT) {
 					continue;
 				}
@@ -89,15 +89,15 @@ void Chunk::generateMesh() {
 
 				if (x > 0)
 					render.nx = this->getBlock(x - 1, y, z).type == BlockType::BLOCK_TYPE_DEFAULT;
-				if (x < Chunk::CHUNK_WIDTH_X - 1)
+				if (x < CHUNK_WIDTH_X - 1)
 					render.px = this->getBlock(x + 1, y, z).type == BlockType::BLOCK_TYPE_DEFAULT;
 				if (y > 0)
 					render.ny = this->getBlock(x, y - 1, z).type == BlockType::BLOCK_TYPE_DEFAULT;
-				if (y < Chunk::CHUNK_WIDTH_Y - 1)
+				if (y < CHUNK_WIDTH_Y - 1)
 					render.py = this->getBlock(x, y + 1, z).type == BlockType::BLOCK_TYPE_DEFAULT;
 				if (z > 0)
 					render.nz = this->getBlock(x, y, z - 1).type == BlockType::BLOCK_TYPE_DEFAULT;
-				if (z < Chunk::CHUNK_WIDTH_Z - 1)
+				if (z < CHUNK_WIDTH_Z - 1)
 					render.pz = this->getBlock(x, y, z + 1).type == BlockType::BLOCK_TYPE_DEFAULT;
 
 				this->createCube(x, y, z, render, this->getBlock(x, y, z).type);
@@ -246,13 +246,13 @@ void Chunk::createFace(BlockVertex v0, BlockVertex v1, BlockVertex v2, BlockVert
 }
 
 int Chunk::toIndex(int x, int y, int z) {
-	return x + Chunk::CHUNK_WIDTH_X * (y + Chunk::CHUNK_WIDTH_Y * z);
+	return x + CHUNK_WIDTH_X * (y + CHUNK_WIDTH_Y * z);
 }
 
 void Chunk::assertBlockIndex(int x, int y, int z) {
-	assert(x >= 0 && x < Chunk::CHUNK_WIDTH_X);
-	assert(y >= 0 && y < Chunk::CHUNK_WIDTH_Y);
-	assert(z >= 0 && z < Chunk::CHUNK_WIDTH_Z);
+	assert(x >= 0 && x < CHUNK_WIDTH_X);
+	assert(y >= 0 && y < CHUNK_WIDTH_Y);
+	assert(z >= 0 && z < CHUNK_WIDTH_Z);
 }
 
 Block& Chunk::getBlock(int x, int y, int z) {
