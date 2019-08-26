@@ -62,7 +62,6 @@ void OpenGLRenderer::prerender() {
 	glCullFace(GL_CW);
 
 	this->sortedRenderStateKeys.clear();
-
 	for (unsigned int instanceID : scene->instanceCache) {
 		RenderStateKey key = 0L;
 		MaterialID matID = MaterialID::NONE_MATERIAL_ID;
@@ -80,7 +79,6 @@ void OpenGLRenderer::prerender() {
 
 	}
 	std::sort(this->sortedRenderStateKeys.begin(), this->sortedRenderStateKeys.end());
-
 }
 
 void OpenGLRenderer::render() {
