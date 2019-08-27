@@ -30,7 +30,6 @@ Chunk::Chunk(int x, int y, int z, Block *data) :
 
 Chunk::~Chunk() {
 	free(data);
-	this->vao.dispose();
 	this->vbo.dispose();
 	this->ebo.dispose();
 	LOG_VOXEL("Chunk {%d, %d, %d} deleted", this->chunk_x, this->chunk_y, this->chunk_z);

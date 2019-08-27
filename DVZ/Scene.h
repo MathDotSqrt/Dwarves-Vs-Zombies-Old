@@ -116,7 +116,7 @@ public:
 	template<typename MATERIAL>
 	unsigned int createMesh(Geometry &model, MATERIAL &material) {
 		unsigned int materialInstanceID = this->createMaterialInstance(material);
-		Mesh newMesh = { model, MATERIAL::type, materialInstanceID };
+		Mesh newMesh = { std::move(model), MATERIAL::type, materialInstanceID };
 		unsigned int newMeshID = this->meshCache.insert(newMesh);
 		return newMeshID;
 	}

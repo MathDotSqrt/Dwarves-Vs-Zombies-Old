@@ -4,14 +4,20 @@ using namespace Graphics;
 
 VAO::VAO(){
 	glGenVertexArrays(1, &this->vaoID);
-	vaos.push_back(this->vaoID);
 
 	LOG_DEBUG("Generated VAO ID: %d", this->vaoID);
-
 }
 
 VAO::~VAO(){
+	this->dispose();
 }
+
+VAO::VAO(VAO &&other){
+	this->vaoID = other.vaoID;
+	other.vaoID = 0; //use null buffer id for old object
+}
+
+
 
 void VAO::bind() {
 	glBindVertexArray(this->vaoID);
@@ -22,18 +28,9 @@ void VAO::unbind() {
 }
 
 void VAO::dispose() {
-	glDeleteVertexArrays(1, &this->vaoID);
-	
-	//removes a vao from the vao list
-	VAO::vaos.erase(std::remove(vaos.begin(),vaos.end(), this->vaoID), VAO::vaos.end());
-
-	LOG_DEBUG("Deleted VAO ID: %d", this->vaoID);
+	if (this->vaoID) {
+		glDeleteVertexArrays(1, &this->vaoID);
+		LOG_DEBUG("Deleted VAO ID: %d", this->vaoID);
+		this->vaoID = 0;
+	}
 }
-
-void VAO::disposeAll() {
-	glDeleteVertexArrays((GLsizei)VAO::vaos.size(), VAO::vaos.data());
-
-	LOG_DEBUG("Deleted %d VAOs", VAO::vaos.size());
-}
-
-std::vector<GLuint> VAO::vaos;

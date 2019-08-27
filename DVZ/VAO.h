@@ -7,19 +7,28 @@
 namespace Graphics {
 
 class VAO {
+private:
+	GLuint vaoID;
+	void dispose();
+
 public:
 	VAO();
 	~VAO();
+	VAO(VAO &&other);
+
+	VAO(const VAO &) = delete;
+	VAO& operator=(const VAO &) = delete;
+
+	VAO& operator=(VAO &&other) {
+		if (this != &other) {
+			this->dispose();
+			//this->vaoID is zero
+			std::swap(this->vaoID, other.vaoID);
+		}
+	}
 
 	void bind();
 	void unbind();
-	void dispose();
-
-	static void disposeAll();
-private:
-	static std::vector<GLuint> vaos;
-
-	GLuint vaoID;
 };
 
 }

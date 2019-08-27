@@ -89,11 +89,9 @@ void Scene::removeMaterialInstance(MaterialID typeID, unsigned int materialInsta
 }
 
 void Scene::removeMesh(unsigned int meshID) {
-	Mesh m = this->meshCache[meshID];
-	//todo fix VAO VBO TEX class to follow RAII principles. this is bad code
-	m.model.getVAO().dispose();
+	Mesh *m = &this->meshCache[meshID];
 
-	this->removeMaterialInstance(m.typeID, m.materialInstanceID);
+	this->removeMaterialInstance(m->typeID, m->materialInstanceID);
 	this->meshCache.erase(meshID);
 }
 

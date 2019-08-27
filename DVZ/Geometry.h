@@ -7,15 +7,16 @@ namespace Graphics {
 
 class Geometry {
 protected:
-	Geometry();
 	VAO vao;
+	VBO vbo;
+	VBO ebo;
 	int indexCount;
-
 public:
-	Geometry(VAO vao, int vertexCount);
+	//Geometry(VAO vao, int vertexCount);
+	Geometry();
 	~Geometry();
 
-	VAO getVAO();
+	VAO& getVAO();
 	int getVertexCount();
 };
 }
