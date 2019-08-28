@@ -28,6 +28,8 @@ Chunk::Chunk(int x, int y, int z, Block *data) :
 	//ebo(GL_ELEMENT_ARRAY_BUFFER)
 	{
 	this->isMeshValid = false;
+
+	//glm::vec3::value_type
 }
 
 Chunk::~Chunk() {

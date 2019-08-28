@@ -29,6 +29,13 @@ public:
 
 	void bind();
 	void unbind();
+
+
+	template<typename VERTEX, typename ATTRIB>
+	void bufferData(std::vector<VERTEX> verticies, GLenum bufferHint) {
+		this->bind();
+
+	}
 };
 
 }
