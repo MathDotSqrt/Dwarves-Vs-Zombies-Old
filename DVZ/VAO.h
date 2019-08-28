@@ -25,6 +25,9 @@ public:
 			//this->vaoID is zero
 			std::swap(this->vaoID, other.vaoID);
 		}
+		
+		//todo figure this out
+		return *this;
 	}
 
 	void bind();

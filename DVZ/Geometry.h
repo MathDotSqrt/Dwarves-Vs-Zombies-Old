@@ -38,11 +38,11 @@ public:
 		indices.clear();
 	}
 
-	inline int getVertexCount() {
+	inline size_t getVertexCount() {
 		return verticies.size();
 	}
 
-	inline int getIndexCount() {
+	inline size_t getIndexCount() {
 		return indices.size();
 	}
 };

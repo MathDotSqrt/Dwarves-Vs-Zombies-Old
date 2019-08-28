@@ -54,11 +54,11 @@ struct BlockMaterial {
 //todo add reference count to mesh to delete it when no transformations are applied to it
 struct Mesh {
 	VAO vao;
-	VBO ebo;
-
-	Geometry model;
+	int indexCount;
 	MaterialID typeID;
 	unsigned int materialInstanceID;
+
+
 };
 
 struct Transformation {
@@ -117,7 +117,9 @@ public:
 	~Scene();
 
 	template<typename VERTEX, typename MATERIAL>
-	unsigned int createMesh(Geometry<VERTEX> &model, MATERIAL &material) {
+	unsigned int createMesh(const Geometry<VERTEX> &model, MATERIAL &material) {
+		Graphics::VBO vbo(GL_STATIC_DRAW);
+
 		unsigned int materialInstanceID = this->createMaterialInstance(material);
 		Mesh newMesh = { std::move(model), MATERIAL::type, materialInstanceID };
 		unsigned int newMeshID = this->meshCache.insert(newMesh);

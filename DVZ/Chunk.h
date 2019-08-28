@@ -83,6 +83,10 @@ public:
 		return this->chunk_z;
 	}
 
+	inline Graphics::Geometry<BlockVertex> getChunkGeometry() {
+		return this->geometry;
+	}
+
 	inline void setChunkRenderID(unsigned int renderID) {
 		this->renderID = renderID;
 	}

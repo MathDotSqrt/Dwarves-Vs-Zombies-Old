@@ -129,9 +129,9 @@ int OpenGLRenderer::renderBasic(int startIndex, glm::mat4 vp) {
 		ColorMaterial *material = &scene->colorMaterialCache[mesh->materialInstanceID];
 		shader->setUniform3f("color", material->color);
 
-		mesh->model.getVAO().bind();
+		mesh->vao.bind();
 		glEnableVertexAttribArray(POSITION_ATTRIB_LOCATION);
-		glDrawElements(GL_TRIANGLES, mesh->model.getVertexCount(), GL_UNSIGNED_INT, 0);
+		glDrawElements(GL_TRIANGLES, mesh->indexCount, GL_UNSIGNED_INT, 0);
 
 		index++;
 	} while (this->isValidState(index, MaterialID::COLOR_MATERIAL_ID));
@@ -175,10 +175,10 @@ int OpenGLRenderer::renderNormal(int startIndex, glm::mat4 vp) {
 		shader->setUniformMat3("inverseTransposeMatrix", glm::inverse(mat), true);
 		shader->setUniformMat4("MVP", vp * model);
 
-		mesh->model.getVAO().bind();
+		mesh->vao.bind();
 		glEnableVertexAttribArray(POSITION_ATTRIB_LOCATION);
 		glEnableVertexAttribArray(NORMAL_ATTRIB_LOCATION);
-		glDrawElements(GL_TRIANGLES, mesh->model.getVertexCount(), GL_UNSIGNED_INT, 0);
+		glDrawElements(GL_TRIANGLES, mesh->indexCount, GL_UNSIGNED_INT, 0);
 
 		index++;
 	} while (this->isValidState(index, MaterialID::NORMAL_MAERIAL_ID));
@@ -234,10 +234,10 @@ int OpenGLRenderer::renderBasicLit(int startIndex, glm::vec3 camera_position, gl
 		shader->setUniform1f("shinyness", material.shinyness);
 
 
-		mesh->model.getVAO().bind();
+		mesh->vao.bind();
 		glEnableVertexAttribArray(POSITION_ATTRIB_LOCATION);
 		glEnableVertexAttribArray(NORMAL_ATTRIB_LOCATION);
-		glDrawElements(GL_TRIANGLES, mesh->model.getVertexCount(), GL_UNSIGNED_INT, 0);
+		glDrawElements(GL_TRIANGLES, mesh->indexCount, GL_UNSIGNED_INT, 0);
 
 		index++;
 	} while (this->isValidState(index, MaterialID::BASIC_LIT_MATERIAL_ID));
@@ -293,11 +293,11 @@ int OpenGLRenderer::renderBasicBlock(int startIndex, glm::vec3 camera_position, 
 		shader->setUniform1f("shinyness", material.shinyness);
 
 
-		mesh->model.getVAO().bind();
+		mesh->vao.bind();
 		glEnableVertexAttribArray(POSITION_ATTRIB_LOCATION);
 		glEnableVertexAttribArray(NORMAL_ATTRIB_LOCATION);
 		glEnableVertexAttribArray(COLOR_ATTRIB_LOCATION);
-		glDrawElements(GL_TRIANGLES, mesh->model.getVertexCount(), GL_UNSIGNED_INT, 0);
+		glDrawElements(GL_TRIANGLES, mesh->indexCount, GL_UNSIGNED_INT, 0);
 
 		index++;
 	} while (this->isValidState(index, MaterialID::BLOCK_MATERIAL_ID));

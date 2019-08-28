@@ -102,7 +102,7 @@ void VoxelSystem::loadChunk(Engine *engine, int cx, int cy, int cz) {
 	chunk->generateMesh();
 
 	
-	unsigned int chunkMesh = engine->getScene()->createMesh(chunkGeometry, chunkMat);
+	unsigned int chunkMesh = engine->getScene()->createMesh(chunk->getChunkGeometry(), chunkMat);
 	Graphics::Transformation t = {
 		glm::vec3(cx * Voxel::CHUNK_RENDER_WIDTH_X, 0, cz * Voxel::CHUNK_RENDER_WIDTH_Z),
 		glm::vec3(0, 0, 0),
