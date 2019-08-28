@@ -13,19 +13,36 @@ QuadGeometry::~QuadGeometry() {
 }
 
 void QuadGeometry::init() {
-	float verticies[] = {
-		-1, 1, 0,  1, 0, 0,  0, 0, -1,  0, 0,
-		1, 1, 0,   0, 1, 0,  0, 0, -1,  1, 0,
-		1, -1, 0,  0, 0, 1,  0, 0, -1,  1, 1,
-		-1, -1, 0, 1, 1, 1,  0, 0, -1,  0, 1
-	};
-	
-	GLuint elements[] = {
-		0,1,2,
-		0,2,3
-	};
+	//float verticies[] = {
+	//	-1, 1, 0,  1, 0, 0,  0, 0, -1,  0, 0,
+	//	1, 1, 0,   0, 1, 0,  0, 0, -1,  1, 0,
+	//	1, -1, 0,  0, 0, 1,  0, 0, -1,  1, 1,
+	//	-1, -1, 0, 1, 1, 1,  0, 0, -1,  0, 1
+	//};
+	//
+	//GLuint elements[] = {
+	//	0,1,2,
+	//	0,2,3
+	//};
 
-	this->vao.bind();
+	QuadVertex v0 = { -1, 1, 0,  1, 0, 0,  0, 0, -1,  0, 0 };
+	QuadVertex v1 = { 1, 1, 0,   0, 1, 0,  0, 0, -1,  1, 0 };
+	QuadVertex v2 = { 1, -1, 0,  0, 0, 1,  0, 0, -1,  1, 1 };
+	QuadVertex v3 = { -1, -1, 0, 1, 1, 1,  0, 0, -1,  0, 1 };
+
+	this->verticies.push_back(v0);
+	this->verticies.push_back(v1);
+	this->verticies.push_back(v2);
+	this->verticies.push_back(v3);
+
+	this->indices.push_back(0);
+	this->indices.push_back(1);
+	this->indices.push_back(2);
+	this->indices.push_back(0);
+	this->indices.push_back(2);
+	this->indices.push_back(3);
+
+	/*this->vao.bind();
 
 	VBO vbo(GL_ARRAY_BUFFER);
 	vbo.bind();
@@ -46,7 +63,7 @@ void QuadGeometry::init() {
 
 	this->indexCount = sizeof(elements)/sizeof(*elements);
 
-	LOG_INFO("%d", this->indexCount);
+	LOG_INFO("%d", this->indexCount);*/
 }
 
 

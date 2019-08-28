@@ -14,7 +14,7 @@ ModelGeometry::ModelGeometry(std::string filename) {
 	vector<Loader::Vertex> verticies = loader.LoadedVertices;
 	vector<GLuint> indicies = loader.LoadedIndices;
 
-	this->vao.bind();
+	/*this->vao.bind();
 	this->vbo.bind();
 	this->vbo.bufferData((sizeof(Loader::Vertex) * verticies.size()), verticies.data(), GL_STATIC_DRAW);
 	glVertexAttribPointer(POSITION_ATTRIB_LOCATION, 3, GL_FLOAT, GL_FALSE, sizeof(Loader::Vertex), (void*)0);
@@ -27,9 +27,7 @@ ModelGeometry::ModelGeometry(std::string filename) {
 	
 	this->vao.unbind();
 	this->ebo.unbind();
-	this->indexCount = (int)indicies.size();
-
-	
+	this->indexCount = (int)indicies.size();*/
 }
 
 

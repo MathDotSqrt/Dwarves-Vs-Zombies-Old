@@ -3,6 +3,7 @@
 #include "VAO.h"
 #include "VBO.h"
 #include <vector>
+#include "Geometry.h"
 
 namespace Voxel{
 
@@ -40,19 +41,20 @@ private:
 	Block *data;
 	bool isMeshValid;
 	bool isEmpty;
-	
-	std::vector<BlockVertex> verticies;
-	std::vector<GLuint> indices;
-	Graphics::VBO vbo;
-	Graphics::VBO ebo;
+
+	Graphics::Geometry<BlockVertex> geometry;
+	//std::vector<BlockVertex> verticies;
+	//std::vector<GLuint> indices;
+	//Graphics::VBO vbo;
+	//Graphics::VBO ebo;
 
 	unsigned int renderID;
 
 public:
 	
 
-	Graphics::VAO vao;
-	int indexCount = 0;
+	//Graphics::VAO vao;
+	//int indexCount = 0;
 
 	Chunk(int x, int y, int z);
 	Chunk(int x, int y, int z, Block *data);

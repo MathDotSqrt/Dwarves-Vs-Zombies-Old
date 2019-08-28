@@ -64,6 +64,11 @@ void VoxelSystem::update(Engine *engine, float delta) {
 			iter = manager->removeChunk(iter);
 		}
 		else {
+			if (!chunk->needsMeshUpdate()) {
+				chunk->generateMesh();
+				//add scene VAO stuff
+			}
+
 			iter++;
 		}
 	}
@@ -85,11 +90,6 @@ void VoxelSystem::update(Engine *engine, float delta) {
 	if (manager->isBlockMapped(bx, by, bz)) {
 		Voxel::Block b(Voxel::BlockType::BLOCK_TYPE_PURPLE);
 		manager->setBlock(bx, by, bz, b);
-		Voxel::Chunk *chunk = manager->getChunk(chunkX, 0, chunkZ);
-		if (!chunk->needsMeshUpdate()) {
-			chunk->generateMesh();
-		}
-
 	}
 }
 
@@ -101,7 +101,7 @@ void VoxelSystem::loadChunk(Engine *engine, int cx, int cy, int cz) {
 	chunk->generateTerrain();
 	chunk->generateMesh();
 
-	Graphics::Geometry chunkGeometry(chunk->vao, chunk->indexCount);
+	
 	unsigned int chunkMesh = engine->getScene()->createMesh(chunkGeometry, chunkMat);
 	Graphics::Transformation t = {
 		glm::vec3(cx * Voxel::CHUNK_RENDER_WIDTH_X, 0, cz * Voxel::CHUNK_RENDER_WIDTH_Z),

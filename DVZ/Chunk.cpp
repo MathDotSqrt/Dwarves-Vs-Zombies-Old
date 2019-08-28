@@ -10,9 +10,10 @@ using namespace Voxel;
 Chunk::Chunk(int x, int y, int z) : 
 	chunk_x(x), 
 	chunk_y(y), 
-	chunk_z(z), 
-	vbo(GL_ARRAY_BUFFER),
-	ebo(GL_ELEMENT_ARRAY_BUFFER){
+	chunk_z(z) 
+	//vbo(GL_ARRAY_BUFFER),
+	//ebo(GL_ELEMENT_ARRAY_BUFFER)
+	{
 
 	data = new Block[CHUNK_VOLUME];
 	this->isMeshValid = false;
@@ -22,16 +23,17 @@ Chunk::Chunk(int x, int y, int z, Block *data) :
 	chunk_x(x), 
 	chunk_y(y), 
 	chunk_z(z), 
-	data(data), 
-	vbo(GL_ARRAY_BUFFER), 
-	ebo(GL_ELEMENT_ARRAY_BUFFER){
+	data(data)
+	//vbo(GL_ARRAY_BUFFER), 
+	//ebo(GL_ELEMENT_ARRAY_BUFFER)
+	{
 	this->isMeshValid = false;
 }
 
 Chunk::~Chunk() {
 	free(data);
-	this->vbo.dispose();
-	this->ebo.dispose();
+	//this->vbo.dispose();
+	//this->ebo.dispose();
 	LOG_VOXEL("Chunk {%d, %d, %d} deleted", this->chunk_x, this->chunk_y, this->chunk_z);
 }
 
@@ -76,8 +78,9 @@ void Chunk::generateTerrain() {
 }
 
 void Chunk::generateMesh() {
-	this->verticies.clear();
-	this->indices.clear();
+	//this->verticies.clear();
+	//this->indices.clear();
+	this->geometry.clear();
 	for (int z = 0; z < CHUNK_WIDTH_Z; z++) {
 		for (int y = 0; y < CHUNK_WIDTH_Y; y++) {
 			for (int x = 0; x < CHUNK_WIDTH_X; x++) {
@@ -104,20 +107,20 @@ void Chunk::generateMesh() {
 		}
 	}
 
-	this->vao.bind();
-	this->vbo.bind();
-	this->vbo.bufferData(sizeof(BlockVertex) * this->verticies.size(), this->verticies.data(), GL_DYNAMIC_DRAW);
-	glVertexAttribPointer(POSITION_ATTRIB_LOCATION, 3, GL_FLOAT, GL_FALSE, sizeof(BlockVertex), (void*)0);
-	glVertexAttribPointer(NORMAL_ATTRIB_LOCATION, 3, GL_FLOAT, GL_FALSE, sizeof(BlockVertex), (void*)(1 * sizeof(glm::vec3)));
-	glVertexAttribPointer(COLOR_ATTRIB_LOCATION, 3, GL_FLOAT, GL_FALSE, sizeof(BlockVertex), (void*)(2 * sizeof(glm::vec3)));
-	this->vbo.unbind();
+	//this->vao.bind();
+	//this->vbo.bind();
+	//this->vbo.bufferData(sizeof(BlockVertex) * this->verticies.size(), this->verticies.data(), GL_DYNAMIC_DRAW);
+	//glVertexAttribPointer(POSITION_ATTRIB_LOCATION, 3, GL_FLOAT, GL_FALSE, sizeof(BlockVertex), (void*)0);
+	//glVertexAttribPointer(NORMAL_ATTRIB_LOCATION, 3, GL_FLOAT, GL_FALSE, sizeof(BlockVertex), (void*)(1 * sizeof(glm::vec3)));
+	//glVertexAttribPointer(COLOR_ATTRIB_LOCATION, 3, GL_FLOAT, GL_FALSE, sizeof(BlockVertex), (void*)(2 * sizeof(glm::vec3)));
+	//this->vbo.unbind();
 
-	this->ebo.bind();
-	this->ebo.bufferData(sizeof(GLuint) * this->indices.size(), this->indices.data(), GL_DYNAMIC_DRAW);
-	this->vao.unbind();
-	this->ebo.unbind();
+	//this->ebo.bind();
+	//this->ebo.bufferData(sizeof(GLuint) * this->indices.size(), this->indices.data(), GL_DYNAMIC_DRAW);
+	//this->vao.unbind();
+	//this->ebo.unbind();
 
-	this->indexCount = (int)this->indices.size();
+	//this->indexCount = (int)this->indices.size();
 	this->isMeshValid = true;
 }
 
@@ -229,19 +232,30 @@ void Chunk::createCube(int x, int y, int z, BlockFaceCullTags render, BlockType 
 }
 
 void Chunk::createFace(BlockVertex v0, BlockVertex v1, BlockVertex v2, BlockVertex v3) {
-	this->verticies.push_back(v0);
-	this->verticies.push_back(v1);
-	this->verticies.push_back(v2);
-	this->verticies.push_back(v3);
+	this->geometry.pushVertex(v0);
+	this->geometry.pushVertex(v1);
+	this->geometry.pushVertex(v2);
+	this->geometry.pushVertex(v3);
 
-	int lastIndex = this->indices.size() == 0 ? 0 : this->indices.back() + 1;
+	//todo figure out if this is correct
+	int lastIndex = this->geometry.getVertexCount();
 
-	this->indices.push_back(lastIndex + 0);
-	this->indices.push_back(lastIndex + 1);
-	this->indices.push_back(lastIndex + 2);
-	this->indices.push_back(lastIndex + 0);
-	this->indices.push_back(lastIndex + 2);
-	this->indices.push_back(lastIndex + 3);
+
+	this->geometry.pushTriangle(lastIndex + 0, lastIndex + 1, lastIndex + 2);
+	this->geometry.pushTriangle(lastIndex + 0, lastIndex + 2, lastIndex + 3);
+
+	//this->verticies.push_back(v0);
+	//this->verticies.push_back(v1);
+	//this->verticies.push_back(v2);
+	//this->verticies.push_back(v3);
+
+
+	//this->indices.push_back(lastIndex + 0);
+	//this->indices.push_back(lastIndex + 1);
+	//this->indices.push_back(lastIndex + 2);
+	//this->indices.push_back(lastIndex + 0);
+	//this->indices.push_back(lastIndex + 2);
+	//this->indices.push_back(lastIndex + 3);
 }
 
 int Chunk::toIndex(int x, int y, int z) {
