@@ -10,9 +10,9 @@ using namespace Voxel;
 Chunk::Chunk(int x, int y, int z) : 
 	chunk_x(x), 
 	chunk_y(y), 
-	chunk_z(z) 
-	//vbo(GL_ARRAY_BUFFER),
-	//ebo(GL_ELEMENT_ARRAY_BUFFER)
+	chunk_z(z), 
+	vbo(GL_ARRAY_BUFFER),
+	ebo(GL_ELEMENT_ARRAY_BUFFER)
 	{
 
 	data = new Block[CHUNK_VOLUME];
@@ -23,9 +23,9 @@ Chunk::Chunk(int x, int y, int z, Block *data) :
 	chunk_x(x), 
 	chunk_y(y), 
 	chunk_z(z), 
-	data(data)
-	//vbo(GL_ARRAY_BUFFER), 
-	//ebo(GL_ELEMENT_ARRAY_BUFFER)
+	data(data),
+	vbo(GL_ARRAY_BUFFER), 
+	ebo(GL_ELEMENT_ARRAY_BUFFER)
 	{
 	this->isMeshValid = false;
 
@@ -108,7 +108,12 @@ void Chunk::generateMesh() {
 			}
 		}
 	}
-
+	this->vbo.bind();
+	this->vbo.bufferData(this->geometry.getVerticies(), GL_STATIC_DRAW);
+	this->ebo.bind();
+	this->ebo.bufferData(this->geometry.getIndices(), GL_STATIC_DRAW);
+	this->ebo.unbind();
+	
 	//this->vao.bind();
 	//this->vbo.bind();
 	//this->vbo.bufferData(sizeof(BlockVertex) * this->verticies.size(), this->verticies.data(), GL_DYNAMIC_DRAW);
@@ -240,8 +245,7 @@ void Chunk::createFace(BlockVertex v0, BlockVertex v1, BlockVertex v2, BlockVert
 	this->geometry.pushVertex(v3);
 
 	//todo figure out if this is correct
-	int lastIndex = this->geometry.getVertexCount();
-
+	int lastIndex = (int)this->geometry.getVertexCount();
 
 	this->geometry.pushTriangle(lastIndex + 0, lastIndex + 1, lastIndex + 2);
 	this->geometry.pushTriangle(lastIndex + 0, lastIndex + 2, lastIndex + 3);

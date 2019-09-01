@@ -12,6 +12,10 @@ protected:
 	std::vector<VERTEX> verticies;
 	std::vector<unsigned int> indices;
 
+	VAO vao;
+	VBO vbo;
+	VBO ebo;
+
 public:
 	Geometry() {
 
@@ -36,6 +40,14 @@ public:
 	inline void clear() {
 		verticies.clear();
 		indices.clear();
+	}
+
+	inline std::vector<VERTEX>& getVerticies() {
+		return this->verticies;
+	}
+
+	inline std::vector<unsigned int>& getIndices() {
+		return this->indices;
 	}
 
 	inline size_t getVertexCount() {

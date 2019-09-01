@@ -17,6 +17,11 @@ public:
 
 	void bufferData(size_t bytes, void* data, GLenum drawType);
 
+	template<typename T>
+	void bufferData(std::vector<T> &vector, GLenum drawType) {
+		glBufferData(this->bufferType, sizeof(T) * vector.size(), vector.data(), drawType);
+	}
+
 	void dispose();
 	void disposeAll();
 private:

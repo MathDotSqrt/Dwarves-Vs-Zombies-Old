@@ -2,8 +2,10 @@
 #include <vector>
 #include <algorithm>
 #include "macrologger.h"
-
 #include <GL/glew.h>
+#include "Attrib.h"
+#include "VBO.h"
+
 namespace Graphics {
 
 class VAO {
@@ -34,11 +36,47 @@ public:
 	void unbind();
 
 
-	template<typename VERTEX, typename ATTRIB>
-	void bufferData(std::vector<VERTEX> verticies, GLenum bufferHint) {
-		this->bind();
+	template<unsigned int L, typename ...T>
+	void bufferInterleavedData(VBO &vbo, const Attrib<L, T>&... attribs) {
+		vbo.bind();
+		
+		size_t stride = this->getAttribsStride(attribs...);
+		this->setInterleavedAttribPointers(stride, 0, attribs...);
 
+		vbo.unbind();
 	}
+private:
+
+	template<unsigned int L, typename T, typename ...U>
+	void setInterleavedAttribPointers(size_t stride, size_t offset, const Attrib<L, T>& attrib, const U&... attribs) {
+		addVertexAttrib(attrib, stride, offset);
+
+		this->setInterleavedAttribPointers(stride, offset + attrib.getSizeOfAttrib(), attribs...);
+	}
+	
+	void setInterleavedAttribPointers(size_t stride, size_t offset) {}
+
+
+	template<unsigned int L, typename T>
+	void addVertexAttrib(const Attrib<L, T>& attrib, size_t stride, size_t offset) {
+		//todo figure out how to handle matrices
+		glVertexAttribPointer(L, attrib.getNumComponents(), attrib.getScalarType(), attrib.getAttribOption(), stride, (void*)offset);
+	}
+
+	template<unsigned int L, typename T, typename ...U>
+	size_t getAttribsStride(const Attrib<L, T>& attrib, const U&... attribs) {
+		return attrib.getSizeOfAttrib() + this->getAttribsStride(attribs...);
+	}
+
+	template<unsigned int L, typename T>
+	size_t getAttribsStride(const Attrib<L, T>& attrib) {
+		return attrib.getSizeOfAttrib();
+	}
+
+	size_t getAttribsStride() {
+		return 0;
+	}
+
 };
 
 }

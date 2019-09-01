@@ -8,7 +8,7 @@
 using namespace Graphics;
 using namespace std;
 
-ModelGeometry::ModelGeometry(std::string filename) {
+ModelGeometry::ModelGeometry(std::string filename){
 	Loader::OBJLoader loader;
 	loader.LoadFile(filename);
 	vector<Loader::Vertex> verticies = loader.LoadedVertices;

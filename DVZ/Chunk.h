@@ -47,6 +47,9 @@ private:
 	//std::vector<GLuint> indices;
 	//Graphics::VBO vbo;
 	//Graphics::VBO ebo;
+	Graphics::VBO vbo;
+	Graphics::VBO ebo;
+	int indexCount = 0;
 	unsigned int renderID;
 
 public:

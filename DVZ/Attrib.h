@@ -31,7 +31,7 @@ namespace Graphics {
 
 
 		//todo check typeToScalar
-		constexpr Attrib(components = T::length, scalarType = typeToScalarType<T>(), attribOption = AttribOption::None) : numComponents(T::length), scalarType(T::){}
+		constexpr Attrib(Components components = T::length, ScalarType scalarType = ScalarType::BYTE, AttribOption attribOption = AttribOption::None) : numComponents(components), scalarType(scalarType), attribOption(attribOption){}
 
 		constexpr Components getNumComponents() const {
 			return numComponents;
@@ -70,36 +70,39 @@ namespace Graphics {
 		}
 
 	private:
-		Components numComponents;
-		ScalarType scalarType;
-		AttribOption attribOption;
+		const Components numComponents;
+		const ScalarType scalarType;
+		const AttribOption attribOption;
 
 		template<typename T>
 		constexpr ScalarType typeToScalarType() const {
-			auto type = std::type_info(T);
+			const auto type = typeid(T);
+
 
 			switch (type) {
-			case char:
-			case glm::int8:
+			case typeid(char):
+			case typeid(glm::int8):
 				return ScalarType::BYTE;
-			case unsigned char:
-			case glm::uint8:
+			case typeid(unsigned char):
+			case typeid(glm::uint8):
 				return ScalarType::UNSIGNED_BYTE;
-			case short:
-			case glm::int16:
+			case typeid(short):
+			case typeid(glm::int16):
 				return ScalarType::SHORT;
-			case unsigned short:
-			case glm::uint16:
+			case typeid(unsigned short):
+			case typeid(glm::uint16):
 				return ScalarType::UNSIGNED_SHORT;
-			case int:
-			case glm::int32:
+			case typeid(int):
+			case typeid(glm::int32):
 				return ScalarType::INT;
-			case unsigned int:
-			case glm::uint32:
+			case typeid(unsigned int):
+			case typeid(glm::uint32):
 				return ScalarType::UNSIGNED_INT;
-			case float:
-			case glm::float32:
+			case typeid(float):
+			case typeid(glm::float32):
 				return ScalarType::FLOAT;
+			default:
+				return ScalarType::BYTE;
 			}
 
 			//TODO add checks for this
