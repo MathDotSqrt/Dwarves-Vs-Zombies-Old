@@ -31,8 +31,9 @@ void PlayState::init() {
 	/*PLAYER*/
 	Graphics::VAO vao;
 	Graphics::VBO vbo(GL_VERTEX_ARRAY);
-	vao.bufferInterleavedData(vbo, Graphics::Attrib<POSITION_ATTRIB_LOCATION, glm::vec3>())
 
+	//Graphics::Attrib<0, glm::vec3> a;
+	//vao.bufferInterleavedData(vbo, a);
 
 
 	/*FLOOR*/

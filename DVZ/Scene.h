@@ -51,21 +51,32 @@ struct BlockMaterial {
 	float shinyness;
 };
 
+struct VertexBuffer {
+	VBO vbo;
+	unsigned int reference_count;
+
+	VertexBuffer() : vbo(GL_ARRAY_BUFFER){
+		this->reference_count = 0;
+	}
+};
+
 //todo add reference count to mesh to delete it when no transformations are applied to it
 struct Mesh {
 	VAO vao;
-	VBO vbo;
 	VBO ebo;
-
 	int indexCount;
+	
+	unsigned int vboID;
+	
 	MaterialID typeID;
 	unsigned int materialInstanceID;
 
-	//Mesh() : vbo(GL_ARRAY_BUFFER), ebo(GL_ELEMENT_ARRAY_BUFFER){
-	//	this->indexCount = 0;
-	//	this->typeID = MaterialID::NONE_MATERIAL_ID;
-	//	this->materialInstanceID = 0;
-	//}
+	Mesh() : ebo(GL_ELEMENT_ARRAY_BUFFER){
+		this->indexCount = 0;
+		this->vboID = 0;
+		this->typeID = MaterialID::NONE_MATERIAL_ID;
+		this->materialInstanceID = 0;
+	}
 
 	//Mesh(MaterialID typeID, unsigned int materialInstanceID) : vbo(GL_ARRAY_BUFFER), ebo(GL_ELEMENT_ARRAY_BUFFER) {
 	//	this->indexCount = 0;
@@ -118,7 +129,8 @@ public:
 	Util::PackedFreeList<Instance> instanceCache;
 	Util::PackedFreeList<Transformation> transformationCache;
 	Util::PackedFreeList<Mesh> meshCache;
-	
+	Util::PackedFreeList<VertexBuffer> vertexBufferCache;
+
 	Util::PackedFreeList<ColorMaterial> colorMaterialCache;
 	Util::PackedFreeList<BasicLitMaterial> basicLitMaterialCache;
 	Util::PackedFreeList<TextureMaterial> textureMaterialCache;
@@ -129,15 +141,21 @@ public:
 	Scene();
 	~Scene();
 
+	template<typename VERTEX>
+	unsigned int createVertexBuffer(const Geometry<VERTEX> &geometry) {
+		
+	}
+
 	template<typename VERTEX, typename MATERIAL>
 	unsigned int createMesh(const Geometry<VERTEX> &model, MATERIAL &material) {
 		unsigned int materialInstanceID = this->createMaterialInstance(material);
+		//unsigned int bufferInstanceID = this->create
 		
-		Mesh newMesh = { , MATERIAL::type, materialInstanceID };
+		Mesh newMesh;
 		
 		
-		unsigned int newMeshID = this->meshCache.insert(newMesh);
-		return newMeshID;
+		unsigned int newMeshID = this->meshCache.insert(std::move(newMesh));
+		return 0;
 	}
 
 

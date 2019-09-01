@@ -1,11 +1,13 @@
+#pragma once
 #include "preamble.glsl"
 #include "gl/glew.h"
-#include "glm.hpp"
+//#include "glm.hpp"
 #include <typeinfo>
 
 namespace Graphics {
 	template<typename unsigned int LOC, typename T>
 	class Attrib {
+	public:
 		typedef enum {
 			ONE = 1,
 			TWO = 2,
@@ -29,9 +31,10 @@ namespace Graphics {
 			Normalize = 1,
 		} AttribOption;
 
+		constexpr Attrib() : numComponents(Components::THREE), scalarType(ScalarType::FLOAT), attribOption(AttribOption::None) {};
 
 		//todo check typeToScalar
-		constexpr Attrib(Components components = T::length, ScalarType scalarType = ScalarType::BYTE, AttribOption attribOption = AttribOption::None) : numComponents(components), scalarType(scalarType), attribOption(attribOption){}
+		constexpr Attrib(Components components, ScalarType scalarType, AttribOption attribOption) : numComponents(components), scalarType(scalarType), attribOption(attribOption){}
 
 		constexpr Components getNumComponents() const {
 			return numComponents;

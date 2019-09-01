@@ -12,9 +12,9 @@ protected:
 	std::vector<VERTEX> verticies;
 	std::vector<unsigned int> indices;
 
-	VAO vao;
+	/*VAO vao;
 	VBO vbo;
-	VBO ebo;
+	VBO ebo;*/
 
 public:
 	Geometry() {

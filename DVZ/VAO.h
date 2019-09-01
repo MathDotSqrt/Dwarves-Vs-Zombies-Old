@@ -36,12 +36,12 @@ public:
 	void unbind();
 
 
-	template<unsigned int L, typename ...T>
-	void bufferInterleavedData(VBO &vbo, const Attrib<L, T>&... attribs) {
+	template<typename ...T>
+	void bufferInterleavedData(VBO &vbo, const T&... attribs) {
 		vbo.bind();
 		
 		size_t stride = this->getAttribsStride(attribs...);
-		this->setInterleavedAttribPointers(stride, 0, attribs...);
+		//this->setInterleavedAttribPointers(stride, 0, attribs...);
 
 		vbo.unbind();
 	}
@@ -54,13 +54,18 @@ private:
 		this->setInterleavedAttribPointers(stride, offset + attrib.getSizeOfAttrib(), attribs...);
 	}
 	
+	template<unsigned int L, typename T>
+	void setInterleavedAttribPointers(size_t stride, size_t offset, const Attrib<L, T>& attrib) {
+		addVertexAttrib(attrib, stride, offset);
+	}
+
 	void setInterleavedAttribPointers(size_t stride, size_t offset) {}
 
 
 	template<unsigned int L, typename T>
 	void addVertexAttrib(const Attrib<L, T>& attrib, size_t stride, size_t offset) {
 		//todo figure out how to handle matrices
-		glVertexAttribPointer(L, attrib.getNumComponents(), attrib.getScalarType(), attrib.getAttribOption(), stride, (void*)offset);
+		glVertexAttribPointer(L, (int)attrib.getNumComponents(), attrib.getScalarType(), attrib.getAttribOption(), stride, (void*)offset);
 	}
 
 	template<unsigned int L, typename T, typename ...U>

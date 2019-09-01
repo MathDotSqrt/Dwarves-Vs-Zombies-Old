@@ -1,12 +1,11 @@
 #include "BasicRenderSystem.h"
 #include "Engine.h"
-#include "VAO.h"
-#include "VBO.h"
 #include "Components.h"
 #include "macrologger.h"
 #include "glm.hpp"
-#include <gtx/transform.hpp>
-#include <gtx/quaternion.hpp>
+#include "VAO.h"
+#include "VBO.h"
+#include <gtc/quaternion.hpp>
 
 using namespace glm;
 
