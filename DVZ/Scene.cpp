@@ -2,11 +2,12 @@
 
 using namespace Graphics;
 
-Scene::Scene() : 
+Scene::Scene() :
 	cameraCache(10),
 	instanceCache(5000),
 	transformationCache(5000),
 	meshCache(5000),
+	vertexBufferCache(5000),
 	colorMaterialCache(5000),
 	basicLitMaterialCache(5000),
 	blockMaterialCache(5000),

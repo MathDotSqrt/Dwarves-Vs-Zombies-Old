@@ -142,13 +142,13 @@ public:
 	Scene();
 	~Scene();
 
-	template<typename VERTEX>
-	unsigned int createVertexBuffer(const Geometry<VERTEX> &geometry) {
+	template<typename VERTEX, typename ...T>
+	unsigned int createVertexBuffer(const Geometry<VERTEX, T...> &geometry) {
 		
 	}
 
-	template<typename VERTEX, typename MATERIAL>
-	unsigned int createMesh(const Geometry<VERTEX> &model, MATERIAL &material) {
+	template<typename MATERIAL, typename VERTEX, typename ...T>
+	unsigned int createMesh(const Geometry<VERTEX, T...> &model, MATERIAL &material) {
 		unsigned int materialInstanceID = this->createMaterialInstance(material);
 		//unsigned int bufferInstanceID = this->create
 		

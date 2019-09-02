@@ -32,10 +32,14 @@ void PlayState::init() {
 	Graphics::VAO vao;
 	Graphics::VBO vbo(GL_VERTEX_ARRAY);
 
-	//Graphics::Attrib<0, glm::vec3> a;
-	//vao.bufferInterleavedData(vbo, a);
+	//vao.bufferInterleavedData(vbo, Graphics::Attrib<POSITION_ATTRIB_LOCATION, glm::vec3>(), Graphics::Attrib<NORMAL_ATTRIB_LOCATION, glm::vec3>());
+	Graphics::Attrib<POSITION_ATTRIB_LOCATION, glm::vec3> a;
 
-
+	LOG_ERROR("ATTRIB %d", a.getNumComponents());
+	LOG_ERROR("ATTRIB %zu", a.getSizeOfAttrib());
+	LOG_ERROR("ATTRIB %d", a.getAttribOption());
+	LOG_ERROR("ATTRIB %d", glm::vec3::length);
+	
 	/*FLOOR*/
 	Graphics::QuadGeometry quad;
 	Graphics::BasicLitMaterial c = { {1, 1, 1}, {.5f, .7f, .1f}, 10 };

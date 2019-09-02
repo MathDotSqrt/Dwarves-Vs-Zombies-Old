@@ -3,7 +3,7 @@
 
 namespace Graphics {
 
-template<typename VERTEX> 
+template<typename VERTEX, typename ...T> 
 class Geometry {
 
 protected:

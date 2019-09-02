@@ -1,5 +1,6 @@
 #pragma once
 #include "Geometry.h"
+#include "Attrib.h"
 #include <string.h>
 
 
@@ -11,7 +12,12 @@ namespace Graphics {
 		float u, v;
 	};
 
-	class ModelGeometry : public Geometry<ModelVertex> {
+	class ModelGeometry : public Geometry<
+		ModelVertex, 
+		Attrib<POSITION_ATTRIB_LOCATION, glm::vec3>, 
+		Attrib<NORMAL_ATTRIB_LOCATION, glm::vec3>,
+		Attrib<TEXCOORD_ATTRIB_LOCATION, glm::vec2>
+	> {
 	private:
 
 	
