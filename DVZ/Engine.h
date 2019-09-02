@@ -3,11 +3,11 @@
 #include "entt.hpp"
 #include "RakPeerInterface.h"
 #include "System.h"
-#include "ModelGeometry.h"
 
 namespace Graphics {
 	class OpenGLRenderer;
 	class Scene;
+	class ModelGeometry;
 }
 
 namespace Voxel {

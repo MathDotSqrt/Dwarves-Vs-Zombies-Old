@@ -1,11 +1,17 @@
 #pragma once
 #include "Geometry.h"
-#include "OBJLoader.h"
 #include <string.h>
 
 
 namespace Graphics {
-	class ModelGeometry : public Geometry<Loader::Vertex> {
+
+	struct ModelVertex {
+		float x, y, z;
+		float nx, ny, nz;
+		float u, v;
+	};
+
+	class ModelGeometry : public Geometry<ModelVertex> {
 	private:
 
 	

@@ -1,5 +1,5 @@
-#pragma once
-
+#ifndef OBJLOADER_H
+#define OBJLOADER_H
 
 #include <iostream> // Iostream - STD I/O Library
 #include <vector> // Vector - STD Vector/Array Library
@@ -1162,3 +1162,5 @@ namespace Loader
 		}
 	};
 }
+
+#endif // !OBJLOADER_H

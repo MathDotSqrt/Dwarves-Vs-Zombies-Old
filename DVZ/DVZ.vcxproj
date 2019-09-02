@@ -205,7 +205,6 @@
     <ClCompile Include="IntervalSystem.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MainState.cpp" />
-    <ClCompile Include="Mesh.cpp" />
     <ClCompile Include="ModelGeometry.cpp" />
     <ClCompile Include="MovementSystem.cpp" />
     <ClCompile Include="NetPlayerSystem.cpp" />
@@ -248,7 +247,6 @@
     <ClInclude Include="IResizable.h" />
     <ClInclude Include="macrologger.h" />
     <ClInclude Include="MainState.h" />
-    <ClInclude Include="Mesh.h" />
     <ClInclude Include="ModelGeometry.h" />
     <ClInclude Include="MovementSystem.h" />
     <ClInclude Include="NetInstanceType.h" />

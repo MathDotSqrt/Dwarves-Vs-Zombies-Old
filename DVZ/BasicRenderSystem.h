@@ -10,8 +10,8 @@ public:
 	BasicRenderSystem(int priority);
 	~BasicRenderSystem();
 
-	void addedToEngine(Engine * engine);
-	void removedFromEngine(Engine * engine);
-	void update(Engine * engine, float delta);
+	void addedToEngine(Engine *engine);
+	void removedFromEngine(Engine *engine);
+	void update(Engine *engine, float delta);
 };
 

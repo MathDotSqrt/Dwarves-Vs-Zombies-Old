@@ -1,5 +1,7 @@
 #pragma once
 #include "entt.hpp"
+
+
 class Engine;
 
 class System {
@@ -10,9 +12,9 @@ public:
 	System(unsigned int priority);
 	virtual ~System();
 
-	virtual void addedToEngine(Engine * engine) = 0;
-	virtual void removedFromEngine(Engine * engine) = 0;
-	virtual void update(Engine * engine, float delta) = 0;
+	virtual void addedToEngine(Engine *engine) = 0;
+	virtual void removedFromEngine(Engine *engine) = 0;
+	virtual void update(Engine *engine, float delta) = 0;
 
 	bool operator < (const System *system) const {
 		return this->priority < system->priority;

@@ -37,9 +37,9 @@ Engine::~Engine(){
 	delete this->serverAddress;
 	delete this->scene;
 	delete this->renderer;
+	delete this->model;
 
 	SLNet::RakPeerInterface::DestroyInstance(this->peer);
-
 	this->deleteAllActiveSystems();
 }
 

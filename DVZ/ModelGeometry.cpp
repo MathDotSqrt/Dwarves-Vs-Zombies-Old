@@ -1,9 +1,7 @@
 //#define TINYOBJLOADER_IMPLEMENTATION //for tinyobj
 #include "ModelGeometry.h"
 #include "OBJLoader.h"
-#include "VBO.h"
-#include "preamble.glsl"
-
+#include "string.h"
 
 using namespace Graphics;
 using namespace std;
@@ -11,8 +9,15 @@ using namespace std;
 ModelGeometry::ModelGeometry(std::string filename){
 	Loader::OBJLoader loader;
 	loader.LoadFile(filename);
-	vector<Loader::Vertex> verticies = loader.LoadedVertices;
-	vector<GLuint> indicies = loader.LoadedIndices;
+
+	size_t size = loader.LoadedVertices.size();
+	//todo this is hacky
+
+	this->verticies.resize(sizeof(Loader::Vertex) * size);
+	memcpy(this->verticies.data(), loader.LoadedVertices.data(), sizeof(Loader::Vertex) * size);
+
+
+	this->indices = loader.LoadedIndices;
 
 	/*this->vao.bind();
 	this->vbo.bind();

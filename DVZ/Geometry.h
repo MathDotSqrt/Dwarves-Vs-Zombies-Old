@@ -1,20 +1,14 @@
 #pragma once
 #include <vector>
-#include "VAO.h"
-#include "VBO.h"
 
 namespace Graphics {
 
-
-template<typename VERTEX>
+template<typename VERTEX> 
 class Geometry {
+
 protected:
 	std::vector<VERTEX> verticies;
 	std::vector<unsigned int> indices;
-
-	/*VAO vao;
-	VBO vbo;
-	VBO ebo;*/
 
 public:
 	Geometry() {

@@ -2,7 +2,8 @@
 #include <glm.hpp>
 #include "Geometry.h"
 #include "PackedFreeList.h"
-
+#include "VAO.h"
+#include "VBO.h"
 namespace Graphics  {
 
 /*
