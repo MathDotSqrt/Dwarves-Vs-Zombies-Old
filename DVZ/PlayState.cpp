@@ -11,7 +11,6 @@
 #include "NetPlayerSystem.h"
 #include "VoxelSystem.h"
 #include "ChunkManager.h"
-#include "Attrib.h"
 
 PlayState::PlayState(GameStateManager *gsm) : GameState(gsm) {
 
@@ -29,16 +28,6 @@ void PlayState::init() {
 	unsigned int pointLightInstanceID = this->e.getScene()->createPointLightInstance();
 	this->e.assign<PointLightComponent>(playerID, pointLightInstanceID, glm::vec3(1, 1, 1), 60.0f);
 	/*PLAYER*/
-	Graphics::VAO vao;
-	Graphics::VBO vbo(GL_VERTEX_ARRAY);
-
-	//vao.bufferInterleavedData(vbo, Graphics::Attrib<POSITION_ATTRIB_LOCATION, glm::vec3>(), Graphics::Attrib<NORMAL_ATTRIB_LOCATION, glm::vec3>());
-	Graphics::Attrib<POSITION_ATTRIB_LOCATION, glm::vec3> a;
-
-	LOG_ERROR("ATTRIB %d", a.getNumComponents());
-	LOG_ERROR("ATTRIB %zu", a.getSizeOfAttrib());
-	LOG_ERROR("ATTRIB %d", a.getAttribOption());
-	LOG_ERROR("ATTRIB %d", glm::vec3::length);
 	
 	/*FLOOR*/
 	Graphics::QuadGeometry quad;

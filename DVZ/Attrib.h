@@ -31,7 +31,11 @@ namespace Graphics {
 			attribOption(attribOption){}
 
 		constexpr int getNumComponents() const {
-			return 3;
+			return (int)components;
+		}
+
+		constexpr DataType getDataType() const {
+			return dataType;
 		}
 
 		constexpr AttribOption getAttribOption() const {
@@ -39,7 +43,7 @@ namespace Graphics {
 		}
 
 		constexpr size_t getSizeOfAttrib() const {
-			return sizeof(T);
+			return Implementation::Attribute<T>::size(components, dataType);
 		}
 
 	private:
@@ -104,19 +108,16 @@ namespace Graphics {
 		template<typename T> struct AttribType {};
 
 		template<>
-		struct AttribType<int> {
-			typedef int ScalarType;
-
+		struct AttribType<double> {
+		public:
+			typedef float ScalarType;
 			typedef enum {
-				BYTE,
-				UNSIGNED_BYTE,
-				SHORT,
-				UNSIGNED_SHORT,
-				INT,
-				UNSIGNED_INT,
+				DOUBLE = GL_DOUBLE
 			} DataType;
 
-			constexpr static DataType DefaultDataType = DataType::INT;
+			constexpr static DataType DefaultDataType = DataType::DOUBLE;
+
+			static size_t size(int components, DataType dataType);
 		};
 
 		template<>
@@ -124,19 +125,108 @@ namespace Graphics {
 		public:
 			typedef float ScalarType;
 			typedef enum {
-				FLOAT,
-				DOUBLE
+				BYTE = GL_BYTE,
+				UNSIGNED_BYTE = GL_UNSIGNED_BYTE,
+				SHORT = GL_SHORT,
+				UNSIGNED_SHORT = GL_UNSIGNED_SHORT,
+				INT = GL_INT,
+				UNSIGNED_INT = GL_UNSIGNED_INT,
+				HALF_FLOAT = GL_HALF_FLOAT,
+				FLOAT = GL_FLOAT,
+
+				DOUBLE = GL_DOUBLE
 			} DataType;
 
 			constexpr static DataType DefaultDataType = DataType::FLOAT;
+
+			static size_t size(int components, DataType dataType);
 		};
+
+		template<>
+		struct AttribType<int> {
+			typedef int ScalarType;
+
+			typedef enum {
+				BYTE = GL_BYTE,
+				UNSIGNED_BYTE = GL_UNSIGNED_BYTE,
+				SHORT = GL_SHORT,
+				UNSIGNED_SHORT = GL_UNSIGNED_SHORT,
+				INT = GL_INT,
+				UNSIGNED_INT = GL_UNSIGNED_INT,
+			} DataType;
+
+			constexpr static DataType DefaultDataType = DataType::INT;
+			static size_t size(int components, DataType dataType);
+		};
+
+		template<>
+		struct AttribType<unsigned int> {
+			typedef unsigned int ScalarType;
+			typedef AttribType<int>::DataType DataType;
+			constexpr static DataType DefaultDataType = DataType::UNSIGNED_INT;
+
+			static size_t size(int components, DataType dataType) {
+				return AttribType<int>::size(components, dataType);
+			}
+		};
+
+		template<>
+		struct AttribType<short> {
+			typedef short ScalarType;
+			typedef AttribType<int>::DataType DataType;
+			constexpr static DataType DefaultDataType = DataType::SHORT;
+
+			static size_t size(int components, DataType dataType) {
+				return AttribType<int>::size(components, dataType);
+			}
+		};
+
+		template<>
+		struct AttribType<unsigned short> {
+			typedef unsigned short ScalarType;
+			typedef AttribType<int>::DataType DataType;
+			constexpr static DataType DefaultDataType = DataType::UNSIGNED_SHORT;
+
+			static size_t size(int components, DataType dataType) {
+				return AttribType<int>::size(components, dataType);
+			}
+		};
+
+		template<>
+		struct AttribType<char> {
+			typedef char ScalarType;
+			typedef AttribType<int>::DataType DataType;
+			constexpr static DataType DefaultDataType = DataType::BYTE;
+
+			static size_t size(int components, DataType dataType) {
+				return AttribType<int>::size(components, dataType);
+			}
+		};
+
+		template<>
+		struct AttribType<unsigned char> {
+			typedef unsigned char ScalarType;
+			typedef AttribType<int>::DataType DataType;
+			constexpr static DataType DefaultDataType = DataType::UNSIGNED_BYTE;
+
+			static size_t size(int components, DataType dataType) {
+				return AttribType<int>::size(components, dataType);
+			}
+		};
+		
 
 
 		//template<typename> struct AttribType {};
 		template<typename T> struct Attribute {};
 
-		template<> struct Attribute<int> : AttribType<int>, AttribSize<1> {};
+		template<> struct Attribute<double> : AttribType<double>, AttribSize<1> {};
 		template<> struct Attribute<float> : AttribType<float>, AttribSize<1> {};
+		template<> struct Attribute<int> : AttribType<int>, AttribSize<1> {};
+		template<> struct Attribute<unsigned int> : AttribType<unsigned int>, AttribSize<1> {};
+		template<> struct Attribute<short> : AttribType<short>, AttribSize<1> {};
+		template<> struct Attribute<unsigned short> : AttribType<unsigned short>, AttribSize<1> {};
+		template<> struct Attribute<char> : AttribType<char>, AttribSize<1> {};
+		template<> struct Attribute<unsigned char> : AttribType<unsigned char>, AttribSize<1> {};
 
 
 		template<typename T, glm::qualifier Q> struct Attribute<glm::vec<1, T, Q>> : AttribType<T>, AttribSize<1> {};

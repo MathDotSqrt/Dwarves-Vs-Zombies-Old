@@ -41,7 +41,7 @@ public:
 		vbo.bind();
 		
 		size_t stride = this->getAttribsStride(attribs...);
-		//this->setInterleavedAttribPointers(stride, 0, attribs...);
+		this->setInterleavedAttribPointers(stride, 0, attribs...);
 
 		vbo.unbind();
 	}
@@ -65,7 +65,7 @@ private:
 	template<unsigned int L, typename T>
 	void addVertexAttrib(const Attrib<L, T>& attrib, size_t stride, size_t offset) {
 		//todo figure out how to handle matrices
-		glVertexAttribPointer(L, (int)attrib.getNumComponents(), GL_FLOAT, attrib.getAttribOption(), stride, (void*)offset);
+		glVertexAttribPointer(L, attrib.getNumComponents(), attrib.getDataType(), attrib.getAttribOption(), stride, (void*)offset);
 	}
 
 	template<unsigned int L, typename T, typename ...U>
@@ -80,38 +80,6 @@ private:
 
 	size_t getAttribsStride() {
 		return 0;
-	}
-
-	template<typename T>
-	constexpr GLuint typeToGLType() const {
-		const auto type = typeid(T);
-		switch (type) {
-		case typeid(char) :
-		case typeid(glm::int8) :
-			return GL_BYTE;
-		case typeid(unsigned char) :
-		case typeid(glm::uint8) :
-			return GL_UNSIGNED_BYTE;
-		case typeid(short) :
-		case typeid(glm::int16) :
-			return GL_SHORT;
-		case typeid(unsigned short) :
-		case typeid(glm::uint16) :
-			return GL_UNSIGNED_SHORT;
-		case typeid(int) :
-		case typeid(glm::int32) :
-			return GL_INT;
-		case typeid(unsigned int) :
-		case typeid(glm::uint32) :
-			return GL_UNSIGNED_INT;
-		case typeid(float) :
-		case typeid(glm::float32) :
-			return GL_FLOAT;
-		default:
-			assert(0);
-			return GL_FLOAT;
-		}
-		//TODO add checks for this
 	}
 
 };

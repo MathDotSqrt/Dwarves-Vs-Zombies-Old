@@ -142,21 +142,35 @@ public:
 	Scene();
 	~Scene();
 
-	template<typename VERTEX, typename ...T>
-	unsigned int createVertexBuffer(const Geometry<VERTEX, T...> &geometry) {
+	template<typename VERTEX>
+	unsigned int createVertexBuffer(const std::vector<VERTEX> &verticies) {
 		
+		VertexBuffer vb;
+		vb.vbo.bind();
+		vb.vbo.bufferData(verticies, GL_STATIC_DRAW);
+		vb.vbo.unbind();
+
+		unsigned int vbID = this->vertexBufferCache.insert(std::move(vb));
+
+		return vbID;
 	}
 
-	template<typename MATERIAL, typename VERTEX, typename ...T>
-	unsigned int createMesh(const Geometry<VERTEX, T...> &model, MATERIAL &material) {
+	template<typename VERTEX, typename MATERIAL, typename ...T>
+	unsigned int createMesh(Geometry<VERTEX, T...> &model, MATERIAL &material) {
 		unsigned int materialInstanceID = this->createMaterialInstance(material);
-		//unsigned int bufferInstanceID = this->create
+		unsigned int bufferInstanceID = this->createVertexBuffer<VERTEX>(model.getVerticies());
 		
+		VBO &vbo = this->vertexBufferCache[bufferInstanceID];
+
 		Mesh newMesh;
+		/*newMesh.vao.bind();
+		newMesh.vao.bufferInterleavedData(vbo, T...);
+		newMesh.ebo.bind();
+		newMesh.ebo.bufferData(model.getIndices());
+		newMesh.vao.unbind();
+		newMesh.ebo.unbind();*/
 		
-		
-		unsigned int newMeshID = this->meshCache.insert(std::move(newMesh));
-		return 0;
+		return this->meshCache.insert(std::move(newMesh));
 	}
 
 
