@@ -4,7 +4,7 @@
 
 using namespace Graphics;
 
-QuadGeometry::QuadGeometry() {
+QuadGeometry::QuadGeometry() : attribs(Attrib<POSITION_ATTRIB_LOCATION, glm::vec3>){
 	this->init();
 }
 

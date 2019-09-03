@@ -86,7 +86,7 @@ public:
 		return this->chunk_z;
 	}
 
-	inline Graphics::Geometry<BlockVertex> getChunkGeometry() {
+	inline Graphics::Geometry<BlockVertex, Graphics::Attrib<POSITION_ATTRIB_LOCATION, glm::vec3>, Graphics::Attrib<NORMAL_ATTRIB_LOCATION, glm::vec3>, Graphics::Attrib<COLOR_ATTRIB_LOCATION, glm::vec3>>& getChunkGeometry() {
 		return this->geometry;
 	}
 

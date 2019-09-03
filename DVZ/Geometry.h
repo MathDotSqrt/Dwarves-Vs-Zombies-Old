@@ -1,5 +1,6 @@
 #pragma once
 #include <vector>
+#include <tuple>
 
 namespace Graphics {
 
@@ -9,10 +10,12 @@ class Geometry {
 protected:
 	std::vector<VERTEX> verticies;
 	std::vector<unsigned int> indices;
+	std::tuple<T...> attribs;
 
 public:
-	Geometry() {
 
+	Geometry(){
+		std::tuple<int, int, int> a(1, 2, 3);
 	}
 	~Geometry() {
 	

@@ -143,7 +143,7 @@ public:
 	~Scene();
 
 	template<typename VERTEX>
-	unsigned int createVertexBuffer(const std::vector<VERTEX> &verticies) {
+	unsigned int createVertexBuffer(std::vector<VERTEX> &verticies) {
 		
 		VertexBuffer vb;
 		vb.vbo.bind();
@@ -158,17 +158,17 @@ public:
 	template<typename VERTEX, typename MATERIAL, typename ...T>
 	unsigned int createMesh(Geometry<VERTEX, T...> &model, MATERIAL &material) {
 		unsigned int materialInstanceID = this->createMaterialInstance(material);
-		unsigned int bufferInstanceID = this->createVertexBuffer<VERTEX>(model.getVerticies());
+		unsigned int bufferInstanceID = this->createVertexBuffer(model.getVerticies());
 		
-		VBO &vbo = this->vertexBufferCache[bufferInstanceID];
+		VertexBuffer vb = this->vertexBufferCache[bufferInstanceID];
 
 		Mesh newMesh;
-		/*newMesh.vao.bind();
-		newMesh.vao.bufferInterleavedData(vbo, T...);
+		newMesh.vao.bind();
+		newMesh.vao.bufferInterleavedData(vb.vbo, T...);
 		newMesh.ebo.bind();
-		newMesh.ebo.bufferData(model.getIndices());
+		newMesh.ebo.bufferData(model.getIndices(), GL_STATIC_DRAW);
 		newMesh.vao.unbind();
-		newMesh.ebo.unbind();*/
+		newMesh.ebo.unbind();
 		
 		return this->meshCache.insert(std::move(newMesh));
 	}
