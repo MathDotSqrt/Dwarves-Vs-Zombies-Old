@@ -11,6 +11,7 @@
 #include "NetPlayerSystem.h"
 #include "VoxelSystem.h"
 #include "ChunkManager.h"
+#include <tuple>
 
 PlayState::PlayState(GameStateManager *gsm) : GameState(gsm) {
 
@@ -80,6 +81,10 @@ void PlayState::init() {
 	//e.attemptConnection("54.224.40.47", 60000);	//AWS
 	e.attemptConnection("127.0.0.1", 60000);		//LOCAL
 	/*NET*/
+
+	Graphics::PositionAttrib v(Graphics::PositionAttrib::Components::THREE, Graphics::PositionAttrib::DataType::HALF_FLOAT, Graphics::PositionAttrib::AttribOption::None);
+	std::tuple<Graphics::PositionAttrib, int, double> a(v, 1, 2.0);
+	LOG_ERROR("%d %d %fd", std::get<0>(a).getNumComponents(), std::get<1>(a), std::get<2>(a));
 
 	/*SYSTEM*/
 	this->e.addSystem(new InputSystem(0));

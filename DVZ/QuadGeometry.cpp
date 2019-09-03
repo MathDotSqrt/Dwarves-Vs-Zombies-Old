@@ -3,8 +3,9 @@
 #include "macrologger.h"
 
 using namespace Graphics;
-
-QuadGeometry::QuadGeometry() : attribs(Attrib<POSITION_ATTRIB_LOCATION, glm::vec3>){
+//todo make a static geometry creator
+QuadGeometry::QuadGeometry() : 
+	Geometry(PositionAttrib(PositionAttrib::Components::THREE, PositionAttrib::DataType::HALF_FLOAT, PositionAttrib::None), Graphics::ColorAttrib(), Graphics::NormalAttrib(), Graphics::TexcoordAttrib()){
 	this->init();
 }
 

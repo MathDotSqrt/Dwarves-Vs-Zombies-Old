@@ -158,7 +158,7 @@ public:
 	template<typename VERTEX, typename MATERIAL, typename ...T>
 	unsigned int createMesh(Geometry<VERTEX, T...> &model, MATERIAL &material) {
 		unsigned int materialInstanceID = this->createMaterialInstance(material);
-		unsigned int bufferInstanceID = this->createVertexBuffer(model.getVerticies());
+		/*unsigned int bufferInstanceID = this->createVertexBuffer(model.getVerticies());
 		
 		VertexBuffer vb = this->vertexBufferCache[bufferInstanceID];
 
@@ -168,9 +168,10 @@ public:
 		newMesh.ebo.bind();
 		newMesh.ebo.bufferData(model.getIndices(), GL_STATIC_DRAW);
 		newMesh.vao.unbind();
-		newMesh.ebo.unbind();
+		newMesh.ebo.unbind();*/
 		
-		return this->meshCache.insert(std::move(newMesh));
+		//return this->meshCache.insert(std::move(newMesh));
+		return 0;
 	}
 
 

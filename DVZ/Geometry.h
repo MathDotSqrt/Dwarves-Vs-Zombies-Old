@@ -15,8 +15,13 @@ protected:
 public:
 
 	Geometry(){
-		std::tuple<int, int, int> a(1, 2, 3);
+
 	}
+
+	Geometry(T...) : attribs(T...){
+		
+	}
+
 	~Geometry() {
 	
 	}

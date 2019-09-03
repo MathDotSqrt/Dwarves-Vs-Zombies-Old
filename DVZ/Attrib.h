@@ -6,7 +6,7 @@
 
 namespace Graphics {
 
-	namespace Implementation { template<typename> struct Attribute; }
+	namespace Implementation { template<typename> struct Attrib; }
 
 	template<typename unsigned int LOC, typename T>
 	class Attrib {
@@ -16,16 +16,17 @@ namespace Graphics {
 			Normalize = 1,
 		} AttribOption;
 
-		typename typedef Implementation::Attribute<T>::ScalarType ScalarType;
-		typename typedef Implementation::Attribute<T>::DataType DataType;
-		typename typedef Implementation::Attribute<T>::Components Components;
+		typename typedef Implementation::Attrib<T>::ScalarType ScalarType;
+		typename typedef Implementation::Attrib<T>::DataType DataType;
+		typename typedef Implementation::Attrib<T>::Components Components;
+
+		constexpr Attrib() : 
+			components(Implementation::Attrib<T>::DefaultNumComponents),
+			dataType(Implementation::Attrib<T>::DefaultDataType),
+			attribOption(AttribOption::None) {}
 
 		//todo check typeToScalar
-		constexpr Attrib(
-			Components components = Implementation::Attribute<T>::DefaultNumComponents,
-			DataType dataType = Implementation::Attribute<T>::DefaultDataType,
-			AttribOption attribOption = AttribOption::None
-		) : 
+		constexpr Attrib(Components components, DataType dataType, AttribOption attribOption) : 
 			components(components),
 			dataType(dataType),
 			attribOption(attribOption){}
@@ -217,23 +218,28 @@ namespace Graphics {
 
 
 		//template<typename> struct AttribType {};
-		template<typename T> struct Attribute {};
+		template<typename T> struct Attrib {};
 
-		template<> struct Attribute<double> : AttribType<double>, AttribSize<1> {};
-		template<> struct Attribute<float> : AttribType<float>, AttribSize<1> {};
-		template<> struct Attribute<int> : AttribType<int>, AttribSize<1> {};
-		template<> struct Attribute<unsigned int> : AttribType<unsigned int>, AttribSize<1> {};
-		template<> struct Attribute<short> : AttribType<short>, AttribSize<1> {};
-		template<> struct Attribute<unsigned short> : AttribType<unsigned short>, AttribSize<1> {};
-		template<> struct Attribute<char> : AttribType<char>, AttribSize<1> {};
-		template<> struct Attribute<unsigned char> : AttribType<unsigned char>, AttribSize<1> {};
+		template<> struct Attrib<double> : AttribType<double>, AttribSize<1> {};
+		template<> struct Attrib<float> : AttribType<float>, AttribSize<1> {};
+		template<> struct Attrib<int> : AttribType<int>, AttribSize<1> {};
+		template<> struct Attrib<unsigned int> : AttribType<unsigned int>, AttribSize<1> {};
+		template<> struct Attrib<short> : AttribType<short>, AttribSize<1> {};
+		template<> struct Attrib<unsigned short> : AttribType<unsigned short>, AttribSize<1> {};
+		template<> struct Attrib<char> : AttribType<char>, AttribSize<1> {};
+		template<> struct Attrib<unsigned char> : AttribType<unsigned char>, AttribSize<1> {};
 
 
-		template<typename T, glm::qualifier Q> struct Attribute<glm::vec<1, T, Q>> : AttribType<T>, AttribSize<1> {};
-		template<typename T, glm::qualifier Q> struct Attribute<glm::vec<2, T, Q>> : AttribType<T>, AttribSize<2> {};
-		template<typename T, glm::qualifier Q> struct Attribute<glm::vec<3, T, Q>> : AttribType<T>, AttribSize<3> {};
-		template<typename T, glm::qualifier Q> struct Attribute<glm::vec<4, T, Q>> : AttribType<T>, AttribSize<4> {};
+		template<typename T, glm::qualifier Q> struct Attrib<glm::vec<1, T, Q>> : AttribType<T>, AttribSize<1> {};
+		template<typename T, glm::qualifier Q> struct Attrib<glm::vec<2, T, Q>> : AttribType<T>, AttribSize<2> {};
+		template<typename T, glm::qualifier Q> struct Attrib<glm::vec<3, T, Q>> : AttribType<T>, AttribSize<3> {};
+		template<typename T, glm::qualifier Q> struct Attrib<glm::vec<4, T, Q>> : AttribType<T>, AttribSize<4> {};
 	}
+
+	typedef Attrib<POSITION_ATTRIB_LOCATION, glm::vec3> PositionAttrib;
+	typedef Attrib<NORMAL_ATTRIB_LOCATION, glm::vec3> NormalAttrib;
+	typedef Attrib<COLOR_ATTRIB_LOCATION, glm::vec3> ColorAttrib;
+	typedef Attrib<TEXCOORD_ATTRIB_LOCATION, glm::vec2> TexcoordAttrib;
 
 }
 

@@ -11,13 +11,7 @@ namespace Graphics {
 		float u, v;
 	};
 
-class QuadGeometry : public Geometry<
-	QuadVertex,
-	Attrib<POSITION_ATTRIB_LOCATION, glm::vec3>,
-	Attrib<COLOR_ATTRIB_LOCATION, glm::vec3>,
-	Attrib<NORMAL_ATTRIB_LOCATION, glm::vec3>,
-	Attrib<TEXCOORD_ATTRIB_LOCATION, glm::vec2>
-> {
+class QuadGeometry : public Geometry<QuadVertex, PositionAttrib, ColorAttrib, NormalAttrib, TexcoordAttrib> {
 public:
 	QuadGeometry();
 	~QuadGeometry();
