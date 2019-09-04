@@ -29,7 +29,6 @@ Engine::Engine() {
 	this->chunkManager = new Voxel::ChunkManager();
 
 	this->main = entt::null;
-	this->model = new Graphics::ModelGeometry("SpunkWalker.obj");;
 }
 
 
@@ -37,7 +36,6 @@ Engine::~Engine(){
 	delete this->serverAddress;
 	delete this->scene;
 	delete this->renderer;
-	delete this->model;
 
 	SLNet::RakPeerInterface::DestroyInstance(this->peer);
 	this->deleteAllActiveSystems();
@@ -69,17 +67,17 @@ entt::entity Engine::addPlayer(float x, float y, float z) {
 entt::entity Engine::addNetPlayer(float x, float y, float z) {
 	entt::entity id = this->create();
 
-	this->assign<PositionComponent>(id, glm::vec3(x, y, z));
-	this->assign<RotationComponent>(id, glm::quat(1, 0, 0, 0));
-	this->assign<ScaleComponent>(id, glm::vec3(.3, .3, .3));
-	this->assign<VelocityComponent>(id, glm::vec3(0, 0, 0));
-	this->assign<RotationalVelocityComponent>(id, glm::vec3(0, 0, 0));
-	this->assign<NetworkComponent>(id);
+	//this->assign<PositionComponent>(id, glm::vec3(x, y, z));
+	//this->assign<RotationComponent>(id, glm::quat(1, 0, 0, 0));
+	//this->assign<ScaleComponent>(id, glm::vec3(.3, .3, .3));
+	//this->assign<VelocityComponent>(id, glm::vec3(0, 0, 0));
+	//this->assign<RotationalVelocityComponent>(id, glm::vec3(0, 0, 0));
+	//this->assign<NetworkComponent>(id);
 
-	Graphics::ColorMaterial c = {1, 0, 1};
-	unsigned int meshID = this->scene->createMesh(*this->model, c);
-	unsigned int renderID = this->scene->createRenderInstance(meshID);
-	this->assign<RenderInstanceComponent>(id, renderID);
+	//Graphics::ColorMaterial c = {1, 0, 1};
+	//unsigned int meshID = this->scene->createMesh(*this->model, c);
+	//unsigned int renderID = this->scene->createRenderInstance(meshID);
+	//this->assign<RenderInstanceComponent>(id, renderID);
 
 	return id;
 }

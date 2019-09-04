@@ -21,22 +21,32 @@ namespace Graphics {
 		typename typedef Implementation::Attrib<T>::Components Components;
 
 		constexpr Attrib() : 
-			components(Implementation::Attrib<T>::DefaultNumComponents),
 			dataType(Implementation::Attrib<T>::DefaultDataType),
+			components(Implementation::Attrib<T>::DefaultNumComponents),
 			attribOption(AttribOption::None) {}
 
-		//todo check typeToScalar
-		constexpr Attrib(Components components, DataType dataType, AttribOption attribOption) : 
-			components(components),
+		constexpr Attrib(DataType dataType) :
 			dataType(dataType),
+			components(Implementation::Attrib<T>::DefaultNumComponents),
+			attribOption(AttribOption::None) {}
+
+		constexpr Attrib(DataType dataType, Components components) :
+			dataType(dataType),
+			components(components),
+			attribOption(AttribOption::None) {}
+
+		constexpr Attrib(DataType dataType, Components components, AttribOption attribOption) :
+			dataType(dataType),
+			components(components),
 			attribOption(attribOption){}
+
+		
+		constexpr DataType getDataType() const {
+			return dataType;
+		}
 
 		constexpr int getNumComponents() const {
 			return (int)components;
-		}
-
-		constexpr DataType getDataType() const {
-			return dataType;
 		}
 
 		constexpr AttribOption getAttribOption() const {
@@ -44,12 +54,12 @@ namespace Graphics {
 		}
 
 		constexpr size_t getSizeOfAttrib() const {
-			return Implementation::Attribute<T>::size(components, dataType);
+			return Implementation::Attrib<T>::size(components, dataType);
 		}
 
 	private:
-		const Components components;
 		const DataType dataType;
+		const Components components;
 		const AttribOption attribOption;
 	};
 

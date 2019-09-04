@@ -31,8 +31,6 @@ private:
 	Graphics::Scene *scene;
 	std::set<System*, System::classcomp> systems;
 
-	Graphics::ModelGeometry *model;
-
 	SLNet::MessageID getPacketID(SLNet::Packet *packet);
 
 public:

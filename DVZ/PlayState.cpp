@@ -1,9 +1,7 @@
 //#define _HAS_STD_BYTE 0	//Visual Studio preprocessor value to turn off conflicting std::byte and byte for c++ 17
 #include "PlayState.h"
 #include "macrologger.h"
-#include "QuadGeometry.h"
-#include "CubeGeometry.h"
-#include "ModelGeometry.h"
+
 #include "Components.h"
 #include "MovementSystem.h"
 #include "InputSystem.h"
@@ -11,7 +9,9 @@
 #include "NetPlayerSystem.h"
 #include "VoxelSystem.h"
 #include "ChunkManager.h"
-#include <tuple>
+
+#include "QuadGeometry.h"
+#include "ModelGeometry.h"
 
 PlayState::PlayState(GameStateManager *gsm) : GameState(gsm) {
 
@@ -31,7 +31,7 @@ void PlayState::init() {
 	/*PLAYER*/
 	
 	/*FLOOR*/
-	Graphics::QuadGeometry quad;
+	Graphics::Geometry quad = Graphics::CreateQuad();
 	Graphics::BasicLitMaterial c = { {1, 1, 1}, {.5f, .7f, .1f}, 10 };
 	unsigned int meshID = this->e.getScene()->createMesh(quad, c);
 	Graphics::Transformation t = { glm::vec3(0, -1, 0), glm::vec3(3.1415f / 2, 0, 0), glm::vec3(10, 10, 10) };
@@ -39,7 +39,7 @@ void PlayState::init() {
 	/*FLOOR*/
 
 	/*DRAGONS*/
-	Graphics::ModelGeometry dragon("tree.obj");
+	Graphics::Geometry dragon = Graphics::CreateModel("tree.obj");
 	for (int i = 0; i < 100; i++) {
 		entt::entity obj = this->e.create();
 		this->e.assign<PositionComponent>(obj, glm::vec3((i - 50) * 5, -1, -10));
@@ -81,10 +81,6 @@ void PlayState::init() {
 	//e.attemptConnection("54.224.40.47", 60000);	//AWS
 	e.attemptConnection("127.0.0.1", 60000);		//LOCAL
 	/*NET*/
-
-	Graphics::PositionAttrib v(Graphics::PositionAttrib::Components::THREE, Graphics::PositionAttrib::DataType::HALF_FLOAT, Graphics::PositionAttrib::AttribOption::None);
-	std::tuple<Graphics::PositionAttrib, int, double> a(v, 1, 2.0);
-	LOG_ERROR("%d %d %fd", std::get<0>(a).getNumComponents(), std::get<1>(a), std::get<2>(a));
 
 	/*SYSTEM*/
 	this->e.addSystem(new InputSystem(0));

@@ -1,5 +1,6 @@
 #pragma once
 #include <vector>
+#include <tuple>
 #include <algorithm>
 #include "macrologger.h"
 #include <GL/glew.h>
@@ -45,7 +46,19 @@ public:
 
 		vbo.unbind();
 	}
+
+	template<typename ...T>
+	void bufferInterleavedData(VBO &vbo, const std::tuple<T...>& attribs) {
+		vbo.bind();
+		auto lambda = [this, vbo](auto &&...args) {
+			size_t stride = this->getAttribsStride(args...);
+			this->setInterleavedAttribPointers(stride, 0, args...);
+		};
+		std::apply(lambda, attribs);
+		vbo.unbind();
+	}
 private:
+
 
 	template<unsigned int L, typename T, typename ...U>
 	void setInterleavedAttribPointers(size_t stride, size_t offset, const Attrib<L, T>& attrib, const U&... attribs) {
@@ -65,7 +78,7 @@ private:
 	template<unsigned int L, typename T>
 	void addVertexAttrib(const Attrib<L, T>& attrib, size_t stride, size_t offset) {
 		//todo figure out how to handle matrices
-		glVertexAttribPointer(L, attrib.getNumComponents(), attrib.getDataType(), attrib.getAttribOption(), stride, (void*)offset);
+		glVertexAttribPointer(L, attrib.getNumComponents(), attrib.getDataType(), attrib.getAttribOption(), (GLsizei)stride, (void*)offset);
 	}
 
 	template<unsigned int L, typename T, typename ...U>

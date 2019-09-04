@@ -72,7 +72,7 @@ void OpenGLRenderer::prerender() {
 
 		RenderState state;
 		state.instanceID = instanceID;
-		state.materialID = matID;
+		state.materialID = matID;	//todo figure out weird memory access error crash
 
 		key = this->createRenderStateKey(state);
 		sortedRenderStateKeys.push_back(key);

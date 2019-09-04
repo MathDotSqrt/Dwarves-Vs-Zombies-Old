@@ -10,15 +10,15 @@ class Geometry {
 protected:
 	std::vector<VERTEX> verticies;
 	std::vector<unsigned int> indices;
-	std::tuple<T...> attribs;
 
 public:
+	std::tuple<T...> attribs;
 
 	Geometry(){
 
 	}
 
-	Geometry(T...) : attribs(T...){
+	Geometry(T... attribs) : attribs(attribs...){
 		
 	}
 
@@ -59,5 +59,6 @@ public:
 	inline size_t getIndexCount() {
 		return indices.size();
 	}
+
 };
 }

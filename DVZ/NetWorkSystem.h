@@ -6,7 +6,6 @@
 namespace SLNet{
 	class RakPeerInterface;
 	struct Packet;
-
 	typedef unsigned char MessageID;
 }
 

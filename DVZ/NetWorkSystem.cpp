@@ -8,7 +8,6 @@
 #include "BitStream.h"
 #include "GamePacketID.h"
 
-#include "QuadGeometry.h"
 #include "Scene.h"
 
 NetWorkSystem::NetWorkSystem(int priority, entt::entity clientEntt, Graphics::Scene *scene) : System(priority){
