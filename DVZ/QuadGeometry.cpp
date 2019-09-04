@@ -5,9 +5,9 @@ using namespace Graphics;
 
 Geometry<QuadVertex, PositionAttrib, ColorAttrib, NormalAttrib, TexcoordAttrib> Graphics::CreateQuad() {
 	PositionAttrib p;
-	ColorAttrib c(ColorAttrib::DataType::HALF_FLOAT);
+	ColorAttrib c;
 	NormalAttrib n;
-	TexcoordAttrib t(TexcoordAttrib::DataType::HALF_FLOAT);
+	TexcoordAttrib t;
 
 	Geometry<QuadVertex, PositionAttrib, ColorAttrib, NormalAttrib, TexcoordAttrib> g(p, c, n, t);
 

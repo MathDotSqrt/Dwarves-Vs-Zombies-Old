@@ -45,7 +45,7 @@
 
 #define LOG_ERROR(message, ...)		PRINT(LOG_FMT message NEW_LINE, LOG_ARGS("ERROR"), __VA_ARGS__)
 #define LOG_WARNING(message, ...)	PRINT(LOG_FMT message NEW_LINE, LOG_ARGS("WARNING"), __VA_ARGS__)
-#define LOG_INFO(message, ...)		PRINT(LOG_FMT message NEW_LINE, LOG_ARGS("INFO"), __VA_ARGS__)
+#define LOG_INFO(message, ...)		//PRINT(LOG_FMT message NEW_LINE, LOG_ARGS("INFO"), __VA_ARGS__)
 #define LOG_DEBUG(message, ...)		//PRINT(LOG_FMT message NEW_LINE, LOG_ARGS("DEBUG"), __VA_ARGS__)
 
 #define LOG_SHADE(message, ...)		//PRINT(LOG_FMT message NEW_LINE, LOG_ARGS("SHADE"), __VA_ARGS__)

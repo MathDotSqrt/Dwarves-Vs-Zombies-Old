@@ -1,6 +1,41 @@
-﻿  PlayState.cpp
-c:\users\chris\desktop\dwarves vs zombies\dwarves-vs-zombies\dvz\playstate.cpp(40): error C2275: 'glm::vec3': illegal use of this type as an expression
-  c:\users\chris\desktop\dwarves vs zombies\dwarves-vs-zombies\dvz\playstate.cpp(40): note: see declaration of 'glm::vec3'
-c:\users\chris\desktop\dwarves vs zombies\dwarves-vs-zombies\dvz\playstate.cpp(40): warning C4473: 'fprintf' : not enough arguments passed for format string
-  c:\users\chris\desktop\dwarves vs zombies\dwarves-vs-zombies\dvz\playstate.cpp(40): note: placeholders and their parameters expect 5 variadic arguments, but 4 were provided
-  c:\users\chris\desktop\dwarves vs zombies\dwarves-vs-zombies\dvz\playstate.cpp(40): note: the missing variadic argument 5 is required by format string '%d'
+﻿  BasicRenderSystem.cpp
+  Chunk.cpp
+  ChunkManager.cpp
+  Client.cpp
+  DemoState.cpp
+  Engine.cpp
+  GameState.cpp
+  GameStateManager.cpp
+  InputSystem.cpp
+  MainState.cpp
+  ModelGeometry.cpp
+  MovementSystem.cpp
+  NetPlayerSystem.cpp
+  NetWorkSystem.cpp
+  OpenGLRenderer.cpp
+  PlayState.cpp
+c:\users\chris\desktop\dwarves vs zombies\dwarves-vs-zombies\dvz\scene.h(159): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
+  c:\users\chris\desktop\dwarves vs zombies\dwarves-vs-zombies\dvz\playstate.cpp(37): note: see reference to function template instantiation 'unsigned int Graphics::Scene::createMesh<Graphics::QuadVertex,Graphics::NormalMaterial,Graphics::PositionAttrib,Graphics::ColorAttrib,Graphics::NormalAttrib,Graphics::TexcoordAttrib>(Graphics::Geometry<Graphics::QuadVertex,Graphics::PositionAttrib,Graphics::ColorAttrib,Graphics::NormalAttrib,Graphics::TexcoordAttrib> &,MATERIAL &)' being compiled
+          with
+          [
+              MATERIAL=Graphics::NormalMaterial
+          ]
+  Scene.cpp
+  ShaderSet.cpp
+  TEX.cpp
+  TestSystem.cpp
+  Generating Code...
+  Compiling...
+  VAO.cpp
+  VBO.cpp
+  VoxelSystem.cpp
+c:\users\chris\desktop\dwarves vs zombies\dwarves-vs-zombies\dvz\scene.h(159): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
+  c:\users\chris\desktop\dwarves vs zombies\dwarves-vs-zombies\dvz\voxelsystem.cpp(105): note: see reference to function template instantiation 'unsigned int Graphics::Scene::createMesh<Voxel::BlockVertex,Graphics::BlockMaterial,Graphics::Attrib<0,glm::vec3>,Graphics::Attrib<2,glm::vec3>,Graphics::Attrib<3,glm::vec3>>(Graphics::Geometry<Voxel::BlockVertex,Graphics::Attrib<0,glm::vec3>,Graphics::Attrib<2,glm::vec3>,Graphics::Attrib<3,glm::vec3>> &,MATERIAL &)' being compiled
+          with
+          [
+              MATERIAL=Graphics::BlockMaterial
+          ]
+  Window.cpp
+  main.cpp
+  Generating Code...
+  DVZ.vcxproj -> C:\Users\Chris\Desktop\Dwarves Vs Zombies\Dwarves-Vs-Zombies\x64\Debug\DVZ.exe

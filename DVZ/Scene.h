@@ -65,7 +65,7 @@ struct VertexBuffer {
 struct Mesh {
 	VAO vao;
 	VBO ebo;
-	int indexCount;
+	GLsizei indexCount;
 	
 	unsigned int vboID;
 	
@@ -118,9 +118,6 @@ struct Camera {
 	float far;
 };
 
-
-
-
 class Scene {
 private:
 	unsigned int mainCameraID;
@@ -144,15 +141,11 @@ public:
 
 	template<typename VERTEX>
 	unsigned int createVertexBuffer(std::vector<VERTEX> &verticies) {
-		
 		VertexBuffer vb;
 		vb.vbo.bind();
 		vb.vbo.bufferData(verticies, GL_STATIC_DRAW);
 		vb.vbo.unbind();
-
-		unsigned int vbID = this->vertexBufferCache.insert(std::move(vb));
-
-		return vbID;
+		return this->vertexBufferCache.insert(std::move(vb));
 	}
 
 	template<typename VERTEX, typename MATERIAL, typename ...T>
@@ -163,15 +156,17 @@ public:
 		VertexBuffer vb = this->vertexBufferCache[bufferInstanceID];
 
 		Mesh newMesh;
+		newMesh.typeID = MATERIAL::type;
+
 		newMesh.vao.bind();
 		newMesh.vao.bufferInterleavedData(vb.vbo, model.attribs);
 		newMesh.ebo.bind();
 		newMesh.ebo.bufferData(model.getIndices(), GL_STATIC_DRAW);
 		newMesh.vao.unbind();
 		newMesh.ebo.unbind();
-		
+		newMesh.indexCount = (GLsizei)model.getIndexCount();
+
 		return this->meshCache.insert(std::move(newMesh));
-		//return 0;
 	}
 
 
