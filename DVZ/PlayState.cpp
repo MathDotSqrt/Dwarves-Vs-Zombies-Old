@@ -34,8 +34,8 @@ void PlayState::init() {
 	
 	Graphics::Geometry model = Graphics::CreateQuad();
 	Graphics::NormalMaterial material;
-	unsigned int meshID = scene->createMesh(model, material);
-	unsigned int renderID = scene->createRenderInstance(meshID);
+	//unsigned int meshID = scene->createMesh(model, material);
+	//unsigned int renderID = scene->createRenderInstance(meshID);
 
 	/*NET*/
 	//e.attemptConnection("54.224.40.47", 60000);	//AWS

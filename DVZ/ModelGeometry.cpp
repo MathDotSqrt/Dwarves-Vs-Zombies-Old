@@ -6,15 +6,15 @@
 using namespace Graphics;
 using namespace std;
 
-Geometry<ModelVertex, PositionAttrib, NormalAttrib, TexcoordAttrib> Graphics::CreateModel(std::string filename) {
-	Geometry<ModelVertex, PositionAttrib, NormalAttrib, TexcoordAttrib> model;
+Geometry<PositionAttrib, NormalAttrib, TexcoordAttrib> Graphics::CreateModel(std::string filename) {
+	Geometry<PositionAttrib, NormalAttrib, TexcoordAttrib> model;
 
-	Loader::OBJLoader loader;
-	loader.LoadFile(filename);
-	size_t size = loader.LoadedVertices.size();
-	model.getVerticies().resize(sizeof(Loader::Vertex) * size);
-	memcpy(model.getVerticies().data(), loader.LoadedVertices.data(), sizeof(Loader::Vertex) * size);
-	model.getIndices() = loader.LoadedIndices;
+	//Loader::OBJLoader loader;
+	//loader.LoadFile(filename);
+	//size_t size = loader.LoadedVertices.size();
+	//model.getVerticies().resize(sizeof(Loader::Vertex) * size);
+	//memcpy(model.getVerticies().data(), loader.LoadedVertices.data(), sizeof(Loader::Vertex) * size);
+	//model.getIndices() = loader.LoadedIndices;
 	return model;
 }
 

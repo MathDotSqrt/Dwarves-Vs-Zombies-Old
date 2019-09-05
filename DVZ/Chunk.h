@@ -42,7 +42,7 @@ private:
 	bool isMeshValid;
 	bool isEmpty;
 
-	Graphics::Geometry<BlockVertex, Graphics::Attrib<POSITION_ATTRIB_LOCATION, glm::vec3>, Graphics::Attrib<NORMAL_ATTRIB_LOCATION, glm::vec3>, Graphics::Attrib<COLOR_ATTRIB_LOCATION, glm::vec3>> geometry;
+	Graphics::Geometry<Graphics::Attrib<POSITION_ATTRIB_LOCATION, glm::vec3>, Graphics::Attrib<NORMAL_ATTRIB_LOCATION, glm::vec3>, Graphics::Attrib<COLOR_ATTRIB_LOCATION, glm::vec3>> geometry;
 	//std::vector<BlockVertex> verticies;
 	//std::vector<GLuint> indices;
 	//Graphics::VBO vbo;
@@ -86,7 +86,7 @@ public:
 		return this->chunk_z;
 	}
 
-	inline Graphics::Geometry<BlockVertex, Graphics::Attrib<POSITION_ATTRIB_LOCATION, glm::vec3>, Graphics::Attrib<NORMAL_ATTRIB_LOCATION, glm::vec3>, Graphics::Attrib<COLOR_ATTRIB_LOCATION, glm::vec3>>& getChunkGeometry() {
+	inline Graphics::Geometry<Graphics::Attrib<POSITION_ATTRIB_LOCATION, glm::vec3>, Graphics::Attrib<NORMAL_ATTRIB_LOCATION, glm::vec3>, Graphics::Attrib<COLOR_ATTRIB_LOCATION, glm::vec3>>& getChunkGeometry() {
 		return this->geometry;
 	}
 

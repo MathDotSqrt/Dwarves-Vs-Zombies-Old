@@ -1,18 +1,36 @@
 #pragma once
 #include <vector>
 #include <tuple>
+#include "glm.hpp"
 
 namespace Graphics {
 
-template<typename VERTEX, typename ...T> 
+template<typename ...T> 
 class Geometry {
+public:
+	template<typename ...V>
+	struct Vertex {};
 
+	template<typename V, typename ...REST>
+	struct Vertex<V::Type, REST...> {
+		Vertex(
+			typename const V& first,
+			typename const REST& ...rest)
+			: first(first), rest(rest...) {}
+		
+		typename V::Type first;
+		typename Vertex<REST...> rest;
+
+	};
+
+	typedef Vertex<T::Type...> GeometryVertex;
 protected:
-	std::vector<VERTEX> verticies;
+	std::vector<GeometryVertex> verticies;
 	std::vector<unsigned int> indices;
 
 public:
 	std::tuple<T...> attribs;
+	std::tuple<T::Type...> test;
 
 	Geometry(){
 
@@ -28,8 +46,12 @@ public:
 
 	//todo add appendQuad method
 
-	template<typename VERTEX>
-	inline void pushVertex(VERTEX &vertex) {
+	//template<T>
+	inline void pushVertex(const T::Type& ... vertexData) {
+		verticies.push_back(GeometryVertex(vertexData...));
+	}
+
+	inline void pushVertex(const GeometryVertex &vertex) {
 		verticies.push_back(vertex);
 	}
 
@@ -44,7 +66,7 @@ public:
 		indices.clear();
 	}
 
-	inline std::vector<VERTEX>& getVerticies() {
+	inline std::vector<GeometryVertex>& getVerticies() {
 		return this->verticies;
 	}
 

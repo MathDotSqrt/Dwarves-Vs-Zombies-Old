@@ -6,13 +6,13 @@
 
 namespace Graphics {
 
-	struct ModelVertex {
-		float x, y, z;
-		float nx, ny, nz;
-		float u, v;
-	};
+	//struct ModelVertex {
+	//	float x, y, z;
+	//	float nx, ny, nz;
+	//	float u, v;
+	//};
 
-	Geometry<ModelVertex, PositionAttrib, NormalAttrib, TexcoordAttrib> CreateModel(std::string filename);
+	Geometry<PositionAttrib, NormalAttrib, TexcoordAttrib> CreateModel(std::string filename);
 
 	//class ModelGeometry : public Geometry<
 	//	ModelVertex, 

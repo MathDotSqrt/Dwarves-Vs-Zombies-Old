@@ -3,23 +3,23 @@
 
 using namespace Graphics;
 
-Geometry<QuadVertex, PositionAttrib, ColorAttrib, NormalAttrib, TexcoordAttrib> Graphics::CreateQuad() {
+Geometry<PositionAttrib, ColorAttrib, NormalAttrib, TexcoordAttrib> Graphics::CreateQuad() {
+	typedef Geometry<PositionAttrib, ColorAttrib, NormalAttrib, TexcoordAttrib> QuadGeometry;
+	
 	PositionAttrib p;
 	ColorAttrib c;
 	NormalAttrib n;
 	TexcoordAttrib t;
 
-	Geometry<QuadVertex, PositionAttrib, ColorAttrib, NormalAttrib, TexcoordAttrib> g(p, c, n, t);
+	QuadGeometry g(p, c, n, t);
+	QuadGeometry::GeometryVertex v(glm::vec3(-1, 1, 0), glm::vec3(1, 0, 0), glm::vec3(0, 0, -1), glm::vec2(0, 0));
+	g.pushVertex(glm::vec3(-1, 1, 0), glm::vec3(1, 0, 0), glm::vec3(0, 0, -1), glm::vec2(0, 0));
+	g.pushVertex(glm::vec3(1, 1, 0), glm::vec3(0, 1, 0), glm::vec3(0, 0, -1), glm::vec2(1, 0));
+	g.pushVertex(glm::vec3(1, -1, 0), glm::vec3(0, 0, 1), glm::vec3(0, 0, -1), glm::vec2(1, 1));
+	g.pushVertex(glm::vec3(-1, -1, 0), glm::vec3(1, 1, 1), glm::vec3(0, 0, -1), glm::vec2(0, 1));
 
-	QuadVertex v0 = { -1, 1, 0,  1, 0, 0,  0, 0, -1,  0, 0 };
-	QuadVertex v1 = { 1, 1, 0,   0, 1, 0,  0, 0, -1,  1, 0 };
-	QuadVertex v2 = { 1, -1, 0,  0, 0, 1,  0, 0, -1,  1, 1 };
-	QuadVertex v3 = { -1, -1, 0, 1, 1, 1,  0, 0, -1,  0, 1 };
 
-	g.pushVertex(v0);
-	g.pushVertex(v1);
-	g.pushVertex(v2);
-	g.pushVertex(v3);
+	//g.pushVertex();
 	g.pushTriangle(0, 1, 2);
 	g.pushTriangle(0, 2, 3);
 	return g;

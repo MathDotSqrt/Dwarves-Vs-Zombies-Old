@@ -3,13 +3,8 @@
 #include "Attrib.h"
 
 namespace Graphics {
-	struct QuadVertex {
-		float x, y, z;
-		float r, g, b;
-		float nx, ny, nz;
-		float u, v;
-	};
-	Geometry<QuadVertex, PositionAttrib, ColorAttrib, NormalAttrib, TexcoordAttrib> CreateQuad();
+
+	Geometry<PositionAttrib, ColorAttrib, NormalAttrib, TexcoordAttrib> CreateQuad();
 }
 
 //namespace Graphics {

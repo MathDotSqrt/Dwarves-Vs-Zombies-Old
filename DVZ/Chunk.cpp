@@ -108,11 +108,11 @@ void Chunk::generateMesh() {
 			}
 		}
 	}
-	this->vbo.bind();
-	this->vbo.bufferData(this->geometry.getVerticies(), GL_STATIC_DRAW);
-	this->ebo.bind();
-	this->ebo.bufferData(this->geometry.getIndices(), GL_STATIC_DRAW);
-	this->ebo.unbind();
+	//this->vbo.bind();
+	//this->vbo.bufferData(this->geometry.getVerticies(), GL_STATIC_DRAW);
+	//this->ebo.bind();
+	//this->ebo.bufferData(this->geometry.getIndices(), GL_STATIC_DRAW);
+	//this->ebo.unbind();
 	
 	//this->vao.bind();
 	//this->vbo.bind();
@@ -239,10 +239,10 @@ void Chunk::createCube(int x, int y, int z, BlockFaceCullTags render, BlockType 
 }
 
 void Chunk::createFace(BlockVertex v0, BlockVertex v1, BlockVertex v2, BlockVertex v3) {
-	this->geometry.pushVertex(v0);
-	this->geometry.pushVertex(v1);
-	this->geometry.pushVertex(v2);
-	this->geometry.pushVertex(v3);
+	//this->geometry.pushVertex(v0);
+	//this->geometry.pushVertex(v1);
+	//this->geometry.pushVertex(v2);
+	//this->geometry.pushVertex(v3);
 
 	//todo figure out if this is correct
 	int lastIndex = (int)this->geometry.getVertexCount();

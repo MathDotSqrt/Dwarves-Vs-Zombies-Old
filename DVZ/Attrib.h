@@ -11,11 +11,14 @@ namespace Graphics {
 	template<typename unsigned int LOC, typename T>
 	class Attrib {
 	public:
+		
+
 		typedef enum {
 			None = 0,
 			Normalize = 1,
 		} AttribOption;
 
+		typename typedef T Type;
 		typename typedef Implementation::Attrib<T>::ScalarType ScalarType;
 		typename typedef Implementation::Attrib<T>::DataType DataType;
 		typename typedef Implementation::Attrib<T>::Components Components;
@@ -77,7 +80,7 @@ namespace Graphics {
 		template<>
 		struct AttribSize<1> {
 			typedef enum {
-				ONE = 1
+				ONE = 1,
 			} Components;
 
 			constexpr static Components DefaultNumComponents = Components::ONE;
@@ -87,7 +90,7 @@ namespace Graphics {
 		struct AttribSize<2> {
 			typedef enum {
 				ONE = 1,
-				TWO = 2
+				TWO = 2,
 			} Components;
 
 			constexpr static Components DefaultNumComponents = Components::TWO;
@@ -98,7 +101,7 @@ namespace Graphics {
 			typedef enum {
 				ONE = 1,
 				TWO = 2,
-				THREE = 3
+				THREE = 3,
 			} Components;
 
 			constexpr static Components DefaultNumComponents = Components::THREE;
@@ -110,9 +113,9 @@ namespace Graphics {
 				ONE = 1,
 				TWO = 2,
 				THREE = 3,
-				FOUR = 4
+				FOUR = 4,
 			} Components;
-
+			
 			constexpr static Components DefaultNumComponents = Components::FOUR;
 		};
 
