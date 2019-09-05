@@ -12,7 +12,7 @@ public:
 	struct Vertex {};
 
 	template<typename V, typename ...REST>
-	struct Vertex<V::Type, REST...> {
+	struct Vertex<V, REST...> {
 		Vertex(
 			typename const V& first,
 			typename const REST& ...rest)
