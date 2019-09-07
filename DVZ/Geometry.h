@@ -20,7 +20,13 @@ public:
 		
 		typename V::Type first;
 		Vertex<REST...> rest;
+	};
 
+	template<typename V>
+	struct Vertex<V> {
+		Vertex( typename const V::Type& last) : last(last){}
+
+		typename V::Type last;
 	};
 	
 	typedef Vertex<T...> GeometryVertex;
@@ -30,7 +36,6 @@ protected:
 
 public:
 	std::tuple<T...> attribs;
-	//std::tuple<T::Type...> test;
 
 	Geometry(){
 
@@ -45,8 +50,6 @@ public:
 	}
 
 	//todo add appendQuad method
-
-	//template<>
 	inline void pushVertex(typename const T::Type& ... vertexData) {
 		verticies.push_back(GeometryVertex(vertexData...));
 	}

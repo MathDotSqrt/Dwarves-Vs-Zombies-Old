@@ -12,6 +12,7 @@
 
 #include "QuadGeometry.h"
 #include "ModelGeometry.h"
+#include "gtx/string_cast.hpp"
 
 PlayState::PlayState(GameStateManager *gsm) : GameState(gsm) {
 
@@ -25,7 +26,6 @@ void PlayState::init() {
 	LOG_STATE("init");
 	Graphics::Scene *scene = e.getScene();
 
-
 	/*PLAYER*/
 	entt::entity playerID = this->e.addPlayer(1, 0, 0);
 	unsigned int pointLightInstanceID = this->e.getScene()->createPointLightInstance();
@@ -36,6 +36,13 @@ void PlayState::init() {
 	Graphics::NormalMaterial material;
 	unsigned int meshID = scene->createMesh(model, material);
 	unsigned int renderID = scene->createRenderInstance(meshID);
+
+	entt::entity test = this->e.create();
+	this->e.assign<PositionComponent>(test, glm::vec3(0, 0, 0));
+	this->e.assign<RotationComponent>(test, glm::quat(glm::vec3(0, 0, 0)));
+	this->e.assign<ScaleComponent>(test, glm::vec3(1, 1, 1));
+	this->e.assign<RotationalVelocityComponent>(test, glm::vec3(0));
+	this->e.assign<RenderInstanceComponent>(test, renderID);
 
 	/*NET*/
 	//e.attemptConnection("54.224.40.47", 60000);	//AWS

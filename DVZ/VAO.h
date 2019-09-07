@@ -50,7 +50,7 @@ public:
 	template<typename ...T>
 	void bufferInterleavedData(VBO &vbo, const std::tuple<T...>& attribs) {
 		vbo.bind();
-		auto lambda = [this, vbo](auto &&...args) {
+		auto lambda = [this](auto &&...args) {
 			size_t stride = this->getAttribsStride(args...);
 			this->setInterleavedAttribPointers(stride, 0, args...);
 		};

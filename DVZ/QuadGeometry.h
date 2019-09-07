@@ -4,7 +4,7 @@
 
 namespace Graphics {
 
-	Geometry<PositionAttrib, ColorAttrib, NormalAttrib, TexcoordAttrib> CreateQuad();
+	Geometry<PositionAttrib, NormalAttrib> CreateQuad();
 }
 
 //namespace Graphics {
