@@ -12,7 +12,8 @@ Geometry<PositionAttrib, ColorAttrib, NormalAttrib, TexcoordAttrib> Graphics::Cr
 	TexcoordAttrib t;
 
 	QuadGeometry g(p, c, n, t);
-	QuadGeometry::GeometryVertex v(glm::vec3(-1, 1, 0), glm::vec3(1, 0, 0), glm::vec3(0, 0, -1), glm::vec2(0, 0));
+	//QuadGeometry::GeometryVertex v(glm::vec3(-1, 1, 0), glm::vec3(1, 0, 0), glm::vec3(0, 0, -1), glm::vec2(0, 0));
+
 	g.pushVertex(glm::vec3(-1, 1, 0), glm::vec3(1, 0, 0), glm::vec3(0, 0, -1), glm::vec2(0, 0));
 	g.pushVertex(glm::vec3(1, 1, 0), glm::vec3(0, 1, 0), glm::vec3(0, 0, -1), glm::vec2(1, 0));
 	g.pushVertex(glm::vec3(1, -1, 0), glm::vec3(0, 0, 1), glm::vec3(0, 0, -1), glm::vec2(1, 1));

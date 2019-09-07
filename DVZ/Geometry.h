@@ -5,32 +5,32 @@
 
 namespace Graphics {
 
-template<typename ...T> 
+template<typename ...T>
 class Geometry {
 public:
 	template<typename ...V>
 	struct Vertex {};
-
+	//drop this
 	template<typename V, typename ...REST>
-	struct Vertex<V, REST...> {
+	struct Vertex<V, REST...>{
 		Vertex(
-			typename const V& first,
-			typename const REST& ...rest)
+			typename const V::Type& first,
+			typename const REST::Type& ...rest)
 			: first(first), rest(rest...) {}
 		
 		typename V::Type first;
-		typename Vertex<REST...> rest;
+		Vertex<REST...> rest;
 
 	};
-
-	typedef Vertex<T::Type...> GeometryVertex;
+	
+	typedef Vertex<T...> GeometryVertex;
 protected:
 	std::vector<GeometryVertex> verticies;
 	std::vector<unsigned int> indices;
 
 public:
 	std::tuple<T...> attribs;
-	std::tuple<T::Type...> test;
+	//std::tuple<T::Type...> test;
 
 	Geometry(){
 
@@ -46,8 +46,8 @@ public:
 
 	//todo add appendQuad method
 
-	//template<T>
-	inline void pushVertex(const T::Type& ... vertexData) {
+	//template<>
+	inline void pushVertex(typename const T::Type& ... vertexData) {
 		verticies.push_back(GeometryVertex(vertexData...));
 	}
 
