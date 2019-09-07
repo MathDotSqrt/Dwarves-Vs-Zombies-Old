@@ -7,14 +7,22 @@ using namespace Graphics;
 using namespace std;
 
 Geometry<PositionAttrib, NormalAttrib, TexcoordAttrib> Graphics::CreateModel(std::string filename) {
-	Geometry<PositionAttrib, NormalAttrib, TexcoordAttrib> model;
+	typedef Geometry<PositionAttrib, NormalAttrib, TexcoordAttrib> ModelGeometry;
+	
+	PositionAttrib p;
+	NormalAttrib n;
+	TexcoordAttrib t;
+	ModelGeometry model(p, n, t);
 
-	//Loader::OBJLoader loader;
-	//loader.LoadFile(filename);
-	//size_t size = loader.LoadedVertices.size();
-	//model.getVerticies().resize(sizeof(Loader::Vertex) * size);
-	//memcpy(model.getVerticies().data(), loader.LoadedVertices.data(), sizeof(Loader::Vertex) * size);
-	//model.getIndices() = loader.LoadedIndices;
+	Loader::OBJLoader loader;
+	loader.LoadFile(filename);
+	size_t size = loader.LoadedVertices.size();
+
+
+	model.getVerticies().resize(size);	//This is unoptimal, calling constructor of geometry vertex
+	//model.getVerticies().assign(loader.LoadedVertices.begin(), loader.LoadedVertices.end());
+	memcpy(model.getVerticies().data(), loader.LoadedVertices.data(), sizeof(ModelGeometry::GeometryVertex) * size);
+	model.getIndices() = loader.LoadedIndices;
 	return model;
 }
 

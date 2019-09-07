@@ -13,6 +13,8 @@ public:
 	//drop this
 	template<typename V, typename ...REST>
 	struct Vertex<V, REST...>{
+		Vertex() {}
+
 		Vertex(
 			typename const V::Type& first,
 			typename const REST::Type& ...rest)
@@ -24,6 +26,7 @@ public:
 
 	template<typename V>
 	struct Vertex<V> {
+		Vertex() {}
 		Vertex( typename const V::Type& last) : last(last){}
 
 		typename V::Type last;

@@ -32,7 +32,7 @@ void PlayState::init() {
 	this->e.assign<PointLightComponent>(playerID, pointLightInstanceID, glm::vec3(1, 1, 1), 60.0f);
 	/*PLAYER*/
 	
-	Graphics::Geometry model = Graphics::CreateQuad();
+	Graphics::Geometry model = Graphics::CreateModel("tree.obj");
 	Graphics::NormalMaterial material;
 	unsigned int meshID = scene->createMesh(model, material);
 	unsigned int renderID = scene->createRenderInstance(meshID);
@@ -41,7 +41,7 @@ void PlayState::init() {
 	this->e.assign<PositionComponent>(test, glm::vec3(0, 0, 0));
 	this->e.assign<RotationComponent>(test, glm::quat(glm::vec3(0, 0, 0)));
 	this->e.assign<ScaleComponent>(test, glm::vec3(1, 1, 1));
-	this->e.assign<RotationalVelocityComponent>(test, glm::vec3(0));
+	this->e.assign<RotationalVelocityComponent>(test, glm::vec3(0, 1, 0));
 	this->e.assign<RenderInstanceComponent>(test, renderID);
 
 	/*NET*/
