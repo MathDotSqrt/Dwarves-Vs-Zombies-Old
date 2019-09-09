@@ -49,7 +49,7 @@ void BasicRenderSystem::update(Engine * engine, float delta) {
 		.each([engine](auto &pointLightComponent, auto &positionComponent) 
 	{
 		Graphics::Scene *scene = engine->getScene();
-		Graphics::PointLight &pointLight = scene->pointLightCache[pointLightComponent.lightInstanceID];
+		Graphics::Scene::PointLight &pointLight = scene->pointLightCache[pointLightComponent.lightInstanceID];
 
 		pointLight.position = positionComponent.pos;
 		pointLight.color[0] = pointLightComponent.color.x;

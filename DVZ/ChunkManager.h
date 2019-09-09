@@ -24,7 +24,7 @@ public:
 		return this->chunkSet.end();
 	}
 
-	inline ChunkIterator removeChunk(ChunkIterator iter) {
+	inline ChunkIterator removeChunk(const ChunkIterator& iter) {
 		return this->chunkSet.erase(iter);
 	}
 	void removeChunk(int cx, int cy, int cz);

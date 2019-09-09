@@ -1,6 +1,12 @@
 #pragma once
+
+//todo delete this pointless class
 #include "IResizable.h"
-#include "Scene.h"
+#include "Scene.h"	//todo remove this include
+
+namespace Voxel {
+	class ChunkManager;
+}
 
 namespace Graphics {
 	class IRenderer  : public IResizable{
@@ -12,7 +18,7 @@ namespace Graphics {
 
 		virtual void init(Scene *scene) = 0;
 		virtual void prerender() = 0;
-		virtual void render() = 0;
+		virtual void render(Voxel::ChunkManager *manager) = 0;
 
 		inline Scene* getScene() {
 			return this->scene;

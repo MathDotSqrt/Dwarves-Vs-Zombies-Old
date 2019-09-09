@@ -53,7 +53,7 @@ void PlayState::init() {
 	this->e.addSystem(new InputSystem(0));
 	this->e.addSystem(new MovementSystem(1));
 	this->e.addSystem(new NetPlayerSystem(.1f, 2));
-	//this->e.addSystem(new VoxelSystem(3));
+	this->e.addSystem(new VoxelSystem(3));
 	this->e.addSystem(new BasicRenderSystem(100));
 	/*SYSTEM*/
 

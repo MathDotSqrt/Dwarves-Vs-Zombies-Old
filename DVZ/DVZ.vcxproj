@@ -248,6 +248,7 @@
     <ClInclude Include="IResizable.h" />
     <ClInclude Include="macrologger.h" />
     <ClInclude Include="MainState.h" />
+    <ClInclude Include="Material.h" />
     <ClInclude Include="ModelGeometry.h" />
     <ClInclude Include="MovementSystem.h" />
     <ClInclude Include="NetInstanceType.h" />

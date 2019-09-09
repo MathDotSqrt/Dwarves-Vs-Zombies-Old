@@ -58,7 +58,7 @@ void VoxelSystem::update(Engine *engine, float delta) {
 			|| cz > RENDER_DISTANCE / 2 + 1
 			|| cz < -RENDER_DISTANCE / 2 - 1) {
 			
-			engine->getScene()->removeRenderInstance(chunk->getChunkRenderID());
+			//engine->getScene()->removeRenderInstance(chunk->getChunkRenderID());
 
 			//removes chunk and returns an iterator pointing to the next chunk
 			iter = manager->removeChunk(iter);
@@ -94,20 +94,7 @@ void VoxelSystem::update(Engine *engine, float delta) {
 }
 
 void VoxelSystem::loadChunk(Engine *engine, int cx, int cy, int cz) {
-	//material for the chunk to be rendered with
-	Graphics::BlockMaterial chunkMat = { {.95f, .7f, .8f}, 30 };
-	
 	Voxel::Chunk *chunk = engine->getChunkManager()->generateChunk(cx, 0, cz);
 	chunk->generateTerrain();
 	chunk->generateMesh();
-
-	
-	unsigned int chunkMesh = engine->getScene()->createMesh(chunk->getChunkGeometry(), chunkMat);
-	Graphics::Transformation t = {
-		glm::vec3(cx * Voxel::CHUNK_RENDER_WIDTH_X, 0, cz * Voxel::CHUNK_RENDER_WIDTH_Z),
-		glm::vec3(0, 0, 0),
-		glm::vec3(1, 1, 1)
-	};
-	unsigned int chunkInstance = engine->getScene()->createRenderInstance(chunkMesh, t);
-	chunk->setChunkRenderID(chunkInstance);
 }

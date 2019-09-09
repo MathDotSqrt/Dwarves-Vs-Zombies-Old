@@ -4,6 +4,7 @@
 #include "VBO.h"
 #include <vector>
 #include "Geometry.h"
+#include "Attrib.h"
 
 namespace Voxel{
 
@@ -27,6 +28,10 @@ static constexpr float CHUNK_RENDER_WIDTH_Z = CHUNK_WIDTH_Z * BLOCK_RENDER_SIZE;
 
 class Chunk {
 private:
+	
+	typedef Graphics::Geometry<Graphics::PositionAttrib, Graphics::NormalAttrib, Graphics::ColorAttrib> BlockGeometry;
+	typedef BlockGeometry::GeometryVertex BlockVertex;
+
 	typedef struct _BlockFaceCullTags {
 		bool px;
 		bool nx;
@@ -42,22 +47,18 @@ private:
 	bool isMeshValid;
 	bool isEmpty;
 
-	Graphics::Geometry<Graphics::Attrib<POSITION_ATTRIB_LOCATION, glm::vec3>, Graphics::Attrib<NORMAL_ATTRIB_LOCATION, glm::vec3>, Graphics::Attrib<COLOR_ATTRIB_LOCATION, glm::vec3>> geometry;
+	BlockGeometry geometry;
 	//std::vector<BlockVertex> verticies;
 	//std::vector<GLuint> indices;
 	//Graphics::VBO vbo;
 	//Graphics::VBO ebo;
+	Graphics::VAO vao;
 	Graphics::VBO vbo;
 	Graphics::VBO ebo;
-	int indexCount = 0;
-	unsigned int renderID;
+	size_t indexCount = 0;
 
 public:
 	
-
-	//Graphics::VAO vao;
-	//int indexCount = 0;
-
 	Chunk(int x, int y, int z);
 	Chunk(int x, int y, int z, Block *data);
 	~Chunk();
@@ -86,17 +87,13 @@ public:
 		return this->chunk_z;
 	}
 
-	inline Graphics::Geometry<Graphics::Attrib<POSITION_ATTRIB_LOCATION, glm::vec3>, Graphics::Attrib<NORMAL_ATTRIB_LOCATION, glm::vec3>, Graphics::Attrib<COLOR_ATTRIB_LOCATION, glm::vec3>>& getChunkGeometry() {
+	inline BlockGeometry& getChunkGeometry() {
 		return this->geometry;
 	}
 
-	inline void setChunkRenderID(unsigned int renderID) {
-		this->renderID = renderID;
+	inline Graphics::VAO& getChunkVAO() {
+		return this->vao;
 	}
-	inline unsigned int getChunkRenderID() {
-		return renderID;
-	}
-
 private:
 	void createCube(int x, int y, int z, BlockFaceCullTags render, BlockType type);
 	void createFace(BlockVertex v0, BlockVertex v1, BlockVertex v2, BlockVertex v3);

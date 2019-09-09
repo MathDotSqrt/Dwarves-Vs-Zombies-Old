@@ -33,9 +33,4 @@ namespace Voxel {
 		}
 	};
 
-	struct BlockVertex {
-		glm::vec3 pos;
-		glm::vec3 norm;
-		glm::vec3 col;
-	};
 }

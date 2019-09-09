@@ -2,6 +2,7 @@
 #include "IRenderer.h"
 
 namespace Graphics {
+
 class OpenGLRenderer : public IRenderer {
 private:
 	typedef unsigned long long RenderStateKey;
@@ -23,6 +24,8 @@ private:
 	int renderNormal(int startKeyIndex, glm::mat4 vp);
 	int renderBasicLit(int startKeyIndex, glm::vec3 camera_position, glm::mat4 vp);
 	int renderBasicBlock(int startKeyIndex, glm::vec3 camera_position, glm::mat4 vp);
+	void renderChunks(Voxel::ChunkManager *manager, glm::vec3 camera_position, glm::mat4 vp);
+
 public:
 	OpenGLRenderer();
 	~OpenGLRenderer();
@@ -30,7 +33,7 @@ public:
 	void init(Scene *scene) override;
 	void resize(int newWidth, int newHeight) override;
 	void prerender() override;
-	void render() override;
+	void render(Voxel::ChunkManager *manager) override;
 };
 }
 

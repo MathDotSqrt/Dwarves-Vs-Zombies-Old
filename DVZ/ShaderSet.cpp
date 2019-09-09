@@ -75,11 +75,11 @@ void GLSLProgram::setUniform1f(string uniformName, float f) {
 		glUniform1f(uniformLocation, f);
 }
 
-void GLSLProgram::setUniform3f(string uniformName, glm::vec3 vec3) {
+void GLSLProgram::setUniform3f(string uniformName, const glm::vec3& vec3) {
 	setUniform3f(uniformName, vec3.x, vec3.y, vec3.z);
 }
 
-void GLSLProgram::setUniform3f(string uniformName, float vec[3]) {
+void GLSLProgram::setUniform3f(string uniformName, const float vec[3]) {
 	setUniform3f(uniformName, vec[0], vec[1], vec[2]);
 }
 

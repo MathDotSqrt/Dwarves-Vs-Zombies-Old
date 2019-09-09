@@ -5,9 +5,8 @@
 #include "glm.hpp"
 #include <gtx/transform.hpp>
 #include <gtx/quaternion.hpp>
-
+#include "ChunkManager.h"
 using namespace Graphics;
-
 
 MaterialID ColorMaterial::type = MaterialID::COLOR_MATERIAL_ID;
 MaterialID NormalMaterial::type = MaterialID::NORMAL_MAERIAL_ID;
@@ -26,7 +25,7 @@ void OpenGLRenderer::init(Scene *scene) {
 	LOG_RENDER("Init");
 	this->scene = scene;
 	
-	Camera camera = {
+	Scene::Camera camera = {
 		glm::vec3(0, 0, 0),
 		glm::vec3(0, 0, -1),
 		glm::vec3(0, 1, 0),
@@ -48,7 +47,7 @@ void OpenGLRenderer::init(Scene *scene) {
 
 void OpenGLRenderer::resize(int newWidth, int newHeight) {
 	LOG_RENDER("Resize (%d, %d)", newWidth, newHeight);
-	Camera *camera = &scene->cameraCache[scene->getMainCameraID()];
+	Scene::Camera *camera = &scene->cameraCache[scene->getMainCameraID()];
 	camera->aspect = (float)newWidth / newHeight;
 
 	this->perspectiveProjection = glm::perspective(camera->fov, camera->aspect, camera->near, camera->far);
@@ -64,11 +63,11 @@ void OpenGLRenderer::prerender() {
 	this->sortedRenderStateKeys.clear();
 	for (unsigned int instanceID : scene->instanceCache) {
 		RenderStateKey key = 0L;
-		MaterialID matID = MaterialID::NONE_MATERIAL_ID;
+		//MaterialID matID = MaterialID::NONE_MATERIAL_ID;
 
-		Instance *instance = &scene->instanceCache[instanceID];
-		Mesh *mesh = &scene->meshCache[instance->meshID];
-		matID = mesh->typeID;
+		Scene::Instance *instance = &scene->instanceCache[instanceID];
+		Scene::Mesh *mesh = &scene->meshCache[instance->meshID];
+		MaterialID matID = mesh->typeID;
 
 		RenderState state;
 		state.instanceID = instanceID;
@@ -76,13 +75,12 @@ void OpenGLRenderer::prerender() {
 
 		key = this->createRenderStateKey(state);
 		sortedRenderStateKeys.push_back(key);
-
 	}
 	std::sort(this->sortedRenderStateKeys.begin(), this->sortedRenderStateKeys.end());
 }
 
-void OpenGLRenderer::render() {
-	Camera *camera = &scene->cameraCache[scene->getMainCameraID()];
+void OpenGLRenderer::render(Voxel::ChunkManager *manager) {
+	Scene::Camera *camera = &scene->cameraCache[scene->getMainCameraID()];
 	glm::mat4 view = glm::lookAt(camera->eye, camera->eye + camera->target, camera->up);
 	glm::mat4 vp = perspectiveProjection * view;
 	glm::vec3 camera_position = camera->eye;
@@ -91,8 +89,8 @@ void OpenGLRenderer::render() {
 	index = renderBasic(index, vp);
 	index = renderNormal(index, vp);
 	index = renderBasicLit(index, camera_position, vp);
-	index = renderBasicBlock(index, camera_position, vp);
-
+	//index = renderBasicBlock(index, camera_position, vp);
+	renderChunks(manager, camera_position, vp);
 	//glBindVertexArray(0);
 }
 
@@ -110,9 +108,9 @@ int OpenGLRenderer::renderBasic(int startIndex, glm::mat4 vp) {
 	do {
 		RenderState state = this->getRenderStateFromIndex(index);
 
-		Instance *instance = &scene->instanceCache[state.instanceID];
-		Mesh *mesh = &scene->meshCache[instance->meshID];
-		Transformation *transformation = &scene->transformationCache[instance->transformationID];
+		Scene::Instance *instance = &scene->instanceCache[state.instanceID];
+		Scene::Mesh *mesh = &scene->meshCache[instance->meshID];
+		Scene::Transformation *transformation = &scene->transformationCache[instance->transformationID];
 
 		glm::quat rot(transformation->rotation);
 		glm::vec3 axis = glm::axis(rot);
@@ -157,9 +155,9 @@ int OpenGLRenderer::renderNormal(int startIndex, glm::mat4 vp) {
 	do {
 		RenderState state = this->getRenderStateFromIndex(index);
 
-		Instance *instance = &scene->instanceCache[state.instanceID];
-		Mesh *mesh = &scene->meshCache[instance->meshID];
-		Transformation *transformation = &scene->transformationCache[instance->transformationID];
+		Scene::Instance *instance = &scene->instanceCache[state.instanceID];
+		Scene::Mesh *mesh = &scene->meshCache[instance->meshID];
+		Scene::Transformation *transformation = &scene->transformationCache[instance->transformationID];
 
 		glm::quat rot(transformation->rotation);
 		glm::vec3 axis = glm::axis(rot);
@@ -201,7 +199,7 @@ int OpenGLRenderer::renderBasicLit(int startIndex, glm::vec3 camera_position, gl
 	shader->setUniform3f("camera_pos", camera_position);
 	shader->setUniformMat4("VP", vp);
 
-	PointLight &point = this->scene->pointLightCache[0];
+	Scene::PointLight &point = this->scene->pointLightCache[0];
 	shader->setUniform3f("point_light_position", point.position);
 	shader->setUniform3f("point_light_color", point.color);
 	shader->setUniform1f("point_light_intensity", point.intensity);
@@ -210,9 +208,9 @@ int OpenGLRenderer::renderBasicLit(int startIndex, glm::vec3 camera_position, gl
 	do {
 		RenderState state = this->getRenderStateFromIndex(index);
 
-		Instance *instance = &scene->instanceCache[state.instanceID];
-		Mesh *mesh = &scene->meshCache[instance->meshID];
-		Transformation *transformation = &scene->transformationCache[instance->transformationID];
+		Scene::Instance *instance = &scene->instanceCache[state.instanceID];
+		Scene::Mesh *mesh = &scene->meshCache[instance->meshID];
+		Scene::Transformation *transformation = &scene->transformationCache[instance->transformationID];
 
 		glm::quat rot(transformation->rotation);
 		glm::vec3 axis = glm::axis(rot);
@@ -261,7 +259,7 @@ int OpenGLRenderer::renderBasicBlock(int startIndex, glm::vec3 camera_position, 
 	shader->setUniform3f("camera_pos", camera_position);
 	shader->setUniformMat4("VP", vp);
 
-	PointLight &point = this->scene->pointLightCache[0];
+	Scene::PointLight &point = this->scene->pointLightCache[0];
 	shader->setUniform3f("point_light_position", point.position);
 	shader->setUniform3f("point_light_color", point.color);
 	shader->setUniform1f("point_light_intensity", point.intensity);
@@ -270,9 +268,9 @@ int OpenGLRenderer::renderBasicBlock(int startIndex, glm::vec3 camera_position, 
 	do {
 		RenderState state = this->getRenderStateFromIndex(index);
 
-		Instance *instance = &scene->instanceCache[state.instanceID];
-		Mesh *mesh = &scene->meshCache[instance->meshID];
-		Transformation *transformation = &scene->transformationCache[instance->transformationID];
+		Scene::Instance *instance = &scene->instanceCache[state.instanceID];
+		Scene::Mesh *mesh = &scene->meshCache[instance->meshID];
+		Scene::Transformation *transformation = &scene->transformationCache[instance->transformationID];
 
 		glm::quat rot(transformation->rotation);
 		glm::vec3 axis = glm::axis(rot);
@@ -306,6 +304,56 @@ int OpenGLRenderer::renderBasicBlock(int startIndex, glm::vec3 camera_position, 
 	glBindVertexArray(0);
 
 	return index;
+}
+
+void OpenGLRenderer::renderChunks(Voxel::ChunkManager *manager, glm::vec3 camera_position, glm::mat4 vp) {
+	const Graphics::BlockMaterial chunkMat = { {.95f, .7f, .8f}, 30 };
+	
+	Shader::GLSLProgram *shader = Shader::getShaderSet({ "chunk_shader.vert", "chunk_shader.frag" });
+	shader->use();
+
+	shader->setUniform3f("camera_pos", camera_position);
+	shader->setUniformMat4("VP", vp);
+
+	Scene::PointLight &point = this->scene->pointLightCache[0];
+	shader->setUniform3f("point_light_position", point.position);
+	shader->setUniform3f("point_light_color", point.color);
+	shader->setUniform1f("point_light_intensity", point.intensity);
+
+	glm::mat4 ident = glm::identity<glm::mat4>();
+
+	Voxel::ChunkManager::ChunkIterator iterator = manager->begin();
+	while(iterator != manager->end()){
+		Voxel::Chunk *chunk = iterator->second;
+
+		if (chunk == nullptr) {
+			continue;
+		}
+
+		float x = chunk->getChunkX() * Voxel::CHUNK_RENDER_WIDTH_X;
+		float y = chunk->getChunkY() * Voxel::CHUNK_RENDER_WIDTH_Y;
+		float z = chunk->getChunkZ() * Voxel::CHUNK_RENDER_WIDTH_Z;
+
+		glm::mat4 model = glm::translate(ident, glm::vec3(x, y, z));
+
+		glm::mat3 mat(model);
+		shader->setUniformMat3("inverseTransposeMatrix", glm::inverse(mat), true);
+		shader->setUniformMat4("M", model);
+
+		shader->setUniform3f("specular_color", chunkMat.specularColor);
+		shader->setUniform1f("shinyness", chunkMat.shinyness);
+
+		chunk->getChunkVAO().bind();
+		glEnableVertexAttribArray(POSITION_ATTRIB_LOCATION);
+		glEnableVertexAttribArray(NORMAL_ATTRIB_LOCATION);
+		glEnableVertexAttribArray(COLOR_ATTRIB_LOCATION);
+		glDrawElements(GL_TRIANGLES, (GLsizei)chunk->getChunkGeometry().getIndexCount(), GL_UNSIGNED_INT, 0);
+
+		iterator++;
+	}
+
+	shader->end();
+	glBindVertexArray(0);
 }
 
 bool OpenGLRenderer::isValidState(int sortedStateKeyIndex, MaterialID typeID) {
