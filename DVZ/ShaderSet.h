@@ -12,6 +12,7 @@
 #define GEOMETRY_EXT "geom"
 #define FRAGMENT_EXT "frag"
 
+#define MAX_SHADER_CODE_LEN 1000000
 namespace Graphics { namespace Shader{
 
 	typedef GLuint ProgramID;
@@ -84,13 +85,13 @@ namespace Graphics { namespace Shader{
 		std::string getProgramName(const std::vector<std::string>& shaders);
 
 		GLuint linkProgram(GLuint vertexID, GLuint geometryID, GLuint fragmentID);
-		GLuint compileShader(std::string src, GLenum shaderType);
+		//GLuint compileShader(std::string src, GLenum shaderType);
 
-		void getCompilationError(GLuint shaderID);
-		void getLinkError(GLuint programID);
+		//void getCompilationError(GLuint shaderID);
+		//void getLinkError(GLuint programID);
 		std::string readFile(std::string filename);
-
-		GLuint compileShader(std::string, GLenum shaderType);
+		std::string preProcessor(std::string& source);
+		GLuint compileShader(std::string& source, GLenum shaderType);
 		GLuint linkProgram(GLuint vertexID, GLuint geometryID, GLuint fragmentID);
 	}
 

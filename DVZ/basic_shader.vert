@@ -1,15 +1,6 @@
 #version 330 core
 
-#ifndef PREAMBLE_GLSL
-#define PREAMBLE_GLSL
-
-#define POSITION_ATTRIB_LOCATION 0
-#define TEXCOORD_ATTRIB_LOCATION 1
-#define NORMAL_ATTRIB_LOCATION 2
-#define COLOR_ATTRIB_LOCATION 3
-#endif
-
-
+#include "preamble.glsl"
 
 layout(location = POSITION_ATTRIB_LOCATION)
 	in vec3 vert_pos;

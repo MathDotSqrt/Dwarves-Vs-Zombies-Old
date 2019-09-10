@@ -208,6 +208,7 @@ GLSLProgram* Shader::createShaderSet(const std::vector<std::string>& shaderFilen
 		}
 
 		std::string source = readFile(shaderFilename);
+		//preProcessor(source);
 		*shaderID = compileShader(source, shaderType);
 
 		if (*shaderID == 0) {
@@ -253,10 +254,55 @@ string Shader::Internal::readFile(string filename) {
 		LOG_ERROR("%s", error_message.c_str());
 		throw std::runtime_error(error_message);	//abort
 	}
-	return text;
+
+
+	return preProcessor(text);
 }
 
-GLuint Shader::Internal::compileShader(std::string source, GLenum shaderType) {
+std::string Shader::Internal::preProcessor(std::string& source) {
+	const std::string INCLUDE_STRING = "#include ";
+	
+	//if there was a recursive includes the shader source will explode in size.
+	//this is my safe gaurd to prevent that
+	if (source.length() > MAX_SHADER_CODE_LEN) {
+		LOG_ERROR("Shader source [%d] > Max source length [%d]. Probably cyclic includes", (int)source.length(), (int)MAX_SHADER_CODE_LEN);
+		throw std::runtime_error("Shader source too long");	//abort
+	}
+
+	std::size_t found = source.find(INCLUDE_STRING);
+
+	//if no include statements were found return the unmodified source
+	if (found == std::string::npos) {
+		return source;
+	}
+
+	std::size_t index = found + INCLUDE_STRING.length();
+
+	//include filename will be placed here
+	std::string include_file = "";
+	while (source[index] != '\n') {
+		include_file += source[index];
+		index++;
+	}
+
+	std::size_t replace_length = INCLUDE_STRING.length() + include_file.length();
+
+	if (include_file.length() == 0 || include_file[0] != '"' || include_file[include_file.length() - 1] != '"') {
+		LOG_ERROR("Include is invalid for %s", include_file.c_str());
+		source.replace(found, replace_length, "\n");
+	}
+
+	include_file.erase(0, 1);						//erase first "
+	include_file.erase(include_file.size() - 1);	//erase last  "
+
+	std::string replace_string = readFile(include_file);
+	replace_string.erase(std::find(replace_string.begin(), replace_string.end(), '\0'), replace_string.end());
+	source.replace(found, replace_length, replace_string);
+
+	return source + "\n";
+}
+
+GLuint Shader::Internal::compileShader(std::string& source, GLenum shaderType) {
 	const char *src = source.c_str();
 
 	GLuint shaderID = glCreateShader(shaderType);
