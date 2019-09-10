@@ -20,6 +20,7 @@ namespace Graphics { namespace Shader{
 	typedef GLuint FragmentID;
 	typedef GLuint GeometryID;
 
+	//todo RAII ban copy operators. Low priority
 	class GLSLProgram {
 	public:
 		friend GLSLProgram *getShaderSet(const std::vector<std::string>& shaders);
@@ -61,10 +62,12 @@ namespace Graphics { namespace Shader{
 		void setUniformMat4(std::string uniformName, glm::mat4 mat, bool transpose = GL_FALSE);
 		void setUniformMat4(std::string uniformName, float mat[4 * 4], bool transpose = GL_FALSE);
 
+		const std::vector<std::string>& getFilenames();
+
 		void dispose();
 
 	private:
-		const std::string name;
+		const std::vector<std::string> filenames;
 		const ProgramID programID;
 		const VertexID vertexID;
 		const FragmentID fragmentID;
@@ -73,18 +76,19 @@ namespace Graphics { namespace Shader{
 		std::unordered_map<std::string, GLint> uniforms;
 		bool m_isValid;
 
-		GLSLProgram(std::string name, ProgramID programID, VertexID vertexID, FragmentID fragmentID);
-		GLSLProgram(std::string name, ProgramID programID, VertexID vertexID, GeometryID geometryID, FragmentID fragmentID);
+		GLSLProgram(std::vector<std::string> filenames, ProgramID programID, VertexID vertexID, FragmentID fragmentID);
+		GLSLProgram(std::vector<std::string> filenames, ProgramID programID, VertexID vertexID, GeometryID geometryID, FragmentID fragmentID);
 		~GLSLProgram();
 	};
 
 
 	namespace Internal {
 		static std::unordered_map<std::string, GLSLProgram*> shaderMap;
+		//static GLSLProgram *DEFAULT_PROGRAM = createShaderSet({});
 
 		std::string getProgramName(const std::vector<std::string>& shaders);
 
-		GLuint linkProgram(GLuint vertexID, GLuint geometryID, GLuint fragmentID);
+		//GLuint linkProgram(GLuint vertexID, GLuint geometryID, GLuint fragmentID);
 		//GLuint compileShader(std::string src, GLenum shaderType);
 
 		//void getCompilationError(GLuint shaderID);
@@ -97,6 +101,10 @@ namespace Graphics { namespace Shader{
 
 	GLSLProgram* getShaderSet(const std::vector<std::string>& shaders);
 	GLSLProgram* createShaderSet(const std::vector<std::string>& shaders);
+
+	typedef std::unordered_map<std::string, GLSLProgram*>::iterator ShaderIterator;
+	ShaderIterator begin();
+	ShaderIterator end();
 
 	void disposeAll();
 

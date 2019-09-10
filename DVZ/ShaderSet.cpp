@@ -8,8 +8,8 @@ using namespace Graphics;
 using namespace Shader;
 using namespace Shader::Internal;
 
-GLSLProgram::GLSLProgram(string name, ProgramID programID, VertexID vertexID, FragmentID fragmentID) :
-	name(name),
+GLSLProgram::GLSLProgram(std::vector<std::string> filenames, ProgramID programID, VertexID vertexID, FragmentID fragmentID) :
+	filenames(filenames),
 	programID(programID),
 	vertexID(vertexID),
 	geometryID(0),
@@ -18,8 +18,8 @@ GLSLProgram::GLSLProgram(string name, ProgramID programID, VertexID vertexID, Fr
 }
 
 
-GLSLProgram::GLSLProgram(string name, ProgramID programID, VertexID vertexID, GeometryID geometryID, FragmentID fragmentID) :
-	name(name),
+GLSLProgram::GLSLProgram(std::vector<std::string> filenames, ProgramID programID, VertexID vertexID, GeometryID geometryID, FragmentID fragmentID) :
+	filenames(filenames),
 	programID(programID),
 	vertexID(vertexID),
 	geometryID(geometryID),
@@ -118,6 +118,10 @@ void GLSLProgram::setUniformMat4(string uniformName, float mat[4 * 4], bool tran
 		glUniformMatrix4fv(uniformLocation, 1, transpose, mat);
 }
 
+const vector<string>& GLSLProgram::getFilenames() {
+	return this->filenames;
+}
+
 void GLSLProgram::dispose() {
 	glDetachShader(this->programID, this->vertexID);
 	glDeleteShader(this->vertexID);
@@ -146,12 +150,14 @@ GLSLProgram* Shader::getShaderSet(const std::vector<std::string>& shaderFilename
 	if (shaderFilenames.size() <= 1) {
 		return nullptr;
 	}
-	
+
 	std::string programName = getProgramName(shaderFilenames);
-
 	GLSLProgram* program = shaderMap[programName];
-
 	if (program == nullptr || program->isValid() == false) {
+		if (program != nullptr) {	//todo hot reload shaders
+			delete program;
+		}
+
 		LOG_SHADE("Creating program: %s", programName.c_str());
 		program = createShaderSet(shaderFilenames);
 
@@ -208,7 +214,6 @@ GLSLProgram* Shader::createShaderSet(const std::vector<std::string>& shaderFilen
 		}
 
 		std::string source = readFile(shaderFilename);
-		//preProcessor(source);
 		*shaderID = compileShader(source, shaderType);
 
 		if (*shaderID == 0) {
@@ -222,7 +227,7 @@ GLSLProgram* Shader::createShaderSet(const std::vector<std::string>& shaderFilen
 		return nullptr;
 	}
 
-	return new GLSLProgram(getProgramName(shaderFilenames), programID, vertexID, geometryID, fragmentID);
+	return new GLSLProgram(shaderFilenames, programID, vertexID, geometryID, fragmentID);
 }
 
 std::string Shader::Internal::getProgramName(const std::vector<std::string>& shaders) {
@@ -354,6 +359,16 @@ GLuint Shader::Internal::linkProgram(GLuint vertexID, GLuint geometryID, GLuint 
 	LOG_SHADE("(P) Linked program %i", programID);
 	return programID;
 }
+
+Shader::ShaderIterator Shader::begin() {
+	return shaderMap.begin();
+}
+
+Shader::ShaderIterator Shader::end() {
+	return shaderMap.end();
+}
+
+
 
 void Shader::disposeAll() {
 	LOG_SHADE("Disposing all shaders...");

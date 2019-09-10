@@ -203,7 +203,7 @@ bool Engine::isConnected() {
 void Engine::addSystem(System *system) {
 	if (std::find(this->systems.begin(), this->systems.end(), system) == this->systems.end()) {
 		//LOG_ENGINE("System: %d Index: %d", system->getPriority(), std::upper_bound(this->systems.begin(), this->systems.end(), system, system->operator<));
-		this->systems.insert(system);
+		this->systems.insert(system);	//TODO fix bug where multiple systems cannot have same priority
 		
 		//this->systems.push_back(system);
 		system->addedToEngine(this);

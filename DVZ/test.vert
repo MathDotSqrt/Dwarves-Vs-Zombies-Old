@@ -1,11 +1,11 @@
 #version 330 core
 
-in vec3 vert_pos;
-in vec3 vert_col;
-in vec2 vert_tex_coord;
+#include "preamble.glsl"
+
+layout(location = POSITION_ATTRIB_LOCATION) in vec3 vert_pos;
 
 out vec3 frag_color;
-out vec2 frag_tex_coord;
+
 
 void main(){
 	frag_color = vert_col;

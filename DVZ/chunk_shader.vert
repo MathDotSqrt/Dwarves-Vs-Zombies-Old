@@ -1,5 +1,4 @@
 #version 330 core
-
 #include "preamble.glsl"
 
 layout(location = POSITION_ATTRIB_LOCATION) in vec3 vert_pos;

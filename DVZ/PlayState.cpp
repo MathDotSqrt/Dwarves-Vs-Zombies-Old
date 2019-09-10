@@ -8,11 +8,10 @@
 #include "BasicRenderSystem.h"
 #include "NetPlayerSystem.h"
 #include "VoxelSystem.h"
-#include "ChunkManager.h"
+#include "ShaderUpdaterSystem.h"
 
 #include "QuadGeometry.h"
 #include "ModelGeometry.h"
-#include "gtx/string_cast.hpp"
 
 PlayState::PlayState(GameStateManager *gsm) : GameState(gsm) {
 
@@ -51,12 +50,13 @@ void PlayState::init() {
 
 	/*SYSTEM*/
 	this->e.addSystem(new InputSystem(0));
-	this->e.addSystem(new MovementSystem(1));
-	this->e.addSystem(new NetPlayerSystem(.1f, 2));
-	this->e.addSystem(new VoxelSystem(3));
-	this->e.addSystem(new BasicRenderSystem(100));
+	this->e.addSystem(new ShaderUpdaterSystem(1.0f, 100));
+	this->e.addSystem(new MovementSystem(200));
+	//this->e.addSystem(new NetPlayerSystem(.1f, 2));
+	this->e.addSystem(new VoxelSystem(300));
+	this->e.addSystem(new BasicRenderSystem(500));
 	/*SYSTEM*/
-
+	LOG_SYSTEM("MANNNN");
 }
 
 void PlayState::cleanUp() {
