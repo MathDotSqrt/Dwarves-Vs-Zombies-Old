@@ -25,8 +25,14 @@ namespace Graphics { namespace Shader{
 	public:
 		friend GLSLProgram *getShaderSet(const std::vector<std::string>& shaders);
 		friend GLSLProgram *createShaderSet(const std::vector<std::string>& shaders);
+		friend void reloadShader(GLSLProgram **program);
+
 		friend void disposeAll();
 
+		struct FileTime {
+			unsigned long low;
+			unsigned long high;
+		};
 
 		inline bool isValid() {
 			return this->m_isValid;
@@ -63,11 +69,16 @@ namespace Graphics { namespace Shader{
 		void setUniformMat4(std::string uniformName, float mat[4 * 4], bool transpose = GL_FALSE);
 
 		const std::vector<std::string>& getFilenames();
+		std::vector<std::pair<void*, FileTime>>& getFiledata();
 
 		void dispose();
 
 	private:
+
+
 		const std::vector<std::string> filenames;
+		std::vector<std::pair<void *, FileTime>> filedata;
+
 		const ProgramID programID;
 		const VertexID vertexID;
 		const FragmentID fragmentID;
@@ -79,10 +90,14 @@ namespace Graphics { namespace Shader{
 		GLSLProgram(std::vector<std::string> filenames, ProgramID programID, VertexID vertexID, FragmentID fragmentID);
 		GLSLProgram(std::vector<std::string> filenames, ProgramID programID, VertexID vertexID, GeometryID geometryID, FragmentID fragmentID);
 		~GLSLProgram();
+
 	};
 
 
 	namespace Internal {
+		std::vector<std::pair<void*, GLSLProgram::FileTime>> loadFileData(const std::vector<std::string>& filenames);
+
+
 		static std::unordered_map<std::string, GLSLProgram*> shaderMap;
 		//static GLSLProgram *DEFAULT_PROGRAM = createShaderSet({});
 
@@ -101,6 +116,7 @@ namespace Graphics { namespace Shader{
 
 	GLSLProgram* getShaderSet(const std::vector<std::string>& shaders);
 	GLSLProgram* createShaderSet(const std::vector<std::string>& shaders);
+	void reloadShader(GLSLProgram **program);
 
 	typedef std::unordered_map<std::string, GLSLProgram*>::iterator ShaderIterator;
 	ShaderIterator begin();

@@ -2,6 +2,8 @@
 #include "macrologger.h"
 #include <gtc/type_ptr.hpp>
 #include <assert.h>
+#include <windows.h>
+#include <fileapi.h>
 
 using namespace std;
 using namespace Graphics;
@@ -10,16 +12,19 @@ using namespace Shader::Internal;
 
 GLSLProgram::GLSLProgram(std::vector<std::string> filenames, ProgramID programID, VertexID vertexID, FragmentID fragmentID) :
 	filenames(filenames),
+	filedata(Shader::Internal::loadFileData(filenames)),
 	programID(programID),
 	vertexID(vertexID),
 	geometryID(0),
 	fragmentID(fragmentID){
 	this->m_isValid = true;
+
 }
 
 
 GLSLProgram::GLSLProgram(std::vector<std::string> filenames, ProgramID programID, VertexID vertexID, GeometryID geometryID, FragmentID fragmentID) :
 	filenames(filenames),
+	filedata(Shader::Internal::loadFileData(filenames)),
 	programID(programID),
 	vertexID(vertexID),
 	geometryID(geometryID),
@@ -31,6 +36,16 @@ GLSLProgram::~GLSLProgram() {
 	if (this->isValid()) {
 		this->dispose();
 	}
+
+	for (std::pair<void*, FileTime> data : this->filedata) {
+		void* filePtr = data.first;
+
+		if ((HANDLE)filePtr != INVALID_HANDLE_VALUE) {
+			LOG_SHADE("Closing file handle [%p]", filePtr);
+			CloseHandle((HANDLE)filePtr);
+		}
+	}
+
 }
 
 GLint GLSLProgram::getUniformLocation(string uniformName) {
@@ -122,6 +137,10 @@ const vector<string>& GLSLProgram::getFilenames() {
 	return this->filenames;
 }
 
+vector<std::pair<void*, GLSLProgram::FileTime>>& GLSLProgram::getFiledata() {
+	return this->filedata;
+}
+
 void GLSLProgram::dispose() {
 	glDetachShader(this->programID, this->vertexID);
 	glDeleteShader(this->vertexID);
@@ -137,14 +156,35 @@ void GLSLProgram::dispose() {
 	glDeleteProgram(this->programID);
 
 	LOG_SHADE("Disposed %s: {ProgramID %d, VertexID %d, GeometryID %d, Fragment %d}",
-		this->name.c_str(), this->programID, this->vertexID, this->geometryID, this->fragmentID);
+		getProgramName(this->filenames).c_str(), this->programID, this->vertexID, this->geometryID, this->fragmentID);
 
 	this->uniforms.clear();
 	this->m_isValid = false;
 }
 
 
+void Shader::reloadShader(GLSLProgram **program) {
+	GLSLProgram *oldProgram = *program;
+	GLSLProgram *newProgram = Shader::createShaderSet(oldProgram->getFilenames());
 
+	//if updated shader could not compile 
+	if (newProgram == nullptr) {
+		LOG_SHADE("Could not reload shader");
+		return;
+	}
+
+	//generates the shader key to access it to get it out of the map
+	std::string programName = getProgramName(oldProgram->getFilenames());
+
+	//deletes the old program and frees GPU memory of it
+	delete oldProgram;
+
+	//inserts the updated shader program in the same location as the previous one
+	shaderMap[programName] = newProgram;
+
+	//sets input pointer equal to the new program pointer
+	*program = newProgram;
+}
 
 GLSLProgram* Shader::getShaderSet(const std::vector<std::string>& shaderFilenames) {
 	if (shaderFilenames.size() <= 1) {
@@ -360,6 +400,32 @@ GLuint Shader::Internal::linkProgram(GLuint vertexID, GLuint geometryID, GLuint 
 	return programID;
 }
 
+std::vector<std::pair<void*, GLSLProgram::FileTime>> Shader::Internal::loadFileData(const std::vector<std::string>& filenames) {
+	const static std::string rel = "C:/Users/Chris/Desktop/Dwarves Vs Zombies/Dwarves-Vs-Zombies/DVZ/";
+
+	std::vector<std::pair<void*, GLSLProgram::FileTime>> filedata;
+	for (std::string filename : filenames) {
+		auto HANDLE = CreateFileA(
+			(rel + filename).c_str(),
+			GENERIC_READ,											//only need read
+			FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE,	//allow other processes to read and write to this file
+			NULL,													//no security needed
+			OPEN_EXISTING,											//only open if existing
+			FILE_ATTRIBUTE_NORMAL,									//we need no special attribs
+			NULL);													//we can ignore if we are opening existing file
+
+
+		FILETIME writeTime = { 0 };
+		GetFileTime(HANDLE, NULL, NULL, &writeTime);
+
+		//converts microsofts filetime to my filetime so i wont have to put includes everywhere
+		GLSLProgram::FileTime time = { writeTime.dwLowDateTime, writeTime.dwHighDateTime };
+		filedata.push_back(std::make_pair((void*)HANDLE, time));
+	}
+
+	return filedata;
+}
+
 Shader::ShaderIterator Shader::begin() {
 	return shaderMap.begin();
 }
@@ -367,8 +433,6 @@ Shader::ShaderIterator Shader::begin() {
 Shader::ShaderIterator Shader::end() {
 	return shaderMap.end();
 }
-
-
 
 void Shader::disposeAll() {
 	LOG_SHADE("Disposing all shaders...");

@@ -30,9 +30,9 @@ void main(){
 	float light_attenuation = min(point_light_intensity / dot(frag_to_point, frag_to_point), 1);
 
 	vec3 lightColor = vec3(0, 0, 0);
-	lightColor += point_light_color * lightStrength * light_attenuation * .5;
+	lightColor += point_light_color * lightStrength * light_attenuation * .7;
 	lightColor += point_light_color * specular_color * specularStrength * light_attenuation;
-	lightColor += vec3(.3, .4, .7) * .9;
+	lightColor += vec3(.7, .6, .7) *  .9;
 
 
 	final_color = vec4(frag_color * lightColor, 1);

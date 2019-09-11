@@ -48,7 +48,7 @@
 #define LOG_INFO(message, ...)		//PRINT(LOG_FMT message NEW_LINE, LOG_ARGS("INFO"), __VA_ARGS__)
 #define LOG_DEBUG(message, ...)		//PRINT(LOG_FMT message NEW_LINE, LOG_ARGS("DEBUG"), __VA_ARGS__)
 
-#define LOG_SHADE(message, ...)		//PRINT(LOG_FMT message NEW_LINE, LOG_ARGS("SHADE"), __VA_ARGS__)
+#define LOG_SHADE(message, ...)		PRINT(LOG_FMT message NEW_LINE, LOG_ARGS("SHADE"), __VA_ARGS__)
 #define LOG_RENDER(message, ...)	//PRINT(LOG_FMT message NEW_LINE, LOG_ARGS("RENDER"), __VA_ARGS__)
 #define LOG_SCENE(message, ...)		//PRINT(LOG_FMT message NEW_LINE, LOG_ARGS("SCENE"), __VA_ARGS__)
 #define LOG_VOXEL(message, ...)		PRINT(LOG_FMT message NEW_LINE, LOG_ARGS("VOXEL"), __VA_ARGS__)

@@ -7,10 +7,10 @@
 #include "macrologger.h"
 #include "GameStateManager.h"
 #include "PlayState.h"
-#include "Components.h"
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
+#include "ShaderSet.h"
 #include "Window.h"
 
 
@@ -57,6 +57,7 @@ void run() {
 	//TODO ensure that VBO and VAO is getting disposed
 	gsm.disposeAllStates();
 	Window::destroyWindow();
+	Graphics::Shader::disposeAll();
 }
 
 int main(void) {
