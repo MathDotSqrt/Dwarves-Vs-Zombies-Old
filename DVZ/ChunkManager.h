@@ -25,6 +25,9 @@ public:
 	}
 
 	inline ChunkIterator removeChunk(const ChunkIterator& iter) {
+		delete iter->second;
+		iter->second = nullptr;
+
 		return this->chunkSet.erase(iter);
 	}
 	void removeChunk(int cx, int cy, int cz);
