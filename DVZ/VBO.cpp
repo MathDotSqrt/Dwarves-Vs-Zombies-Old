@@ -5,14 +5,28 @@ using namespace Graphics;
 VBO::VBO(GLenum bufferType){
 	this->bufferType = bufferType;
 	glGenBuffers(1, &this->vboID);
-
-	VBO::vbos.push_back(this->vboID);
-
 	LOG_DEBUG("Generated VBO ID: %d", this->vboID);
 }
 
+VBO::VBO(VBO&& other) : vboID(other.vboID), bufferType(other.bufferType){
+	other.vboID = 0;
+}
 
 VBO::~VBO(){
+	this->dispose();
+}
+
+VBO& VBO::operator=(VBO &&other) {
+	if (this != &other) {
+		this->dispose();
+
+		//this->vboID is zero
+		std::swap(this->vboID, other.vboID);
+		std::swap(this->bufferType, other.bufferType);
+	}
+
+	//todo figure this out
+	return *this;
 }
 
 void VBO::bind() {
@@ -30,18 +44,9 @@ void VBO::bufferData(size_t bytes, void* data, GLenum drawType) {
 }
 
 void VBO::dispose() {
-	glDeleteBuffers(1, &this->vboID);
-
-	//removes a vbo from the vbo list
-	VBO::vbos.erase(std::remove(VBO::vbos.begin(), VBO::vbos.end(), this->vboID), vbos.end());
-
-	LOG_DEBUG("Deleted VBO ID: %d", this->vboID);
+	if (this->vboID) {
+		glDeleteBuffers(1, &this->vboID);
+		LOG_DEBUG("Deleted VBO ID: %d", this->vboID);
+		this->vboID = 0;
+	}
 }
-
-void VBO::disposeAll() {
-	glDeleteBuffers((GLsizei)VBO::vbos.size(), VBO::vbos.data());
-
-	LOG_DEBUG("Deleted %d VBOs ", VBO::vbos.size());
-}
-
-std::vector<GLuint> VBO::vbos;

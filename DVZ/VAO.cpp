@@ -17,7 +17,16 @@ VAO::VAO(VAO &&other){
 	other.vaoID = 0; //use null buffer id for old object
 }
 
+VAO& VAO::operator=(VAO &&other) {
+	if (this != &other) {
+		this->dispose();
+		//this->vaoID is zero
+		std::swap(this->vaoID, other.vaoID);
+	}
 
+	//todo figure this out
+	return *this;
+}
 
 void VAO::bind() {
 	glBindVertexArray(this->vaoID);

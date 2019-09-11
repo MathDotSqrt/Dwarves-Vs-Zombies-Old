@@ -11,7 +11,7 @@ namespace Graphics {
 
 class VAO {
 private:
-	GLuint vaoID;
+	GLuint vaoID = 0;
 	void dispose();
 
 public:
@@ -22,16 +22,7 @@ public:
 	VAO(const VAO &) = delete;
 	VAO& operator=(const VAO &) = delete;
 
-	VAO& operator=(VAO &&other) {
-		if (this != &other) {
-			this->dispose();
-			//this->vaoID is zero
-			std::swap(this->vaoID, other.vaoID);
-		}
-		
-		//todo figure this out
-		return *this;
-	}
+	VAO& operator=(VAO &&other);
 
 	void bind();
 	void unbind();

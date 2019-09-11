@@ -113,7 +113,7 @@ public:
 		unsigned int materialInstanceID = this->createMaterialInstance(material);
 		unsigned int bufferInstanceID = this->createVertexBuffer(model.getVerticies());
 		
-		VertexBuffer vb = this->vertexBufferCache[bufferInstanceID];
+		VertexBuffer &vb = this->vertexBufferCache[bufferInstanceID];
 
 		Mesh newMesh;
 		newMesh.typeID = MATERIAL::type;

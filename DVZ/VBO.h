@@ -10,7 +10,12 @@ namespace Graphics {
 class VBO {
 public:
 	VBO(GLenum);
+	VBO(VBO&& other);
 	~VBO();
+
+	VBO(const VBO&) = delete;
+	VBO& operator =(const VBO&) = delete;
+	VBO& operator=(VBO &&other);
 
 	void bind();
 	void unbind(); 
@@ -23,10 +28,8 @@ public:
 	}
 
 	void dispose();
-	void disposeAll();
 private:
-	static std::vector<GLuint> vbos;
-	GLuint vboID;
+	GLuint vboID = 0;
 	GLuint bufferType;
 
 };
