@@ -12,8 +12,13 @@ ChunkManager::~ChunkManager()
 }
 
 void ChunkManager::removeChunk(int cx, int cy, int cz) {
-	if (this->isChunkMapped(cx, cy, cz)) {
-		this->chunkSet.erase(this->hashcode(cx, cy, cz));
+	auto chunk = this->chunkSet.find(this->hashcode(cx, cy, cz));
+	if (chunk != this->chunkSet.end()) {
+		delete chunk->second;
+		chunk->second = nullptr;
+
+		this->chunkSet.erase(chunk);
+
 	}
 }
 
