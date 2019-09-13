@@ -222,6 +222,7 @@
     <ClCompile Include="SystemManager.cpp" />
     <ClCompile Include="TestSystem.cpp" />
     <ClCompile Include="TEX.cpp" />
+    <ClCompile Include="Timer.cpp" />
     <ClCompile Include="VAO.cpp" />
     <ClCompile Include="VBO.cpp" />
     <ClCompile Include="VoxelSystem.cpp" />
@@ -269,6 +270,7 @@
     <ClInclude Include="SystemManager.h" />
     <ClInclude Include="TestSystem.h" />
     <ClInclude Include="TEX.h" />
+    <ClInclude Include="Timer.h" />
     <ClInclude Include="tinyobj.h" />
     <ClInclude Include="VAO.h" />
     <ClInclude Include="VBO.h" />
