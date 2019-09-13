@@ -124,6 +124,7 @@
       <ConformanceMode>true</ConformanceMode>
       <BasicRuntimeChecks>Default</BasicRuntimeChecks>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -151,6 +152,7 @@
       <AdditionalIncludeDirectories>$(SolutionDir)RakNet\;$(SolutionDir)STD;$(SolutionDir)GLM\gtx;$(SolutionDir)GLM\gtc;$(SolutionDir)OpenGL\GLEW-win32\include;$(SolutionDir)OpenGL\GLFW-win64\include;$(SolutionDir)GLM;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <BasicRuntimeChecks>Default</BasicRuntimeChecks>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <AdditionalDependencies>opengl32.lib;openGL32.lib;glew32.lib;glfw3.lib;RakNetDLL.lib;%(AdditionalDependencies)</AdditionalDependencies>
