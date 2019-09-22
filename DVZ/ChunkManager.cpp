@@ -2,11 +2,16 @@
 #include <string>
 using namespace Voxel;
 
-ChunkManager::ChunkManager() {
+ChunkManager::ChunkManager() : chunkLoadQueue(), chunkReadyQueue(), chunkLoaderThread(&ChunkManager::chunkLoader, this) {
+	this->shouldRunChunkLoader = true;
+
 }
 
 
 ChunkManager::~ChunkManager() {
+	this->shouldRunChunkLoader = false;
+	this->chunkLoadQueue.push(nullptr);
+	this->chunkLoaderThread.join();	//might not delete some chunks...
 }
 
 void ChunkManager::update(float x, float y, float z) {
@@ -16,16 +21,19 @@ void ChunkManager::update(float x, float y, float z) {
 
 	for (int cx = chunkX - RENDER_DISTANCE / 2; cx < chunkX + RENDER_DISTANCE; cx++) {
 		for (int cz = chunkZ - RENDER_DISTANCE / 2; cz < chunkZ + RENDER_DISTANCE; cz++) {
-			if (!this->isChunkMapped(cx, chunkY, cz)) {
-				Voxel::Chunk *chunk = this->generateChunk(cx, chunkY, cz);
-				chunk->generateTerrain();
-				chunk->generateMesh();
+			if (!this->isChunkMapped(cx, chunkY, cz) && !this->isChunkQueued(cx, chunkY, cz)) {
+				//Voxel::Chunk *chunk = this->generateChunk(cx, chunkY, cz);
+				//chunk->generateTerrain();
+				//chunk->generateMesh();
+				//chunk->bufferDataToGPU();
+				Chunk *chunk = new Chunk(cx, chunkY, cz);
+				this->chunkLoadQueue.push(chunk);
+				this->chunkQueuedSet[this->hashcode(cx, chunkY, cz)] = chunk;
 			}
 		}
 	}
 
 	ChunkIterator iter = this->begin();
-
 	while (iter != this->end()) {
 		Chunk *chunk = iter->second;
 		int cx = chunk->getChunkX() - chunkX;
@@ -42,11 +50,41 @@ void ChunkManager::update(float x, float y, float z) {
 		else {
 			if (!chunk->needsMeshUpdate()) {
 				chunk->generateMesh();
+				chunk->bufferDataToGPU();
 			}
 			iter++;
 		}
 
 	}
+
+	if (!this->chunkReadyQueue.empty()) {
+		Chunk* chunk = this->chunkReadyQueue.pop();
+		if (chunk != nullptr && !this->isChunkMapped(chunk->getChunkX(), chunk->getChunkY(), chunk->getChunkZ())) {
+			chunk->bufferDataToGPU();
+			this->chunkQueuedSet.erase(this->chunkQueuedSet.find(this->hashcode(chunk->getChunkX(), chunk->getChunkY(), chunk->getChunkZ())));
+
+			this->chunkSet[this->hashcode(chunk->getChunkX(), chunk->getChunkY(), chunk->getChunkZ())] = chunk;
+		}
+		else {
+			//chunk could not be added to chunk set, delete it
+			delete chunk;
+		}
+	}
+}
+
+void ChunkManager::chunkLoader() {
+	this->shouldRunChunkLoader = true;
+	LOG_VOXEL("Starting chunk loader thread...");
+	while (this->shouldRunChunkLoader) {
+		Chunk* chunk = this->chunkLoadQueue.pop();
+		if (chunk == nullptr) {
+			continue;
+		}
+		chunk->generateTerrain();
+		chunk->generateMesh();
+		this->chunkReadyQueue.push(chunk);
+	}
+	LOG_VOXEL("Terminated: chunk loader thread");
 }
 
 ChunkManager::ChunkIterator ChunkManager::removeChunk(const ChunkManager::ChunkIterator& iter) {
@@ -94,6 +132,17 @@ bool ChunkManager::isChunkMapped(int cx, int cy, int cz) {
 	iter = this->chunkSet.find(hashcode(cx, cy, cz));
 
 	return iter != this->chunkSet.end();
+}
+
+bool ChunkManager::isChunkQueued(int cx, int cy, int cz) {
+	//check to see if chunkset actually inserts a nullptr when checking for an invalid chunk
+	//Might cause lots of rehashing
+	//return this->getChunk(cx, cy, cz) == nullptr;
+
+	std::unordered_map<int, Chunk*>::const_iterator iter;
+	iter = this->chunkQueuedSet.find(hashcode(cx, cy, cz));
+
+	return iter != this->chunkQueuedSet.end();
 }
 
 Block& ChunkManager::getBlock(int x, int y, int z) {

@@ -1,6 +1,8 @@
 #pragma once
 #include <unordered_map>
 #include <thread>
+#include <atomic>
+#include "ConcurrentQueue.h"
 #include "Block.h"
 #include "Chunk.h"
 
@@ -14,7 +16,13 @@ namespace Voxel{
 class ChunkManager {
 private:
 	static const int RENDER_DISTANCE = 10;
-	std::thread meshGenThread;
+	
+
+	Util::ConcurrentQueue<Chunk*> chunkLoadQueue;
+	Util::ConcurrentQueue<Chunk*> chunkReadyQueue;
+
+	std::thread chunkLoaderThread;
+	std::atomic<bool> shouldRunChunkLoader;
 
 public:
 	typedef std::unordered_map<int, Chunk*>::iterator ChunkIterator;
@@ -25,7 +33,7 @@ public:
 	//todo add frustum
 	void update(float x, float y, float z);
 
-	void meshGenerator();
+	void chunkLoader();
 
 	inline ChunkIterator begin() {
 		return this->chunkSet.begin();
@@ -45,6 +53,7 @@ public:
 	//Chunk* setChunk(int cx, int cy, int cz, Block *data);
 
 	bool isChunkMapped(int cx, int cy, int cz);
+	bool isChunkQueued(int cx, int cy, int cz);
 
 	Block& getBlock(int x, int y, int z);
 	void setBlock(int x, int y, int z, Block &block);
@@ -63,6 +72,7 @@ public:
 
 private:
 	std::unordered_map<int, Chunk*> chunkSet;
+	std::unordered_map<int, Chunk*> chunkQueuedSet;
 	int expand(int x);
 
 };

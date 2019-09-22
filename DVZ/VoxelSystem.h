@@ -12,11 +12,7 @@ class VoxelSystem : public System {
 
 private:
 	inline static int RENDER_DISTANCE = 10;
-
-	Util::ConcurrentQueue<Voxel::Chunk*> loadChunkQueue;
-	Util::ConcurrentQueue<Voxel::Chunk*> loadedChunkQueue;
-
-	std::thread chunkLoaderThread;	//todo remove this
+	//std::thread chunkLoaderThread;	//todo remove this
 
 	bool shouldLoadChunks = true;
 

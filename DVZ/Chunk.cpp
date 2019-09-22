@@ -121,7 +121,6 @@ void Chunk::generateMesh() {
 		}
 	}
 
-	this->bufferDataToGPU();
 	this->isMeshValid = true;
 }
 

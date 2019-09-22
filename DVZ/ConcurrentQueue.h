@@ -1,3 +1,4 @@
+#pragma once
 #include <queue>
 #include <thread>
 #include <mutex>
@@ -41,6 +42,11 @@ public:
 		queue_.push(std::move(item));
 		mlock.unlock();
 		cond_.notify_one();
+	}
+
+	bool empty() {
+		std::lock_guard<std::mutex> mlock(mutex_);
+		return queue_.empty();
 	}
 
 private:
