@@ -121,6 +121,11 @@ void Chunk::generateMesh() {
 		}
 	}
 
+	this->bufferDataToGPU();
+	this->isMeshValid = true;
+}
+
+void Chunk::bufferDataToGPU() {
 	this->vbo.bind();
 	this->vbo.bufferData(this->geometry.getVerticies(), GL_STATIC_DRAW);
 	this->vbo.unbind();
@@ -128,27 +133,6 @@ void Chunk::generateMesh() {
 	this->ebo.bufferData(this->geometry.getIndices(), GL_STATIC_DRAW);
 	this->ebo.unbind();
 	this->indexCount = this->geometry.getIndexCount();
-	//this->vbo.bind();
-	//this->vbo.bufferData(this->geometry.getVerticies(), GL_STATIC_DRAW);
-	//this->ebo.bind();
-	//this->ebo.bufferData(this->geometry.getIndices(), GL_STATIC_DRAW);
-	//this->ebo.unbind();
-	
-	//this->vao.bind();
-	//this->vbo.bind();
-	//this->vbo.bufferData(sizeof(BlockVertex) * this->verticies.size(), this->verticies.data(), GL_DYNAMIC_DRAW);
-	//glVertexAttribPointer(POSITION_ATTRIB_LOCATION, 3, GL_FLOAT, GL_FALSE, sizeof(BlockVertex), (void*)0);
-	//glVertexAttribPointer(NORMAL_ATTRIB_LOCATION, 3, GL_FLOAT, GL_FALSE, sizeof(BlockVertex), (void*)(1 * sizeof(glm::vec3)));
-	//glVertexAttribPointer(COLOR_ATTRIB_LOCATION, 3, GL_FLOAT, GL_FALSE, sizeof(BlockVertex), (void*)(2 * sizeof(glm::vec3)));
-	//this->vbo.unbind();
-
-	//this->ebo.bind();
-	//this->ebo.bufferData(sizeof(GLuint) * this->indices.size(), this->indices.data(), GL_DYNAMIC_DRAW);
-	//this->vao.unbind();
-	//this->ebo.unbind();
-
-	//this->indexCount = (int)this->indices.size();
-	this->isMeshValid = true;
 }
 
 void Chunk::createCube(int x, int y, int z, BlockFaceCullTags render, BlockType type) {

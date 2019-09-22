@@ -1,20 +1,31 @@
 #pragma once
 #include <unordered_map>
+#include <thread>
+#include "Block.h"
 #include "Chunk.h"
 
 namespace Voxel{
+	struct Chunk2 {
+		int cx, cy, cz;
+		Block *data;
+	};
 
 
 class ChunkManager {
 private:
-	std::unordered_map<int, Chunk*> chunkSet;
-	int expand(int x);
+	static const int RENDER_DISTANCE = 10;
+	std::thread meshGenThread;
 
 public:
 	typedef std::unordered_map<int, Chunk*>::iterator ChunkIterator;
 
 	ChunkManager();
 	~ChunkManager();
+
+	//todo add frustum
+	void update(float x, float y, float z);
+
+	void meshGenerator();
 
 	inline ChunkIterator begin() {
 		return this->chunkSet.begin();
@@ -24,12 +35,7 @@ public:
 		return this->chunkSet.end();
 	}
 
-	inline ChunkIterator removeChunk(const ChunkIterator& iter) {
-		delete iter->second;
-		iter->second = nullptr;
-
-		return this->chunkSet.erase(iter);
-	}
+	inline ChunkIterator removeChunk(const ChunkIterator& iter);
 	void removeChunk(int cx, int cy, int cz);
 
 	int hashcode(int i, int j, int k);
@@ -55,6 +61,9 @@ public:
 	int getChunkY(float y);
 	int getChunkZ(float z);
 
+private:
+	std::unordered_map<int, Chunk*> chunkSet;
+	int expand(int x);
 
 };
 
