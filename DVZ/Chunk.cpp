@@ -16,21 +16,33 @@ Chunk::Chunk(int x, int y, int z) :
 	{
 
 	data = new Block[CHUNK_VOLUME];
+
+	this->vao.bind();
+	
+	this->vbo.bind();
+	this->vao.bufferInterleavedData(vbo, this->geometry.attribs);
+	this->vbo.unbind();
+	
+	this->ebo.bind();
+	this->vao.unbind();
+	this->ebo.unbind();
+
+	this->indexCount = 0;
 	this->isMeshValid = false;
 }
 
-Chunk::Chunk(int x, int y, int z, Block *data) : 
-	chunk_x(x), 
-	chunk_y(y), 
-	chunk_z(z), 
-	data(data),
-	vbo(GL_ARRAY_BUFFER), 
-	ebo(GL_ELEMENT_ARRAY_BUFFER)
-	{
-	this->isMeshValid = false;
-
-	//glm::vec3::value_type
-}
+//Chunk::Chunk(int x, int y, int z, Block *data) : 
+//	chunk_x(x), 
+//	chunk_y(y), 
+//	chunk_z(z), 
+//	data(data),
+//	vbo(GL_ARRAY_BUFFER), 
+//	ebo(GL_ELEMENT_ARRAY_BUFFER)
+//	{
+//	this->isMeshValid = false;
+//	
+//	//glm::vec3::value_type
+//}
 
 Chunk::~Chunk() {
 	free(data);
@@ -109,14 +121,11 @@ void Chunk::generateMesh() {
 		}
 	}
 
-	this->vao.bind();
 	this->vbo.bind();
 	this->vbo.bufferData(this->geometry.getVerticies(), GL_STATIC_DRAW);
-	this->vao.bufferInterleavedData(this->vbo, this->geometry.attribs);
 	this->vbo.unbind();
 	this->ebo.bind();
 	this->ebo.bufferData(this->geometry.getIndices(), GL_STATIC_DRAW);
-	this->vao.unbind();
 	this->ebo.unbind();
 	this->indexCount = this->geometry.getIndexCount();
 	//this->vbo.bind();
@@ -299,10 +308,10 @@ void Chunk::setBlock(int x, int y, int z, Block &block) {
 	}
 }
 
-void Chunk::setBlockData(Block *newData) {
-	assert(newData);
-
-	free(this->data);
-	this->data = newData;
-	this->isMeshValid = false;
-}
+//void Chunk::setBlockData(Block *newData) {
+//	assert(newData);
+//
+//	free(this->data);
+//	this->data = newData;
+//	this->isMeshValid = false;
+//}

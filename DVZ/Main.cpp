@@ -30,6 +30,7 @@ void run() {
 	Window::createWindow(DEFAULT_WIDTH, DEFAULT_HEIGHT, TITLE);
 	initGLEW();
 
+
 	GameStateManager gsm;
 	gsm.enterState<PlayState>();
 

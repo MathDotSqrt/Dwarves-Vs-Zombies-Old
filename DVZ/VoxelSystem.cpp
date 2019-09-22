@@ -5,13 +5,17 @@
 #include "ChunkManager.h"
 #include "Scene.h"
 
-VoxelSystem::VoxelSystem(int priority) : System(priority){
-
+VoxelSystem::VoxelSystem(int priority) : chunkLoaderThread(&VoxelSystem::chunkLoader, this), System(priority){
+	LOG_SYSTEM("NUMBER OF THREADS: %d", std::thread::hardware_concurrency());
 }
 
 
 VoxelSystem::~VoxelSystem() {
-
+	if (this->shouldLoadChunks) {
+		this->shouldLoadChunks = false;
+		this->chunkLoaderThread.join();
+	}
+	this->shouldLoadChunks = false;
 }
 
 void VoxelSystem::addedToEngine(Engine *engine) {
@@ -62,6 +66,7 @@ void VoxelSystem::update(Engine *engine, float delta) {
 
 			//removes chunk and returns an iterator pointing to the next chunk
 			iter = manager->removeChunk(iter);
+			
 		}
 		else {
 			if (!chunk->needsMeshUpdate()) {
@@ -91,6 +96,15 @@ void VoxelSystem::update(Engine *engine, float delta) {
 		Voxel::Block b(Voxel::BlockType::BLOCK_TYPE_PURPLE);
 		manager->setBlock(bx, by, bz, b);
 	}
+}
+
+void VoxelSystem::chunkLoader() {
+	LOG_SYSTEM("Starting chunk loading thread...");
+	while (this->shouldLoadChunks) {
+		LOG_SYSTEM("THREAD");
+		std::this_thread::sleep_for(std::chrono::milliseconds(500));
+	}
+	LOG_SYSTEM("Thread stopped");
 }
 
 void VoxelSystem::loadChunk(Engine *engine, int cx, int cy, int cz) {

@@ -36,7 +36,7 @@ public:
 
 	Chunk* getChunk(int cx, int cy, int cz);
 	Chunk* generateChunk(int cx, int cy, int cz);
-	Chunk* setChunk(int cx, int cy, int cz, Block *data);
+	//Chunk* setChunk(int cx, int cy, int cz, Block *data);
 
 	bool isChunkMapped(int cx, int cy, int cz);
 

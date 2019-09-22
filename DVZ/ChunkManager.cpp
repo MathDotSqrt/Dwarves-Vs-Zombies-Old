@@ -37,20 +37,20 @@ Chunk* ChunkManager::generateChunk(int cx, int cy, int cz) {
 	return chunk;
 }
 
-Chunk* ChunkManager::setChunk(int cx, int cy, int cz, Block *data) {
-	Chunk *chunk;
-	
-	if (this->isChunkMapped(cx, cy, cz)) {
-		chunk = this->getChunk(cx, cy, cz);
-		chunk->setBlockData(data);
-	}
-	else {
-		chunk = new Chunk(cx, cy, cz, data);
-		this->chunkSet[this->hashcode(cx, cy, cz)] = chunk;
-	}
-
-	return chunk;
-}
+//Chunk* ChunkManager::setChunk(int cx, int cy, int cz, Block *data) {
+//	Chunk *chunk;
+//	
+//	if (this->isChunkMapped(cx, cy, cz)) {
+//		chunk = this->getChunk(cx, cy, cz);
+//		chunk->setBlockData(data);
+//	}
+//	else {
+//		chunk = new Chunk(cx, cy, cz, data);
+//		this->chunkSet[this->hashcode(cx, cy, cz)] = chunk;
+//	}
+//
+//	return chunk;
+//}
 
 bool ChunkManager::isChunkMapped(int cx, int cy, int cz) {
 	//check to see if chunkset actually inserts a nullptr when checking for an invalid chunk

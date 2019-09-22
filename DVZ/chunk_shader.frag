@@ -34,7 +34,7 @@ void main(){
 	lightColor += point_light_color * specular_color * specularStrength * light_attenuation;
 	//lightColor += vec3(.7, .7, .6) *  .9;
 
-	vec3 ambientColor = vec3(.7, .7, .7) * .7;
+	vec3 ambientColor = vec3(1, 1, 1) * .3;
 	lightColor += ambientColor;
 
 

@@ -54,22 +54,22 @@ private:
 	//Graphics::VBO ebo;
 	Graphics::VAO vao;
 	Graphics::VBO vbo;
-	Graphics::VBO ebo;
+	Graphics::VBO ebo;		//TODO: all index buffers are the same. replace this one with a unique one
 	size_t indexCount = 0;
 
 public:
 	
 	Chunk(int x, int y, int z);
-	Chunk(int x, int y, int z, Block *data);
+	//Chunk(int x, int y, int z, Block *data);
 	~Chunk();
 
 	void generateTerrain();
 	void generateMesh();
-
+	void bufferDataToGPU();
 
 	Block& getBlock(int x, int y, int z);
 	void setBlock(int x, int y, int z, Block &block);
-	void setBlockData(Block *newData);
+	//void setBlockData(Block *newData);
 
 	inline bool needsMeshUpdate() {
 		return this->isMeshValid;

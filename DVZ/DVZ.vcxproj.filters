@@ -201,6 +201,9 @@
     <ClInclude Include="Timer.h">
       <Filter>Header Files\Util</Filter>
     </ClInclude>
+    <ClInclude Include="ConcurrentQueue.h">
+      <Filter>Header Files\Util</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
