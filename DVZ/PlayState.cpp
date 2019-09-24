@@ -75,3 +75,4 @@ void PlayState::leaving() {
 void PlayState::update(float delta) {
 	this->e.update(delta);
 }
+

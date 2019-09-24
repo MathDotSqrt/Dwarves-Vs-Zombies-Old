@@ -52,6 +52,8 @@ Chunk::~Chunk() {
 }
 
 void Chunk::generateTerrain() {
+	std::lock_guard<std::shared_mutex> writeLock(this->chunkMutex);
+
 	for (int bz = 0; bz < CHUNK_WIDTH_Z; bz++) {
 		for (int by = 0; by < CHUNK_WIDTH_Y; by++) {
 			for (int bx = 0; bx < CHUNK_WIDTH_X; bx++) {
@@ -62,22 +64,22 @@ void Chunk::generateTerrain() {
 
 				if (y > 32)
 					if (x % 4 == 0 && z % 4 == 0 && y % 4 == 0) {
-						this->getBlock(bx, by, bz) = { BlockType::BLOCK_TYPE_STONE };
+						this->getBlockInternal(bx, by, bz) = { BlockType::BLOCK_TYPE_STONE };
 					}
 					else {
-						this->getBlock(bx, by, bz) = { BlockType::BLOCK_TYPE_DEFAULT };
+						this->getBlockInternal(bx, by, bz) = { BlockType::BLOCK_TYPE_DEFAULT };
 					}
 				else if ((x * x) % (z * z + 1) > y * y) {
 					if(y == 32)
-						this->getBlock(bx, by, bz) = { BlockType::BLOCK_TYPE_GRASS };
+						this->getBlockInternal(bx, by, bz) = { BlockType::BLOCK_TYPE_GRASS };
 					else if((x * (z % (y * y + 1))) % 2 == 0)
-						this->getBlock(bx, by, bz) = { BlockType::BLOCK_TYPE_DIRT };
+						this->getBlockInternal(bx, by, bz) = { BlockType::BLOCK_TYPE_DIRT };
 					else
-						this->getBlock(bx, by, bz) = { BlockType::BLOCK_TYPE_STONE };
+						this->getBlockInternal(bx, by, bz) = { BlockType::BLOCK_TYPE_STONE };
 					
 				}
 				else
-					this->getBlock(bx, by, bz) = {BlockType::BLOCK_TYPE_DEFAULT };
+					this->getBlockInternal(bx, by, bz) = {BlockType::BLOCK_TYPE_DEFAULT };
 				//if (x == y && y == z) {
 				//	this->getBlock(x, y, z) = { BlockType::BLOCK_TYPE_DIRT };
 				//}
@@ -92,31 +94,31 @@ void Chunk::generateTerrain() {
 }
 
 void Chunk::generateMesh() {
-	//this->verticies.clear();
-	//this->indices.clear();
+	std::scoped_lock<std::shared_mutex, std::mutex> lock(this->chunkMutex, this->geometryMutex);
+
 	this->geometry.clear();
 	for (int z = 0; z < CHUNK_WIDTH_Z; z++) {
 		for (int y = 0; y < CHUNK_WIDTH_Y; y++) {
 			for (int x = 0; x < CHUNK_WIDTH_X; x++) {
-				if (this->getBlock(x, y, z).type == BlockType::BLOCK_TYPE_DEFAULT) {
+				if (this->getBlockInternal(x, y, z).type == BlockType::BLOCK_TYPE_DEFAULT) {
 					continue;
 				}
 				BlockFaceCullTags render = {true, true, true, true, true, true};
 
 				if (x > 0)
-					render.nx = this->getBlock(x - 1, y, z).type == BlockType::BLOCK_TYPE_DEFAULT;
+					render.nx = this->getBlockInternal(x - 1, y, z).type == BlockType::BLOCK_TYPE_DEFAULT;
 				if (x < CHUNK_WIDTH_X - 1)
-					render.px = this->getBlock(x + 1, y, z).type == BlockType::BLOCK_TYPE_DEFAULT;
+					render.px = this->getBlockInternal(x + 1, y, z).type == BlockType::BLOCK_TYPE_DEFAULT;
 				if (y > 0)
-					render.ny = this->getBlock(x, y - 1, z).type == BlockType::BLOCK_TYPE_DEFAULT;
+					render.ny = this->getBlockInternal(x, y - 1, z).type == BlockType::BLOCK_TYPE_DEFAULT;
 				if (y < CHUNK_WIDTH_Y - 1)
-					render.py = this->getBlock(x, y + 1, z).type == BlockType::BLOCK_TYPE_DEFAULT;
+					render.py = this->getBlockInternal(x, y + 1, z).type == BlockType::BLOCK_TYPE_DEFAULT;
 				if (z > 0)
-					render.nz = this->getBlock(x, y, z - 1).type == BlockType::BLOCK_TYPE_DEFAULT;
+					render.nz = this->getBlockInternal(x, y, z - 1).type == BlockType::BLOCK_TYPE_DEFAULT;
 				if (z < CHUNK_WIDTH_Z - 1)
-					render.pz = this->getBlock(x, y, z + 1).type == BlockType::BLOCK_TYPE_DEFAULT;
+					render.pz = this->getBlockInternal(x, y, z + 1).type == BlockType::BLOCK_TYPE_DEFAULT;
 
-				this->createCube(x, y, z, render, this->getBlock(x, y, z).type);
+				this->createCube(x, y, z, render, this->getBlockInternal(x, y, z).type);
 			}
 		}
 	}
@@ -125,6 +127,8 @@ void Chunk::generateMesh() {
 }
 
 void Chunk::bufferDataToGPU() {
+	std::lock_guard<std::mutex> lock(this->geometryMutex);
+
 	this->vbo.bind();
 	this->vbo.bufferData(this->geometry.getVerticies(), GL_STATIC_DRAW);
 	this->vbo.unbind();
@@ -278,11 +282,14 @@ void Chunk::assertBlockIndex(int x, int y, int z) {
 }
 
 Block& Chunk::getBlock(int x, int y, int z) {
+	std::shared_lock<std::shared_mutex> lock(this->chunkMutex);
 	this->assertBlockIndex(x, y, z);
 	return data[this->toIndex(x, y, z)];
 }
 
 void Chunk::setBlock(int x, int y, int z, Block &block) {
+	std::lock_guard<std::shared_mutex> lock(this->chunkMutex);
+
 	this->assertBlockIndex(x, y, z);
 
 	if (this->data[this->toIndex(x, y, z)] != block) {

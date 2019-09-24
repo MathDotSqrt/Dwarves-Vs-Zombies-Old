@@ -7,7 +7,7 @@
 namespace Util{
 
 template <typename T>
-class ConcurrentQueue
+class BlockingConcurrentQueue
 {
 public:
 

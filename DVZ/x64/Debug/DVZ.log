@@ -1,20 +1,2 @@
-﻿  BasicRenderSystem.cpp
-  DemoState.cpp
-  Engine.cpp
-  GameState.cpp
-  GameStateManager.cpp
-  InputSystem.cpp
-  IntervalSystem.cpp
-  MainState.cpp
-  MovementSystem.cpp
-  NetPlayerSystem.cpp
-  NetWorkSystem.cpp
-  PlayState.cpp
-  ShaderUpdaterSystem.cpp
-  System.cpp
-  SystemManager.cpp
-  TestSystem.cpp
-  VoxelSystem.cpp
-  main.cpp
-  Generating Code...
+﻿  Chunk.cpp
   DVZ.vcxproj -> C:\Users\Chris\Desktop\Dwarves Vs Zombies\Dwarves-Vs-Zombies\x64\Debug\DVZ.exe

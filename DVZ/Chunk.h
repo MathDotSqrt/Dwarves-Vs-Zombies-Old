@@ -5,6 +5,7 @@
 #include <vector>
 #include "Geometry.h"
 #include "Attrib.h"
+#include <shared_mutex>
 
 namespace Voxel{
 
@@ -48,19 +49,18 @@ private:
 	bool isEmpty;
 
 	BlockGeometry geometry;
-	//std::vector<BlockVertex> verticies;
-	//std::vector<GLuint> indices;
-	//Graphics::VBO vbo;
-	//Graphics::VBO ebo;
+
 	Graphics::VAO vao;
 	Graphics::VBO vbo;
 	Graphics::VBO ebo;		//TODO: all index buffers are the same. replace this one with a unique one
 	size_t indexCount = 0;
 
+	std::shared_mutex chunkMutex;
+	std::mutex geometryMutex;
+
 public:
 	
 	Chunk(int x, int y, int z);
-	//Chunk(int x, int y, int z, Block *data);
 	~Chunk();
 
 	void generateTerrain();
@@ -69,7 +69,6 @@ public:
 
 	Block& getBlock(int x, int y, int z);
 	void setBlock(int x, int y, int z, Block &block);
-	//void setBlockData(Block *newData);
 
 	inline bool needsMeshUpdate() {
 		return this->isMeshValid;
@@ -95,6 +94,12 @@ public:
 		return this->vao;
 	}
 private:
+	inline Block& getBlockInternal(int x, int y, int z) {
+		//std::shared_lock<std::shared_mutex> lock(this->chunkMutex);
+		//this->assertBlockIndex(x, y, z);
+		return data[this->toIndex(x, y, z)];
+	}
+
 	void createCube(int x, int y, int z, BlockFaceCullTags render, BlockType type);
 	void createFace(BlockVertex v0, BlockVertex v1, BlockVertex v2, BlockVertex v3);
 

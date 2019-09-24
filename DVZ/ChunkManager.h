@@ -18,8 +18,8 @@ private:
 	static const int RENDER_DISTANCE = 10;
 	
 
-	Util::ConcurrentQueue<Chunk*> chunkLoadQueue;
-	Util::ConcurrentQueue<Chunk*> chunkReadyQueue;
+	Util::BlockingConcurrentQueue<Chunk*> chunkLoadQueue;
+	Util::BlockingConcurrentQueue<Chunk*> chunkReadyQueue;
 
 	std::thread chunkLoaderThread;
 	std::atomic<bool> shouldRunChunkLoader;
