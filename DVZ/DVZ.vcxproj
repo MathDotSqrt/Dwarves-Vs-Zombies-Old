@@ -206,6 +206,7 @@
     <ClCompile Include="IEntityListener.cpp" />
     <ClCompile Include="InputSystem.cpp" />
     <ClCompile Include="IntervalSystem.cpp" />
+    <ClCompile Include="IThreadPoolTask.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MainState.cpp" />
     <ClCompile Include="ModelGeometry.cpp" />
@@ -222,6 +223,7 @@
     <ClCompile Include="SystemManager.cpp" />
     <ClCompile Include="TestSystem.cpp" />
     <ClCompile Include="TEX.cpp" />
+    <ClCompile Include="ThreadPool.cpp" />
     <ClCompile Include="Timer.cpp" />
     <ClCompile Include="VAO.cpp" />
     <ClCompile Include="VBO.cpp" />
@@ -251,6 +253,7 @@
     <ClInclude Include="IntervalSystem.h" />
     <ClInclude Include="IRenderer.h" />
     <ClInclude Include="IResizable.h" />
+    <ClInclude Include="IThreadPoolTask.h" />
     <ClInclude Include="macrologger.h" />
     <ClInclude Include="MainState.h" />
     <ClInclude Include="Material.h" />
@@ -271,6 +274,7 @@
     <ClInclude Include="SystemManager.h" />
     <ClInclude Include="TestSystem.h" />
     <ClInclude Include="TEX.h" />
+    <ClInclude Include="ThreadPool.h" />
     <ClInclude Include="Timer.h" />
     <ClInclude Include="tinyobj.h" />
     <ClInclude Include="VAO.h" />

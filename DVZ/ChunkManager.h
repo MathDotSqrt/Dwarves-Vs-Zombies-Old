@@ -5,7 +5,7 @@
 #include "ConcurrentQueue.h"
 #include "Block.h"
 #include "Chunk.h"
-
+#include "ThreadPool.h"
 namespace Voxel{
 	struct Chunk2 {
 		int cx, cy, cz;
@@ -18,11 +18,9 @@ private:
 	static const int RENDER_DISTANCE = 10;
 	
 
-	Util::BlockingConcurrentQueue<Chunk*> chunkLoadQueue;
 	Util::BlockingConcurrentQueue<Chunk*> chunkReadyQueue;
-
-	std::thread chunkLoaderThread;
-	std::atomic<bool> shouldRunChunkLoader;
+	Util::Threading::ThreadPool pool;
+	
 
 public:
 	typedef std::unordered_map<int, Chunk*>::iterator ChunkIterator;
@@ -33,7 +31,7 @@ public:
 	//todo add frustum
 	void update(float x, float y, float z);
 
-	void chunkLoader();
+	void chunkLoader(Chunk *);
 
 	inline ChunkIterator begin() {
 		return this->chunkSet.begin();

@@ -1,17 +1,16 @@
 #include "ChunkManager.h"
 #include <string>
+#include <algorithm>
+#include <random>
 using namespace Voxel;
 
-ChunkManager::ChunkManager() : chunkLoadQueue(), chunkReadyQueue(), chunkLoaderThread(&ChunkManager::chunkLoader, this) {
-	this->shouldRunChunkLoader = true;
+ChunkManager::ChunkManager() : chunkReadyQueue(), pool(3) {
 
 }
 
 
 ChunkManager::~ChunkManager() {
-	this->shouldRunChunkLoader = false;
-	this->chunkLoadQueue.push(nullptr);
-	this->chunkLoaderThread.join();	//might not delete some chunks...
+	this->pool.stop();
 }
 
 void ChunkManager::update(float x, float y, float z) {
@@ -19,18 +18,26 @@ void ChunkManager::update(float x, float y, float z) {
 	int chunkY = this->getChunkY(y);
 	int chunkZ = this->getChunkZ(z);
 
+	std::vector<Chunk*> asd;
+
 	for (int cx = chunkX - RENDER_DISTANCE / 2; cx < chunkX + RENDER_DISTANCE; cx++) {
 		for (int cz = chunkZ - RENDER_DISTANCE / 2; cz < chunkZ + RENDER_DISTANCE; cz++) {
 			if (!this->isChunkMapped(cx, chunkY, cz) && !this->isChunkQueued(cx, chunkY, cz)) {
-				//Voxel::Chunk *chunk = this->generateChunk(cx, chunkY, cz);
-				//chunk->generateTerrain();
-				//chunk->generateMesh();
-				//chunk->bufferDataToGPU();
 				Chunk *chunk = new Chunk(cx, chunkY, cz);
-				this->chunkLoadQueue.push(chunk);
+				
+				asd.push_back(chunk);
 				this->chunkQueuedSet[this->hashcode(cx, chunkY, cz)] = chunk;
 			}
 		}
+	}
+
+	auto rng = std::default_random_engine{};
+	std::shuffle(std::begin(asd), std::end(asd), rng);
+
+	for (Chunk *c : asd) {
+		this->pool.submit([this, c]() {
+			this->chunkLoader(c);
+		});
 	}
 
 	ChunkIterator iter = this->begin();
@@ -72,19 +79,10 @@ void ChunkManager::update(float x, float y, float z) {
 	}
 }
 
-void ChunkManager::chunkLoader() {
-	this->shouldRunChunkLoader = true;
-	LOG_VOXEL("Starting chunk loader thread...");
-	while (this->shouldRunChunkLoader) {
-		Chunk* chunk = this->chunkLoadQueue.pop();
-		if (chunk == nullptr) {
-			continue;
-		}
-		chunk->generateTerrain();
-		chunk->generateMesh();
-		this->chunkReadyQueue.push(chunk);
-	}
-	LOG_VOXEL("Terminated: chunk loader thread");
+void ChunkManager::chunkLoader(Chunk *chunk) {
+	chunk->generateTerrain();
+	chunk->generateMesh();
+	this->chunkReadyQueue.push(chunk);
 }
 
 ChunkManager::ChunkIterator ChunkManager::removeChunk(const ChunkManager::ChunkIterator& iter) {

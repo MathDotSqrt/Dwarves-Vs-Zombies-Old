@@ -58,4 +58,5 @@
 #define LOG_SYSTEM(message, ...)	PRINT(LOG_FMT message NEW_LINE, LOG_ARGS("SYSTEM"), __VA_ARGS__)
 #define LOG_NET(message, ...)		PRINT(LOG_FMT message NEW_LINE, LOG_ARGS("NET"), __VA_ARGS__)
 #define LOG_ENGINE(message, ...)	PRINT(LOG_FMT message NEW_LINE, LOG_ARGS("ENGINE"), __VA_ARGS__)
+#define LOG_THREAD(message, ...)	PRINT(LOG_FMT message NEW_LINE, LOG_ARGS("THREAD"), __VA_ARGS__)
 

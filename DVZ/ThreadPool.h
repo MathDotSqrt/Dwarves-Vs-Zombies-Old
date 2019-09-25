@@ -18,7 +18,7 @@ namespace Util::Threading {
 			}
 		}
 		~ThreadPool() {
-
+			this->stop();
 		}
 
 		template<typename F, typename ...ARGS>
