@@ -12,7 +12,7 @@
 #include <GLFW/glfw3.h>
 #include "ShaderSet.h"
 #include "Window.h"
-
+#include "Timer.h"
 
 const static unsigned int DEFAULT_WIDTH = 1024, DEFAULT_HEIGHT = 768;
 const static char* TITLE = "Dwavres Vs Zombies";
@@ -38,14 +38,24 @@ void run() {
 	double lastTime = glfwGetTime();
 	double currentTime = glfwGetTime();
 	double delta = 1 / 60.0;
+	bool info_pause = false;
+
 	do {
 		currentTime = glfwGetTime();
 		gsm.update((float)delta);
 
 		numFrames++;
+		
+		if (info_pause && Window::isPressed('o')) {
+			info_pause = false;
+		}
+		else if (!info_pause && Window::isPressed('p')) {
+			info_pause = true;
+		}
 
-		if (currentTime - lastTime >= 1.0) {
+		if (currentTime - lastTime >= 1.0 && !info_pause) {
 			LOG_INFO("Milliseconds per Frame: %f", 1000.0 / numFrames);
+			Util::Performance::getTimerInfo();
 
 			numFrames = 0;
 			lastTime += 1.0;

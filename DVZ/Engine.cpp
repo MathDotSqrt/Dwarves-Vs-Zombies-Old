@@ -14,7 +14,7 @@
 #include "QuadGeometry.h"
 #include "ModelGeometry.h"
 #include "ChunkManager.h"
-
+#include "Timer.h"
 
 using namespace std;
 
@@ -84,13 +84,16 @@ entt::entity Engine::addNetPlayer(float x, float y, float z) {
 }
 
 void Engine::update(float delta) {
-	this->pollNetwork();
-	this->updateSystems(delta);
+	//this->pollNetwork();
+	{
+		Util::Performance::Timer timer("Update Systems");
+		this->updateSystems(delta);
+	}
 
 	this->renderer->prerender();
 	this->renderer->render(this->chunkManager);
 	
-	VelocityComponent &v = this->get<VelocityComponent>(this->main);
+	/*VelocityComponent &v = this->get<VelocityComponent>(this->main);
 	RotationalVelocityComponent &rv = this->get<RotationalVelocityComponent>(this->main);
 	float velLen = glm::length2(v.vel);
 	float rVelLen = glm::length2(rv.eular);
@@ -113,7 +116,7 @@ void Engine::update(float delta) {
 		out.Write(eular.z);
 
 		this->peer->Send(&out, HIGH_PRIORITY, RELIABLE_ORDERED, 0, SLNet::UNASSIGNED_RAKNET_GUID, true);
-	}
+	}*/
 }
 
 void Engine::attemptConnection(const char* host, unsigned short port) {

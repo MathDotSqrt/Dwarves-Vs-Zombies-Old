@@ -6,6 +6,8 @@
 #include <gtx/transform.hpp>
 #include <gtx/quaternion.hpp>
 #include "ChunkManager.h"
+#include "Timer.h"
+
 using namespace Graphics;
 
 MaterialID ColorMaterial::type = MaterialID::COLOR_MATERIAL_ID;
@@ -95,6 +97,7 @@ void OpenGLRenderer::render(Voxel::ChunkManager *manager) {
 }
 
 int OpenGLRenderer::renderBasic(int startIndex, glm::mat4 vp) {
+
 	if (!this->isValidState(startIndex, MaterialID::COLOR_MATERIAL_ID)) {
 		return startIndex;
 	}
@@ -307,6 +310,8 @@ int OpenGLRenderer::renderBasicBlock(int startIndex, glm::vec3 camera_position, 
 }
 
 void OpenGLRenderer::renderChunks(Voxel::ChunkManager *manager, glm::vec3 camera_position, glm::mat4 vp) {
+	Util::Performance::Timer timer("Render Chunks");
+
 	const Graphics::BlockMaterial chunkMat = { {.95f, .7f, .8f}, 30 };
 	
 	Shader::GLSLProgram *shader = Shader::getShaderSet({ "chunk_shader.vert", "chunk_shader.frag" });

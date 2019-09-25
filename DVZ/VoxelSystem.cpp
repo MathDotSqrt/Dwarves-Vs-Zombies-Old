@@ -35,7 +35,7 @@ void VoxelSystem::update(Engine *engine, float delta) {
 
 	if (manager->isBlockMapped(bx, by, bz)) {
 		Voxel::Block b(Voxel::BlockType::BLOCK_TYPE_PURPLE);
-		manager->setBlock(bx, by, bz, b);
+		//manager->setBlock(bx, by, bz, b);
 	}
 }
 

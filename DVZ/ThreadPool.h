@@ -31,10 +31,12 @@ namespace Util::Threading {
 				(*taskptr)();
 			};
 			
-			tasks.push(wrapper_function);
+			tasks.push(std::move(wrapper_function));
 
 			return taskptr->get_future();
 		}
+
+
 
 		void stop() {
 			if (shutdown) {
@@ -66,7 +68,7 @@ namespace Util::Threading {
 
 		class WorkerThread {
 		public:
-			WorkerThread(ThreadPool *pool, int id) : pool(pool){
+			WorkerThread(ThreadPool *pool, int id) : pool(pool){	//todo add destructor for logging
 
 			}
 

@@ -2,9 +2,11 @@
 #include <string>
 #include <algorithm>
 #include <random>
+#include "Timer.h"
+
 using namespace Voxel;
 
-ChunkManager::ChunkManager() : chunkReadyQueue(), pool(3) {
+ChunkManager::ChunkManager() : chunkReadyQueue(), pool(7) {
 
 }
 
@@ -13,31 +15,41 @@ ChunkManager::~ChunkManager() {
 	this->pool.stop();
 }
 
+void thread(Util::BlockingConcurrentQueue<Chunk*> *queue, Chunk *chunk) {
+	chunk->generateTerrain();
+	chunk->generateMesh();
+	queue->push(chunk);
+}
+
 void ChunkManager::update(float x, float y, float z) {
 	int chunkX = this->getChunkX(x);
 	int chunkY = this->getChunkY(y);
 	int chunkZ = this->getChunkZ(z);
+	{
+		Util::Performance::Timer timer("Chunk Updater");
+		for (int cx = chunkX - RENDER_DISTANCE / 2; cx < chunkX + RENDER_DISTANCE; cx++) {
+			for (int cz = chunkZ - RENDER_DISTANCE / 2; cz < chunkZ + RENDER_DISTANCE; cz++) {
+				if (!this->isChunkMapped(cx, chunkY, cz) && !this->isChunkQueued(cx, chunkY, cz)) {
+					Util::Performance::Timer timer2("Chunk Grid");
 
-	std::vector<Chunk*> asd;
+					Chunk *chunk = nullptr;
+					{
+						Util::Performance::Timer timer("Chunk alloc");
+						chunk = new Chunk(cx, chunkY, cz);
+					}
 
-	for (int cx = chunkX - RENDER_DISTANCE / 2; cx < chunkX + RENDER_DISTANCE; cx++) {
-		for (int cz = chunkZ - RENDER_DISTANCE / 2; cz < chunkZ + RENDER_DISTANCE; cz++) {
-			if (!this->isChunkMapped(cx, chunkY, cz) && !this->isChunkQueued(cx, chunkY, cz)) {
-				Chunk *chunk = new Chunk(cx, chunkY, cz);
-				
-				asd.push_back(chunk);
-				this->chunkQueuedSet[this->hashcode(cx, chunkY, cz)] = chunk;
+					/*this->pool.submit([this, chunk]() {
+						this->chunkLoader(chunk);
+					});*/
+					{
+						Util::Performance::Timer timer("Pool Submit");
+						this->pool.submit(thread, &this->chunkReadyQueue, chunk);
+						//this->chunkLoader(chunk);
+					}
+					this->chunkQueuedSet[this->hashcode(cx, chunkY, cz)] = chunk;
+				}
 			}
 		}
-	}
-
-	auto rng = std::default_random_engine{};
-	std::shuffle(std::begin(asd), std::end(asd), rng);
-
-	for (Chunk *c : asd) {
-		this->pool.submit([this, c]() {
-			this->chunkLoader(c);
-		});
 	}
 
 	ChunkIterator iter = this->begin();
@@ -50,7 +62,7 @@ void ChunkManager::update(float x, float y, float z) {
 			|| cx < -RENDER_DISTANCE / 2 - 5
 			|| cz > RENDER_DISTANCE / 2 + 5
 			|| cz < -RENDER_DISTANCE / 2 - 5) {
-			
+
 			//removes chunk and returns an iterator pointing to the next chunk
 			iter = this->removeChunk(iter);
 		}
@@ -64,7 +76,8 @@ void ChunkManager::update(float x, float y, float z) {
 
 	}
 
-	if (!this->chunkReadyQueue.empty()) {
+	Util::Performance::Timer timer("Chunk Queue");
+	for (int i = 0; i < 8 && !this->chunkReadyQueue.empty(); i++) {
 		Chunk* chunk = this->chunkReadyQueue.pop();
 		if (chunk != nullptr && !this->isChunkMapped(chunk->getChunkX(), chunk->getChunkY(), chunk->getChunkZ())) {
 			chunk->bufferDataToGPU();
@@ -84,6 +97,8 @@ void ChunkManager::chunkLoader(Chunk *chunk) {
 	chunk->generateMesh();
 	this->chunkReadyQueue.push(chunk);
 }
+
+
 
 ChunkManager::ChunkIterator ChunkManager::removeChunk(const ChunkManager::ChunkIterator& iter) {
 	delete iter->second;
