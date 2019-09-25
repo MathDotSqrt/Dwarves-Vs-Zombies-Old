@@ -48,6 +48,7 @@ void run() {
 		
 		if (info_pause && Window::isPressed('o')) {
 			info_pause = false;
+			lastTime = currentTime;
 		}
 		else if (!info_pause && Window::isPressed('p')) {
 			info_pause = true;

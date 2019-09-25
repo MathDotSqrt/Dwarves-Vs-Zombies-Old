@@ -26,23 +26,30 @@ void ChunkManager::update(float x, float y, float z) {
 	int chunkY = this->getChunkY(y);
 	int chunkZ = this->getChunkZ(z);
 	{
-		Util::Performance::Timer timer("Chunk Updater");
+		Util::Performance::Timer chunkTimer("Chunk Updater");
 		for (int cx = chunkX - RENDER_DISTANCE / 2; cx < chunkX + RENDER_DISTANCE; cx++) {
 			for (int cz = chunkZ - RENDER_DISTANCE / 2; cz < chunkZ + RENDER_DISTANCE; cz++) {
-				if (!this->isChunkMapped(cx, chunkY, cz) && !this->isChunkQueued(cx, chunkY, cz)) {
-					Util::Performance::Timer timer2("Chunk Grid");
+				bool isUnmapped = false;
+
+				{
+					Util::Performance::Timer mappTimer("Mapping Test");
+					isUnmapped = !this->isChunkMapped(cx, chunkY, cz) && !this->isChunkQueued(cx, chunkY, cz);
+				}
+
+				if (isUnmapped) {
+					Util::Performance::Timer gridTimer("Chunk Grid");
 
 					Chunk *chunk = nullptr;
 					{
-						Util::Performance::Timer timer("Chunk alloc");
-						chunk = new Chunk(cx, chunkY, cz);
+						Util::Performance::Timer allocTimer("Chunk alloc");
+						chunk = new Chunk(cx, chunkY, cz);	//todo allocate on thread
 					}
 
 					/*this->pool.submit([this, chunk]() {
 						this->chunkLoader(chunk);
 					});*/
 					{
-						Util::Performance::Timer timer("Pool Submit");
+						Util::Performance::Timer poolTimer("Pool Submit");
 						this->pool.submit(thread, &this->chunkReadyQueue, chunk);
 						//this->chunkLoader(chunk);
 					}
@@ -76,7 +83,6 @@ void ChunkManager::update(float x, float y, float z) {
 
 	}
 
-	Util::Performance::Timer timer("Chunk Queue");
 	for (int i = 0; i < 8 && !this->chunkReadyQueue.empty(); i++) {
 		Chunk* chunk = this->chunkReadyQueue.pop();
 		if (chunk != nullptr && !this->isChunkMapped(chunk->getChunkX(), chunk->getChunkY(), chunk->getChunkZ())) {
