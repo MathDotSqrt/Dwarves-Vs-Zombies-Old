@@ -27,7 +27,7 @@ namespace Util::Allocator{
 		}
 
 		size_t getNumAllocs() {
-			return this->used_mem;
+			return this->num_allocs;
 		}
 
 	protected:

@@ -217,6 +217,7 @@
     <ClCompile Include="NetWorkSystem.cpp" />
     <ClCompile Include="OpenGLRenderer.cpp" />
     <ClCompile Include="PlayState.cpp" />
+    <ClCompile Include="PoolAllocator.cpp" />
     <ClCompile Include="QuadGeometry.cpp" />
     <ClCompile Include="Scene.cpp" />
     <ClCompile Include="ShaderSet.cpp" />
@@ -271,6 +272,7 @@
     <ClInclude Include="OpenGLRenderer.h" />
     <ClInclude Include="PackedFreeList.h" />
     <ClInclude Include="PlayState.h" />
+    <ClInclude Include="PoolAllocator.h" />
     <ClInclude Include="QuadGeometry.h" />
     <ClInclude Include="Scene.h" />
     <ClInclude Include="ShaderSet.h" />

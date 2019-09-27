@@ -15,10 +15,13 @@
 #include "ModelGeometry.h"
 #include "ChunkManager.h"
 #include "Timer.h"
+#include <stdlib.h>
+
+#define LINEAR_ALLOC_SIZE 100 * sizeof(float)
 
 using namespace std;
 
-Engine::Engine() {
+Engine::Engine() : linearAlloc(LINEAR_ALLOC_SIZE, malloc(LINEAR_ALLOC_SIZE)){	//todo delete
 	this->peer = SLNet::RakPeerInterface::GetInstance();
 	this->serverAddress = nullptr;
 
@@ -265,6 +268,10 @@ SLNet::MessageID Engine::getPacketID(SLNet::Packet *packet) {
 	else {
 		return packet->data[0];
 	}
+}
+
+Util::Allocator::LinearAllocator& Engine::getAllocator() {
+	return this->linearAlloc;
 }
 
 Voxel::ChunkManager* Engine::getChunkManager() {

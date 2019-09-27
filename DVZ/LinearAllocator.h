@@ -14,6 +14,10 @@ namespace Util::Allocator {
 		void clear();
 
 	private:
+		//delete
+		LinearAllocator(const LinearAllocator &) = delete;
+		LinearAllocator& operator=(const LinearAllocator&) = delete;
+
 		voidptr currentPtr;
 	};
 

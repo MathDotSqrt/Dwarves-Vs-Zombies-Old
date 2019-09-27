@@ -219,6 +219,9 @@
     <ClInclude Include="LinearAllocator.h">
       <Filter>Header Files\Util</Filter>
     </ClInclude>
+    <ClInclude Include="PoolAllocator.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -337,6 +340,9 @@
     </ClCompile>
     <ClCompile Include="LinearAllocator.cpp">
       <Filter>Source Files\Util</Filter>
+    </ClCompile>
+    <ClCompile Include="PoolAllocator.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

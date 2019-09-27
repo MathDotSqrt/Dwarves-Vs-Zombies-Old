@@ -59,6 +59,12 @@ void PlayState::init() {
 	/*SYSTEM*/
 	LOG_SYSTEM("init");
 
+	Util::Allocator::LinearAllocator &alloc = this->e.getAllocator();
+	struct X {
+		float abc;
+		char c;
+	};
+
 	
 }
 

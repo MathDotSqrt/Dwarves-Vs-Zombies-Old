@@ -2,7 +2,8 @@
 #include <set>
 #include "entt.hpp"
 #include "RakPeerInterface.h"
-#include "System.h"
+#include "System.h"	//todo remove this
+#include "LinearAllocator.h"
 
 namespace Graphics {
 	class OpenGLRenderer;
@@ -14,24 +15,30 @@ namespace Voxel {
 	class ChunkManager;
 }
 
-class Engine : public entt::registry{
+class Engine : public entt::registry {
 private:
+	//MAIN PLAYER
 	entt::entity main;
-	bool canSendPackets = false;
+	//MAIN PLAYER
 
+	//NET
+	bool canSendPackets = false;
 	const char* host;
 	unsigned short port;
 	SLNet::RakPeerInterface *peer;
 	SLNet::SystemAddress *serverAddress;
-
 	std::unordered_map<entt::entity, entt::entity> netToClientID;
+	SLNet::MessageID getPacketID(SLNet::Packet *packet);
+	//NET
 
+	//SYSTEMS
+	Util::Allocator::LinearAllocator linearAlloc;
 	Voxel::ChunkManager *chunkManager;
 	Graphics::OpenGLRenderer *renderer;
 	Graphics::Scene *scene;
 	std::set<System*, System::classcomp> systems;
+	//SYSTEMS
 
-	SLNet::MessageID getPacketID(SLNet::Packet *packet);
 
 public:
 	Engine();
@@ -59,6 +66,7 @@ public:
 	entt::entity getPlayer();
 
 	SLNet::ConnectionState getConnectionState();
+	Util::Allocator::LinearAllocator& getAllocator();
 	Voxel::ChunkManager* getChunkManager();
 	Graphics::OpenGLRenderer* getRenderer();
 	Graphics::Scene* getScene();
