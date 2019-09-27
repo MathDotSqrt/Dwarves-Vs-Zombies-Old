@@ -192,6 +192,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Allocator.cpp" />
     <ClCompile Include="Attrib.cpp" />
     <ClCompile Include="BasicRenderSystem.cpp" />
     <ClCompile Include="Chunk.cpp" />
@@ -207,6 +208,7 @@
     <ClCompile Include="InputSystem.cpp" />
     <ClCompile Include="IntervalSystem.cpp" />
     <ClCompile Include="IThreadPoolTask.cpp" />
+    <ClCompile Include="LinearAllocator.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MainState.cpp" />
     <ClCompile Include="ModelGeometry.cpp" />
@@ -233,12 +235,14 @@
   <ItemGroup>
     <ClInclude Include="..\ENTT\single_include\entt\entt.hpp" />
     <ClInclude Include="..\STD\stb_image.h" />
+    <ClInclude Include="Allocator.h" />
     <ClInclude Include="Attrib.h" />
     <ClInclude Include="BasicRenderSystem.h" />
     <ClInclude Include="Block.h" />
     <ClInclude Include="Chunk.h" />
     <ClInclude Include="ChunkManager.h" />
     <ClInclude Include="Client.h" />
+    <ClInclude Include="Common.h" />
     <ClInclude Include="Components.h" />
     <ClInclude Include="ConcurrentQueue.h" />
     <ClInclude Include="CubeGeometry.h" />
@@ -254,6 +258,7 @@
     <ClInclude Include="IRenderer.h" />
     <ClInclude Include="IResizable.h" />
     <ClInclude Include="IThreadPoolTask.h" />
+    <ClInclude Include="LinearAllocator.h" />
     <ClInclude Include="macrologger.h" />
     <ClInclude Include="MainState.h" />
     <ClInclude Include="Material.h" />

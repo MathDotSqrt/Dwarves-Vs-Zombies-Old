@@ -2,6 +2,8 @@
 #include "PlayState.h"
 #include "macrologger.h"
 
+#include "LinearAllocator.h"
+
 #include "Components.h"
 #include "MovementSystem.h"
 #include "InputSystem.h"
@@ -10,7 +12,6 @@
 #include "VoxelSystem.h"
 #include "ShaderUpdaterSystem.h"
 
-#include "QuadGeometry.h"
 #include "ModelGeometry.h"
 
 PlayState::PlayState(GameStateManager *gsm) : GameState(gsm) {
@@ -56,7 +57,9 @@ void PlayState::init() {
 	this->e.addSystem(new VoxelSystem(300));
 	this->e.addSystem(new BasicRenderSystem(500));
 	/*SYSTEM*/
-	LOG_SYSTEM("MANNNN");
+	LOG_SYSTEM("init");
+
+	
 }
 
 void PlayState::cleanUp() {

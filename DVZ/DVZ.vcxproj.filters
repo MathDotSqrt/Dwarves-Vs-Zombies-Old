@@ -210,6 +210,15 @@
     <ClInclude Include="IThreadPoolTask.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Allocator.h">
+      <Filter>Header Files\Util</Filter>
+    </ClInclude>
+    <ClInclude Include="Common.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="LinearAllocator.h">
+      <Filter>Header Files\Util</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -323,6 +332,12 @@
     <ClCompile Include="IThreadPoolTask.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Allocator.cpp">
+      <Filter>Source Files\Util</Filter>
+    </ClCompile>
+    <ClCompile Include="LinearAllocator.cpp">
+      <Filter>Source Files\Util</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="test.vert">
@@ -371,8 +386,8 @@
     <Text Include="dragon.obj">
       <Filter>Resource Files\Models</Filter>
     </Text>
-    <Text Include="tree.obj" />
-    <Text Include="SpunkWalker.obj" />
     <Text Include="cube.obj" />
+    <Text Include="SpunkWalker.obj" />
+    <Text Include="tree.obj" />
   </ItemGroup>
 </Project>

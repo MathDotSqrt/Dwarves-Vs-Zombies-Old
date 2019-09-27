@@ -60,4 +60,5 @@
 #define LOG_ENGINE(message, ...)	PRINT(LOG_FMT message NEW_LINE, LOG_ARGS("ENGINE"), __VA_ARGS__)
 #define LOG_THREAD(message, ...)	PRINT(LOG_FMT message NEW_LINE, LOG_ARGS("THREAD"), __VA_ARGS__)
 #define LOG_TIMER(message, ...)		PRINT(LOG_FMT message NEW_LINE, LOG_ARGS("TIMER"), __VA_ARGS__)
+#define LOG_ALLOC(message, ...)		PRINT(LOG_FMT message NEW_LINE, LOG_ARGS("ALLOC"), __VA_ARGS__)
 
