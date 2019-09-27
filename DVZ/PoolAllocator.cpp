@@ -25,6 +25,7 @@ PoolAllocator::PoolAllocator(size_t block_size, uint8 block_alignment, size_t si
 	void **p = this->free_list_head;
 
 	for (size_t i = 0; i < num_blocks - 1; i++) {
+		p;
 		*p = (voidptr)(reinterpret_cast<uint8*>(p) + block_size);
 
 		p = (void**) *p;
@@ -60,7 +61,7 @@ void PoolAllocator::free(voidptr pointer) {
 		return;
 	}
 
-	*(static_cast<size_t*>(pointer)) = (size_t)this->free_list_head;
+	*((void**)pointer) = this->free_list_head;
 	this->free_list_head = (void**)pointer;
 
 	this->used_mem -= this->block_size;

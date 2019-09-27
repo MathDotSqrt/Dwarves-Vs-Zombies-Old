@@ -6,6 +6,9 @@
 #include "Block.h"
 #include "Chunk.h"
 #include "ThreadPool.h"
+
+#include "PoolAllocator.h"
+
 namespace Voxel{
 	struct Chunk2 {
 		int cx, cy, cz;
@@ -17,7 +20,7 @@ class ChunkManager {
 private:
 	static const int RENDER_DISTANCE = 10;
 	
-
+	Util::Allocator::PoolAllocator chunkAllocator;
 	Util::BlockingConcurrentQueue<Chunk*> chunkReadyQueue;
 	Util::Threading::ThreadPool pool;
 	
@@ -25,7 +28,7 @@ private:
 public:
 	typedef std::unordered_map<int, Chunk*>::iterator ChunkIterator;
 
-	ChunkManager();
+	ChunkManager(Util::Allocator::IAllocator &parent);
 	~ChunkManager();
 
 	//todo add frustum

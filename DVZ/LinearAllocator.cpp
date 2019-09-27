@@ -17,8 +17,8 @@ LinearAllocator::~LinearAllocator() {
 
 voidptr LinearAllocator::allocate(size_t size, uint8 alignment) {
 	assert(size != 0);
+	size_t avalible_mem = this->getAvailableMem();
 
-	size_t avalible_mem = this->buffer_size - this->used_mem;
 
 	//std::align only modifies currentPtr and avalible mem(?) if it can fit
 	voidptr alignedPointer = std::align(alignment, size, this->currentPtr, avalible_mem);
@@ -46,4 +46,5 @@ void LinearAllocator::clear() {
 	this->currentPtr = this->start;
 	this->used_mem = 0;
 	this->num_allocs = 0;
+	this->buffer_size;
 }

@@ -17,7 +17,8 @@
 #include "Timer.h"
 #include <stdlib.h>
 
-#define LINEAR_ALLOC_SIZE 100 * sizeof(float)
+#define LINEAR_ALLOC_SIZE 64 * 1024 * 1024
+//#define LINEAR_ALLOC_SIZE 100
 
 using namespace std;
 
@@ -29,7 +30,7 @@ Engine::Engine() : linearAlloc(LINEAR_ALLOC_SIZE, malloc(LINEAR_ALLOC_SIZE)){	//
 	this->renderer = new Graphics::OpenGLRenderer();
 	this->renderer->init(scene);
 
-	this->chunkManager = new Voxel::ChunkManager();
+	this->chunkManager = new Voxel::ChunkManager(this->linearAlloc);
 
 	this->main = entt::null;
 }

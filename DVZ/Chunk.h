@@ -27,6 +27,7 @@ static constexpr float CHUNK_RENDER_WIDTH_X = CHUNK_WIDTH_X * BLOCK_RENDER_SIZE;
 static constexpr float CHUNK_RENDER_WIDTH_Y = CHUNK_WIDTH_Y * BLOCK_RENDER_SIZE;
 static constexpr float CHUNK_RENDER_WIDTH_Z = CHUNK_WIDTH_Z * BLOCK_RENDER_SIZE;
 
+//DO NOT CALL THIS ON STACK
 class Chunk {
 private:
 	
@@ -44,7 +45,7 @@ private:
 
 	const int chunk_x, chunk_y, chunk_z;
 	
-	Block *data;
+	Block data[CHUNK_VOLUME];
 	bool isMeshValid;
 	bool isEmpty;
 

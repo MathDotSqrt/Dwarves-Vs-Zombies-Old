@@ -15,7 +15,7 @@ Chunk::Chunk(int x, int y, int z) :
 	ebo(GL_ELEMENT_ARRAY_BUFFER)
 	{
 
-	data = new Block[CHUNK_VOLUME];
+	//data = new Block[CHUNK_VOLUME];
 
 	this->vao.bind();
 	
@@ -45,7 +45,7 @@ Chunk::Chunk(int x, int y, int z) :
 //}
 
 Chunk::~Chunk() {
-	free(data);
+	//free(data);
 	//this->vbo.dispose();
 	//this->ebo.dispose();
 	LOG_VOXEL("Chunk {%d, %d, %d} deleted", this->chunk_x, this->chunk_y, this->chunk_z);

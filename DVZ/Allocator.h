@@ -14,19 +14,23 @@ namespace Util::Allocator{
 		virtual voidptr allocate(size_t size, uint8 alignment = 4) = 0;
 		virtual void free(voidptr pointer) = 0;
 
-		voidptr getStart() {
+		inline voidptr getStart() {
 			return this->start;
 		}
 
-		size_t getAllocSize() {
+		inline size_t getAllocSize() {
 			return this->buffer_size;
 		}
 
-		size_t getUsedMem() {
+		inline size_t getUsedMem() {
 			return this->used_mem;
 		}
 
-		size_t getNumAllocs() {
+		inline size_t getAvailableMem() {
+			return this->buffer_size - this->used_mem;
+		}
+
+		inline size_t getNumAllocs() {
 			return this->num_allocs;
 		}
 
@@ -40,6 +44,11 @@ namespace Util::Allocator{
 	template<typename T>
 	T* allocateNew(IAllocator& allocator) {
 		return new (allocator.allocate(sizeof(T), __alignof(T))) T;
+	}
+
+	template<typename T, typename ...ARGS>
+	T* allocateNew(IAllocator& allocator, ARGS... args) {
+		return new (allocator.allocate(sizeof(T), __alignof(T))) T(args...);
 	}
 
 	template<typename T>

@@ -4,9 +4,12 @@
 #include <random>
 #include "Timer.h"
 
+#define CHUNK_ALLOC_SIZE 32 * 1024 * 1024
+
 using namespace Voxel;
 
-ChunkManager::ChunkManager() : chunkReadyQueue(), pool(7) {
+ChunkManager::ChunkManager(Util::Allocator::IAllocator &parent) 
+	: chunkAllocator(sizeof(Chunk), __alignof(Chunk), CHUNK_ALLOC_SIZE, parent.allocate(CHUNK_ALLOC_SIZE)), chunkReadyQueue(), pool(7) {
 
 }
 
@@ -42,7 +45,8 @@ void ChunkManager::update(float x, float y, float z) {
 					Chunk *chunk = nullptr;
 					{
 						Util::Performance::Timer allocTimer("Chunk alloc");
-						chunk = new Chunk(cx, chunkY, cz);	//todo allocate on thread
+						//chunk = new Chunk(cx, chunkY, cz);	//todo allocate on thread
+						chunk = Util::Allocator::allocateNew<Chunk>(this->chunkAllocator, cx, chunkY, cz);
 					}
 
 					/*this->pool.submit([this, chunk]() {
