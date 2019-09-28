@@ -2,7 +2,7 @@
 #include <vector>
 #include <thread>
 #include <future>
-#include "ConcurrentQueue.h"
+#include "blockingconcurrentqueue.h"
 #include "macrologger.h"
 
 namespace Util::Threading {
@@ -31,7 +31,7 @@ namespace Util::Threading {
 				(*taskptr)();
 			};
 			
-			tasks.push(std::move(wrapper_function));
+			tasks.enqueue(std::move(wrapper_function));
 
 			return taskptr->get_future();
 		}
@@ -64,7 +64,7 @@ namespace Util::Threading {
 		volatile bool shutdown;
 		int numThreads;
 		std::vector<std::thread> workers;
-		Util::BlockingConcurrentQueue<std::function<void()>> tasks;
+		moodycamel::BlockingConcurrentQueue<std::function<void()>> tasks;
 
 		class WorkerThread {
 		public:
@@ -76,7 +76,7 @@ namespace Util::Threading {
 				std::function<void()> function;
 
 				while (!pool->shutdown) {
-					pool->tasks.pop(function);
+					pool->tasks.wait_dequeue(function);
 					function();
 				}
 

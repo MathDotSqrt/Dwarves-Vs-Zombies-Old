@@ -201,14 +201,8 @@
     <ClInclude Include="Timer.h">
       <Filter>Header Files\Util</Filter>
     </ClInclude>
-    <ClInclude Include="ConcurrentQueue.h">
-      <Filter>Header Files\Util</Filter>
-    </ClInclude>
     <ClInclude Include="ThreadPool.h">
       <Filter>Header Files\Util</Filter>
-    </ClInclude>
-    <ClInclude Include="IThreadPoolTask.h">
-      <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Allocator.h">
       <Filter>Header Files\Util</Filter>
@@ -220,7 +214,13 @@
       <Filter>Header Files\Util</Filter>
     </ClInclude>
     <ClInclude Include="PoolAllocator.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\Util</Filter>
+    </ClInclude>
+    <ClInclude Include="concurrentqueue.h">
+      <Filter>Header Files\Util</Filter>
+    </ClInclude>
+    <ClInclude Include="blockingconcurrentqueue.h">
+      <Filter>Header Files\Util</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -332,9 +332,6 @@
     <ClCompile Include="ThreadPool.cpp">
       <Filter>Source Files\Util</Filter>
     </ClCompile>
-    <ClCompile Include="IThreadPoolTask.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Allocator.cpp">
       <Filter>Source Files\Util</Filter>
     </ClCompile>
@@ -342,7 +339,7 @@
       <Filter>Source Files\Util</Filter>
     </ClCompile>
     <ClCompile Include="PoolAllocator.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\Util</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

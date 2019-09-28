@@ -5,8 +5,8 @@
 #include <random>
 #include "Timer.h"
 
-#define CHUNK_ALLOC_SIZE 16 * 1024 * 1024
-#define CHUNK_THREAD_POOL_SIZE 1
+#define CHUNK_ALLOC_SIZE 60 * 1024 * 1024
+#define CHUNK_THREAD_POOL_SIZE 2
 
 using namespace Voxel;
 
@@ -28,10 +28,10 @@ ChunkManager::~ChunkManager() {
 	}
 }
 
-void thread(Util::BlockingConcurrentQueue<Chunk*> *queue, Chunk *chunk) {
+void thread(moodycamel::ConcurrentQueue<Chunk*> *queue, Chunk *chunk) {
 	chunk->generateTerrain();
 	chunk->generateMesh();
-	queue->push(chunk);
+	queue->enqueue(chunk);
 }
 
 void ChunkManager::update(float x, float y, float z) {
@@ -85,9 +85,11 @@ void ChunkManager::update(float x, float y, float z) {
 
 	}
 
-	for (int i = 0; i < 8 && !this->chunkReadyQueue.empty(); i++) {
-		Chunk* chunk = this->chunkReadyQueue.pop();
-		if (chunk != nullptr && !this->isChunkMapped(chunk->getChunkX(), chunk->getChunkY(), chunk->getChunkZ())) {
+	Chunk* chunk = nullptr;
+	for (int i = 0; this->chunkReadyQueue.try_dequeue(chunk); i++) {
+		if (chunk == nullptr) continue;
+
+		if (!this->isChunkMapped(chunk->getChunkX(), chunk->getChunkY(), chunk->getChunkZ())) {
 			chunk->bufferDataToGPU();
 			this->chunkQueuedSet.erase(this->chunkQueuedSet.find(this->hashcode(chunk->getChunkX(), chunk->getChunkY(), chunk->getChunkZ())));
 
@@ -103,7 +105,7 @@ void ChunkManager::update(float x, float y, float z) {
 void ChunkManager::chunkLoader(Chunk *chunk) {
 	chunk->generateTerrain();
 	chunk->generateMesh();
-	this->chunkReadyQueue.push(chunk);
+	this->chunkReadyQueue.enqueue(chunk);
 }
 
 

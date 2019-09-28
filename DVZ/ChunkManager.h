@@ -2,7 +2,7 @@
 #include <unordered_map>
 #include <thread>
 #include <atomic>
-#include "ConcurrentQueue.h"
+#include "concurrentqueue.h"
 #include "Block.h"
 #include "Chunk.h"
 #include "ThreadPool.h"
@@ -21,7 +21,7 @@ private:
 	static const int RENDER_DISTANCE = 10;
 	
 	Util::Allocator::PoolAllocator chunkAllocator;
-	Util::BlockingConcurrentQueue<Chunk*> chunkReadyQueue;
+	moodycamel::ConcurrentQueue<Chunk*> chunkReadyQueue;
 	Util::Threading::ThreadPool pool;
 	
 
