@@ -13,6 +13,8 @@ LinearAllocator::LinearAllocator(size_t size, voidptr start) : IAllocator(size, 
 
 LinearAllocator::~LinearAllocator() {
 	this->currentPtr = nullptr;
+	this->num_allocs = 0;
+	this->used_mem = 0;
 }
 
 voidptr LinearAllocator::allocate(size_t size, uint8 alignment) {

@@ -1,5 +1,6 @@
 #include "PoolAllocator.h"
 #include <memory>
+#include "Timer.h"
 using namespace Util::Allocator;
 
 PoolAllocator::PoolAllocator(size_t block_size, uint8 block_alignment, size_t size, voidptr start) 
@@ -21,7 +22,7 @@ PoolAllocator::PoolAllocator(size_t block_size, uint8 block_alignment, size_t si
 	this->used_mem = static_cast<uint8*>(alignedAddress) - static_cast<uint8*>(this->start);
 	this->num_blocks = block_buffer_size / block_size;
 
-	this->free_list_head = &alignedAddress;
+	this->free_list_head = (void**)alignedAddress;
 	void **p = this->free_list_head;
 
 	for (size_t i = 0; i < num_blocks - 1; i++) {
@@ -37,10 +38,12 @@ PoolAllocator::PoolAllocator(size_t block_size, uint8 block_alignment, size_t si
 
 
 PoolAllocator::~PoolAllocator() {
-
+	this->num_allocs = 0;
+	this->used_mem = 0;
 }
 
 voidptr PoolAllocator::allocate(size_t size, uint8 alignment) {
+	Util::Performance::Timer timer("Pool Alloc");
 	assert(size == this->block_size && alignment == this->block_alignment);
 
 	if (this->free_list_head == nullptr) {

@@ -4,7 +4,7 @@
 #include "VBO.h"
 #include "preamble.glsl"
 #include "macrologger.h"
-
+#include "Timer.h"
 using namespace Voxel;
 
 Chunk::Chunk(int x, int y, int z) : 
@@ -14,13 +14,14 @@ Chunk::Chunk(int x, int y, int z) :
 	vbo(GL_ARRAY_BUFFER),
 	ebo(GL_ELEMENT_ARRAY_BUFFER)
 	{
-
+	Util::Performance::Timer timer("Chunk Constructor");
 	//data = new Block[CHUNK_VOLUME];
 
 	this->vao.bind();
 	
 	this->vbo.bind();
-	this->vao.bufferInterleavedData(vbo, this->geometry.attribs);
+	//this->vao.bufferInterleavedData(vbo, this->geometry.attribs);
+	this->vao.bufferInterleavedData(vbo, Graphics::PositionAttrib(), Graphics::NormalAttrib(), Graphics::ColorAttrib());
 	this->vbo.unbind();
 	
 	this->ebo.bind();
@@ -48,7 +49,7 @@ Chunk::~Chunk() {
 	//free(data);
 	//this->vbo.dispose();
 	//this->ebo.dispose();
-	LOG_VOXEL("Chunk {%d, %d, %d} deleted", this->chunk_x, this->chunk_y, this->chunk_z);
+	//LOG_VOXEL("Chunk {%d, %d, %d} deleted", this->chunk_x, this->chunk_y, this->chunk_z);
 }
 
 void Chunk::generateTerrain() {

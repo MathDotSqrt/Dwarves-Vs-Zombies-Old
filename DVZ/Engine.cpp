@@ -17,7 +17,7 @@
 #include "Timer.h"
 #include <stdlib.h>
 
-#define LINEAR_ALLOC_SIZE 64 * 1024 * 1024
+#define LINEAR_ALLOC_SIZE 24 * 1024 * 1024
 //#define LINEAR_ALLOC_SIZE 100
 
 using namespace std;

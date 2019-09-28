@@ -32,6 +32,7 @@ void PlayState::init() {
 	this->e.assign<PointLightComponent>(playerID, pointLightInstanceID, glm::vec3(1, 1, 1), 60.0f);
 	/*PLAYER*/
 	
+	/*TREE*/
 	Graphics::Geometry model = Graphics::CreateModel("tree.obj");
 	Graphics::NormalMaterial material;
 	unsigned int meshID = scene->createMesh(model, material);
@@ -43,6 +44,8 @@ void PlayState::init() {
 	this->e.assign<ScaleComponent>(test, glm::vec3(1, 1, 1));
 	this->e.assign<RotationalVelocityComponent>(test, glm::vec3(0, 1, 0));
 	this->e.assign<RenderInstanceComponent>(test, renderID);
+	/*TREE*/
+
 
 	/*NET*/
 	//e.attemptConnection("54.224.40.47", 60000);	//AWS
@@ -57,15 +60,8 @@ void PlayState::init() {
 	this->e.addSystem(new VoxelSystem(300));
 	this->e.addSystem(new BasicRenderSystem(500));
 	/*SYSTEM*/
+
 	LOG_SYSTEM("init");
-
-	Util::Allocator::LinearAllocator &alloc = this->e.getAllocator();
-	struct X {
-		float abc;
-		char c;
-	};
-
-	
 }
 
 void PlayState::cleanUp() {

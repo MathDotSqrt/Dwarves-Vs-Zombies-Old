@@ -396,4 +396,9 @@
     <Text Include="SpunkWalker.obj" />
     <Text Include="tree.obj" />
   </ItemGroup>
+  <ItemGroup>
+    <Object Include="black.obj">
+      <Filter>Resource Files\Models</Filter>
+    </Object>
+  </ItemGroup>
 </Project>
