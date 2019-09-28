@@ -38,8 +38,8 @@ PoolAllocator::PoolAllocator(size_t block_size, uint8 block_alignment, size_t si
 
 
 PoolAllocator::~PoolAllocator() {
-	this->num_allocs = 0;
-	this->used_mem = 0;
+	//this->num_allocs = 0;
+	//this->used_mem = 0;
 }
 
 voidptr PoolAllocator::allocate(size_t size, uint8 alignment) {

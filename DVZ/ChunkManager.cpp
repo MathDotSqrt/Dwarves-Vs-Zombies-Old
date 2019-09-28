@@ -6,7 +6,7 @@
 #include "Timer.h"
 
 #define CHUNK_ALLOC_SIZE 16 * 1024 * 1024
-#define CHUNK_THREAD_POOL_SIZE 4
+#define CHUNK_THREAD_POOL_SIZE 1
 
 using namespace Voxel;
 
@@ -19,7 +19,13 @@ ChunkManager::ChunkManager(Util::Allocator::IAllocator &parent)
 
 
 ChunkManager::~ChunkManager() {
+	//deleting all chunks
 	this->pool.stop();
+	ChunkManager::ChunkIterator iter = this->begin();
+	while (iter != this->end()) {
+		Util::Allocator::free(this->chunkAllocator, iter->second);
+		iter++;
+	}
 }
 
 void thread(Util::BlockingConcurrentQueue<Chunk*> *queue, Chunk *chunk) {
@@ -34,7 +40,6 @@ void ChunkManager::update(float x, float y, float z) {
 	int chunkZ = this->getChunkZ(z);
 
 	{
-		bool gen = false;
 		Util::Performance::Timer chunkTimer("Chunk Updater");
 		for (int x = -RENDER_DISTANCE/2; x < RENDER_DISTANCE/2; x++) {
 			for (int z = -RENDER_DISTANCE/2; z < RENDER_DISTANCE/2; z++) {
@@ -46,7 +51,6 @@ void ChunkManager::update(float x, float y, float z) {
 				
 				bool needsChunk = false;
 				needsChunk = !this->isChunkMapped(cx, cy, cz) && !this->isChunkQueued(cx, cy, cz);
-				gen |= needsChunk;
 				if (needsChunk) {
 					Util::Performance::Timer chunkTimer1("Chunk Alloc");
 					Chunk *chunk = nullptr;
@@ -56,8 +60,6 @@ void ChunkManager::update(float x, float y, float z) {
 				}
 			}
 		}
-		if(gen)
-			LOG_ERROR("POOL MEM: %zu ", this->chunkAllocator.getAvailableMem());
 	}
 
 	Util::Performance::Timer timer("Chunk Dequeue");
