@@ -6,7 +6,7 @@
 #include "Timer.h"
 
 #define CHUNK_ALLOC_SIZE 60 * 1024 * 1024
-#define CHUNK_THREAD_POOL_SIZE 2
+#define CHUNK_THREAD_POOL_SIZE 3
 
 using namespace Voxel;
 

@@ -222,6 +222,9 @@
     <ClInclude Include="blockingconcurrentqueue.h">
       <Filter>Header Files\Util</Filter>
     </ClInclude>
+    <ClInclude Include="ChunkMesh.h">
+      <Filter>Header Files\Voxel</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -341,6 +344,9 @@
     <ClCompile Include="PoolAllocator.cpp">
       <Filter>Source Files\Util</Filter>
     </ClCompile>
+    <ClCompile Include="ChunkMesh.cpp">
+      <Filter>Source Files\Util</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="test.vert">
@@ -392,10 +398,6 @@
     <Text Include="cube.obj" />
     <Text Include="SpunkWalker.obj" />
     <Text Include="tree.obj" />
-  </ItemGroup>
-  <ItemGroup>
-    <Object Include="black.obj">
-      <Filter>Resource Files\Models</Filter>
-    </Object>
+    <Text Include="black.obj" />
   </ItemGroup>
 </Project>

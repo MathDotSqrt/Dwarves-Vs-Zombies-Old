@@ -197,6 +197,7 @@
     <ClCompile Include="BasicRenderSystem.cpp" />
     <ClCompile Include="Chunk.cpp" />
     <ClCompile Include="ChunkManager.cpp" />
+    <ClCompile Include="ChunkMesh.cpp" />
     <ClCompile Include="Client.cpp" />
     <ClCompile Include="CubeGeometry.cpp" />
     <ClCompile Include="DemoState.cpp" />
@@ -242,6 +243,7 @@
     <ClInclude Include="blockingconcurrentqueue.h" />
     <ClInclude Include="Chunk.h" />
     <ClInclude Include="ChunkManager.h" />
+    <ClInclude Include="ChunkMesh.h" />
     <ClInclude Include="Client.h" />
     <ClInclude Include="Common.h" />
     <ClInclude Include="Components.h" />
