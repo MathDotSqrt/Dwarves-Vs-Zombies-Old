@@ -222,7 +222,7 @@
     <ClInclude Include="blockingconcurrentqueue.h">
       <Filter>Header Files\Util</Filter>
     </ClInclude>
-    <ClInclude Include="ChunkMesh.h">
+    <ClInclude Include="ChunkRenderData.h">
       <Filter>Header Files\Voxel</Filter>
     </ClInclude>
   </ItemGroup>
@@ -344,8 +344,8 @@
     <ClCompile Include="PoolAllocator.cpp">
       <Filter>Source Files\Util</Filter>
     </ClCompile>
-    <ClCompile Include="ChunkMesh.cpp">
-      <Filter>Source Files\Util</Filter>
+    <ClCompile Include="ChunkRenderData.cpp">
+      <Filter>Source Files\Voxel</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

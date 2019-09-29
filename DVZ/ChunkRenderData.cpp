@@ -1,8 +1,8 @@
-#include "ChunkMesh.h"
+#include "ChunkRenderData.h"
 
 using namespace Voxel;
 
-ChunkMesh::ChunkMesh(int32 cx, int32 cy, int32 cz) : 
+ChunkRenderData::ChunkRenderData(int32 cx, int32 cy, int32 cz) : 
 	vbo(GL_ARRAY_BUFFER), ebo(GL_ELEMENT_ARRAY_BUFFER), 
 	cx(cx), cy(cy), cz(cz){
 	this->vao.bind();
@@ -15,11 +15,11 @@ ChunkMesh::ChunkMesh(int32 cx, int32 cy, int32 cz) :
 }
 
 
-ChunkMesh::~ChunkMesh() {
+ChunkRenderData::~ChunkRenderData() {
 
 }
 
-void ChunkMesh::bufferGeometry(ChunkMesh::ChunkGeometry& geometry) {
+void ChunkRenderData::bufferGeometry(ChunkRenderData::ChunkGeometry& geometry) {
 	this->vbo.bind();
 	this->vbo.bufferData(geometry.getVerticies(), GL_STATIC_DRAW);
 	this->ebo.bind();

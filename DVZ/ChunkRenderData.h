@@ -6,7 +6,7 @@
 
 namespace Voxel{
 
-class ChunkMesh {
+class ChunkRenderData {
 private:
 	typedef Graphics::Geometry < Graphics::PositionAttrib, Graphics::NormalAttrib, Graphics::ColorAttrib> ChunkGeometry;
 
@@ -16,11 +16,11 @@ private:
 	Graphics::VBO vbo;
 	Graphics::VBO ebo;
 	
-	int indexCount;
+	size_t indexCount;
 
 public:
-	ChunkMesh(int32 cx, int32 cy, int32 cz);
-	~ChunkMesh();
+	ChunkRenderData(int32 cx, int32 cy, int32 cz);
+	~ChunkRenderData();
 
 	void bufferGeometry(ChunkGeometry& geometry);
 };
