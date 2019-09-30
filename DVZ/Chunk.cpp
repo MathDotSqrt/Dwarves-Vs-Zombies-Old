@@ -63,9 +63,9 @@ void Chunk::generateTerrain() {
 				int y = this->chunk_y * CHUNK_WIDTH_Y + by;
 				int z = this->chunk_z * CHUNK_WIDTH_Z + bz;
 
-				if (y > 32)
+				if (y > 32 && x % 4 == 0 && z % 4 == 0 && y % 4 == 0)
 					if (x % 4 == 0 && z % 4 == 0 && y % 4 == 0) {
-						this->getBlockInternal(bx, by, bz) = { BlockType::BLOCK_TYPE_STONE };
+						//this->getBlockInternal(bx, by, bz) = { BlockType::BLOCK_TYPE_STONE };
 					}
 					else {
 						this->getBlockInternal(bx, by, bz) = { BlockType::BLOCK_TYPE_DEFAULT };
