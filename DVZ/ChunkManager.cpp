@@ -10,8 +10,8 @@
 using namespace Voxel;
 
 ChunkManager::ChunkManager(Util::Allocator::IAllocator &parent) :
-	chunkAllocator(sizeof(Chunk), __alignof(Chunk), CHUNK_ALLOC_SIZE, parent.allocate(CHUNK_ALLOC_SIZE)),
-	chunkMesherAllocator(CHUNK_MESHER_ALLOC_SIZE, parent.allocate(CHUNK_MESHER_ALLOC_SIZE)),
+	chunkAllocator(sizeof(Chunk), __alignof(Chunk), CHUNK_ALLOC_SIZE, parent),
+	chunkMesherAllocator(CHUNK_MESHER_ALLOC_SIZE, parent),
 	chunkReadyQueue(), 
 	pool(CHUNK_THREAD_POOL_SIZE) {
 

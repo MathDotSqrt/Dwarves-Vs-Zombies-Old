@@ -6,6 +6,7 @@ namespace Util::Allocator {
 	{
 	public:
 		LinearAllocator(size_t size, voidptr start);
+		LinearAllocator(size_t size, Util::Allocator::IAllocator &parent);
 		~LinearAllocator();
 
 		voidptr allocate(size_t size, uint8 alignment = 4) override;

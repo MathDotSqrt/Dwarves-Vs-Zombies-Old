@@ -21,7 +21,7 @@ class ChunkManager {
 public:
 	static const int CHUNK_ALLOC_SIZE = 48 * 1024 * 1024;
 	static const int CHUNK_MESHER_ALLOC_SIZE = 8 * 1024 * 1024;
-	static const int CHUNK_THREAD_POOL_SIZE = 7;
+	static const int CHUNK_THREAD_POOL_SIZE = 1;
 
 	static const int RENDER_DISTANCE = 15;
 

@@ -7,7 +7,11 @@
 using namespace Util::Allocator;
 
 LinearAllocator::LinearAllocator(size_t size, voidptr start) : IAllocator(size, start) {
-	this->currentPtr = start;
+	this->currentPtr = this->start;
+}
+
+LinearAllocator::LinearAllocator(size_t size, Util::Allocator::IAllocator &parent) : IAllocator(size, parent) {
+	this->currentPtr = this->start;
 }
 
 

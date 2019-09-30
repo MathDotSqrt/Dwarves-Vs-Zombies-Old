@@ -8,6 +8,7 @@ namespace Util::Allocator{
 	class IAllocator {
 	public:
 		IAllocator(size_t size, voidptr start);
+		IAllocator(size_t size, IAllocator &parent);
 
 		virtual ~IAllocator();
 	
