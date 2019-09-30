@@ -8,6 +8,7 @@
 #include "ThreadPool.h"
 
 #include "PoolAllocator.h"
+#include "LinearAllocator.h"
 
 namespace Voxel{
 	struct Chunk2 {
@@ -17,13 +18,19 @@ namespace Voxel{
 
 
 class ChunkManager {
+public:
+	static const int CHUNK_ALLOC_SIZE = 48 * 1024 * 1024;
+	static const int CHUNK_MESHER_ALLOC_SIZE = 8 * 1024 * 1024;
+	static const int CHUNK_THREAD_POOL_SIZE = 7;
+
+	static const int RENDER_DISTANCE = 15;
+
 private:
-	static const int RENDER_DISTANCE = 10;
-	
 	Util::Allocator::PoolAllocator chunkAllocator;
-	moodycamel::ConcurrentQueue<Chunk*> chunkReadyQueue;
+	Util::Allocator::LinearAllocator chunkMesherAllocator;
 	Util::Threading::ThreadPool pool;
 	
+	moodycamel::ConcurrentQueue<Chunk*> chunkReadyQueue;
 
 public:
 	typedef std::unordered_map<int, Chunk*>::iterator ChunkIterator;

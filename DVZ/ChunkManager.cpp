@@ -5,13 +5,13 @@
 #include <random>
 #include "Timer.h"
 
-#define CHUNK_ALLOC_SIZE 60 * 1024 * 1024
-#define CHUNK_THREAD_POOL_SIZE 3
+
 
 using namespace Voxel;
 
-ChunkManager::ChunkManager(Util::Allocator::IAllocator &parent) 
-	: chunkAllocator(sizeof(Chunk), __alignof(Chunk), CHUNK_ALLOC_SIZE, parent.allocate(CHUNK_ALLOC_SIZE)), 
+ChunkManager::ChunkManager(Util::Allocator::IAllocator &parent) :
+	chunkAllocator(sizeof(Chunk), __alignof(Chunk), CHUNK_ALLOC_SIZE, parent.allocate(CHUNK_ALLOC_SIZE)),
+	chunkMesherAllocator(CHUNK_MESHER_ALLOC_SIZE, parent.allocate(CHUNK_MESHER_ALLOC_SIZE)),
 	chunkReadyQueue(), 
 	pool(CHUNK_THREAD_POOL_SIZE) {
 
@@ -35,6 +35,10 @@ void thread(moodycamel::ConcurrentQueue<Chunk*> *queue, Chunk *chunk) {
 }
 
 void ChunkManager::update(float x, float y, float z) {
+	static auto lambda = [this](Chunk* chunk) {
+		this->chunkLoader(chunk);
+	};
+	
 	int chunkX = this->getChunkX(x);
 	int chunkY = this->getChunkY(y);
 	int chunkZ = this->getChunkZ(z);
@@ -55,7 +59,8 @@ void ChunkManager::update(float x, float y, float z) {
 					Util::Performance::Timer chunkTimer1("Chunk Alloc");
 					Chunk *chunk = nullptr;
 					chunk = Util::Allocator::allocateNew<Chunk>(this->chunkAllocator, cx, cy, cz);
-					this->pool.submit(thread, &this->chunkReadyQueue, chunk);
+					//this->pool.submit(thread, &this->chunkReadyQueue, chunk);
+					this->pool.submit(lambda, chunk);
 					this->chunkQueuedSet[this->hashcode(cx, chunkY, cz)] = chunk;
 				}
 			}
@@ -102,7 +107,11 @@ void ChunkManager::update(float x, float y, float z) {
 	}
 }
 
+std::atomic<int> count = 0;
+
 void ChunkManager::chunkLoader(Chunk *chunk) {
+	thread_local int workerID = count++;
+
 	chunk->generateTerrain();
 	chunk->generateMesh();
 	this->chunkReadyQueue.enqueue(chunk);

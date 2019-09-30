@@ -17,12 +17,11 @@
 #include "Timer.h"
 #include <stdlib.h>
 
-#define LINEAR_ALLOC_SIZE 64 * 1024 * 1024
 //#define LINEAR_ALLOC_SIZE 100
 
 using namespace std;
 
-Engine::Engine() : linearAlloc(LINEAR_ALLOC_SIZE, malloc(LINEAR_ALLOC_SIZE)){	//todo delete
+Engine::Engine() : linearAlloc(MEM_ALLOC_SIZE, malloc(MEM_ALLOC_SIZE)){	//todo delete
 	this->peer = SLNet::RakPeerInterface::GetInstance();
 	this->serverAddress = nullptr;
 
