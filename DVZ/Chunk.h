@@ -29,11 +29,11 @@ static constexpr float CHUNK_RENDER_WIDTH_Z = CHUNK_WIDTH_Z * BLOCK_RENDER_SIZE;
 
 //DO NOT CALL THIS ON STACK
 class Chunk {
-private:
-	friend class ChunkMesher;
-
+public:
 	typedef Graphics::Geometry<Graphics::PositionAttrib, Graphics::NormalAttrib, Graphics::ColorAttrib> BlockGeometry;
 	typedef BlockGeometry::GeometryVertex BlockVertex;
+private:
+	friend class ChunkMesher;
 
 	typedef struct _BlockFaceCullTags {
 		bool px;

@@ -5,10 +5,14 @@
 #include "concurrentqueue.h"
 #include "Block.h"
 #include "Chunk.h"
+
+
 #include "ThreadPool.h"
 
 #include "PoolAllocator.h"
 #include "LinearAllocator.h"
+
+#include "Recycler.h"
 
 namespace Voxel{
 	struct Chunk2 {
@@ -21,15 +25,17 @@ class ChunkManager {
 public:
 	static const int CHUNK_ALLOC_SIZE = 48 * 1024 * 1024;
 	static const int CHUNK_MESHER_ALLOC_SIZE = 8 * 1024 * 1024;
+	static const int CHUNK_MESH_RECYCLE_SIZE = 2 * 1024 * 1024;
 	static const int CHUNK_THREAD_POOL_SIZE = 1;
 
 	static const int RENDER_DISTANCE = 15;
 
 private:
+	Util::Threading::ThreadPool pool;
+
 	Util::Allocator::PoolAllocator chunkAllocator;
 	Util::Allocator::LinearAllocator chunkMesherAllocator;
-	Util::Threading::ThreadPool pool;
-	
+	Util::Recycler<Chunk::BlockGeometry> meshRecycler;
 	moodycamel::ConcurrentQueue<Chunk*> chunkReadyQueue;
 
 public:

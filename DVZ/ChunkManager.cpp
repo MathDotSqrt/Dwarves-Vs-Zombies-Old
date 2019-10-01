@@ -10,10 +10,11 @@
 using namespace Voxel;
 
 ChunkManager::ChunkManager(Util::Allocator::IAllocator &parent) :
+	pool(CHUNK_THREAD_POOL_SIZE),
 	chunkAllocator(sizeof(Chunk), __alignof(Chunk), CHUNK_ALLOC_SIZE, parent),
 	chunkMesherAllocator(CHUNK_MESHER_ALLOC_SIZE, parent),
-	chunkReadyQueue(), 
-	pool(CHUNK_THREAD_POOL_SIZE) {
+	meshRecycler(CHUNK_MESH_RECYCLE_SIZE, parent),
+	chunkReadyQueue() {
 
 }
 
@@ -59,6 +60,10 @@ void ChunkManager::update(float x, float y, float z) {
 					Util::Performance::Timer chunkTimer1("Chunk Alloc");
 					Chunk *chunk = nullptr;
 					chunk = Util::Allocator::allocateNew<Chunk>(this->chunkAllocator, cx, cy, cz);
+					
+					Chunk::BlockGeometry *mesh = this->meshRecycler.get();
+					this->meshRecycler.recycle(mesh);
+					
 					//this->pool.submit(thread, &this->chunkReadyQueue, chunk);
 					this->pool.submit(lambda, chunk);
 					this->chunkQueuedSet[this->hashcode(cx, chunkY, cz)] = chunk;

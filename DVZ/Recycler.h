@@ -19,13 +19,15 @@ public:
 	
 	~Recycler() {
 		for (T* t : recycled) {
-			Util::Allocator::free(t);
+			Util::Allocator::free(this->pool, t);
 		}
 	}
 
 	T* get() {
 		if (recycled.size() > 0) {
-			return recycled.pop_back();
+			T* back = this->recycled.back();
+			this->recycled.pop_back();
+			return back;
 		}
 
 		T* t = Util::Allocator::allocateNew<T>(this->pool);
