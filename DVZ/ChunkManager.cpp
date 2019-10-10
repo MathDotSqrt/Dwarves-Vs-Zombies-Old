@@ -13,6 +13,7 @@ ChunkManager::ChunkManager(Util::Allocator::IAllocator &parent) :
 	pool(CHUNK_THREAD_POOL_SIZE),
 	chunkAllocator(sizeof(Chunk), __alignof(Chunk), CHUNK_ALLOC_SIZE, parent),
 	chunkMesherAllocator(CHUNK_MESHER_ALLOC_SIZE, parent),
+	renderDataRecycler(CHUNK_RENDER_DATA_RECYCLE_SIZE, parent),
 	meshRecycler(CHUNK_MESH_RECYCLE_SIZE, parent),
 	chunkReadyQueue() {
 
@@ -55,18 +56,18 @@ void ChunkManager::update(float x, float y, float z) {
 				int cz = chunkZ + z;
 				
 				bool needsChunk = false;
-				needsChunk = !this->isChunkMapped(cx, cy, cz) && !this->isChunkQueued(cx, cy, cz);
+				needsChunk = !this->isChunkMapped(cx, cy, cz);
 				if (needsChunk) {
 					Util::Performance::Timer chunkTimer1("Chunk Alloc");
 					Chunk *chunk = nullptr;
 					chunk = Util::Allocator::allocateNew<Chunk>(this->chunkAllocator, cx, cy, cz);
 					
-					Chunk::BlockGeometry *mesh = this->meshRecycler.get();
+					Chunk::BlockGeometry *mesh = this->meshRecycler.getNew();
 					this->meshRecycler.recycle(mesh);
 					
 					//this->pool.submit(thread, &this->chunkReadyQueue, chunk);
 					this->pool.submit(lambda, chunk);
-					this->chunkQueuedSet[this->hashcode(cx, chunkY, cz)] = chunk;
+					this->chunkSet[this->hashcode(cx, chunkY, cz)] = chunk;
 				}
 			}
 		}
@@ -86,7 +87,7 @@ void ChunkManager::update(float x, float y, float z) {
 			iter = this->removeChunk(iter);
 		}
 		else {
-			if (!chunk->needsMeshUpdate()) {
+			if (chunk->needsMeshUpdate()) {
 				chunk->generateMesh();
 				chunk->bufferDataToGPU();
 			}
@@ -98,22 +99,11 @@ void ChunkManager::update(float x, float y, float z) {
 	Chunk* chunk = nullptr;
 	for (int i = 0; this->chunkReadyQueue.try_dequeue(chunk); i++) {
 		if (chunk == nullptr) continue;
-
-		if (!this->isChunkMapped(chunk->getChunkX(), chunk->getChunkY(), chunk->getChunkZ())) {
-			chunk->bufferDataToGPU();
-			this->chunkQueuedSet.erase(this->chunkQueuedSet.find(this->hashcode(chunk->getChunkX(), chunk->getChunkY(), chunk->getChunkZ())));
-
-			this->chunkSet[this->hashcode(chunk->getChunkX(), chunk->getChunkY(), chunk->getChunkZ())] = chunk;
-		}
-		else {
-			//chunk could not be added to chunk set, delete it
-			Util::Allocator::free<Chunk>(this->chunkAllocator, chunk);
-		}
+		chunk->bufferDataToGPU();
 	}
 }
 
 std::atomic<int> count = 0;
-
 void ChunkManager::chunkLoader(Chunk *chunk) {
 	thread_local int workerID = count++;
 
@@ -135,16 +125,21 @@ ChunkManager::ChunkIterator ChunkManager::removeChunk(const ChunkManager::ChunkI
 void ChunkManager::removeChunk(int cx, int cy, int cz) {
 	auto chunk = this->chunkSet.find(this->hashcode(cx, cy, cz));
 	if (chunk != this->chunkSet.end()) {
-		delete chunk->second;
+		delete chunk->second;	//todo remove this shit
 		chunk->second = nullptr;
 
 		this->chunkSet.erase(chunk);
-
 	}
 }
 
 Chunk* ChunkManager::getChunk(int cx, int cy, int cz) {
 	return this->chunkSet[this->hashcode(cx, cy, cz)];
+}
+
+Chunk* ChunkManager::getChunkIfMapped(int cx, int cy, int cz) {
+	std::unordered_map<int, Chunk*>::const_iterator iter;
+	iter = this->chunkSet.find(hashcode(cx, cy, cz));
+	return iter != this->chunkSet.end() ? iter->second : nullptr;
 }
 
 Chunk* ChunkManager::generateChunk(int cx, int cy, int cz) {
@@ -172,16 +167,6 @@ bool ChunkManager::isChunkMapped(int cx, int cy, int cz) {
 	return iter != this->chunkSet.end();
 }
 
-bool ChunkManager::isChunkQueued(int cx, int cy, int cz) {
-	//check to see if chunkset actually inserts a nullptr when checking for an invalid chunk
-	//Might cause lots of rehashing
-	//return this->getChunk(cx, cy, cz) == nullptr;
-
-	std::unordered_map<int, Chunk*>::const_iterator iter;
-	iter = this->chunkQueuedSet.find(hashcode(cx, cy, cz));
-
-	return iter != this->chunkQueuedSet.end();
-}
 
 Block& ChunkManager::getBlock(int x, int y, int z) {
 	int cx = x >> CHUNK_SHIFT_X;

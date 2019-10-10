@@ -95,6 +95,7 @@ public:
 	}
 
 	inline ChunkState getChunkState() {
+		//std::shared_lock<std::shared_mutex> lock(this->chunkMutex);
 		return this->currentState;
 	}
 

@@ -327,11 +327,12 @@ void OpenGLRenderer::renderChunks(Voxel::ChunkManager *manager, glm::vec3 camera
 
 	glm::mat4 ident = glm::identity<glm::mat4>();
 
-	Voxel::ChunkManager::ChunkIterator iterator = manager->begin();
-	while(iterator != manager->end()){
+	//Voxel::ChunkManager::ChunkIterator iterator = manager->begin();
+	for (Voxel::ChunkManager::ChunkIterator iterator = manager->begin(); iterator != manager->end(); iterator++) {
+
 		Voxel::Chunk *chunk = iterator->second;
 
-		if (chunk == nullptr) {
+		if (chunk == nullptr || chunk->getChunkState() == Voxel::Chunk::EMPTY) {
 			continue;
 		}
 
@@ -353,8 +354,6 @@ void OpenGLRenderer::renderChunks(Voxel::ChunkManager *manager, glm::vec3 camera
 		glEnableVertexAttribArray(NORMAL_ATTRIB_LOCATION);
 		glEnableVertexAttribArray(COLOR_ATTRIB_LOCATION);
 		glDrawElements(GL_TRIANGLES, (GLsizei)chunk->getChunkGeometry().getIndexCount(), GL_UNSIGNED_INT, 0);
-
-		iterator++;
 	}
 
 	shader->end();

@@ -54,7 +54,6 @@ Chunk::~Chunk() {
 
 void Chunk::generateTerrain() {
 	std::lock_guard<std::shared_mutex> writeLock(this->chunkMutex);
-
 	for (int bz = 0; bz < CHUNK_WIDTH_Z; bz++) {
 		for (int by = 0; by < CHUNK_WIDTH_Y; by++) {
 			for (int bx = 0; bx < CHUNK_WIDTH_X; bx++) {

@@ -23,7 +23,7 @@ public:
 		}
 	}
 
-	T* get() {
+	T* getNew() {
 		if (recycled.size() > 0) {
 			T* back = this->recycled.back();
 			this->recycled.pop_back();

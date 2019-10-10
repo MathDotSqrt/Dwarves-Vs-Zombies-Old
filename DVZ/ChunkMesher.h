@@ -5,6 +5,9 @@
 namespace Voxel{
 
 class ChunkMesher {
+private:
+	//Block block[];
+
 public:
 	ChunkMesher();
 	~ChunkMesher();
