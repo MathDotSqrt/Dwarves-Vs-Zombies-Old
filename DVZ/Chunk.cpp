@@ -15,7 +15,8 @@ Chunk::Chunk(int x, int y, int z) :
 	ebo(GL_ELEMENT_ARRAY_BUFFER)
 	{
 	Util::Performance::Timer timer("Chunk Constructor");
-	//data = new Block[CHUNK_VOLUME];
+
+	this->currentState = Chunk::EMPTY;
 
 	this->vao.bind();
 	
@@ -29,7 +30,6 @@ Chunk::Chunk(int x, int y, int z) :
 	this->ebo.unbind();
 
 	this->indexCount = 0;
-	this->isMeshValid = false;
 }
 
 //Chunk::Chunk(int x, int y, int z, Block *data) : 
@@ -91,7 +91,7 @@ void Chunk::generateTerrain() {
 		}
 	}
 
-	this->isMeshValid = false;
+	this->currentState = Chunk::DIRTY_MESH;
 }
 
 void Chunk::generateMesh() {
@@ -124,7 +124,7 @@ void Chunk::generateMesh() {
 		}
 	}
 
-	this->isMeshValid = true;
+	this->currentState = Chunk::VALID;
 }
 
 void Chunk::bufferDataToGPU() {
@@ -295,7 +295,7 @@ void Chunk::setBlock(int x, int y, int z, Block &block) {
 
 	if (this->data[this->toIndex(x, y, z)] != block) {
 		this->data[this->toIndex(x, y, z)] = block;
-		this->isMeshValid = false;
+		this->currentState = Chunk::DIRTY_MESH;	//todo only dirty chunk if there is an adjecant block that is transparent
 	}
 }
 

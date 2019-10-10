@@ -32,6 +32,13 @@ class Chunk {
 public:
 	typedef Graphics::Geometry<Graphics::PositionAttrib, Graphics::NormalAttrib, Graphics::ColorAttrib> BlockGeometry;
 	typedef BlockGeometry::GeometryVertex BlockVertex;
+
+	typedef enum _ChunkState{
+		EMPTY,
+		DIRTY_MESH,
+		VALID
+	} ChunkState;
+
 private:
 	friend class ChunkMesher;
 
@@ -47,8 +54,7 @@ private:
 	const int chunk_x, chunk_y, chunk_z;
 	
 	Block data[CHUNK_VOLUME];
-	bool isMeshValid;
-	bool isEmpty;
+	ChunkState currentState;
 
 	BlockGeometry geometry;
 
@@ -73,7 +79,7 @@ public:
 	void setBlock(int x, int y, int z, Block &block);
 
 	inline bool needsMeshUpdate() {
-		return this->isMeshValid;
+		return this->currentState == Chunk::DIRTY_MESH;
 	}
 
 	inline int getChunkX() {
@@ -86,6 +92,10 @@ public:
 
 	inline int getChunkZ() {
 		return this->chunk_z;
+	}
+
+	inline ChunkState getChunkState() {
+		return this->currentState;
 	}
 
 	inline BlockGeometry& getChunkGeometry() {
