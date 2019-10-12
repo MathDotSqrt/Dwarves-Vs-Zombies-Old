@@ -33,12 +33,13 @@ struct ChunkNeighbors {
 class ChunkManager {
 public:
 	typedef std::unordered_map<int, ChunkHandle>::iterator ChunkIterator;
+	typedef std::unordered_map<int, ChunkRenderData*>::iterator ChunkRenderDataIterator;
 
 	static const int CHUNK_ALLOC_SIZE = 40 * 1024 * 1024;
 	static const int CHUNK_MESHER_ALLOC_SIZE = 8 * 1024 * 1024;
 	static const int CHUNK_MESH_RECYCLE_SIZE = 2 * 1024 * 1024;
 	static const int CHUNK_RENDER_DATA_RECYCLE_SIZE = 2 * 1024 * 1024;
-	static const int CHUNK_THREAD_POOL_SIZE = 1;
+	static const int CHUNK_THREAD_POOL_SIZE = 1;	//dont change this until i fix allocate array
 	static const int RENDER_DISTANCE = 15;
 
 	ChunkManager(Util::Allocator::IAllocator &parent);
@@ -55,6 +56,13 @@ public:
 
 	inline ChunkIterator end() {
 		return this->chunkSet.end();
+	}
+
+	inline ChunkRenderDataIterator beginRenderData() {
+		return this->renderDataSet.begin();
+	}
+	inline ChunkRenderDataIterator endRenderData() {
+		return this->renderDataSet.end();
 	}
 
 	inline ChunkIterator removeChunk(const ChunkIterator& iter);
@@ -95,7 +103,7 @@ private:
 	Util::Recycler<ChunkRenderData> renderDataRecycler;
 	Util::Recycler<Chunk::BlockGeometry> meshRecycler;
 
-	moodycamel::ConcurrentQueue<Chunk::BlockGeometry*> chunkMeshQueue;
+	moodycamel::ConcurrentQueue <std::pair<Chunk::BlockGeometry*, glm::vec3>> chunkMeshQueue;
 
 	//moodycamel::ConcurrentQueue<Chunk*> chunkReadyQueue;
 

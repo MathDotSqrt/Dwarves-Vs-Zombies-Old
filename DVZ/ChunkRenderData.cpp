@@ -19,12 +19,12 @@ ChunkRenderData::~ChunkRenderData() {
 
 }
 
-void ChunkRenderData::bufferGeometry(ChunkRenderData::ChunkGeometry& geometry) {
+void ChunkRenderData::bufferGeometry(ChunkRenderData::ChunkGeometry *geometry) {
 	this->vbo.bind();
-	this->vbo.bufferData(geometry.getVerticies(), GL_STATIC_DRAW);
+	this->vbo.bufferData(geometry->getVerticies(), GL_STATIC_DRAW);
 	this->ebo.bind();
-	this->ebo.bufferData(geometry.getIndices(), GL_STATIC_DRAW);
+	this->ebo.bufferData(geometry->getIndices(), GL_STATIC_DRAW);
 	this->ebo.unbind();
 
-	this->indexCount = geometry.getIndexCount();
+	this->indexCount = geometry->getIndexCount();
 }

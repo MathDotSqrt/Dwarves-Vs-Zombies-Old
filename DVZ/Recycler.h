@@ -35,6 +35,18 @@ public:
 		return t;
 	}
 
+	template<typename ...ARGS>
+	T* getNew(ARGS ...args) {
+		if (recycled.size() > 0) {
+			T* back = this->recycled.back();
+			this->recycled.pop_back();
+			return back;
+		}
+
+		T* t = Util::Allocator::allocateNew<T>(this->pool, args...);
+		return t;
+	}
+
 	//todo add a handler class for this to prevent copying of pointer and funny buisness
 	void recycle(T *&t) {
 		this->recycled.push_back(t);

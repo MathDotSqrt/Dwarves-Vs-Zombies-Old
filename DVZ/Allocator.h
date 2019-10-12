@@ -109,7 +109,8 @@ namespace Util::Allocator{
 
 		size_t length = *(((size_t*)array) - 1);
 
-		for (size_t i = 0; i < length; i++) array.~T();
+		//todo look at this code. I added [i] to array
+		for (size_t i = 0; i < length; i++) array[i].~T();
 
 		//Calculate how much extra memory was allocated to store the length before the array 
 		uint8 headerSize = sizeof(size_t) / sizeof(T);

@@ -45,7 +45,7 @@ voidptr LinearAllocator::allocate(size_t size, uint8 alignment) {
 
 void LinearAllocator::free(voidptr pointer) {
 	LOG_ERROR("Cannot free linear allocator. Must clear entire allocator");
-	assert(0);
+	//assert(0);
 }
 
 void LinearAllocator::clear() {

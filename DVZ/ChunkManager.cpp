@@ -17,7 +17,8 @@ ChunkManager::ChunkManager(Util::Allocator::IAllocator &parent) :
 	meshRecycler(CHUNK_MESH_RECYCLE_SIZE, parent)
 	{
 
-	this->chunkMesherArray = Util::Allocator::allocateArray<ChunkMesher>(this->chunkMesherAllocator, CHUNK_THREAD_POOL_SIZE);
+	//this->chunkMesherArray = Util::Allocator::allocateArray<ChunkMesher>(this->chunkMesherAllocator, CHUNK_THREAD_POOL_SIZE);
+	this->chunkMesherArray = Util::Allocator::allocateNew<ChunkMesher>(this->chunkMesherAllocator);
 
 }
 
@@ -25,6 +26,7 @@ ChunkManager::ChunkManager(Util::Allocator::IAllocator &parent) :
 ChunkManager::~ChunkManager() {
 	//deleting all chunks
 	this->pool.stop();
+	//Util::Allocator::freeArray<ChunkMesher>(this->chunkMesherAllocator, this->chunkMesherArray);
 	//ChunkManager::ChunkIterator iter = this->begin();
 	/*while (iter != this->end()) {
 		Util::Allocator::free(this->chunkPoolAllocator, iter->second);
@@ -33,9 +35,9 @@ ChunkManager::~ChunkManager() {
 }
 
 void thread(moodycamel::ConcurrentQueue<Chunk*> *queue, Chunk *chunk) {
-	chunk->generateTerrain();
-	chunk->generateMesh();
-	queue->enqueue(chunk);
+	//chunk->generateTerrain();
+	//chunk->generateMesh();
+	//queue->enqueue(chunk);
 }
 
 void ChunkManager::update(float x, float y, float z) {
@@ -93,26 +95,30 @@ void ChunkManager::update(float x, float y, float z) {
 
 	}
 
-	Chunk::BlockGeometry* geometry = nullptr;
-	for (int i = 0; this->chunkMeshQueue.try_dequeue(geometry); i++) {
-		if (geometry == nullptr) continue;
+	std::pair<Chunk::BlockGeometry*, glm::vec3> element;
+	for (int i = 0; this->chunkMeshQueue.try_dequeue(element); i++) {
+		glm::vec3 chunkCoord = element.second;
+		ChunkRenderData *data = renderDataRecycler.getNew(chunkCoord.x, chunkCoord.y, chunkCoord.z);
+		data->bufferGeometry(element.first);
 
-
-		this->meshRecycler.recycle(geometry);
+		this->renderDataSet[this->hashcode(chunkCoord.x, chunkCoord.y, chunkCoord.z)];
+		this->meshRecycler.recycle(element.first);
 	}
 }
 
 std::atomic<int> count = 0;
 void ChunkManager::chunkLoader(ChunkNeighbors neighbors, Chunk::BlockGeometry *geometry) {
+	//static id for each thread
 	thread_local int workerID = count++;
 
+	neighbors.middle->generateTerrain();
 	this->chunkMesherArray[workerID].loadChunkDataAsync(neighbors);
 	this->chunkMesherArray[workerID].createChunkMesh(*geometry);
-
-	neighbors.middle->generateTerrain();
-	neighbors.middle->generateMesh();
 	
-	this->chunkMeshQueue.enqueue(geometry);
+	int cx = neighbors.middle->getChunkX();
+	int cy = neighbors.middle->getChunkY();
+	int cz = neighbors.middle->getChunkZ();
+	this->chunkMeshQueue.enqueue(std::pair<Chunk::BlockGeometry*, glm::vec3>(geometry, glm::vec3(cx, cy, cz)));
 }
 
 

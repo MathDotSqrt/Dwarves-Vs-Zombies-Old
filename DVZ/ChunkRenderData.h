@@ -22,7 +22,7 @@ public:
 	ChunkRenderData(int32 cx, int32 cy, int32 cz);
 	~ChunkRenderData();
 
-	void bufferGeometry(ChunkGeometry& geometry);
+	void bufferGeometry(ChunkGeometry *geometry);
 };
 
 }
