@@ -19,6 +19,6 @@ void ChunkMesher::loadChunkDataAsync(Chunk *chunk, Chunk *up, Chunk *down, Chunk
 
 }
 
-void ChunkMesher::createChunkMesh(Chunk::BlockGeometry &geometry) {
+void ChunkMesher::createChunkMesh(Chunk::BlockGeometry *geometry) {
 
 }

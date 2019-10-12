@@ -193,6 +193,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Allocator.cpp" />
+    <ClCompile Include="AllocatorHandle.cpp" />
     <ClCompile Include="Attrib.cpp" />
     <ClCompile Include="BasicRenderSystem.cpp" />
     <ClCompile Include="Chunk.cpp" />
@@ -240,6 +241,7 @@
     <ClInclude Include="..\ENTT\single_include\entt\entt.hpp" />
     <ClInclude Include="..\STD\stb_image.h" />
     <ClInclude Include="Allocator.h" />
+    <ClInclude Include="AllocatorHandle.h" />
     <ClInclude Include="Attrib.h" />
     <ClInclude Include="BasicRenderSystem.h" />
     <ClInclude Include="Block.h" />

@@ -234,6 +234,9 @@
     <ClInclude Include="ChunkGeometry.h">
       <Filter>Header Files\Voxel</Filter>
     </ClInclude>
+    <ClInclude Include="AllocatorHandle.h">
+      <Filter>Header Files\Util</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -364,6 +367,9 @@
     </ClCompile>
     <ClCompile Include="ChunkGeometry.cpp">
       <Filter>Source Files\Voxel</Filter>
+    </ClCompile>
+    <ClCompile Include="AllocatorHandle.cpp">
+      <Filter>Source Files\Util</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

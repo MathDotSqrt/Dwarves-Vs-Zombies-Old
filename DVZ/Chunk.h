@@ -120,5 +120,17 @@ private:
 	void assertBlockIndex(int x, int y, int z);
 };
 
+struct ChunkHandle {
+	const int cx;
+	const int cy;
+	const int cz;
+
+
+
+	ChunkHandle(int cx, int cy, int cz) : cx(cx), cy(cy), cz(cz){
+	
+	}
+};
+
 }
 

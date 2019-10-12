@@ -96,10 +96,12 @@ void ChunkManager::update(float x, float y, float z) {
 
 	}
 
-	Chunk* chunk = nullptr;
-	for (int i = 0; this->chunkReadyQueue.try_dequeue(chunk); i++) {
-		if (chunk == nullptr) continue;
-		chunk->bufferDataToGPU();
+	Chunk::BlockGeometry* geometry = nullptr;
+	for (int i = 0; this->chunkMeshQueue.try_dequeue(geometry); i++) {
+		if (geometry == nullptr) continue;
+
+
+		this->meshRecycler.recycle(geometry);
 	}
 }
 
@@ -109,7 +111,7 @@ void ChunkManager::chunkLoader(Chunk *chunk) {
 
 	chunk->generateTerrain();
 	chunk->generateMesh();
-	this->chunkReadyQueue.enqueue(chunk);
+	//this->chunkReadyQueue.enqueue(chunk);
 }
 
 

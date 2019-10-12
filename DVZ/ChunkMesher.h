@@ -15,7 +15,7 @@ public:
 	void loadChunkData(Chunk *chunk, Chunk *up, Chunk *down, Chunk *left, Chunk *right, Chunk *front, Chunk *back);
 	void loadChunkDataAsync(Chunk *chunk, Chunk *up, Chunk *down, Chunk *left, Chunk *right, Chunk *front, Chunk *back);
 
-	void createChunkMesh(Chunk::BlockGeometry &geometry);
+	void createChunkMesh(Chunk::BlockGeometry *geometry);
 };
 }
 

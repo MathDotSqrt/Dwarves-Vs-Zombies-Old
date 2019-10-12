@@ -32,18 +32,7 @@ public:
 	static const int RENDER_DISTANCE = 15;
 
 private:
-	Util::Threading::ThreadPool pool;
-
-	Util::Allocator::PoolAllocator chunkAllocator;
-	Util::Allocator::LinearAllocator chunkMesherAllocator;
-
-	Util::Recycler<ChunkRenderData> renderDataRecycler;
-	Util::Recycler<Chunk::BlockGeometry> meshRecycler;
-
-	std::vector<ChunkRenderData> renderableChunks;
-	moodycamel::ConcurrentQueue<Chunk::BlockGeometry*> chunkMeshQueue;
 	
-	moodycamel::ConcurrentQueue<Chunk*> chunkReadyQueue;
 
 public:
 	typedef std::unordered_map<int, Chunk*>::iterator ChunkIterator;
@@ -92,7 +81,20 @@ public:
 	int getChunkZ(float z);
 
 private:
+	Util::Threading::ThreadPool pool;
+
+	Util::Allocator::PoolAllocator chunkAllocator;
+	Util::Allocator::LinearAllocator chunkMesherAllocator;
+
+	Util::Recycler<ChunkRenderData> renderDataRecycler;
+	Util::Recycler<Chunk::BlockGeometry> meshRecycler;
+
+	moodycamel::ConcurrentQueue<Chunk::BlockGeometry*> chunkMeshQueue;
+
+	//moodycamel::ConcurrentQueue<Chunk*> chunkReadyQueue;
+
 	std::unordered_map<int, Chunk*> chunkSet;
+	std::unordered_map<int, ChunkRenderData*> renderDataSet;
 	int expand(int x);
 
 };
