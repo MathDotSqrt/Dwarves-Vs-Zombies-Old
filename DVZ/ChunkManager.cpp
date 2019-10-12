@@ -26,6 +26,7 @@ ChunkManager::ChunkManager(Util::Allocator::IAllocator &parent) :
 ChunkManager::~ChunkManager() {
 	//deleting all chunks
 	this->pool.stop();
+	this->chunkSet.clear();
 	//Util::Allocator::freeArray<ChunkMesher>(this->chunkMesherAllocator, this->chunkMesherArray);
 	//ChunkManager::ChunkIterator iter = this->begin();
 	/*while (iter != this->end()) {
@@ -64,7 +65,6 @@ void ChunkManager::update(float x, float y, float z) {
 				if (needsChunk) {
 					Util::Performance::Timer chunkTimer1("Chunk Alloc");
 					ChunkHandle chunk = Util::Allocator::allocateHandle<Chunk>(this->chunkPoolAllocator, cx, cy, cz);
-
 					this->pool.submit(lambda, this->getChunkNeighbors(chunk), this->meshRecycler.getNew());
 					this->chunkSet[this->hashcode(cx, chunkY, cz)] = chunk;
 				}
@@ -81,27 +81,32 @@ void ChunkManager::update(float x, float y, float z) {
 		
 		const int DELETE_RANGE = RENDER_DISTANCE / 2 + 3;
 
-		if (diffX > DELETE_RANGE || diffZ > DELETE_RANGE) {
-			//removes chunk and returns an iterator pointing to the next chunk
-			iter = this->removeChunk(iter);
-		}
-		else {
-			if (chunk->needsMeshUpdate()) {
-				chunk->generateMesh();
-				chunk->bufferDataToGPU();
-			}
-			iter++;
-		}
+		//if (diffX > DELETE_RANGE || diffZ > DELETE_RANGE) {
+		//	//removes chunk and returns an iterator pointing to the next chunk
+		//	//todo
+		//	//iter = this->removeChunk(iter);
+		//}
+		//else {
+		//	if (chunk->needsMeshUpdate()) {
+		//		//todo
+		//	}
+		//	iter++;
+		//}
+
+		iter++;
 
 	}
 
-	std::pair<Chunk::BlockGeometry*, glm::vec3> element;
+	std::pair<Chunk::BlockGeometry*, glm::ivec3> element;
 	for (int i = 0; this->chunkMeshQueue.try_dequeue(element); i++) {
-		glm::vec3 chunkCoord = element.second;
-		ChunkRenderData *data = renderDataRecycler.getNew(chunkCoord.x, chunkCoord.y, chunkCoord.z);
+		glm::ivec3 chunkCoord = element.second;
+		ChunkRenderData *data = renderDataRecycler.getNew();
+		data->cx = chunkCoord.x;
+		data->cy = chunkCoord.y;
+		data->cz = chunkCoord.z;
 		data->bufferGeometry(element.first);
 
-		this->renderDataSet[this->hashcode(chunkCoord.x, chunkCoord.y, chunkCoord.z)];
+		this->renderDataSet[this->hashcode(chunkCoord.x, chunkCoord.y, chunkCoord.z)] = data;
 		this->meshRecycler.recycle(element.first);
 	}
 }
@@ -110,7 +115,8 @@ std::atomic<int> count = 0;
 void ChunkManager::chunkLoader(ChunkNeighbors neighbors, Chunk::BlockGeometry *geometry) {
 	//static id for each thread
 	thread_local int workerID = count++;
-
+	std::this_thread::sleep_for(std::chrono::seconds(1));
+	
 	neighbors.middle->generateTerrain();
 	this->chunkMesherArray[workerID].loadChunkDataAsync(neighbors);
 	this->chunkMesherArray[workerID].createChunkMesh(*geometry);
@@ -118,7 +124,7 @@ void ChunkManager::chunkLoader(ChunkNeighbors neighbors, Chunk::BlockGeometry *g
 	int cx = neighbors.middle->getChunkX();
 	int cy = neighbors.middle->getChunkY();
 	int cz = neighbors.middle->getChunkZ();
-	this->chunkMeshQueue.enqueue(std::pair<Chunk::BlockGeometry*, glm::vec3>(geometry, glm::vec3(cx, cy, cz)));
+	this->chunkMeshQueue.enqueue(std::pair<Chunk::BlockGeometry*, glm::ivec3>(geometry, glm::vec3(cx, cy, cz)));
 }
 
 

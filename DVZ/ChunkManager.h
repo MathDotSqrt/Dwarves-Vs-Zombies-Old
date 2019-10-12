@@ -103,7 +103,7 @@ private:
 	Util::Recycler<ChunkRenderData> renderDataRecycler;
 	Util::Recycler<Chunk::BlockGeometry> meshRecycler;
 
-	moodycamel::ConcurrentQueue <std::pair<Chunk::BlockGeometry*, glm::vec3>> chunkMeshQueue;
+	moodycamel::ConcurrentQueue <std::pair<Chunk::BlockGeometry*, glm::ivec3>> chunkMeshQueue;
 
 	//moodycamel::ConcurrentQueue<Chunk*> chunkReadyQueue;
 

@@ -2,9 +2,8 @@
 
 using namespace Voxel;
 
-ChunkRenderData::ChunkRenderData(int32 cx, int32 cy, int32 cz) : 
-	vbo(GL_ARRAY_BUFFER), ebo(GL_ELEMENT_ARRAY_BUFFER), 
-	cx(cx), cy(cy), cz(cz){
+ChunkRenderData::ChunkRenderData() : 
+	vbo(GL_ARRAY_BUFFER), ebo(GL_ELEMENT_ARRAY_BUFFER) {
 	this->vao.bind();
 	this->vao.bufferInterleavedData(this->vbo, Graphics::PositionAttrib(), Graphics::NormalAttrib(), Graphics::ColorAttrib());
 	this->ebo.bind();

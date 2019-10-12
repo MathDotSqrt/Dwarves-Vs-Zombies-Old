@@ -328,17 +328,17 @@ void OpenGLRenderer::renderChunks(Voxel::ChunkManager *manager, glm::vec3 camera
 	glm::mat4 ident = glm::identity<glm::mat4>();
 
 	//Voxel::ChunkManager::ChunkIterator iterator = manager->begin();
-	for (Voxel::ChunkManager::ChunkIterator iterator = manager->begin(); iterator != manager->end(); iterator++) {
+	for (Voxel::ChunkManager::ChunkRenderDataIterator iterator = manager->beginRenderData(); iterator != manager->endRenderData(); iterator++) {
 
-		Voxel::ChunkHandle chunk = iterator->second;
+		Voxel::ChunkRenderData *data = iterator->second;
 
-		if (chunk == nullptr || chunk->getChunkState() == Voxel::Chunk::EMPTY) {
+		if (data == nullptr) {
 			continue;
 		}
 
-		float x = chunk->getChunkX() * Voxel::CHUNK_RENDER_WIDTH_X;
-		float y = chunk->getChunkY() * Voxel::CHUNK_RENDER_WIDTH_Y;
-		float z = chunk->getChunkZ() * Voxel::CHUNK_RENDER_WIDTH_Z;
+		float x = data->getChunkX() * Voxel::CHUNK_RENDER_WIDTH_X;
+		float y = data->getChunkY() * Voxel::CHUNK_RENDER_WIDTH_Y;
+		float z = data->getChunkZ() * Voxel::CHUNK_RENDER_WIDTH_Z;
 
 		glm::mat4 model = glm::translate(ident, glm::vec3(x, y, z));
 
@@ -349,11 +349,11 @@ void OpenGLRenderer::renderChunks(Voxel::ChunkManager *manager, glm::vec3 camera
 		shader->setUniform3f("specular_color", chunkMat.specularColor);
 		shader->setUniform1f("shinyness", chunkMat.shinyness);
 
-		chunk->getChunkVAO().bind();
+		data->vao.bind();
 		glEnableVertexAttribArray(POSITION_ATTRIB_LOCATION);
 		glEnableVertexAttribArray(NORMAL_ATTRIB_LOCATION);
 		glEnableVertexAttribArray(COLOR_ATTRIB_LOCATION);
-		glDrawElements(GL_TRIANGLES, (GLsizei)chunk->getChunkGeometry().getIndexCount(), GL_UNSIGNED_INT, 0);
+		glDrawElements(GL_TRIANGLES, (GLsizei)data->indexCount, GL_UNSIGNED_INT, 0);
 	}
 
 	shader->end();

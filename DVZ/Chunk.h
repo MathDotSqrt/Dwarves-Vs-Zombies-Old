@@ -42,29 +42,13 @@ public:
 private:
 	friend class ChunkMesher;
 
-	typedef struct _BlockFaceCullTags {
-		bool px;
-		bool nx;
-		bool py;
-		bool ny;
-		bool pz;
-		bool nz;
-	} BlockFaceCullTags;
-
 	const int chunk_x, chunk_y, chunk_z;
 	
 	Block data[CHUNK_VOLUME];
 	ChunkState currentState;
-
 	BlockGeometry geometry;
 
-	Graphics::VAO vao;
-	Graphics::VBO vbo;
-	Graphics::VBO ebo;		//TODO: all index buffers are the same. replace this one with a unique one
-	size_t indexCount = 0;
-
 	std::shared_mutex chunkMutex;
-	std::mutex geometryMutex;
 
 public:
 	
@@ -72,8 +56,6 @@ public:
 	~Chunk();
 
 	void generateTerrain();
-	void generateMesh();
-	void bufferDataToGPU();
 
 	Block& getBlock(int x, int y, int z);
 	void setBlock(int x, int y, int z, Block &block);
@@ -103,19 +85,12 @@ public:
 		return this->geometry;
 	}
 
-	inline Graphics::VAO& getChunkVAO() {
-		return this->vao;
-	}
 private:
 	inline Block& getBlockInternal(int x, int y, int z) {
 		//std::shared_lock<std::shared_mutex> lock(this->chunkMutex);
 		//this->assertBlockIndex(x, y, z);
 		return data[this->toIndex(x, y, z)];
 	}
-
-	void createCube(int x, int y, int z, BlockFaceCullTags render, BlockType type);
-	void createFace(BlockVertex v0, BlockVertex v1, BlockVertex v2, BlockVertex v3);
-
 	int toIndex(int x, int y, int z);
 	void assertBlockIndex(int x, int y, int z);
 };

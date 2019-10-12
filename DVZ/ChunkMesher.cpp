@@ -25,6 +25,7 @@ void ChunkMesher::loadChunkDataAsync(ChunkNeighbors &n) {
 				}
 			}
 		}
+		n.middle->currentState = Chunk::ChunkState::VALID;
 	}
 }
 
@@ -33,7 +34,7 @@ void ChunkMesher::createChunkMesh(Chunk::BlockGeometry &geometry) {
 	for (int z = 0; z < CHUNK_WIDTH_Z; z++) {
 		for (int y = 0; y < CHUNK_WIDTH_Y; y++) {
 			for (int x = 0; x < CHUNK_WIDTH_X; x++) {
-				Block &block = this->getBlock(x + 1, y + 1, z + 1);
+				Block block = this->getBlock(x, y, z);
 				if (block.type == BlockType::BLOCK_TYPE_DEFAULT) {
 					continue;
 				}
@@ -85,6 +86,7 @@ void ChunkMesher::createCulledCube(int x, int y, int z, ChunkMesher::BlockFaceCu
 		c1 = glm::vec3(.3f, .3f, .3f);
 		c2 = glm::vec3(.3f, .3f, .3f);
 		c3 = glm::vec3(.3f, .3f, .3f);
+		break;
 	case BlockType::BLOCK_TYPE_GRASS:
 		c0 = glm::vec3(0, 1, 0);
 		c1 = glm::vec3(0, 1, 0);
@@ -96,11 +98,13 @@ void ChunkMesher::createCulledCube(int x, int y, int z, ChunkMesher::BlockFaceCu
 		c1 = glm::vec3(.7f, 0, 1);
 		c2 = glm::vec3(.7f, 0, 1);
 		c3 = glm::vec3(.7f, 0, 1);
+		break;
 	default:
 		c0 = glm::vec3(1, 1, 1);
 		c1 = glm::vec3(1, 1, 1);
 		c2 = glm::vec3(1, 1, 1);
 		c3 = glm::vec3(1, 1, 1);
+		break;
 	}
 
 	BlockVertex v0, v1, v2, v3;
@@ -180,7 +184,7 @@ void ChunkMesher::createFace(BlockVertex v0, BlockVertex v1, BlockVertex v2, Blo
 }
 
 Block& ChunkMesher::getBlock(int x, int y, int z) {
-	return this->block[toPaddedBlockIndex(x, y, z)];
+	return this->block[toPaddedBlockIndex(x+1, y+1, z+1)];
 }
 
 int ChunkMesher::toPaddedBlockIndex(int x, int y, int z) {

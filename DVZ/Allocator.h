@@ -130,7 +130,7 @@ namespace Util::Allocator{
 			
 			}
 
-			void operator() (T* value){
+			void operator()(T* value){
 				free(this->allocator, value);
 			}
 		private:
