@@ -1,5 +1,6 @@
 #pragma once
 #include <assert.h>
+#include <memory>
 #include "Common.h"
 
 namespace Util::Allocator{
@@ -53,7 +54,7 @@ namespace Util::Allocator{
 	}
 
 	template<typename T>
-	T* allocNew(IAllocator& allocator, const T& t) {
+	T* allocateNew(IAllocator& allocator, const T& t) {
 		return new (allocator.allocate(sizeof(T), __alignof(T))) T(t);
 	}
 
@@ -115,6 +116,37 @@ namespace Util::Allocator{
 		if (sizeof(size_t) % sizeof(T) > 0)
 			headerSize += 1;
 		allocator.free(array - headerSize);
+	}
+
+	template<typename T>
+	using Handle = std::shared_ptr<T>;
+
+	namespace Implementation {
+		template<typename T>
+		struct deleter {
+		public:
+			deleter(IAllocator &allocator) : allocator(allocator){
+			
+			}
+
+			void operator() (T* value){
+				free(this->allocator, value);
+			}
+		private:
+			IAllocator &allocator;
+		};
+	};
+
+	template<typename T>
+	Handle<T> allocateHandle(IAllocator &allocator) {
+		T *ptr = allocateNew<T>(allocator);
+		return std::shared_ptr<T>(ptr, Implementation::deleter<T>(allocator));
+	}
+
+	template<typename T, typename ...ARGS>
+	Handle<T> allocateHandle(IAllocator &allocator, ARGS ...args) {
+		T *ptr = allocateNew<T>(allocator, args...);
+		return std::shared_ptr<T>(ptr, Implementation::deleter<T>(allocator));
 	}
 
 }

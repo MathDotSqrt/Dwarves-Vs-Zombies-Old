@@ -8,8 +8,10 @@ namespace Util::Allocator {
 	private:
 		using shared_ptr = std::shared_ptr<T>;
 	public:
-		AllocatorHandle(const IAllocator& allocator) {
-			this->allocator = allocator;
+		using handle = shared_ptr;
+
+		AllocatorHandle(IAllocator *allocator) {
+			this->allocator = *allocator;
 		}
 		~AllocatorHandle() {
 		

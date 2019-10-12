@@ -44,7 +44,7 @@ void VoxelSystem::chunkLoader() {
 }
 
 void VoxelSystem::loadChunk(Engine *engine, int cx, int cy, int cz) {
-	Voxel::Chunk *chunk = engine->getChunkManager()->generateChunk(cx, 0, cz);
-	chunk->generateTerrain();
-	chunk->generateMesh();
+	//Voxel::ChunkHandle chunk = engine->getChunkManager()->generateChunk(cx, 0, cz);
+	//chunk->generateTerrain();
+	//chunk->generateMesh();
 }

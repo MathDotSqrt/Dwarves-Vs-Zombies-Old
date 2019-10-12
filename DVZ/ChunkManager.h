@@ -9,17 +9,15 @@
 
 #include "ThreadPool.h"
 
-#include "PoolAllocator.h"
 #include "LinearAllocator.h"
+#include "PoolAllocator.h"
+#include "AllocatorHandle.h"
 
 #include "Recycler.h"
 
 namespace Voxel{
-	struct Chunk2 {
-		int cx, cy, cz;
-		Block *data;
-	};
 
+typedef Util::Allocator::Handle<Chunk> ChunkHandle;
 
 class ChunkManager {
 public:
@@ -35,7 +33,7 @@ private:
 	
 
 public:
-	typedef std::unordered_map<int, Chunk*>::iterator ChunkIterator;
+	typedef std::unordered_map<int, ChunkHandle>::iterator ChunkIterator;
 
 	ChunkManager(Util::Allocator::IAllocator &parent);
 	~ChunkManager();
@@ -43,7 +41,7 @@ public:
 	//todo add frustum
 	void update(float x, float y, float z);
 
-	void chunkLoader(Chunk *);
+	void chunkLoader(ChunkHandle chunk);
 
 	inline ChunkIterator begin() {
 		return this->chunkSet.begin();
@@ -58,9 +56,8 @@ public:
 
 	int hashcode(int i, int j, int k);
 
-	Chunk* getChunk(int cx, int cy, int cz);
-	Chunk* getChunkIfMapped(int cx, int cy, int cz);
-	Chunk* generateChunk(int cx, int cy, int cz);
+	ChunkHandle getChunk(int cx, int cy, int cz);
+	ChunkHandle getChunkIfMapped(int cx, int cy, int cz);
 	//Chunk* setChunk(int cx, int cy, int cz, Block *data);
 
 	bool isChunkMapped(int cx, int cy, int cz);
@@ -83,8 +80,8 @@ public:
 private:
 	Util::Threading::ThreadPool pool;
 
-	Util::Allocator::PoolAllocator chunkAllocator;
 	Util::Allocator::LinearAllocator chunkMesherAllocator;
+	Util::Allocator::PoolAllocator chunkPoolAllocator;
 
 	Util::Recycler<ChunkRenderData> renderDataRecycler;
 	Util::Recycler<Chunk::BlockGeometry> meshRecycler;
@@ -93,7 +90,7 @@ private:
 
 	//moodycamel::ConcurrentQueue<Chunk*> chunkReadyQueue;
 
-	std::unordered_map<int, Chunk*> chunkSet;
+	std::unordered_map<int, ChunkHandle> chunkSet;
 	std::unordered_map<int, ChunkRenderData*> renderDataSet;
 	int expand(int x);
 

@@ -330,7 +330,7 @@ void OpenGLRenderer::renderChunks(Voxel::ChunkManager *manager, glm::vec3 camera
 	//Voxel::ChunkManager::ChunkIterator iterator = manager->begin();
 	for (Voxel::ChunkManager::ChunkIterator iterator = manager->begin(); iterator != manager->end(); iterator++) {
 
-		Voxel::Chunk *chunk = iterator->second;
+		Voxel::ChunkHandle chunk = iterator->second;
 
 		if (chunk == nullptr || chunk->getChunkState() == Voxel::Chunk::EMPTY) {
 			continue;
