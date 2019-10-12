@@ -1,5 +1,5 @@
 #include "ChunkMesher.h"
-
+#include "ChunkManager.h"
 using namespace Voxel;
 
 ChunkMesher::ChunkMesher() {
@@ -11,14 +11,14 @@ ChunkMesher::~ChunkMesher() {
 
 }
 
-void ChunkMesher::loadChunkData(Chunk *chunk, Chunk *up, Chunk *down, Chunk *left, Chunk *right, Chunk *front, Chunk *back) {
+void ChunkMesher::loadChunkData(ChunkNeighbors &n) {
 
 }
 
-void ChunkMesher::loadChunkDataAsync(Chunk *chunk, Chunk *up, Chunk *down, Chunk *left, Chunk *right, Chunk *front, Chunk *back) {
+void ChunkMesher::loadChunkDataAsync(ChunkNeighbors &n) {
 
 }
 
-void ChunkMesher::createChunkMesh(Chunk::BlockGeometry *geometry) {
+void ChunkMesher::createChunkMesh(Chunk::BlockGeometry &geometry) {
 
 }

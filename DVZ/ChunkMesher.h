@@ -4,18 +4,22 @@
 
 namespace Voxel{
 
+struct ChunkNeighbors;
+
 class ChunkMesher {
 private:
-	//Block block[];
+	const static int PADDED_VOLUME = (Voxel::CHUNK_WIDTH_X + 2) * (Voxel::CHUNK_WIDTH_Y + 2) * (Voxel::CHUNK_RENDER_WIDTH_Z + 2);
+	Block block[PADDED_VOLUME];
+	
 
 public:
 	ChunkMesher();
 	~ChunkMesher();
 
-	void loadChunkData(Chunk *chunk, Chunk *up, Chunk *down, Chunk *left, Chunk *right, Chunk *front, Chunk *back);
-	void loadChunkDataAsync(Chunk *chunk, Chunk *up, Chunk *down, Chunk *left, Chunk *right, Chunk *front, Chunk *back);
+	void loadChunkData(ChunkNeighbors &);
+	void loadChunkDataAsync(ChunkNeighbors &);
 
-	void createChunkMesh(Chunk::BlockGeometry *geometry);
+	void createChunkMesh(Chunk::BlockGeometry &);
 };
 }
 

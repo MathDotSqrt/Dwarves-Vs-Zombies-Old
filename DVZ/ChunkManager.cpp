@@ -17,6 +17,8 @@ ChunkManager::ChunkManager(Util::Allocator::IAllocator &parent) :
 	meshRecycler(CHUNK_MESH_RECYCLE_SIZE, parent)
 	{
 
+	this->chunkMesherArray = Util::Allocator::allocateArray<ChunkMesher>(this->chunkMesherAllocator, CHUNK_THREAD_POOL_SIZE);
+
 }
 
 
@@ -37,8 +39,8 @@ void thread(moodycamel::ConcurrentQueue<Chunk*> *queue, Chunk *chunk) {
 }
 
 void ChunkManager::update(float x, float y, float z) {
-	static auto lambda = [this](ChunkHandle chunk) {
-		this->chunkLoader(chunk);
+	static auto lambda = [this](ChunkNeighbors neighbors, Chunk::BlockGeometry* geometry) {
+		this->chunkLoader(neighbors, geometry);
 	};
 	
 	int chunkX = this->getChunkX(x);
@@ -60,8 +62,8 @@ void ChunkManager::update(float x, float y, float z) {
 				if (needsChunk) {
 					Util::Performance::Timer chunkTimer1("Chunk Alloc");
 					ChunkHandle chunk = Util::Allocator::allocateHandle<Chunk>(this->chunkPoolAllocator, cx, cy, cz);
-					
-					this->pool.submit(lambda, chunk);
+
+					this->pool.submit(lambda, this->getChunkNeighbors(chunk), this->meshRecycler.getNew());
 					this->chunkSet[this->hashcode(cx, chunkY, cz)] = chunk;
 				}
 			}
@@ -101,12 +103,16 @@ void ChunkManager::update(float x, float y, float z) {
 }
 
 std::atomic<int> count = 0;
-void ChunkManager::chunkLoader(ChunkHandle chunk) {
+void ChunkManager::chunkLoader(ChunkNeighbors neighbors, Chunk::BlockGeometry *geometry) {
 	thread_local int workerID = count++;
 
-	chunk->generateTerrain();
-	chunk->generateMesh();
-	//this->chunkReadyQueue.enqueue(chunk);
+	this->chunkMesherArray[workerID].loadChunkDataAsync(neighbors);
+	this->chunkMesherArray[workerID].createChunkMesh(*geometry);
+
+	neighbors.middle->generateTerrain();
+	neighbors.middle->generateMesh();
+	
+	this->chunkMeshQueue.enqueue(geometry);
 }
 
 
@@ -130,11 +136,26 @@ ChunkHandle ChunkManager::getChunk(int cx, int cy, int cz) {
 	return this->chunkSet[this->hashcode(cx, cy, cz)];
 }
 
-ChunkHandle  ChunkManager::getChunkIfMapped(int cx, int cy, int cz) {
+ChunkHandle ChunkManager::getChunkIfMapped(int cx, int cy, int cz) {
 	std::unordered_map<int, ChunkHandle>::const_iterator iter;
 	iter = this->chunkSet.find(hashcode(cx, cy, cz));
 	return iter != this->chunkSet.end() ? iter->second : nullptr;
 }
+
+ChunkNeighbors ChunkManager::getChunkNeighbors(ChunkHandle chunk) {
+	int cx = chunk->getChunkX(), cy = chunk->getChunkY(), cz = chunk->getChunkZ();
+	
+	return {
+		chunk, 
+		getChunkIfMapped(cx, cy, cz+1),
+		getChunkIfMapped(cx, cy, cz-1),
+		getChunkIfMapped(cx-1, cy, cz),
+		getChunkIfMapped(cx+1, cy, cz),
+		getChunkIfMapped(cx, cy+1, cz),
+		getChunkIfMapped(cx, cy-1, cz)
+	};
+}
+
 
 bool ChunkManager::isChunkMapped(int cx, int cy, int cz) {
 	//check to see if chunkset actually inserts a nullptr when checking for an invalid chunk

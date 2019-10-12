@@ -12,10 +12,8 @@ namespace Voxel {
 		BLOCK_TYPE_PURPLE,
 		BLOCK_TYPE_NUM_TYPES
 	} BlockType;
-
 	struct Block {
 		BlockType type;
-
 		Block() {
 			this->type = BlockType::BLOCK_TYPE_DEFAULT;
 		}

@@ -6,6 +6,7 @@
 #include "Block.h"
 #include "Chunk.h"
 #include "ChunkRenderData.h"
+#include "ChunkMesher.h"
 
 #include "ThreadPool.h"
 
@@ -19,21 +20,26 @@ namespace Voxel{
 
 typedef Util::Allocator::Handle<Chunk> ChunkHandle;
 
+struct ChunkNeighbors {
+	ChunkHandle middle;
+	ChunkHandle front;
+	ChunkHandle back;
+	ChunkHandle left;
+	ChunkHandle right;
+	ChunkHandle up;
+	ChunkHandle down;
+};
+
 class ChunkManager {
 public:
+	typedef std::unordered_map<int, ChunkHandle>::iterator ChunkIterator;
+
 	static const int CHUNK_ALLOC_SIZE = 40 * 1024 * 1024;
 	static const int CHUNK_MESHER_ALLOC_SIZE = 8 * 1024 * 1024;
 	static const int CHUNK_MESH_RECYCLE_SIZE = 2 * 1024 * 1024;
 	static const int CHUNK_RENDER_DATA_RECYCLE_SIZE = 2 * 1024 * 1024;
 	static const int CHUNK_THREAD_POOL_SIZE = 1;
-
 	static const int RENDER_DISTANCE = 15;
-
-private:
-	
-
-public:
-	typedef std::unordered_map<int, ChunkHandle>::iterator ChunkIterator;
 
 	ChunkManager(Util::Allocator::IAllocator &parent);
 	~ChunkManager();
@@ -41,7 +47,7 @@ public:
 	//todo add frustum
 	void update(float x, float y, float z);
 
-	void chunkLoader(ChunkHandle chunk);
+	void chunkLoader(ChunkNeighbors neighbors, Chunk::BlockGeometry*);
 
 	inline ChunkIterator begin() {
 		return this->chunkSet.begin();
@@ -58,7 +64,8 @@ public:
 
 	ChunkHandle getChunk(int cx, int cy, int cz);
 	ChunkHandle getChunkIfMapped(int cx, int cy, int cz);
-	//Chunk* setChunk(int cx, int cy, int cz, Block *data);
+	ChunkNeighbors getChunkNeighbors(ChunkHandle chunk);
+	ChunkNeighbors getChunkNeighbors(int cx, int cy, int cz);
 
 	bool isChunkMapped(int cx, int cy, int cz);
 
@@ -77,11 +84,13 @@ public:
 	int getChunkY(float y);
 	int getChunkZ(float z);
 
+
+
 private:
 	Util::Threading::ThreadPool pool;
 
-	Util::Allocator::LinearAllocator chunkMesherAllocator;
 	Util::Allocator::PoolAllocator chunkPoolAllocator;
+	Util::Allocator::LinearAllocator chunkMesherAllocator;
 
 	Util::Recycler<ChunkRenderData> renderDataRecycler;
 	Util::Recycler<Chunk::BlockGeometry> meshRecycler;
@@ -92,6 +101,9 @@ private:
 
 	std::unordered_map<int, ChunkHandle> chunkSet;
 	std::unordered_map<int, ChunkRenderData*> renderDataSet;
+
+	ChunkMesher *chunkMesherArray;
+
 	int expand(int x);
 
 };
