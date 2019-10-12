@@ -35,12 +35,6 @@ ChunkManager::~ChunkManager() {
 	}*/
 }
 
-void thread(moodycamel::ConcurrentQueue<Chunk*> *queue, Chunk *chunk) {
-	//chunk->generateTerrain();
-	//chunk->generateMesh();
-	//queue->enqueue(chunk);
-}
-
 void ChunkManager::update(float x, float y, float z) {
 	static auto lambda = [this](ChunkNeighbors neighbors, Chunk::BlockGeometry* geometry) {
 		this->chunkLoader(neighbors, geometry);
@@ -180,7 +174,7 @@ bool ChunkManager::isChunkMapped(int cx, int cy, int cz) {
 }
 
 
-Block& ChunkManager::getBlock(int x, int y, int z) {
+Block ChunkManager::getBlock(int x, int y, int z) {
 	int cx = x >> CHUNK_SHIFT_X;
 	int cy = y >> CHUNK_SHIFT_Y;
 	int cz = z >> CHUNK_SHIFT_Z;
@@ -195,7 +189,7 @@ Block& ChunkManager::getBlock(int x, int y, int z) {
 	return chunk->getBlock(bx, by, bz);
 }
 
-void ChunkManager::setBlock(int x, int y, int z, Block &block) {
+void ChunkManager::setBlock(int x, int y, int z, Block block) {
 	int cx = x >> CHUNK_SHIFT_X;
 	int cy = y >> CHUNK_SHIFT_Y;
 	int cz = z >> CHUNK_SHIFT_Z;
@@ -219,7 +213,7 @@ bool ChunkManager::isBlockMapped(int x, int y, int z) {
 	return this->isChunkMapped(cx, cy, cz);
 }
 
-Block& ChunkManager::getBlock(float x, float y, float z) {
+Block ChunkManager::getBlock(float x, float y, float z) {
 	x /= BLOCK_RENDER_SIZE;
 	y /= BLOCK_RENDER_SIZE;
 	z /= BLOCK_RENDER_SIZE;
@@ -227,7 +221,7 @@ Block& ChunkManager::getBlock(float x, float y, float z) {
 	return this->getBlock((int)x, (int)y, (int)z);
 }
 
-void ChunkManager::setBlock(float x, float y, float z, Block &block) {
+void ChunkManager::setBlock(float x, float y, float z, Block block) {
 	x /= BLOCK_RENDER_SIZE;
 	y /= BLOCK_RENDER_SIZE;
 	z /= BLOCK_RENDER_SIZE;

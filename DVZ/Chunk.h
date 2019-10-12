@@ -35,6 +35,7 @@ public:
 
 	typedef enum _ChunkState{
 		EMPTY,
+		LAZY_LOADED,
 		DIRTY_MESH,
 		VALID
 	} ChunkState;
@@ -57,12 +58,13 @@ public:
 
 	void generateTerrain();
 
-	Block& getBlock(int x, int y, int z);
-	void setBlock(int x, int y, int z, Block &block);
+	Block getBlock(int x, int y, int z);
+	void setBlock(int x, int y, int z, Block block);
 
 	inline bool needsMeshUpdate() {
 		return this->currentState == Chunk::DIRTY_MESH;
 	}
+
 
 	inline int getChunkX() {
 		return this->chunk_x;

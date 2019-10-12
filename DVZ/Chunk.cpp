@@ -87,13 +87,13 @@ void Chunk::assertBlockIndex(int x, int y, int z) {
 	assert(z >= 0 && z < CHUNK_WIDTH_Z);
 }
 
-Block& Chunk::getBlock(int x, int y, int z) {
+Block Chunk::getBlock(int x, int y, int z) {
 	std::shared_lock<std::shared_mutex> lock(this->chunkMutex);
 	this->assertBlockIndex(x, y, z);
 	return data[this->toIndex(x, y, z)];
 }
 
-void Chunk::setBlock(int x, int y, int z, Block &block) {
+void Chunk::setBlock(int x, int y, int z, Block block) {
 	std::lock_guard<std::shared_mutex> lock(this->chunkMutex);
 
 	this->assertBlockIndex(x, y, z);

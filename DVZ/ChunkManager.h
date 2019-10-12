@@ -77,12 +77,12 @@ public:
 
 	bool isChunkMapped(int cx, int cy, int cz);
 
-	Block& getBlock(int x, int y, int z);
-	void setBlock(int x, int y, int z, Block &block);
+	Block getBlock(int x, int y, int z);
+	void setBlock(int x, int y, int z, Block block);
 	bool isBlockMapped(int x, int y, int z);
 
-	Block& getBlock(float x, float y, float z);
-	void setBlock(float x, float y, float z, Block &block);
+	Block getBlock(float x, float y, float z);
+	void setBlock(float x, float y, float z, Block block);
 
 	int getBlockX(float x);
 	int getBlockY(float y);
