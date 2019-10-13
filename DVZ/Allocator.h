@@ -73,6 +73,13 @@ namespace Util::Allocator{
 		t = nullptr;
 	}
 
+	//template<typename T>
+	//T* allocateArray(IAllocator &allocator, size_t length) {
+	//	assert(length != 0);
+
+	//	T *t = allocator.allocate(sizeof(T) * length, alignof(T));
+	//}
+
 	//todo see if this is actually usefull
 	//todo make user keep track of array length
 	template<typename T>
@@ -94,7 +101,7 @@ namespace Util::Allocator{
 		//calls constructor for all T in array
 		//new (&p) will gaurentee that T will not be allocated randomly in heap
 		for (size_t i = 0; i < length; i++) {
-			new (&p) T;
+			new (p + i) T;
 		}
 
 		return p;

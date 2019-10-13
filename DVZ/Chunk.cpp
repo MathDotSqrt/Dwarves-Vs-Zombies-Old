@@ -46,6 +46,10 @@ void Chunk::generateTerrain() {
 				int y = this->chunk_y * CHUNK_WIDTH_Y + by;
 				int z = this->chunk_z * CHUNK_WIDTH_Z + bz;
 
+				/*if (y < getHashCode() % CHUNK_WIDTH_Y) {
+					this->setBlockInternal(bx, by, bz, (chunk_x + chunk_z) % 2 == 0 ? Block(BlockType::BLOCK_TYPE_STONE) : Block(BlockType::BLOCK_TYPE_DIRT));
+				}*/
+
 				if (y > 32 && x % 4 == 0 && z % 4 == 0 && y % 4 == 0)
 					if (x % 4 == 0 && z % 4 == 0 && y % 4 == 0) {
 						//this->getBlockInternal(bx, by, bz) = { BlockType::BLOCK_TYPE_STONE };
@@ -64,12 +68,6 @@ void Chunk::generateTerrain() {
 				}
 				else
 					this->getBlockInternal(bx, by, bz) = {BlockType::BLOCK_TYPE_DEFAULT };
-				//if (x == y && y == z) {
-				//	this->getBlock(x, y, z) = { BlockType::BLOCK_TYPE_DIRT };
-				//}
-				//else {
-				//	this->getBlock(x, y, z) = { BlockType::BLOCK_TYPE_DEFAULT };
-				//}
 			}
 		}
 	}
@@ -112,4 +110,17 @@ void Chunk::setBlock(int x, int y, int z, Block block) {
 		if(this->currentState == Chunk::VALID)		//only dirty state if it was valid, not if empty or lazy
 			this->currentState = Chunk::DIRTY_MESH;	//todo only dirty chunk if there is an adjecant block that is transparent
 	}
+}
+
+int Chunk::expand(int x) {
+	x &= 0x3FF;
+	x = (x | (x << 16)) & 4278190335;
+	x = (x | (x << 8)) & 251719695;
+	x = (x | (x << 4)) & 3272356035;
+	x = (x | (x << 2)) & 1227133513;
+	return x;
+}
+
+int Chunk::getHashCode() {
+	return expand(chunk_x) + (expand(chunk_y) << 1) + (expand(chunk_z) << 2);
 }

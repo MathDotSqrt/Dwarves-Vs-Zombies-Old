@@ -4,7 +4,6 @@
 #include <future>
 #include "blockingconcurrentqueue.h"
 #include "macrologger.h"
-
 namespace Util::Threading {
 	//https://github.com/mtrebi/thread-pool/blob/master/include/ThreadPool.h
 

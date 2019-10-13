@@ -35,12 +35,12 @@ public:
 	typedef std::unordered_map<int, ChunkHandle>::iterator ChunkIterator;
 	typedef std::unordered_map<int, ChunkRenderData*>::iterator ChunkRenderDataIterator;
 
-	static const int CHUNK_ALLOC_SIZE = 40 * 1024 * 1024;
+	static const int CHUNK_ALLOC_SIZE = 80 * 1024 * 1024;
 	static const int CHUNK_MESHER_ALLOC_SIZE = 8 * 1024 * 1024;
 	static const int CHUNK_MESH_RECYCLE_SIZE = 2 * 1024 * 1024;
 	static const int CHUNK_RENDER_DATA_RECYCLE_SIZE = 2 * 1024 * 1024;
 	static const int CHUNK_THREAD_POOL_SIZE = 1;	//dont change this until i fix allocate array
-	static const int RENDER_DISTANCE = 15;
+	static const int RENDER_DISTANCE = 25;
 
 	ChunkManager(Util::Allocator::IAllocator &parent);
 	~ChunkManager();
@@ -48,7 +48,8 @@ public:
 	//todo add frustum
 	void update(float x, float y, float z);
 
-	void chunkLoader(ChunkNeighbors neighbors, Chunk::BlockGeometry*);
+	void chunkGeneratorThread(ChunkHandle chunk);
+	void chunkMeshingThread(ChunkNeighbors neighbors, Chunk::BlockGeometry*);
 
 	inline ChunkIterator begin() {
 		return this->chunkSet.begin();
@@ -96,7 +97,7 @@ public:
 
 private:
 	Util::Threading::ThreadPool pool;
-	Util::Allocator::PoolAllocator chunkPoolAllocator;
+	Util::Allocator::PoolAllocator chunkPoolAllocator;			//todo fix chunk alloc assert bug
 	Util::Allocator::LinearAllocator chunkMesherAllocator;
 
 	Util::Recycler<ChunkRenderData> renderDataRecycler;
@@ -106,12 +107,13 @@ private:
 
 	std::unordered_map<int, ChunkHandle> chunkSet;
 	std::unordered_map<int, ChunkRenderData*> renderDataSet;
+	std::unordered_map<int, bool> chunkQueuedSet;
 
 	ChunkMesher *chunkMesherArray;
 
-	int currentChunkX = INT_MIN;
-	int currentChunkY = INT_MIN;
-	int currentChunkZ = INT_MIN;
+	int currentChunkX = 0;
+	int currentChunkY = 0;
+	int currentChunkZ = 0;
 
 	int expand(int x);
 

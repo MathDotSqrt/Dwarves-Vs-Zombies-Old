@@ -16,6 +16,8 @@ void ChunkMesher::loadChunkData(ChunkNeighbors &n) {
 }
 
 void ChunkMesher::loadChunkDataAsync(ChunkNeighbors &n) {
+	memset(this->block, BlockType::BLOCK_TYPE_DEFAULT, sizeof(block));
+	
 	if(n.middle){
 		std::shared_lock<std::shared_mutex> middle_lock(n.middle->chunkMutex);
 		for (int z = 0; z < CHUNK_WIDTH_Z; z++) { 
@@ -28,25 +30,25 @@ void ChunkMesher::loadChunkDataAsync(ChunkNeighbors &n) {
 		n.middle->currentState = Chunk::ChunkState::VALID;
 	}
 
-	if(n.front){	
+	if(n.front && !n.front->isEmpty()){	
 		std::shared_lock<std::shared_mutex> front_lock(n.front->chunkMutex);
 		for(int y = 0; y < CHUNK_WIDTH_Y; y++){
 			for (int x = 0; x < CHUNK_WIDTH_X; x++) {
-				this->block[toPaddedBlockIndex(x + 1, y + 1, 0)] = n.front->getBlockInternal(x, y, CHUNK_WIDTH_Z-1);
+				this->block[toPaddedBlockIndex(x + 1, y + 1, PADDED_WIDTH_Z-1)] = n.front->getBlockInternal(x, y, 0);
 			}
 		}
 	}
 
-	if (n.back) {
+	if (n.back && !n.back->isEmpty()) {
 		std::shared_lock<std::shared_mutex> back_lock(n.back->chunkMutex);
 		for (int y = 0; y < CHUNK_WIDTH_Y; y++) {
 			for (int x = 0; x < CHUNK_WIDTH_X; x++) {
-				this->block[toPaddedBlockIndex(x + 1, y + 1, PADDED_WIDTH_Z-1)] = n.back->getBlockInternal(x, y, 0);
+				this->block[toPaddedBlockIndex(x + 1, y + 1, 0)] = n.back->getBlockInternal(x, y, CHUNK_WIDTH_Z-1);
 			}
 		}
 	}
 
-	if (n.left) {
+	if (n.left && !n.left->isEmpty()) {
 		std::shared_lock<std::shared_mutex> left_lock(n.left->chunkMutex);
 		for (int z = 0; z < CHUNK_WIDTH_Z; z++) {
 			for (int y = 0; y < CHUNK_WIDTH_Y; y++) {
@@ -55,7 +57,7 @@ void ChunkMesher::loadChunkDataAsync(ChunkNeighbors &n) {
 		}
 	}
 
-	if (n.right) {
+	if (n.right && !n.right->isEmpty()) {
 		std::shared_lock<std::shared_mutex> right_lock(n.right->chunkMutex);
 		for (int z = 0; z < CHUNK_WIDTH_Z; z++) {
 			for (int y = 0; y < CHUNK_WIDTH_Y; y++) {

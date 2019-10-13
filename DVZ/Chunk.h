@@ -9,9 +9,9 @@
 
 namespace Voxel{
 
-static constexpr int CHUNK_SHIFT_X = 4;
-static constexpr int CHUNK_SHIFT_Y = 6;
-static constexpr int CHUNK_SHIFT_Z = 4;
+static constexpr int CHUNK_SHIFT_X = 5;
+static constexpr int CHUNK_SHIFT_Y = 5;
+static constexpr int CHUNK_SHIFT_Z = 5;
 
 static constexpr int CHUNK_WIDTH_X = 1 << CHUNK_SHIFT_X;
 static constexpr int CHUNK_WIDTH_Y = 1 << CHUNK_SHIFT_Y;
@@ -48,12 +48,12 @@ private:
 	
 	Block data[CHUNK_VOLUME];
 	ChunkState currentState;
-	BlockGeometry geometry;
 
 	std::shared_mutex chunkMutex;
 
 public:
 	
+	//todo make chunk contain shared pointer of render data from a recycler. Maybe
 	Chunk(int x, int y, int z);
 	~Chunk();
 
@@ -101,6 +101,14 @@ public:
 		return true;
 	}
 
+	inline bool isEmpty() {
+		return this->currentState == Chunk::ChunkState::EMPTY;
+	}
+
+	inline bool isValid() {
+		return this->currentState == Chunk::ChunkState::VALID;
+	}
+
 	inline int getChunkX() {
 		return this->chunk_x;
 	}
@@ -117,9 +125,7 @@ public:
 		return this->currentState;
 	}
 
-	inline BlockGeometry& getChunkGeometry() {
-		return this->geometry;
-	}
+	int getHashCode();
 
 private:
 	inline Block& getBlockInternal(int x, int y, int z) {
@@ -127,8 +133,14 @@ private:
 		//this->assertBlockIndex(x, y, z);
 		return data[this->toIndex(x, y, z)];
 	}
+
+	inline void setBlockInternal(int x, int y, int z, Block b) {
+		data[this->toIndex(x, y, z)] = b;
+	}
 	int toIndex(int x, int y, int z);
 	void assertBlockIndex(int x, int y, int z);
+
+	int expand(int i);
 };
 
 }
