@@ -325,11 +325,6 @@ void OpenGLRenderer::renderChunks(Voxel::ChunkManager *manager, glm::vec3 camera
 	shader->setUniform3f("point_light_color", point.color);
 	shader->setUniform1f("point_light_intensity", point.intensity);
 
-	glm::mat4 ident = glm::identity<glm::mat4>();
-	
-	//glm::mat3 mat(ident);
-	//shader->setUniformMat3("inverseTransposeMatrix", glm::inverse(mat), true);
-
 	Util::Performance::Timer timer2("Render ONLY Chunks");
 	for (Voxel::ChunkManager::ChunkRenderDataIterator iterator = manager->beginRenderData(); iterator != manager->endRenderData(); iterator++) {
 
@@ -343,8 +338,7 @@ void OpenGLRenderer::renderChunks(Voxel::ChunkManager *manager, glm::vec3 camera
 		float y = data->getChunkY() * Voxel::CHUNK_RENDER_WIDTH_Y;
 		float z = data->getChunkZ() * Voxel::CHUNK_RENDER_WIDTH_Z;
 
-		//glm::mat4 model = glm::translate(ident, glm::vec3(x, y, z));
-		shader->setUniform3f("world_pos", glm::vec3(x, y, z));
+		shader->setUniform3f("pos", glm::vec3(x, y, z));
 		shader->setUniform3f("specular_color", chunkMat.specularColor);
 		shader->setUniform1f("shinyness", chunkMat.shinyness);
 

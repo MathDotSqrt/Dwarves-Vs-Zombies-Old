@@ -40,7 +40,7 @@ public:
 	static const int CHUNK_MESH_RECYCLE_SIZE = 2 * 1024 * 1024;
 	static const int CHUNK_RENDER_DATA_RECYCLE_SIZE = 2 * 1024 * 1024;
 	static const int CHUNK_THREAD_POOL_SIZE = 1;	//dont change this until i fix allocate array
-	static const int RENDER_DISTANCE = 25;
+	static const int RENDER_DISTANCE = 15;
 
 	ChunkManager(Util::Allocator::IAllocator &parent);
 	~ChunkManager();

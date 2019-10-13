@@ -140,7 +140,7 @@ void ChunkManager::update(float x, float y, float z) {
 	}
 	Util::Performance::Timer chunkDequeueTimer("Chunk Dequeue");
 	std::pair<Chunk::BlockGeometry*, glm::ivec3> element;
-	for (int i = 0; i < 1 && this->chunkMeshQueue.try_dequeue(element); i++) {
+	for (int i = 0; i < 8 && this->chunkMeshQueue.try_dequeue(element); i++) {
 		glm::ivec3 chunkCoord = element.second;
 		ChunkRenderData *data = renderDataRecycler.getNew();
 		data->cx = chunkCoord.x;
