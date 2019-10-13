@@ -326,6 +326,7 @@ void OpenGLRenderer::renderChunks(Voxel::ChunkManager *manager, glm::vec3 camera
 	shader->setUniform1f("point_light_intensity", point.intensity);
 
 	glm::mat4 ident = glm::identity<glm::mat4>();
+	Util::Performance::Timer timer2("Render ONLY Chunks");
 
 	//Voxel::ChunkManager::ChunkIterator iterator = manager->begin();
 	for (Voxel::ChunkManager::ChunkRenderDataIterator iterator = manager->beginRenderData(); iterator != manager->endRenderData(); iterator++) {

@@ -96,21 +96,22 @@ public:
 
 private:
 	Util::Threading::ThreadPool pool;
-
 	Util::Allocator::PoolAllocator chunkPoolAllocator;
 	Util::Allocator::LinearAllocator chunkMesherAllocator;
 
 	Util::Recycler<ChunkRenderData> renderDataRecycler;
 	Util::Recycler<Chunk::BlockGeometry> meshRecycler;
 
-	moodycamel::ConcurrentQueue <std::pair<Chunk::BlockGeometry*, glm::ivec3>> chunkMeshQueue;
-
-	//moodycamel::ConcurrentQueue<Chunk*> chunkReadyQueue;
+	moodycamel::ConcurrentQueue<std::pair<Chunk::BlockGeometry*, glm::ivec3>> chunkMeshQueue;
 
 	std::unordered_map<int, ChunkHandle> chunkSet;
 	std::unordered_map<int, ChunkRenderData*> renderDataSet;
 
 	ChunkMesher *chunkMesherArray;
+
+	int currentChunkX = INT_MIN;
+	int currentChunkY = INT_MIN;
+	int currentChunkZ = INT_MIN;
 
 	int expand(int x);
 

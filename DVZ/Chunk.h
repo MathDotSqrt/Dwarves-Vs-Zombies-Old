@@ -34,10 +34,11 @@ public:
 	typedef BlockGeometry::GeometryVertex BlockVertex;
 
 	typedef enum _ChunkState{
-		EMPTY,
-		LAZY_LOADED,
-		DIRTY_MESH,
-		VALID
+		EMPTY,					//allocated but all of the values are nonsense
+		LAZY_LOADED,			//allocated with generated blocks, but has no render data associated. Useful for meshing algo
+		NEED_MESH,				//allocated but needs mesh
+		DIRTY_MESH,				//has a mesh but the chunk state is different than the mesh
+		VALID					//has a mesh and chunk is consistant with mesh
 	} ChunkState;
 
 private:
@@ -61,10 +62,44 @@ public:
 	Block getBlock(int x, int y, int z);
 	void setBlock(int x, int y, int z, Block block);
 
+	//needs mesh
+	inline bool needsNewMesh() {
+		return this->currentState == Chunk::NEED_MESH;
+	}
 	inline bool needsMeshUpdate() {
 		return this->currentState == Chunk::DIRTY_MESH;
 	}
+	
+	inline bool flagLoadLazy() {
+		if (this->currentState == Chunk::EMPTY) {
+			this->currentState = Chunk::LAZY_LOADED;
+			return true;
+		}
 
+		return false;
+	}
+
+	inline bool flagMeshCreation() {
+		if (this->currentState == Chunk::ChunkState::LAZY_LOADED) {
+			this->currentState = Chunk::NEED_MESH;
+			return true;
+		}
+
+		return false;
+	}
+
+	inline bool flagDirty() {
+		if (this->currentState == Chunk::ChunkState::VALID) {
+			this->currentState = Chunk::ChunkState::DIRTY_MESH;
+			return true;
+		}
+		return false;
+	}
+
+	inline bool flagValid() {
+		this->currentState = Chunk::ChunkState::VALID;
+		return true;
+	}
 
 	inline int getChunkX() {
 		return this->chunk_x;
@@ -79,7 +114,6 @@ public:
 	}
 
 	inline ChunkState getChunkState() {
-		//std::shared_lock<std::shared_mutex> lock(this->chunkMutex);
 		return this->currentState;
 	}
 

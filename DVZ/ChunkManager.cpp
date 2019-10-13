@@ -44,7 +44,11 @@ void ChunkManager::update(float x, float y, float z) {
 	int chunkY = this->getChunkY(y);
 	int chunkZ = this->getChunkZ(z);
 
-	{
+	if (chunkX != this->currentChunkX || chunkY != this->currentChunkY || chunkZ != this->currentChunkZ) {
+		this->currentChunkX = chunkX;
+		this->currentChunkY = chunkY;
+		this->currentChunkZ = chunkZ;
+
 		Util::Performance::Timer chunkTimer("Chunk Updater");
 		for (int x = -RENDER_DISTANCE/2; x < RENDER_DISTANCE/2; x++) {
 			for (int z = -RENDER_DISTANCE/2; z < RENDER_DISTANCE/2; z++) {
@@ -67,32 +71,32 @@ void ChunkManager::update(float x, float y, float z) {
 	}
 
 	Util::Performance::Timer timer("Chunk Dequeue");
-	ChunkIterator iter = this->begin();
-	while (iter != this->end()) {
-		ChunkHandle chunk = iter->second;
-		int diffX = std::abs(chunk->getChunkX() - chunkX);
-		int diffZ = std::abs(chunk->getChunkZ() - chunkZ);
-		
-		const int DELETE_RANGE = RENDER_DISTANCE / 2 + 3;
+	//ChunkIterator iter = this->begin();
+	//while (iter != this->end()) {
+	//	ChunkHandle chunk = iter->second;
+	//	int diffX = std::abs(chunk->getChunkX() - chunkX);
+	//	int diffZ = std::abs(chunk->getChunkZ() - chunkZ);
+	//	
+	//	const int DELETE_RANGE = RENDER_DISTANCE / 2 + 3;
 
-		//if (diffX > DELETE_RANGE || diffZ > DELETE_RANGE) {
-		//	//removes chunk and returns an iterator pointing to the next chunk
-		//	//todo
-		//	//iter = this->removeChunk(iter);
-		//}
-		//else {
-		//	if (chunk->needsMeshUpdate()) {
-		//		//todo
-		//	}
-		//	iter++;
-		//}
+	//	//if (diffX > DELETE_RANGE || diffZ > DELETE_RANGE) {
+	//	//	//removes chunk and returns an iterator pointing to the next chunk
+	//	//	//todo
+	//	//	//iter = this->removeChunk(iter);
+	//	//}
+	//	//else {
+	//	//	if (chunk->needsMeshUpdate()) {
+	//	//		//todo
+	//	//	}
+	//	//	iter++;
+	//	//}
 
-		iter++;
+	//	iter++;
 
-	}
+	//}
 
 	std::pair<Chunk::BlockGeometry*, glm::ivec3> element;
-	for (int i = 0; this->chunkMeshQueue.try_dequeue(element); i++) {
+	for (int i = 0; i <= 5 && this->chunkMeshQueue.try_dequeue(element); i++) {
 		glm::ivec3 chunkCoord = element.second;
 		ChunkRenderData *data = renderDataRecycler.getNew();
 		data->cx = chunkCoord.x;
@@ -109,15 +113,19 @@ std::atomic<int> count = 0;
 void ChunkManager::chunkLoader(ChunkNeighbors neighbors, Chunk::BlockGeometry *geometry) {
 	//static id for each thread
 	thread_local int workerID = count++;
-	std::this_thread::sleep_for(std::chrono::seconds(1));
+	//std::this_thread::sleep_for(std::chrono::seconds(1));
 	
-	neighbors.middle->generateTerrain();
+	if(neighbors.middle->getChunkState() == Chunk::ChunkState::EMPTY)
+		neighbors.middle->generateTerrain();
 	this->chunkMesherArray[workerID].loadChunkDataAsync(neighbors);
 	this->chunkMesherArray[workerID].createChunkMesh(*geometry);
 	
+	neighbors.middle->flagValid();
+
 	int cx = neighbors.middle->getChunkX();
 	int cy = neighbors.middle->getChunkY();
 	int cz = neighbors.middle->getChunkZ();
+
 	this->chunkMeshQueue.enqueue(std::pair<Chunk::BlockGeometry*, glm::ivec3>(geometry, glm::vec3(cx, cy, cz)));
 }
 

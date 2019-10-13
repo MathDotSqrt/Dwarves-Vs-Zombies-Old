@@ -74,7 +74,7 @@ void Chunk::generateTerrain() {
 		}
 	}
 
-	this->currentState = Chunk::DIRTY_MESH;
+	this->currentState = Chunk::LAZY_LOADED;
 }
 
 int Chunk::toIndex(int x, int y, int z) {
@@ -88,18 +88,28 @@ void Chunk::assertBlockIndex(int x, int y, int z) {
 }
 
 Block Chunk::getBlock(int x, int y, int z) {
+	if (this->currentState == Chunk::ChunkState::EMPTY) {
+		return Block();
+	}
+
 	std::shared_lock<std::shared_mutex> lock(this->chunkMutex);
 	this->assertBlockIndex(x, y, z);
 	return data[this->toIndex(x, y, z)];
 }
 
 void Chunk::setBlock(int x, int y, int z, Block block) {
+	if (this->currentState != Chunk::ChunkState::EMPTY) {
+		return;
+	}
+
 	std::lock_guard<std::shared_mutex> lock(this->chunkMutex);
 
 	this->assertBlockIndex(x, y, z);
 
 	if (this->data[this->toIndex(x, y, z)] != block) {
 		this->data[this->toIndex(x, y, z)] = block;
-		this->currentState = Chunk::DIRTY_MESH;	//todo only dirty chunk if there is an adjecant block that is transparent
+
+		if(this->currentState == Chunk::VALID)		//only dirty state if it was valid, not if empty or lazy
+			this->currentState = Chunk::DIRTY_MESH;	//todo only dirty chunk if there is an adjecant block that is transparent
 	}
 }
