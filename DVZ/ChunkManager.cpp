@@ -37,12 +37,15 @@ void chunk_mesh_thread(ChunkNeighbors neighbors, Chunk::BlockGeometry *geometry,
 }
 
 ChunkManager::ChunkManager(Util::Allocator::IAllocator &parent) :
-	pool(CHUNK_THREAD_POOL_SIZE),
+	//pool(CHUNK_THREAD_POOL_SIZE),
 	chunkPoolAllocator(sizeof(Chunk), __alignof(Chunk), CHUNK_ALLOC_SIZE, parent),
 	chunkMesherAllocator(CHUNK_MESHER_ALLOC_SIZE, parent),
 	renderDataRecycler(CHUNK_RENDER_DATA_RECYCLE_SIZE, parent),
 	meshRecycler(CHUNK_MESH_RECYCLE_SIZE, parent)
 	{
+
+	generatorThread = std::thread(&ChunkManager::chunkGeneratorThread, this);
+	mesherThread = std::thread(&ChunkManager::chunkMeshingThread, this);
 
 	this->chunkMesherArray = Util::Allocator::allocateArray<ChunkMesher>(this->chunkMesherAllocator, CHUNK_THREAD_POOL_SIZE);
 
@@ -56,8 +59,10 @@ ChunkManager::ChunkManager(Util::Allocator::IAllocator &parent) :
 			needsChunk = !this->isChunkMapped(cx, cy, cz);
 			if (needsChunk) {
 				ChunkHandle chunk = Util::Allocator::allocateHandle<Chunk>(this->chunkPoolAllocator, cx, cy, cz);
-				this->pool.submit(chunk_gen_thread, chunk);
+				//this->pool.submit(chunk_gen_thread, chunk);
 				this->chunkSet[this->hashcode(cx, 0, cz)] = chunk;
+				this->chunkGenQueue.enqueue(chunk);
+
 			}
 		}
 	}
@@ -67,9 +72,14 @@ ChunkManager::ChunkManager(Util::Allocator::IAllocator &parent) :
 
 ChunkManager::~ChunkManager() {
 	//deleting all chunks
-	this->pool.stop();
+	//this->pool.stop();
+	this->runThreads = false;
 	this->chunkSet.clear();
 	Util::Allocator::freeArray<ChunkMesher>(this->chunkMesherAllocator, this->chunkMesherArray);
+
+	this->generatorThread.join();
+	this->mesherThread.join();
+
 	//ChunkManager::ChunkIterator iter = this->begin();
 	/*while (iter != this->end()) {
 		Util::Allocator::free(this->chunkPoolAllocator, iter->second);
@@ -79,10 +89,6 @@ ChunkManager::~ChunkManager() {
 
 void ChunkManager::update(float x, float y, float z) {
 	Util::Performance::Timer chunkTimer("Chunk Update");
-
-	/*static auto meshingFunc = [this](ChunkNeighbors neighbors, Chunk::BlockGeometry* geometry) {
-		this->chunkMeshingThread(neighbors, geometry);
-	};*/
 	
 	int chunkX = this->getChunkX(x);
 	int chunkY = this->getChunkY(y);
@@ -105,8 +111,9 @@ void ChunkManager::update(float x, float y, float z) {
 				needsChunk = !this->isChunkMapped(cx, cy, cz);
 				if (needsChunk) {
 					ChunkHandle chunk = Util::Allocator::allocateHandle<Chunk>(this->chunkPoolAllocator, cx, cy, cz);
-					this->pool.submit(chunk_gen_thread, chunk);
+					//this->pool.submit(chunk_gen_thread, chunk);
 					this->chunkSet[this->hashcode(cx, chunkY, cz)] = chunk;
+					this->chunkGenQueue.enqueue(chunk);
 				}
 			}
 		}
@@ -128,7 +135,8 @@ void ChunkManager::update(float x, float y, float z) {
 		}
 		else if (diffX < DELETE_RANGE && diffZ < DELETE_RANGE) {
 			if (!chunk->isValid() && !this->chunkQueuedSet[iter->second->getHashCode()]) {
-				this->pool.submit(chunk_mesh_thread, this->getChunkNeighbors(chunk), this->meshRecycler.getNew(), this->chunkMesherArray, &this->chunkMeshQueue);
+				//this->pool.submit(chunk_mesh_thread, this->getChunkNeighbors(chunk), this->meshRecycler.getNew(), this->chunkMesherArray, &this->chunkMeshQueue);
+				this->chunkMeshingQueue.enqueue(std::make_pair<ChunkNeighbors, Chunk::BlockGeometry*>(this->getChunkNeighbors(chunk), this->meshRecycler.getNew()));
 				this->chunkQueuedSet[chunk->getHashCode()] = true;
 			}
 			iter++;
@@ -162,9 +170,11 @@ void ChunkManager::update(float x, float y, float z) {
 void ChunkManager::chunkGeneratorThread() {
 	ChunkHandle chunk;
 	while (this->runThreads) {
-		this->chunkGenQueue.wait_dequeue_timed(chunk, std::chrono::milliseconds(500));
-		if (chunk && chunk->isEmpty()) {
-			chunk->generateTerrain();
+		bool dequeued = this->chunkGenQueue.wait_dequeue_timed(chunk, std::chrono::milliseconds(500));
+		if (dequeued) {
+			if (chunk && chunk->isEmpty()) {
+				chunk->generateTerrain();
+			}
 		}
 	}
 	
@@ -176,26 +186,25 @@ void ChunkManager::chunkMeshingThread() {
 	thread_local int workerID = threadCount++;
 	std::pair<ChunkNeighbors, Chunk::BlockGeometry*> pair;
 	while (this->runThreads) {
-		this->chunkMeshingQueue.wait_dequeue_timed(pair, std::chrono::milliseconds(500));
-		
-		ChunkNeighbors &neighbors = pair.first;
-		Chunk::BlockGeometry *geometry = pair.second;
+		bool dequeued = this->chunkMeshingQueue.wait_dequeue_timed(pair, std::chrono::milliseconds(500));
+		if (dequeued) {
+			ChunkNeighbors &neighbors = pair.first;
+			Chunk::BlockGeometry *geometry = pair.second;
 
-		if (neighbors.middle->getChunkState() == Chunk::ChunkState::EMPTY)
-			neighbors.middle->generateTerrain();
-		this->chunkMesherArray[workerID].loadChunkDataAsync(neighbors);
-		this->chunkMesherArray[workerID].createChunkMesh(*geometry);
+			//if (neighbors.middle->getChunkState() == Chunk::ChunkState::EMPTY)
+			//	neighbors.middle->generateTerrain();
+			this->chunkMesherArray[0].loadChunkDataAsync(neighbors);
+			this->chunkMesherArray[0].createChunkMesh(*geometry);
 
-		neighbors.middle->flagValid();
+			neighbors.middle->flagValid();
 
-		int cx = neighbors.middle->getChunkX();
-		int cy = neighbors.middle->getChunkY();
-		int cz = neighbors.middle->getChunkZ();
+			int cx = neighbors.middle->getChunkX();
+			int cy = neighbors.middle->getChunkY();
+			int cz = neighbors.middle->getChunkZ();
 
-		this->chunkMeshQueue.enqueue(std::pair<Chunk::BlockGeometry*, glm::ivec3>(geometry, glm::vec3(cx, cy, cz)));
+			this->chunkMeshQueue.enqueue(std::pair<Chunk::BlockGeometry*, glm::ivec3>(geometry, glm::vec3(cx, cy, cz)));
+		}
 	}
-
-	
 }
 
 

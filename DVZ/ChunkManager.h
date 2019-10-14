@@ -100,7 +100,7 @@ private:
 	std::thread generatorThread;
 	std::thread mesherThread;
 
-	Util::Threading::ThreadPool pool;
+	//Util::Threading::ThreadPool pool;
 	Util::Allocator::PoolAllocator chunkPoolAllocator;			//todo fix chunk alloc assert bug
 	Util::Allocator::LinearAllocator chunkMesherAllocator;
 
