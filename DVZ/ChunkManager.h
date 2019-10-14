@@ -48,8 +48,8 @@ public:
 	//todo add frustum
 	void update(float x, float y, float z);
 
-	void chunkGeneratorThread(ChunkHandle chunk);
-	void chunkMeshingThread(ChunkNeighbors neighbors, Chunk::BlockGeometry*);
+	void chunkGeneratorThread();
+	void chunkMeshingThread();
 
 	inline ChunkIterator begin() {
 		return this->chunkSet.begin();
@@ -96,6 +96,7 @@ public:
 
 
 private:
+	std::atomic<bool> runThreads = true;
 	std::thread generatorThread;
 	std::thread mesherThread;
 
@@ -106,7 +107,10 @@ private:
 	Util::Recycler<ChunkRenderData> renderDataRecycler;
 	Util::Recycler<Chunk::BlockGeometry> meshRecycler;
 
+	moodycamel::BlockingConcurrentQueue<ChunkHandle> chunkGenQueue;
+	moodycamel::BlockingConcurrentQueue<std::pair<ChunkNeighbors, Chunk::BlockGeometry*>> chunkMeshingQueue;
 	moodycamel::ConcurrentQueue<std::pair<Chunk::BlockGeometry*, glm::ivec3>> chunkMeshQueue;
+	
 
 	std::unordered_map<int, ChunkHandle> chunkSet;
 	std::unordered_map<int, ChunkRenderData*> renderDataSet;

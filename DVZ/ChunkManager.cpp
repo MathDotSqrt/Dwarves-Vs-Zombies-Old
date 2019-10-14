@@ -159,31 +159,43 @@ void ChunkManager::update(float x, float y, float z) {
 
 //todo fix bug where all handles are in queue and the program wants to close causing a 
 //assert in IAllocator for not freeing memory
-void ChunkManager::chunkGeneratorThread(ChunkHandle chunk) {
-	if (chunk && chunk->isEmpty()) {
-		chunk->generateTerrain();
+void ChunkManager::chunkGeneratorThread() {
+	ChunkHandle chunk;
+	while (this->runThreads) {
+		this->chunkGenQueue.wait_dequeue_timed(chunk, std::chrono::milliseconds(500));
+		if (chunk && chunk->isEmpty()) {
+			chunk->generateTerrain();
+		}
 	}
+	
 }
 
-//std::atomic<int> count = 0;
-void ChunkManager::chunkMeshingThread(ChunkNeighbors neighbors, Chunk::BlockGeometry *geometry) {
+std::atomic<int> threadCount = 0;
+void ChunkManager::chunkMeshingThread() {
 	//static id for each thread
-	//counter++
-	thread_local int workerID = -1;
-	//std::this_thread::sleep_for(std::chrono::seconds(1));
-	
-	if(neighbors.middle->getChunkState() == Chunk::ChunkState::EMPTY)
-		neighbors.middle->generateTerrain();
-	this->chunkMesherArray[workerID].loadChunkDataAsync(neighbors);
-	this->chunkMesherArray[workerID].createChunkMesh(*geometry);
-	
-	neighbors.middle->flagValid();
+	thread_local int workerID = threadCount++;
+	std::pair<ChunkNeighbors, Chunk::BlockGeometry*> pair;
+	while (this->runThreads) {
+		this->chunkMeshingQueue.wait_dequeue_timed(pair, std::chrono::milliseconds(500));
+		
+		ChunkNeighbors &neighbors = pair.first;
+		Chunk::BlockGeometry *geometry = pair.second;
 
-	int cx = neighbors.middle->getChunkX();
-	int cy = neighbors.middle->getChunkY();
-	int cz = neighbors.middle->getChunkZ();
+		if (neighbors.middle->getChunkState() == Chunk::ChunkState::EMPTY)
+			neighbors.middle->generateTerrain();
+		this->chunkMesherArray[workerID].loadChunkDataAsync(neighbors);
+		this->chunkMesherArray[workerID].createChunkMesh(*geometry);
 
-	this->chunkMeshQueue.enqueue(std::pair<Chunk::BlockGeometry*, glm::ivec3>(geometry, glm::vec3(cx, cy, cz)));
+		neighbors.middle->flagValid();
+
+		int cx = neighbors.middle->getChunkX();
+		int cy = neighbors.middle->getChunkY();
+		int cz = neighbors.middle->getChunkZ();
+
+		this->chunkMeshQueue.enqueue(std::pair<Chunk::BlockGeometry*, glm::ivec3>(geometry, glm::vec3(cx, cy, cz)));
+	}
+
+	
 }
 
 
