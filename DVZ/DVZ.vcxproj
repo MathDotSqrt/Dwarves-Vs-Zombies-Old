@@ -305,6 +305,7 @@
     <None Include="basic_shader.vert" />
     <None Include="chunk_shader.frag" />
     <None Include="chunk_shader.vert" />
+    <None Include="math.glsl" />
     <None Include="normal_shader.frag" />
     <None Include="normal_shader.vert" />
     <None Include="preamble.glsl" />

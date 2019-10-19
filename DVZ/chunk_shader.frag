@@ -1,5 +1,7 @@
 #version 330 core
 
+#include "math.glsl"
+
 in vec3 frag_pos;
 in vec3 frag_normal;
 in vec3 frag_color;
@@ -39,4 +41,5 @@ void main(){
 
 
 	final_color = vec4(frag_color * lightColor, 1);
+	final_color = toGamma(final_color);
 }

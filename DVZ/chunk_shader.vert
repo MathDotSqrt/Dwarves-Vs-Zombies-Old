@@ -1,5 +1,7 @@
 #version 330 core
+#include "math.glsl"
 #include "preamble.glsl"
+
 
 layout(location = POSITION_ATTRIB_LOCATION) in vec3 vert_pos;
 layout(location = NORMAL_ATTRIB_LOCATION) 	in vec3 vert_norm;
@@ -25,7 +27,7 @@ void main(){
 	
 	frag_pos = world_pos.xyz;
 	frag_normal = vert_norm;
-	frag_color = vert_col;
+	frag_color = toLinear(vert_col);
 
 	gl_Position = VP * world_pos;
 }

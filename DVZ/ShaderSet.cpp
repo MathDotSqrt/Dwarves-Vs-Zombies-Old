@@ -342,9 +342,10 @@ std::string Shader::Internal::preProcessor(std::string& source) {
 
 	std::string replace_string = readFile(include_file);
 	replace_string.erase(std::find(replace_string.begin(), replace_string.end(), '\0'), replace_string.end());
+	replace_string.append("\n");
 	source.replace(found, replace_length, replace_string);
-
-	return source + "\n";
+	source += '\n';
+	return preProcessor(source);
 }
 
 GLuint Shader::Internal::compileShader(std::string& source, GLenum shaderType) {
