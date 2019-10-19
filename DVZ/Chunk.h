@@ -10,7 +10,7 @@
 namespace Voxel{
 
 static constexpr int CHUNK_SHIFT_X = 5;
-static constexpr int CHUNK_SHIFT_Y = 5;
+static constexpr int CHUNK_SHIFT_Y = 6;
 static constexpr int CHUNK_SHIFT_Z = 5;
 
 static constexpr int CHUNK_WIDTH_X = 1 << CHUNK_SHIFT_X;
