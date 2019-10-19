@@ -100,6 +100,7 @@ namespace Graphics {
 				ONE = 1,
 				TWO = 2,
 				THREE = 3,
+				FOUR = 4,	//todo look at this
 			} Components;
 
 			constexpr static Components DefaultNumComponents = Components::THREE;

@@ -98,15 +98,15 @@ void ChunkMesher::createCulledCube(int x, int y, int z, ChunkMesher::BlockFaceCu
 	int y_ = y;
 	int z_ = z;
 
-	glm::u8vec3 p0(x_, y_, z_ + BLOCK_WIDTH);
-	glm::u8vec3 p1(x_ + BLOCK_WIDTH, y_, z_ + BLOCK_WIDTH);
-	glm::u8vec3 p2(x_ + BLOCK_WIDTH, y_ + BLOCK_WIDTH, z_ + BLOCK_WIDTH);
-	glm::u8vec3 p3(x_, y_ + BLOCK_WIDTH, z_ + BLOCK_WIDTH);
+	glm::vec3 p0(x_, y_, z_ + BLOCK_WIDTH);
+	glm::vec3 p1(x_ + BLOCK_WIDTH, y_, z_ + BLOCK_WIDTH);
+	glm::vec3 p2(x_ + BLOCK_WIDTH, y_ + BLOCK_WIDTH, z_ + BLOCK_WIDTH);
+	glm::vec3 p3(x_, y_ + BLOCK_WIDTH, z_ + BLOCK_WIDTH);
 
-	glm::u8vec3 p4(x_ + BLOCK_WIDTH, y_, z_);
-	glm::u8vec3 p5(x_, y_, z_);
-	glm::u8vec3 p6(x_, y_ + BLOCK_WIDTH, z_ );
-	glm::u8vec3 p7(x_ + BLOCK_WIDTH, y_ + BLOCK_WIDTH, z_);
+	glm::vec3 p4(x_ + BLOCK_WIDTH, y_, z_);
+	glm::vec3 p5(x_, y_, z_);
+	glm::vec3 p6(x_, y_ + BLOCK_WIDTH, z_ );
+	glm::vec3 p7(x_ + BLOCK_WIDTH, y_ + BLOCK_WIDTH, z_);
 
 	glm::vec3 c0, c1, c2, c3;
 
@@ -147,7 +147,7 @@ void ChunkMesher::createCulledCube(int x, int y, int z, ChunkMesher::BlockFaceCu
 
 	/*FRONT*/
 	if (tags.pz) {
-		glm::vec3 n0(0, 0, 1);
+		glm::i8vec3 n0(0, 0, 1);
 		v0 = { p0, n0, c0 };
 		v1 = { p1, n0, c1 };
 		v2 = { p2, n0, c2 };
@@ -157,7 +157,7 @@ void ChunkMesher::createCulledCube(int x, int y, int z, ChunkMesher::BlockFaceCu
 
 	/*BACK*/
 	if (tags.nz) {
-		glm::vec3 n1(0, 0, -1);
+		glm::i8vec3 n1(0, 0, -1);
 		v0 = { p4, n1, c0 };
 		v1 = { p5, n1, c1 };
 		v2 = { p6, n1, c2 };
@@ -167,7 +167,7 @@ void ChunkMesher::createCulledCube(int x, int y, int z, ChunkMesher::BlockFaceCu
 
 	/*LEFT*/
 	if (tags.nx) {
-		glm::vec3 n2(-1, 0, 0);
+		glm::i8vec3 n2(-1, 0, 0);
 		v0 = { p5, n2, c0 };
 		v1 = { p0, n2, c1 };
 		v2 = { p3, n2, c2 };
@@ -177,7 +177,7 @@ void ChunkMesher::createCulledCube(int x, int y, int z, ChunkMesher::BlockFaceCu
 
 	/*RIGHT*/
 	if (tags.px) {
-		glm::vec3 n3(1, 0, 0);
+		glm::i8vec3 n3(1, 0, 0);
 		v0 = { p1, n3, c0 };
 		v1 = { p4, n3, c1 };
 		v2 = { p7, n3, c2 };
@@ -187,7 +187,7 @@ void ChunkMesher::createCulledCube(int x, int y, int z, ChunkMesher::BlockFaceCu
 
 	/*TOP*/
 	if (tags.py) {
-		glm::vec3 n4(0, 1, 0);
+		glm::i8vec3 n4(0, 1, 0);
 		v0 = { p3, n4, c0 };
 		v1 = { p2, n4, c1 };
 		v2 = { p7, n4, c2 };
@@ -197,7 +197,7 @@ void ChunkMesher::createCulledCube(int x, int y, int z, ChunkMesher::BlockFaceCu
 
 	/*BOTTOM*/
 	if (tags.ny) {
-		glm::vec3 n5(0, -1, 0);
+		glm::i8vec3 n5(0, -1, 0);
 		v0 = { p1, n5, c0 };
 		v1 = { p0, n5, c1 };
 		v2 = { p5, n5, c2 };

@@ -2,20 +2,23 @@
 #include "Geometry.h"
 #include "attrib.h"
 
-#define BLOCK_ATTRIBS	Graphics::Attrib<POSITION_ATTRIB_LOCATION, glm::u8vec3>, \
-						Graphics::Attrib<NORMAL_ATTRIB_LOCATION, glm::vec3>,   \
-						Graphics::Attrib<COLOR_ATTRIB_LOCATION, glm::vec3>       \
+
 
 namespace Voxel{
 class ChunkGeometry {
 private:
+	typedef Graphics::Attrib<POSITION_ATTRIB_LOCATION, glm::u16vec3> BlockPositionAttrib;
+	typedef Graphics::Attrib<NORMAL_ATTRIB_LOCATION, glm::vec3> BlockNormalAttrib;
+	typedef Graphics::Attrib<COLOR_ATTRIB_LOCATION, glm::vec3> BlockColorAttrib;
+
 	friend class ChunkRenderData;
 
-	typedef Graphics::Geometry<BLOCK_ATTRIBS> BlockGeometry;
+	typedef Graphics::Geometry<BlockPositionAttrib, BlockNormalAttrib, BlockColorAttrib> BlockGeometry;
 
 	BlockGeometry geometry;
 
-	static const std::tuple<BLOCK_ATTRIBS> ATTRIBS;
+	static const std::tuple<BlockPositionAttrib, BlockNormalAttrib, BlockColorAttrib> ATTRIBS;
+	size_t size = sizeof(BlockVertex);
 
 public:
 	typedef BlockGeometry::GeometryVertex BlockVertex;

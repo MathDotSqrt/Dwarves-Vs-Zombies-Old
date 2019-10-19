@@ -346,7 +346,7 @@ void OpenGLRenderer::renderChunks(Voxel::ChunkManager *manager, glm::vec3 camera
 		glEnableVertexAttribArray(POSITION_ATTRIB_LOCATION);
 		glEnableVertexAttribArray(NORMAL_ATTRIB_LOCATION);
 		glEnableVertexAttribArray(COLOR_ATTRIB_LOCATION);
-		glDrawElements(GL_TRIANGLES, (GLsizei)data->indexCount, GL_UNSIGNED_INT, 0);
+ 		glDrawElements(GL_TRIANGLES, (GLsizei)data->indexCount, GL_UNSIGNED_INT, 0);
 	}
 
 	shader->end();
