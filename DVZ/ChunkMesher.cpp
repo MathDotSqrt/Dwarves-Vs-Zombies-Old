@@ -98,48 +98,48 @@ void ChunkMesher::createCulledCube(int x, int y, int z, ChunkMesher::BlockFaceCu
 	int y_ = y;
 	int z_ = z;
 
-	glm::vec3 p0(x_, y_, z_ + BLOCK_WIDTH);
-	glm::vec3 p1(x_ + BLOCK_WIDTH, y_, z_ + BLOCK_WIDTH);
-	glm::vec3 p2(x_ + BLOCK_WIDTH, y_ + BLOCK_WIDTH, z_ + BLOCK_WIDTH);
-	glm::vec3 p3(x_, y_ + BLOCK_WIDTH, z_ + BLOCK_WIDTH);
+	glm::u8vec3 p0(x_, y_, z_ + BLOCK_WIDTH);
+	glm::u8vec3 p1(x_ + BLOCK_WIDTH, y_, z_ + BLOCK_WIDTH);
+	glm::u8vec3 p2(x_ + BLOCK_WIDTH, y_ + BLOCK_WIDTH, z_ + BLOCK_WIDTH);
+	glm::u8vec3 p3(x_, y_ + BLOCK_WIDTH, z_ + BLOCK_WIDTH);
 
-	glm::vec3 p4(x_ + BLOCK_WIDTH, y_, z_);
-	glm::vec3 p5(x_, y_, z_);
-	glm::vec3 p6(x_, y_ + BLOCK_WIDTH, z_ );
-	glm::vec3 p7(x_ + BLOCK_WIDTH, y_ + BLOCK_WIDTH, z_);
+	glm::u8vec3 p4(x_ + BLOCK_WIDTH, y_, z_);
+	glm::u8vec3 p5(x_, y_, z_);
+	glm::u8vec3 p6(x_, y_ + BLOCK_WIDTH, z_ );
+	glm::u8vec3 p7(x_ + BLOCK_WIDTH, y_ + BLOCK_WIDTH, z_);
 
-	glm::vec3 c0, c1, c2, c3;
+	glm::u8vec3 c0, c1, c2, c3;
 
 	switch (b.type) {
 	case BlockType::BLOCK_TYPE_DIRT:
-		c0 = glm::vec3(.7f, .4f, .4f);
-		c1 = glm::vec3(.7f, .4f, .4f);
-		c2 = glm::vec3(.7f, .4f, .4f);
-		c3 = glm::vec3(.7f, .4f, .4f);
+		c0 = glm::u8vec3(179, 102, 102);
+		c1 = glm::u8vec3(179, 102, 102);
+		c2 = glm::u8vec3(179, 102, 102);
+		c3 = glm::u8vec3(179, 102, 102);
 		break;
 	case BlockType::BLOCK_TYPE_STONE:
-		c0 = glm::vec3(.3f, .3f, .3f);
-		c1 = glm::vec3(.3f, .3f, .3f);
-		c2 = glm::vec3(.3f, .3f, .3f);
-		c3 = glm::vec3(.3f, .3f, .3f);
+		c0 = glm::u8vec3(77, 77, 77);
+		c1 = glm::u8vec3(77, 77, 77);
+		c2 = glm::u8vec3(77, 77, 77);
+		c3 = glm::u8vec3(77, 77, 77);
 		break;
 	case BlockType::BLOCK_TYPE_GRASS:
-		c0 = glm::vec3(0, 1, 0);
-		c1 = glm::vec3(0, 1, 0);
-		c2 = glm::vec3(0, 1, 0);
-		c3 = glm::vec3(0, 1, 0);
+		c0 = glm::u8vec3(0, 255, 0);
+		c1 = glm::u8vec3(0, 255, 0);
+		c2 = glm::u8vec3(0, 255, 0);
+		c3 = glm::u8vec3(0, 255, 0);
 		break;
 	case BlockType::BLOCK_TYPE_PURPLE:
-		c0 = glm::vec3(.7f, 0, 1);
-		c1 = glm::vec3(.7f, 0, 1);
-		c2 = glm::vec3(.7f, 0, 1);
-		c3 = glm::vec3(.7f, 0, 1);
+		c0 = glm::u8vec3(179, 0, 255);
+		c1 = glm::u8vec3(179, 0, 255);
+		c2 = glm::u8vec3(179, 0, 255);
+		c3 = glm::u8vec3(179, 0, 255);
 		break;
 	default:
-		c0 = glm::vec3(1, 1, 1);
-		c1 = glm::vec3(1, 1, 1);
-		c2 = glm::vec3(1, 1, 1);
-		c3 = glm::vec3(1, 1, 1);
+		c0 = glm::u8vec3(255, 255, 255);
+		c1 = glm::u8vec3(255, 255, 255);
+		c2 = glm::u8vec3(255, 255, 255);
+		c3 = glm::u8vec3(255, 255, 255);
 		break;
 	}
 

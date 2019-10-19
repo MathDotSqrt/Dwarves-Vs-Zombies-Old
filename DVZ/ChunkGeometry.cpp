@@ -4,15 +4,18 @@ using namespace Voxel;
 
 ChunkGeometry::ChunkGeometry() : geometry(
 	ChunkGeometry::BlockPositionAttrib(
-		ChunkGeometry::BlockPositionAttrib::DataType::UNSIGNED_SHORT,
+		ChunkGeometry::BlockPositionAttrib::DataType::UNSIGNED_BYTE,
 		ChunkGeometry::BlockPositionAttrib::Components::FOUR
 	),
 	ChunkGeometry::BlockNormalAttrib(
-		ChunkGeometry::BlockNormalAttrib::DataType::FLOAT, 
-		ChunkGeometry::BlockNormalAttrib::Components::THREE, 
-		ChunkGeometry::BlockNormalAttrib::AttribOption::None
+		ChunkGeometry::BlockNormalAttrib::DataType::BYTE, 
+		ChunkGeometry::BlockNormalAttrib::Components::FOUR
 	),
-	ChunkGeometry::BlockColorAttrib()
+	ChunkGeometry::BlockColorAttrib(
+		ChunkGeometry::BlockColorAttrib::DataType::UNSIGNED_BYTE,
+		ChunkGeometry::BlockColorAttrib::Components::FOUR,
+		ChunkGeometry::BlockColorAttrib::AttribOption::Normalize
+	)
 ){}
 
 
@@ -36,14 +39,4 @@ void ChunkGeometry::clear() {
 	this->geometry.clear();
 }
 
-const std::tuple<ChunkGeometry::BlockPositionAttrib, ChunkGeometry::BlockNormalAttrib, ChunkGeometry::BlockColorAttrib> ChunkGeometry::ATTRIBS = ChunkGeometry::BlockGeometry(
-	ChunkGeometry::BlockPositionAttrib(
-		ChunkGeometry::BlockPositionAttrib::DataType::UNSIGNED_SHORT,
-		ChunkGeometry::BlockPositionAttrib::Components::FOUR
-	),
-	ChunkGeometry::BlockNormalAttrib(
-		ChunkGeometry::BlockNormalAttrib::DataType::FLOAT,
-		ChunkGeometry::BlockNormalAttrib::Components::THREE,
-		ChunkGeometry::BlockNormalAttrib::AttribOption::None
-	),
-	ChunkGeometry::BlockColorAttrib()).attribs;
+const std::tuple<ChunkGeometry::BlockPositionAttrib, ChunkGeometry::BlockNormalAttrib, ChunkGeometry::BlockColorAttrib> ChunkGeometry::ATTRIBS = ChunkGeometry().geometry.attribs;

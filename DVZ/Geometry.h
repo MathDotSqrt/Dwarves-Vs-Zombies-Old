@@ -10,9 +10,10 @@ class Geometry {
 public:
 	template<typename ...V>
 	struct Vertex {};
-	//drop this
+	
+	//opengl requires all elements in struct to have alignment of atleast 4
 	template<typename V, typename ...REST>
-	struct Vertex<V, REST...>{
+	struct alignas(4) Vertex<V, REST...>{
 		Vertex() {}
 
 		Vertex(
@@ -25,7 +26,7 @@ public:
 	};
 
 	template<typename V>
-	struct Vertex<V> {
+	struct alignas(4) Vertex<V> {
 		Vertex() {}
 		Vertex( typename const V::Type& last) : last(last){}
 
