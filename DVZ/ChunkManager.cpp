@@ -95,14 +95,11 @@ ChunkManager::~ChunkManager() {
 }
 
 void ChunkManager::update(float x, float y, float z) {
-	Util::Performance::Timer chunkTimer("Chunk Update");
-	
 	int chunkX = this->getChunkX(x);
 	int chunkY = this->getChunkY(y);
 	int chunkZ = this->getChunkZ(z);
 
 	if (chunkX != this->currentChunkX || chunkY != this->currentChunkY || chunkZ != this->currentChunkZ) {
-		Util::Performance::Timer timer("Chunk gen submit");
 		this->currentChunkX = chunkX;
 		this->currentChunkY = chunkY;
 		this->currentChunkZ = chunkZ;
@@ -127,7 +124,6 @@ void ChunkManager::update(float x, float y, float z) {
 	}
 
 	{
-	Util::Performance::Timer chunkIterTimer("Chunk Iter");
 	ChunkIterator iter = this->begin();
 	while (iter != this->end()) {
 		ChunkHandle chunk = iter->second;
@@ -153,7 +149,6 @@ void ChunkManager::update(float x, float y, float z) {
 		}
 	}
 	}
-	Util::Performance::Timer chunkDequeueTimer("Chunk Dequeue");
 	std::pair<ChunkGeometry*, glm::ivec3> element;
 	for (int i = 0; this->chunkMeshQueue.try_dequeue(element); i++) {
 		glm::ivec3 chunkCoord = element.second;
@@ -161,10 +156,7 @@ void ChunkManager::update(float x, float y, float z) {
 		data->cx = chunkCoord.x;
 		data->cy = chunkCoord.y;
 		data->cz = chunkCoord.z;
-		{
-			Util::Performance::Timer buffer("Geometry Buffer");
-			data->bufferGeometry(element.first);
-		}
+		data->bufferGeometry(element.first);
 		int hashcode = this->hashcode(chunkCoord.x, chunkCoord.y, chunkCoord.z);
 		this->renderDataSet[hashcode] = data;
 		this->meshRecycler.recycle(element.first);

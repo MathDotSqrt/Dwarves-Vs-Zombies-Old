@@ -51,7 +51,6 @@ void PoolAllocator::init(size_t block_size, uint8 block_alignment) {
 }
 
 voidptr PoolAllocator::allocate(size_t size, uint8 alignment) {
-	Util::Performance::Timer timer("Pool Alloc");
 	assert(size == this->block_size && alignment == this->block_alignment);
 
 	if (this->free_list_head == nullptr) {

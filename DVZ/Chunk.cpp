@@ -11,7 +11,6 @@ Chunk::Chunk(int x, int y, int z) :
 	chunk_x(x), 
 	chunk_y(y), 
 	chunk_z(z) {
-	Util::Performance::Timer timer("Chunk Constructor");
 	this->currentState = Chunk::EMPTY;
 
 }

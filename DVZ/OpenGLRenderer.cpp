@@ -310,7 +310,6 @@ int OpenGLRenderer::renderBasicBlock(int startIndex, glm::vec3 camera_position, 
 }
 
 void OpenGLRenderer::renderChunks(Voxel::ChunkManager *manager, glm::vec3 camera_position, glm::mat4 vp) {
-	Util::Performance::Timer timer("Render Chunks");
 
 	const Graphics::BlockMaterial chunkMat = { {.95f, .7f, .8f}, 30 };
 	
@@ -325,7 +324,6 @@ void OpenGLRenderer::renderChunks(Voxel::ChunkManager *manager, glm::vec3 camera
 	shader->setUniform3f("point_light_color", point.color);
 	shader->setUniform1f("point_light_intensity", point.intensity);
 
-	Util::Performance::Timer timer2("Render ONLY Chunks");
 	for (Voxel::ChunkManager::ChunkRenderDataIterator iterator = manager->beginRenderData(); iterator != manager->endRenderData(); iterator++) {
 
 		Voxel::ChunkRenderData *data = iterator->second;
