@@ -3,12 +3,12 @@
 #include "VAO.h"
 #include "VBO.h"
 #include "Geometry.h"
+#include "ChunkGeometry.h"
 
 namespace Voxel{
 
 class ChunkRenderData {
 private:
-	typedef Graphics::Geometry < Graphics::PositionAttrib, Graphics::NormalAttrib, Graphics::ColorAttrib> ChunkGeometry;
 
 public:
 	int32 cx, cy, cz;

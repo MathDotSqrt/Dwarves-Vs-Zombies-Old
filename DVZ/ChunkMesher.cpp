@@ -67,8 +67,8 @@ void ChunkMesher::loadChunkDataAsync(ChunkNeighbors &n) {
 	}
 }
 
-void ChunkMesher::createChunkMesh(Chunk::BlockGeometry &geometry) {
-	geometry.clear();
+void ChunkMesher::createChunkMesh(ChunkGeometry *geometry) {
+	geometry->clear();
 	for (int z = 0; z < CHUNK_WIDTH_Z; z++) {
 		for (int y = 0; y < CHUNK_WIDTH_Y; y++) {
 			for (int x = 0; x < CHUNK_WIDTH_X; x++) {
@@ -91,24 +91,22 @@ void ChunkMesher::createChunkMesh(Chunk::BlockGeometry &geometry) {
 	}
 }
 
-void ChunkMesher::createCulledCube(int x, int y, int z, ChunkMesher::BlockFaceCullTags tags, Block b, Chunk::BlockGeometry &geometry) {
-	typedef Chunk::BlockGeometry::GeometryVertex BlockVertex;
-	
-	constexpr float HALF_WIDTH = BLOCK_RENDER_SIZE / 2.0f;
+void ChunkMesher::createCulledCube(int x, int y, int z, ChunkMesher::BlockFaceCullTags tags, Block b, ChunkGeometry *geometry) {
+	constexpr unsigned int BLOCK_WIDTH = 1;
 
-	float x_ = x * BLOCK_RENDER_SIZE;
-	float y_ = y * BLOCK_RENDER_SIZE;
-	float z_ = z * BLOCK_RENDER_SIZE;
+	int x_ = x;
+	int y_ = y;
+	int z_ = z;
 
-	glm::vec3 p0(x_ - HALF_WIDTH, y_ - HALF_WIDTH, z_ + HALF_WIDTH);
-	glm::vec3 p1(x_ + HALF_WIDTH, y_ - HALF_WIDTH, z_ + HALF_WIDTH);
-	glm::vec3 p2(x_ + HALF_WIDTH, y_ + HALF_WIDTH, z_ + HALF_WIDTH);
-	glm::vec3 p3(x_ - HALF_WIDTH, y_ + HALF_WIDTH, z_ + HALF_WIDTH);
+	glm::u8vec3 p0(x_, y_, z_ + BLOCK_WIDTH);
+	glm::u8vec3 p1(x_ + BLOCK_WIDTH, y_, z_ + BLOCK_WIDTH);
+	glm::u8vec3 p2(x_ + BLOCK_WIDTH, y_ + BLOCK_WIDTH, z_ + BLOCK_WIDTH);
+	glm::u8vec3 p3(x_, y_ + BLOCK_WIDTH, z_ + BLOCK_WIDTH);
 
-	glm::vec3 p4(x_ + HALF_WIDTH, y_ - HALF_WIDTH, z_ - HALF_WIDTH);
-	glm::vec3 p5(x_ - HALF_WIDTH, y_ - HALF_WIDTH, z_ - HALF_WIDTH);
-	glm::vec3 p6(x_ - HALF_WIDTH, y_ + HALF_WIDTH, z_ - HALF_WIDTH);
-	glm::vec3 p7(x_ + HALF_WIDTH, y_ + HALF_WIDTH, z_ - HALF_WIDTH);
+	glm::u8vec3 p4(x_ + BLOCK_WIDTH, y_, z_);
+	glm::u8vec3 p5(x_, y_, z_);
+	glm::u8vec3 p6(x_, y_ + BLOCK_WIDTH, z_ );
+	glm::u8vec3 p7(x_ + BLOCK_WIDTH, y_ + BLOCK_WIDTH, z_);
 
 	glm::vec3 c0, c1, c2, c3;
 
@@ -154,7 +152,7 @@ void ChunkMesher::createCulledCube(int x, int y, int z, ChunkMesher::BlockFaceCu
 		v1 = { p1, n0, c1 };
 		v2 = { p2, n0, c2 };
 		v3 = { p3, n0, c3 };
-		createFace(v0, v1, v2, v3, geometry);
+		geometry->appendFace(v0, v1, v2, v3);
 	}
 
 	/*BACK*/
@@ -164,7 +162,7 @@ void ChunkMesher::createCulledCube(int x, int y, int z, ChunkMesher::BlockFaceCu
 		v1 = { p5, n1, c1 };
 		v2 = { p6, n1, c2 };
 		v3 = { p7, n1, c3 };
-		createFace(v0, v1, v2, v3, geometry);
+		geometry->appendFace(v0, v1, v2, v3);
 	}
 
 	/*LEFT*/
@@ -174,7 +172,7 @@ void ChunkMesher::createCulledCube(int x, int y, int z, ChunkMesher::BlockFaceCu
 		v1 = { p0, n2, c1 };
 		v2 = { p3, n2, c2 };
 		v3 = { p6, n2, c3 };
-		createFace(v0, v1, v2, v3, geometry);
+		geometry->appendFace(v0, v1, v2, v3);
 	}
 
 	/*RIGHT*/
@@ -184,7 +182,7 @@ void ChunkMesher::createCulledCube(int x, int y, int z, ChunkMesher::BlockFaceCu
 		v1 = { p4, n3, c1 };
 		v2 = { p7, n3, c2 };
 		v3 = { p2, n3, c3 };
-		createFace(v0, v1, v2, v3, geometry);
+		geometry->appendFace(v0, v1, v2, v3);
 	}
 
 	/*TOP*/
@@ -194,7 +192,7 @@ void ChunkMesher::createCulledCube(int x, int y, int z, ChunkMesher::BlockFaceCu
 		v1 = { p2, n4, c1 };
 		v2 = { p7, n4, c2 };
 		v3 = { p6, n4, c3 };
-		createFace(v0, v1, v2, v3, geometry);
+		geometry->appendFace(v0, v1, v2, v3);
 	}
 
 	/*BOTTOM*/
@@ -204,24 +202,11 @@ void ChunkMesher::createCulledCube(int x, int y, int z, ChunkMesher::BlockFaceCu
 		v1 = { p0, n5, c1 };
 		v2 = { p5, n5, c2 };
 		v3 = { p4, n5, c3 };
-		createFace(v0, v1, v2, v3, geometry);
+		geometry->appendFace(v0, v1, v2, v3);
 	}
 }
 
-void ChunkMesher::createFace(BlockVertex v0, BlockVertex v1, BlockVertex v2, BlockVertex v3, Chunk::BlockGeometry &geometry) {
-	geometry.pushVertex(v0);
-	geometry.pushVertex(v1);
-	geometry.pushVertex(v2);
-	geometry.pushVertex(v3);
-
-	////todo figure out if this is correct
-	int lastIndex = (int)geometry.getVertexCount();
-
-	geometry.pushTriangle(lastIndex + 0, lastIndex + 1, lastIndex + 2);
-	geometry.pushTriangle(lastIndex + 0, lastIndex + 2, lastIndex + 3);
-}
-
-Block& ChunkMesher::getBlock(int x, int y, int z) {
+Block ChunkMesher::getBlock(int x, int y, int z) {
 	return this->block[toPaddedBlockIndex(x+1, y+1, z+1)];
 }
 

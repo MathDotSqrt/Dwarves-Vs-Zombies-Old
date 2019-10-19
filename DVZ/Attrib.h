@@ -11,8 +11,6 @@ namespace Graphics {
 	template<typename unsigned int LOC, typename T>
 	class Attrib {
 	public:
-		
-
 		typedef enum {
 			None = 0,
 			Normalize = 1,
@@ -124,7 +122,7 @@ namespace Graphics {
 		template<>
 		struct AttribType<double> {
 		public:
-			typedef float ScalarType;
+			typedef double ScalarType;
 			typedef enum {
 				DOUBLE = GL_DOUBLE
 			} DataType;
@@ -199,7 +197,21 @@ namespace Graphics {
 		struct AttribType<unsigned short> {
 			typedef unsigned short ScalarType;
 			typedef AttribType<int>::DataType DataType;
+			
 			constexpr static DataType DefaultDataType = DataType::UNSIGNED_SHORT;
+
+			
+
+			static size_t size(int components, DataType dataType) {
+				return AttribType<int>::size(components, dataType);
+			}
+		};
+
+		template<>
+		struct AttribType<signed char> {	//for some reason the compile thinks this is different to char
+			typedef char ScalarType;
+			typedef AttribType<int>::DataType DataType;
+			constexpr static DataType DefaultDataType = DataType::BYTE;
 
 			static size_t size(int components, DataType dataType) {
 				return AttribType<int>::size(components, dataType);

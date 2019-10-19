@@ -23,9 +23,9 @@ static constexpr int CHUNK_BLOCK_POS_MASK_Z = CHUNK_WIDTH_Z - 1;
 
 static constexpr int CHUNK_VOLUME = CHUNK_WIDTH_X * CHUNK_WIDTH_Y * CHUNK_WIDTH_Z;
 
-static constexpr float CHUNK_RENDER_WIDTH_X = CHUNK_WIDTH_X * BLOCK_RENDER_SIZE;
-static constexpr float CHUNK_RENDER_WIDTH_Y = CHUNK_WIDTH_Y * BLOCK_RENDER_SIZE;
-static constexpr float CHUNK_RENDER_WIDTH_Z = CHUNK_WIDTH_Z * BLOCK_RENDER_SIZE;
+static constexpr float CHUNK_RENDER_WIDTH_X = CHUNK_WIDTH_X;
+static constexpr float CHUNK_RENDER_WIDTH_Y = CHUNK_WIDTH_Y;
+static constexpr float CHUNK_RENDER_WIDTH_Z = CHUNK_WIDTH_Z;
 
 //DO NOT CALL THIS ON STACK
 class Chunk {
