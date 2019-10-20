@@ -35,12 +35,12 @@ public:
 	typedef std::unordered_map<int, ChunkHandle>::iterator ChunkIterator;
 	typedef std::unordered_map<int, ChunkRenderData*>::iterator ChunkRenderDataIterator;
 
-	static const int CHUNK_ALLOC_SIZE = 80 * 1024 * 1024;
+	static const int CHUNK_ALLOC_SIZE = 200 * 1024 * 1024;
 	static const int CHUNK_MESHER_ALLOC_SIZE = 8 * 1024 * 1024;
 	static const int CHUNK_MESH_RECYCLE_SIZE = 2 * 1024 * 1024;
 	static const int CHUNK_RENDER_DATA_RECYCLE_SIZE = 2 * 1024 * 1024;
 	static const int CHUNK_THREAD_POOL_SIZE = 1;	//dont change this until i fix allocate array
-	static const int RENDER_DISTANCE = 15;
+	static const int RENDER_DISTANCE = 30;
 
 	ChunkManager(Util::Allocator::IAllocator &parent);
 	~ChunkManager();

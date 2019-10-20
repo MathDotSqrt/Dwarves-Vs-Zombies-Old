@@ -42,7 +42,7 @@ void PlayState::init() {
 	this->e.assign<PositionComponent>(test, glm::vec3(0, 0, 0));
 	this->e.assign<RotationComponent>(test, glm::quat(glm::vec3(0, 0, 0)));
 	this->e.assign<ScaleComponent>(test, glm::vec3(1, 1, 1));
-	this->e.assign<RotationalVelocityComponent>(test, glm::vec3(1, 1, 0));
+	this->e.assign<RotationalVelocityComponent>(test, glm::vec3(0, 1, 0));
 	this->e.assign<RenderInstanceComponent>(test, renderID);
 	/*TREE*/
 
