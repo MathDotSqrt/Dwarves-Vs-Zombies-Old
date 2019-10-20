@@ -53,6 +53,9 @@ ChunkManager::ChunkManager(Util::Allocator::IAllocator &parent) :
 
 	this->chunkMesherArray = Util::Allocator::allocateArray<ChunkMesher>(this->chunkMesherAllocator, CHUNK_THREAD_POOL_SIZE);
 
+	this->chunkSet.max_load_factor(1.2);
+
+	//std::vector<ChunkHandle> chunksToQueue;
 	for (int x = -RENDER_DISTANCE / 2 - 1; x < RENDER_DISTANCE / 2 + 1; x++) {
 		for (int z = -RENDER_DISTANCE / 2 - 1; z < RENDER_DISTANCE / 2 + 1; z++) {
 			int cx = x;
@@ -65,7 +68,8 @@ ChunkManager::ChunkManager(Util::Allocator::IAllocator &parent) :
 				ChunkHandle chunk = Util::Allocator::allocateHandle<Chunk>(this->chunkPoolAllocator, cx, cy, cz);
 				//this->pool.submit(chunk_gen_thread, chunk);
 				this->chunkSet[this->hashcode(cx, 0, cz)] = chunk;
-				this->chunkGenQueue.enqueue(chunk);
+				//chunksToQueue.push_back(std::move(chunk));
+				this->chunkGenQueue.enqueue(std::move(chunk));
 
 			}
 		}
@@ -117,7 +121,7 @@ void ChunkManager::update(float x, float y, float z) {
 					ChunkHandle chunk = Util::Allocator::allocateHandle<Chunk>(this->chunkPoolAllocator, cx, cy, cz);
 					//this->pool.submit(chunk_gen_thread, chunk);
 					this->chunkSet[this->hashcode(cx, chunkY, cz)] = chunk;
-					this->chunkGenQueue.enqueue(chunk);
+					this->chunkGenQueue.enqueue(std::move(chunk));
 				}
 			}
 		}

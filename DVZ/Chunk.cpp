@@ -45,11 +45,11 @@ void Chunk::generateTerrain() {
 				int y = this->chunk_y * CHUNK_WIDTH_Y + by;
 				int z = this->chunk_z * CHUNK_WIDTH_Z + bz;
 
-				/*if (y < getHashCode() % CHUNK_WIDTH_Y) {
+				if (y < (getHashCode() % (CHUNK_WIDTH_Y * 2))) {
 					this->setBlockInternal(bx, by, bz, (chunk_x + chunk_z) % 2 == 0 ? Block(BlockType::BLOCK_TYPE_STONE) : Block(BlockType::BLOCK_TYPE_DIRT));
-				}*/
+				}
 
-				if ((x * x) % (z * z + 1) > y * y) {
+				/*if ((x * x) % (z * z + 1) > y * y) {
 					if(y == 32)
 						this->getBlockInternal(bx, by, bz) = { BlockType::BLOCK_TYPE_GRASS };
 					else if((x * (z % (y * y + 1))) % 2 == 0)
@@ -59,7 +59,7 @@ void Chunk::generateTerrain() {
 					
 				}
 				else
-					this->getBlockInternal(bx, by, bz) = {BlockType::BLOCK_TYPE_DEFAULT };
+					this->getBlockInternal(bx, by, bz) = {BlockType::BLOCK_TYPE_DEFAULT };*/
 			}
 		}
 	}
