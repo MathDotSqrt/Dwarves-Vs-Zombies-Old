@@ -49,6 +49,8 @@ void Chunk::generateTerrain() {
 					this->setBlockInternal(bx, by, bz, (chunk_x + chunk_z) % 2 == 0 ? Block(BlockType::BLOCK_TYPE_STONE) : Block(BlockType::BLOCK_TYPE_DIRT));
 				}
 
+				//std::this_thread::sleep_for(std::chrono::nanoseconds(5));
+
 				/*if ((x * x) % (z * z + 1) > y * y) {
 					if(y == 32)
 						this->getBlockInternal(bx, by, bz) = { BlockType::BLOCK_TYPE_GRASS };

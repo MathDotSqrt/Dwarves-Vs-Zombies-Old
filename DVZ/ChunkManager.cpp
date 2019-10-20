@@ -53,7 +53,7 @@ ChunkManager::ChunkManager(Util::Allocator::IAllocator &parent) :
 
 	this->chunkMesherArray = Util::Allocator::allocateArray<ChunkMesher>(this->chunkMesherAllocator, CHUNK_THREAD_POOL_SIZE);
 
-	this->chunkSet.max_load_factor(1.2);
+	this->chunkSet.max_load_factor(1.2f);
 
 	//std::vector<ChunkHandle> chunksToQueue;
 	for (int x = -RENDER_DISTANCE / 2 - 1; x < RENDER_DISTANCE / 2 + 1; x++) {
@@ -102,8 +102,9 @@ void ChunkManager::update(float x, float y, float z) {
 	int chunkX = this->getChunkX(x);
 	int chunkY = this->getChunkY(y);
 	int chunkZ = this->getChunkZ(z);
-
+	std::vector<ChunkHandle> chunkList;
 	if (chunkX != this->currentChunkX || chunkY != this->currentChunkY || chunkZ != this->currentChunkZ) {
+		Util::Performance::Timer chunkSetUpdate("Chunk Set Update");
 		this->currentChunkX = chunkX;
 		this->currentChunkY = chunkY;
 		this->currentChunkZ = chunkZ;
@@ -118,13 +119,22 @@ void ChunkManager::update(float x, float y, float z) {
 				bool needsChunk = false;
 				needsChunk = !this->isChunkMapped(cx, cy, cz);
 				if (needsChunk) {
+					Util::Performance::Timer chunkSubmit("Chunk Needs");
+
 					ChunkHandle chunk = Util::Allocator::allocateHandle<Chunk>(this->chunkPoolAllocator, cx, cy, cz);
+
+					Util::Performance::Timer chunkGen("Chunk Gen Submit");
+
 					//this->pool.submit(chunk_gen_thread, chunk);
 					this->chunkSet[this->hashcode(cx, chunkY, cz)] = chunk;
-					this->chunkGenQueue.enqueue(std::move(chunk));
+					//this->chunkGenQueue.enqueue(std::move(chunk));
+					chunkList.push_back(std::move(chunk));
 				}
 			}
 		}
+		this->chunkGenQueue.enqueue_bulk(chunkList.begin(), chunkList.size());
+
+
 	}
 
 	{
@@ -143,7 +153,7 @@ void ChunkManager::update(float x, float y, float z) {
 		else if (diffX < DELETE_RANGE && diffZ < DELETE_RANGE) {
 			if (!chunk->isValid() && !this->chunkQueuedSet[iter->second->getHashCode()]) {
 				//this->pool.submit(chunk_mesh_thread, this->getChunkNeighbors(chunk), this->meshRecycler.getNew(), this->chunkMesherArray, &this->chunkMeshQueue);
-				this->chunkMeshingQueue.enqueue(std::make_pair<ChunkNeighbors, ChunkGeometry*>(this->getChunkNeighbors(chunk), this->meshRecycler.getNew()));
+				this->chunkMeshingQueue.enqueue(std::make_pair<ChunkNeighbors, ChunkGeometry*>(std::move(this->getChunkNeighbors(chunk)), std::move(this->meshRecycler.getNew())));
 				this->chunkQueuedSet[chunk->getHashCode()] = true;
 			}
 			iter++;
