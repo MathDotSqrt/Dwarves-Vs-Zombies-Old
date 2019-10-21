@@ -18,6 +18,7 @@ namespace Voxel {
 			this->type = BlockType::BLOCK_TYPE_DEFAULT;
 		}
 
+
 		Block(BlockType type) {
 			this->type = type;
 		}

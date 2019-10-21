@@ -25,7 +25,7 @@ int main(void) {
 	peer->Startup(MAX_CONNECTIONS, &sd, 1);
 	peer->SetMaximumIncomingConnections(MAX_CONNECTIONS + 1);
 
-	while (1) {
+	while (0) {
 		SLNet::Packet *packet;
 		for (packet = peer->Receive(); packet; peer->DeallocatePacket(packet), packet = peer->Receive()) {
 			MessageID m = GetPacketIdent(packet);

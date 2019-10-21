@@ -64,5 +64,6 @@ void main(){
 
 	float fog = fog_mix(camera_pos, frag_pos);
 	float mix_factor = 1 - (fog_max - fog) / (fog_max - fog_min);
-	final_color = toGamma(mix(final_color, fog_color, mix_factor)); 
+	//final_color = toGamma(mix(final_color, fog_color, mix_factor)); 
+	final_color = toGamma(fog_color * mix_factor); 
 }

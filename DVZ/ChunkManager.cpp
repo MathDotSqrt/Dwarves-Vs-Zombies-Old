@@ -120,9 +120,11 @@ void ChunkManager::update(float x, float y, float z) {
 				needsChunk = !this->isChunkMapped(cx, cy, cz);
 				if (needsChunk) {
 					Util::Performance::Timer chunkSubmit("Chunk Needs");
-
-					ChunkHandle chunk = Util::Allocator::allocateHandle<Chunk>(this->chunkPoolAllocator, cx, cy, cz);
-
+					ChunkHandle chunk;
+					{
+						Util::Performance::Timer chunkAlloc("Chunk Alloc");
+						chunk = Util::Allocator::allocateHandle<Chunk>(this->chunkPoolAllocator, cx, cy, cz);
+					}
 					Util::Performance::Timer chunkGen("Chunk Gen Submit");
 
 					//this->pool.submit(chunk_gen_thread, chunk);
