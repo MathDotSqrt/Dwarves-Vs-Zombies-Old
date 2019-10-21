@@ -53,7 +53,7 @@ ChunkManager::ChunkManager(Util::Allocator::IAllocator &parent) :
 
 	this->chunkMesherArray = Util::Allocator::allocateArray<ChunkMesher>(this->chunkMesherAllocator, CHUNK_THREAD_POOL_SIZE);
 
-	this->chunkSet.max_load_factor(1.2f);
+	this->chunkSet.max_load_factor(1.0f);
 
 	//std::vector<ChunkHandle> chunksToQueue;
 	for (int x = -RENDER_DISTANCE / 2 - 1; x < RENDER_DISTANCE / 2 + 1; x++) {

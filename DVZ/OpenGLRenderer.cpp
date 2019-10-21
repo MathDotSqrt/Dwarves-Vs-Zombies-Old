@@ -311,7 +311,7 @@ int OpenGLRenderer::renderBasicBlock(int startIndex, glm::vec3 camera_position, 
 }
 
 void OpenGLRenderer::renderChunks(Voxel::ChunkManager *manager, glm::vec3 camera_position, glm::mat4 vp) {
-
+	Util::Performance::Timer chunks("RenderChunks");
 	const Graphics::BlockMaterial chunkMat = { {.95f, .7f, .8f}, 30 };
 	
 	Shader::GLSLProgram *shader = Shader::getShaderSet({ "chunk_shader.vert", "chunk_shader.frag" });
@@ -324,6 +324,9 @@ void OpenGLRenderer::renderChunks(Voxel::ChunkManager *manager, glm::vec3 camera
 	shader->setUniform3f("point_light_position", point.position);
 	shader->setUniform3f("point_light_color", point.color);
 	shader->setUniform1f("point_light_intensity", point.intensity);
+
+	shader->setUniform3f("specular_color", chunkMat.specularColor);
+	shader->setUniform1f("shinyness", chunkMat.shinyness);
 
 	for (Voxel::ChunkManager::ChunkRenderDataIterator iterator = manager->beginRenderData(); iterator != manager->endRenderData(); iterator++) {
 
@@ -338,8 +341,6 @@ void OpenGLRenderer::renderChunks(Voxel::ChunkManager *manager, glm::vec3 camera
 		float z = data->getChunkZ() * Voxel::CHUNK_RENDER_WIDTH_Z;
 
 		shader->setUniform3f("pos", glm::vec3(x, y, z));
-		shader->setUniform3f("specular_color", chunkMat.specularColor);
-		shader->setUniform1f("shinyness", chunkMat.shinyness);
 
 		data->vao.bind();
 		glEnableVertexAttribArray(POSITION_ATTRIB_LOCATION);
