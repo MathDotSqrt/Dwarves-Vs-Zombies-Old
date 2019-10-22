@@ -43,6 +43,7 @@ public:
 
 private:
 	friend class ChunkMesher;
+	friend class ChunkManager;
 
 	const int chunk_x, chunk_y, chunk_z;
 	

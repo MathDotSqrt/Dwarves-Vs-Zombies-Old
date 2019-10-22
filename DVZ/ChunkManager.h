@@ -66,6 +66,8 @@ public:
 		return this->renderDataSet.end();
 	}
 
+	void newAllocChunk(int cx, int cy, int cz);
+
 	inline ChunkIterator removeChunk(const ChunkIterator& iter);
 	void removeChunk(int cx, int cy, int cz);
 

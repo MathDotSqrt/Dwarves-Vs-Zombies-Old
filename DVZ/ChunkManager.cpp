@@ -99,6 +99,7 @@ ChunkManager::~ChunkManager() {
 }
 
 void ChunkManager::update(float x, float y, float z) {
+	Util::Performance::Timer update("Chunk Manager Update");
 	int chunkX = this->getChunkX(x);
 	int chunkY = this->getChunkY(y);
 	int chunkZ = this->getChunkZ(z);
