@@ -45,12 +45,6 @@ public:
 	ChunkManager(Util::Allocator::IAllocator &parent);
 	~ChunkManager();
 
-	//todo add frustum
-	void update(float x, float y, float z);
-
-	void chunkGeneratorThread();
-	void chunkMeshingThread();
-
 	inline ChunkIterator begin() {
 		return this->chunkSet.begin();
 	}
@@ -66,8 +60,10 @@ public:
 		return this->renderDataSet.end();
 	}
 
-	void newAllocChunk(int cx, int cy, int cz);
+	//todo add frustum
+	void update(float x, float y, float z);
 
+	void newChunk(int cx, int cy, int cz);
 	inline ChunkIterator removeChunk(const ChunkIterator& iter);
 	void removeChunk(int cx, int cy, int cz);
 
@@ -94,10 +90,14 @@ public:
 	int getChunkX(float x);
 	int getChunkY(float y);
 	int getChunkZ(float z);
-
-
-
 private:
+	void loadChunks(int chunkX, int chunkY, int chunkZ, int renderDistance);
+	void updateAllChunks(int playerCX, int playerCY, int playerCZ);
+	void dequeueChunkRenderData();
+
+	void chunkGeneratorThread();
+	void chunkMeshingThread();
+
 	std::atomic<bool> runThreads = true;
 	std::thread generatorThread;
 	std::thread mesherThread[CHUNK_THREAD_POOL_SIZE];

@@ -45,7 +45,7 @@ private:
 	friend class ChunkMesher;
 	friend class ChunkManager;
 
-	const int chunk_x, chunk_y, chunk_z;
+	int chunk_x, chunk_y, chunk_z;
 	
 	Block data[CHUNK_VOLUME];
 	ChunkState currentState;
@@ -138,6 +138,9 @@ private:
 	inline void setBlockInternal(int x, int y, int z, Block b) {
 		data[this->toIndex(x, y, z)] = b;
 	}
+	
+	void reinitializeChunk(int cx, int cy, int cz);
+
 	int toIndex(int x, int y, int z);
 	void assertBlockIndex(int x, int y, int z);
 

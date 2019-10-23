@@ -106,6 +106,15 @@ void Chunk::setBlock(int x, int y, int z, Block block) {
 	}
 }
 
+void Chunk::reinitializeChunk(int cx, int cy, int cz) {
+	//todo maybe put in lock gaurd here
+	this->chunk_x = cx;
+	this->chunk_y = cy;
+	this->chunk_z = cz;
+
+	this->currentState = Chunk::EMPTY;
+}
+
 int Chunk::expand(int x) {
 	x &= 0x3FF;
 	x = (x | (x << 16)) & 4278190335;
