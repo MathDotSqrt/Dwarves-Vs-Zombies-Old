@@ -18,7 +18,7 @@
 
 namespace Voxel{
 
-typedef std::shared_ptr<Chunk> ChunkHandle;
+class ChunkHandle;
 
 struct ChunkNeighbors {
 	ChunkHandle middle;
@@ -32,6 +32,8 @@ struct ChunkNeighbors {
 
 class ChunkManager {
 public:
+	typedef Chunk* ChunkPtr;
+	
 	typedef std::unordered_map<int, ChunkHandle>::iterator ChunkIterator;
 	typedef std::unordered_map<int, ChunkRenderData*>::iterator ChunkRenderDataIterator;
 
@@ -44,6 +46,28 @@ public:
 
 	ChunkManager(Util::Allocator::IAllocator &parent);
 	~ChunkManager();
+
+	//todo add frustum
+	void update(float x, float y, float z);
+
+	ChunkHandle getChunkReference();
+
+	ChunkHandle loadChunk(int cx, int cy, int cz);
+	bool loadChunkAsync(int cx, int cy, int cz);
+	bool loadChunkAsync(int cx, int cy, int cz, void *callback);
+
+	ChunkHandle getChunk(int cx, int cy, int cz);
+	ChunkHandle getChunkIfMapped(int cx, int cy, int cz);
+	ChunkNeighbors getChunkNeighbors(ChunkHandle chunk);
+
+	bool isChunkMapped(int cx, int cy, int cz);
+	bool isBlockMapped(int x, int y, int z);
+
+
+	Block getBlock(int x, int y, int z);
+	void setBlock(int x, int y, int z, Block block);
+	Block getBlock(float x, float y, float z);
+	void setBlock(float x, float y, float z, Block block);
 
 	inline ChunkIterator begin() {
 		return this->chunkSet.begin();
@@ -59,44 +83,20 @@ public:
 	inline ChunkRenderDataIterator endRenderData() {
 		return this->renderDataSet.end();
 	}
-
-	//todo add frustum
-	void update(float x, float y, float z);
-
+private:
 	ChunkHandle newChunk(int cx, int cy, int cz);
-	inline ChunkIterator removeChunk(const ChunkIterator& iter);
+	ChunkIterator removeChunk(const ChunkIterator& iter);
 	void removeChunk(int cx, int cy, int cz);
 
-	int hashcode(int i, int j, int k);
 
-	ChunkHandle getChunk(int cx, int cy, int cz);
-	ChunkHandle getChunkIfMapped(int cx, int cy, int cz);
-	ChunkNeighbors getChunkNeighbors(ChunkHandle chunk);
-	ChunkNeighbors getChunkNeighbors(int cx, int cy, int cz);
-
-	bool isChunkMapped(int cx, int cy, int cz);
-
-	Block getBlock(int x, int y, int z);
-	void setBlock(int x, int y, int z, Block block);
-	bool isBlockMapped(int x, int y, int z);
-
-	Block getBlock(float x, float y, float z);
-	void setBlock(float x, float y, float z, Block block);
-
-	int getBlockX(float x);
-	int getBlockY(float y);
-	int getBlockZ(float z);
-
-	int getChunkX(float x);
-	int getChunkY(float y);
-	int getChunkZ(float z);
-private:
 	void loadChunks(int chunkX, int chunkY, int chunkZ, int renderDistance);
 	void updateAllChunks(int playerCX, int playerCY, int playerCZ);
 	void dequeueChunkRenderData();
 
 	void chunkGeneratorThread();
 	void chunkMeshingThread();
+
+	int hashcode(int i, int j, int k);
 
 	struct ChunkDestructor {
 		ChunkDestructor(ChunkManager *manager){
@@ -115,8 +115,6 @@ private:
 	std::thread generatorThread;
 	std::thread mesherThread[CHUNK_THREAD_POOL_SIZE];
 
-	//Util::Threading::ThreadPool pool;
-	//Util::Allocator::PoolAllocator chunkPoolAllocator;			//todo fix chunk alloc assert bug
 	Util::Recycler<Chunk> chunkRecycler;
 	Util::Recycler<ChunkGeometry> meshRecycler;
 	Util::Recycler<ChunkRenderData> renderDataRecycler;
@@ -149,5 +147,17 @@ private:
 
 };
 
+class ChunkHandle : std::unique_ptr<Chunk>{
+public:
+	friend class ChunkManager;
+
+private:
+	ChunkHandle(ChunkManager *manager, ChunkManager::ChunkPtr ptr) : unique_ptr(ptr){
+	
+	}
+
+	Chunk *chunk_ptr;
+
+};
 }
 
