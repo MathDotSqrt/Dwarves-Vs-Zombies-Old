@@ -5,7 +5,7 @@
 #include "System.h"	//todo remove this
 #include "LinearAllocator.h"
 
-#define MEM_ALLOC_SIZE 256 * 1024 * 1024
+#define MEM_ALLOC_SIZE 512 * 1024 * 1024
 
 namespace Graphics {
 	class OpenGLRenderer;

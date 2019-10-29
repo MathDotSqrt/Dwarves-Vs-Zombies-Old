@@ -36,6 +36,8 @@ Chunk::~Chunk() {
 }
 
 void Chunk::generateTerrain() {
+	memset(&this->data, BlockType::BLOCK_TYPE_DEFAULT, sizeof(this->data));
+	
 	std::lock_guard<std::shared_mutex> writeLock(this->chunkMutex);
 	for (int bz = 0; bz < CHUNK_WIDTH_Z; bz++) {
 		for (int by = 0; by < CHUNK_WIDTH_Y; by++) {
@@ -45,23 +47,29 @@ void Chunk::generateTerrain() {
 				int y = this->chunk_y * CHUNK_WIDTH_Y + by;
 				int z = this->chunk_z * CHUNK_WIDTH_Z + bz;
 
-				if (y < (getHashCode() % (CHUNK_WIDTH_Y * 2))) {
+				/*if (y < (abs(x / 10 + z / 10))) {
 					this->setBlockInternal(bx, by, bz, (chunk_x + chunk_z) % 2 == 0 ? Block(BlockType::BLOCK_TYPE_STONE) : Block(BlockType::BLOCK_TYPE_DIRT));
 				}
+				else {
+					this->setBlockInternal(bx, by, bz, Block(BlockType::BLOCK_TYPE_DEFAULT));
+				}*/
 
+				/*if (y < (getHashCode() % (CHUNK_WIDTH_Y * 4))) {
+					this->setBlockInternal(bx, by, bz, (chunk_x + chunk_z) % 2 == 0 ? Block(BlockType::BLOCK_TYPE_STONE) : Block(BlockType::BLOCK_TYPE_DIRT));
+				}
+*/
 				//std::this_thread::sleep_for(std::chrono::nanoseconds(5));
 
-				/*if ((x * x) % (z * z + 1) > y * y) {
+				if ((x * x) % (z * z + 1) > y * y) {
 					if(y == 32)
 						this->getBlockInternal(bx, by, bz) = { BlockType::BLOCK_TYPE_GRASS };
 					else if((x * (z % (y * y + 1))) % 2 == 0)
 						this->getBlockInternal(bx, by, bz) = { BlockType::BLOCK_TYPE_DIRT };
 					else
 						this->getBlockInternal(bx, by, bz) = { BlockType::BLOCK_TYPE_STONE };
-					
 				}
 				else
-					this->getBlockInternal(bx, by, bz) = {BlockType::BLOCK_TYPE_DEFAULT };*/
+					this->getBlockInternal(bx, by, bz) = {BlockType::BLOCK_TYPE_DEFAULT };
 			}
 		}
 	}
@@ -108,6 +116,7 @@ void Chunk::setBlock(int x, int y, int z, Block block) {
 
 void Chunk::reinitializeChunk(int cx, int cy, int cz) {
 	//todo maybe put in lock gaurd here
+	std::lock_guard<std::shared_mutex>  lock(chunkMutex);
 	this->chunk_x = cx;
 	this->chunk_y = cy;
 	this->chunk_z = cz;

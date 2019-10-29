@@ -55,7 +55,7 @@ void main(){
 	lightColor += point_light_color * specular_color * specularStrength * light_attenuation;
 	//lightColor += vec3(.7, .7, .6) *  .9;
 
-	vec3 ambientColor = vec3(1, 1, 1) * .05;
+	vec3 ambientColor = vec3(1, 1, 1) * .5;
 	lightColor += ambientColor;
 
 
@@ -64,6 +64,6 @@ void main(){
 
 	float fog = fog_mix(camera_pos, frag_pos);
 	float mix_factor = 1 - (fog_max - fog) / (fog_max - fog_min);
-	final_color = toGamma(mix(final_color, fog_color, mix_factor)); 
+	//final_color = toGamma(mix(final_color, fog_color, mix_factor)); 
 	//final_color = toGamma(fog_color * mix_factor); 
 }

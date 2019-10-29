@@ -9,9 +9,9 @@
 
 namespace Voxel{
 
-static constexpr int CHUNK_SHIFT_X = 5;
+static constexpr int CHUNK_SHIFT_X = 4;
 static constexpr int CHUNK_SHIFT_Y = 7;
-static constexpr int CHUNK_SHIFT_Z = 5;
+static constexpr int CHUNK_SHIFT_Z = 4;
 
 static constexpr int CHUNK_WIDTH_X = 1 << CHUNK_SHIFT_X;
 static constexpr int CHUNK_WIDTH_Y = 1 << CHUNK_SHIFT_Y;
@@ -65,13 +65,17 @@ public:
 
 	//needs mesh
 	inline bool needsNewMesh() {
+		std::shared_lock<std::shared_mutex> lock(chunkMutex);
 		return this->currentState == Chunk::NEED_MESH;
 	}
 	inline bool needsMeshUpdate() {
+		std::shared_lock<std::shared_mutex> lock(chunkMutex);
 		return this->currentState == Chunk::DIRTY_MESH;
 	}
 	
 	inline bool flagLoadLazy() {
+		std::lock_guard<std::shared_mutex> lock(chunkMutex);
+
 		if (this->currentState == Chunk::EMPTY) {
 			this->currentState = Chunk::LAZY_LOADED;
 			return true;
@@ -81,6 +85,8 @@ public:
 	}
 
 	inline bool flagMeshCreation() {
+		std::lock_guard<std::shared_mutex> lock(chunkMutex);
+
 		if (this->currentState == Chunk::ChunkState::LAZY_LOADED) {
 			this->currentState = Chunk::NEED_MESH;
 			return true;
@@ -90,6 +96,7 @@ public:
 	}
 
 	inline bool flagDirty() {
+		std::lock_guard<std::shared_mutex> lock(chunkMutex);
 		if (this->currentState == Chunk::ChunkState::VALID) {
 			this->currentState = Chunk::ChunkState::DIRTY_MESH;
 			return true;
@@ -98,15 +105,18 @@ public:
 	}
 
 	inline bool flagValid() {
+		std::lock_guard<std::shared_mutex> lock(chunkMutex);
 		this->currentState = Chunk::ChunkState::VALID;
 		return true;
 	}
 
 	inline bool isEmpty() {
+		std::shared_lock<std::shared_mutex> lock(chunkMutex);
 		return this->currentState == Chunk::ChunkState::EMPTY;
 	}
 
 	inline bool isValid() {
+		std::shared_lock<std::shared_mutex> lock(chunkMutex);
 		return this->currentState == Chunk::ChunkState::VALID;
 	}
 

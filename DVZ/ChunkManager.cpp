@@ -9,43 +9,14 @@
 
 using namespace Voxel;
 
-//void chunk_gen_thread(ChunkHandle chunk) {
-//	if (chunk && chunk->isEmpty()) {
-//		chunk->generateTerrain();
-//	}
-//}
-//
-//
-//std::atomic<int> count = 0;
-//void chunk_mesh_thread(ChunkNeighbors neighbors,ChunkGeometry *geometry, ChunkMesher *mesher, moodycamel::ConcurrentQueue<std::pair<Chunk::BlockGeometry*, glm::ivec3>> *queue) {
-//	//static id for each thread
-//	const thread_local int workerID = count++;
-//	//std::this_thread::sleep_for(std::chrono::seconds(1));
-//
-//	if (neighbors.middle->getChunkState() == Chunk::ChunkState::EMPTY)
-//		neighbors.middle->generateTerrain();
-//	mesher[workerID].loadChunkDataAsync(neighbors);
-//	mesher[workerID].createChunkMesh(geometry);
-//
-//	neighbors.middle->flagValid();
-//
-//	int cx = neighbors.middle->getChunkX();
-//	int cy = neighbors.middle->getChunkY();
-//	int cz = neighbors.middle->getChunkZ();
-//
-//	queue->enqueue(std::pair<Chunk::BlockGeometry*, glm::ivec3>(geometry, glm::vec3(cx, cy, cz)));
-//}
-
 ChunkManager::ChunkManager(Util::Allocator::IAllocator &parent) :
-	//pool(CHUNK_THREAD_POOL_SIZE),
-	chunkPoolAllocator(sizeof(Chunk), __alignof(Chunk), CHUNK_ALLOC_SIZE, parent),
-	chunkMesherAllocator(CHUNK_MESHER_ALLOC_SIZE, parent),
+	chunkRecycler(CHUNK_ALLOC_SIZE, parent),
 	renderDataRecycler(CHUNK_RENDER_DATA_RECYCLE_SIZE, parent),
-	meshRecycler(CHUNK_MESH_RECYCLE_SIZE, parent)
+	meshRecycler(CHUNK_MESH_RECYCLE_SIZE, parent),
+	chunkMesherAllocator(CHUNK_MESHER_ALLOC_SIZE, parent)
 	{
 
 	generatorThread = std::thread(&ChunkManager::chunkGeneratorThread, this);
-
 	for (int i = 0; i < CHUNK_THREAD_POOL_SIZE; i++) {
 		mesherThread[i] = std::thread(&ChunkManager::chunkMeshingThread, this);
 	}
@@ -54,8 +25,6 @@ ChunkManager::ChunkManager(Util::Allocator::IAllocator &parent) :
 	this->chunkMesherArray = Util::Allocator::allocateArray<ChunkMesher>(this->chunkMesherAllocator, CHUNK_THREAD_POOL_SIZE);
 
 	this->chunkSet.max_load_factor(1.0f);
-
-	//std::vector<ChunkHandle> chunksToQueue;
 	this->loadChunks(0, 0, 0, RENDER_DISTANCE);
 }
 
@@ -74,6 +43,7 @@ ChunkManager::~ChunkManager() {
 }
 
 void ChunkManager::update(float x, float y, float z) {
+	Util::Performance::Timer update("Chunk Update");
 	int chunkX = this->getChunkX(x);
 	int chunkY = this->getChunkY(y);
 	int chunkZ = this->getChunkZ(z);
@@ -81,16 +51,26 @@ void ChunkManager::update(float x, float y, float z) {
 		this->currentChunkX = chunkX;
 		this->currentChunkY = chunkY;
 		this->currentChunkZ = chunkZ;
+		Util::Performance::Timer loadChunks("LoadChunks");
 		this->loadChunks(chunkX, chunkY, chunkZ, RENDER_DISTANCE);
 	}
-
-	this->updateAllChunks(chunkX, chunkY, chunkZ);	
-	this->dequeueChunkRenderData();
+	{
+		Util::Performance::Timer updateAll("Chunk Iter");
+		this->updateAllChunks(chunkX, chunkY, chunkZ);
+	}
+	{
+		Util::Performance::Timer render("Chunk Render DQ");
+		this->dequeueChunkRenderData();
+	}
 }
 
 
-void ChunkManager::newChunk(int cx, int cy, int cz) {
+ChunkHandle ChunkManager::newChunk(int cx, int cy, int cz) {
+	//test if there is a free chunk.
+	Chunk* chunk_ptr = this->chunkRecycler.getNew(cx, cy, cz);
+	chunk_ptr->reinitializeChunk(cx, cy, cz);		//todo think of a better way to reinit chunks
 
+	return ChunkHandle(chunk_ptr, ChunkDestructor(this));
 }
 
 ChunkManager::ChunkIterator ChunkManager::removeChunk(const ChunkManager::ChunkIterator& iter) {
@@ -106,6 +86,8 @@ ChunkManager::ChunkIterator ChunkManager::removeChunk(const ChunkManager::ChunkI
 		this->renderDataRecycler.recycle(r_iter->second);
 		this->renderDataSet.erase(r_iter);
 	}
+
+	this->chunkQueuedSet[this->hashcode(cx, cy, cz)] = false;
 
 	return this->chunkSet.erase(iter);
 }
@@ -251,7 +233,6 @@ int ChunkManager::hashcode(int i, int j, int k) {
 
 void ChunkManager::loadChunks(int chunkX, int chunkY, int chunkZ, int renderDistance) {
 	std::vector<ChunkHandle> chunkList;
-
 	for (int x = -renderDistance / 2 - 1; x < renderDistance / 2 + 1; x++) {
 		for (int z = -renderDistance / 2 - 1; z < renderDistance / 2 + 1; z++) {
 			int cx = chunkX + x;
@@ -265,7 +246,7 @@ void ChunkManager::loadChunks(int chunkX, int chunkY, int chunkZ, int renderDist
 				ChunkHandle chunk;
 				{
 					Util::Performance::Timer chunkAlloc("Chunk Alloc");
-					chunk = Util::Allocator::allocateHandle<Chunk>(this->chunkPoolAllocator, cx, cy, cz);
+					chunk = this->newChunk(cx, cy, cz);
 				}
 				Util::Performance::Timer chunkGen("Chunk Gen Submit");
 				this->chunkSet[this->hashcode(cx, chunkY, cz)] = chunk;
