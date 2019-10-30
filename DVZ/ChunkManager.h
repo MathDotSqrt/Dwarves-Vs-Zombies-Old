@@ -18,23 +18,23 @@
 
 namespace Voxel{
 
-class ChunkHandle;
+struct ChunkManager::ChunkDestructor;
+typedef std::unique_ptr<Chunk> ChunkHandle;
+typedef std::unique_ptr<Chunk, ChunkManager::ChunkDestructor> ChunkRefHandle;
 
 struct ChunkNeighbors {
-	ChunkHandle middle;
-	ChunkHandle front;
-	ChunkHandle back;
-	ChunkHandle left;
-	ChunkHandle right;
-	ChunkHandle up;
-	ChunkHandle down;
+	ChunkRefHandle middle;
+	ChunkRefHandle front;
+	ChunkRefHandle back;
+	ChunkRefHandle left;
+	ChunkRefHandle right;
+	ChunkRefHandle up;
+	ChunkRefHandle down;
 };
 
 class ChunkManager {
 public:
-	typedef Chunk* ChunkPtr;
-	
-	typedef std::unordered_map<int, ChunkHandle>::iterator ChunkIterator;
+	typedef std::unordered_map<int, ChunkRefHandle>::iterator ChunkIterator;
 	typedef std::unordered_map<int, ChunkRenderData*>::iterator ChunkRenderDataIterator;
 
 	static const int CHUNK_ALLOC_SIZE = 500 * 1024 * 1024;
@@ -50,24 +50,25 @@ public:
 	//todo add frustum
 	void update(float x, float y, float z);
 
-	ChunkHandle getChunkReference();
+	ChunkRefHandle getChunk(int cx, int cy, int cz);
+	ChunkRefHandle getChunkIfMapped(int cx, int cy, int cz);
+	ChunkNeighbors getChunkNeighbors(const ChunkRefHandle &chunk);
 
-	ChunkHandle loadChunk(int cx, int cy, int cz);
+	ChunkRefHandle loadChunk(int cx, int cy, int cz);
 	bool loadChunkAsync(int cx, int cy, int cz);
 	bool loadChunkAsync(int cx, int cy, int cz, void *callback);
-
-	ChunkHandle getChunk(int cx, int cy, int cz);
-	ChunkHandle getChunkIfMapped(int cx, int cy, int cz);
-	ChunkNeighbors getChunkNeighbors(ChunkHandle chunk);
-
+	
 	bool isChunkMapped(int cx, int cy, int cz);
 	bool isBlockMapped(int x, int y, int z);
-
 
 	Block getBlock(int x, int y, int z);
 	void setBlock(int x, int y, int z, Block block);
 	Block getBlock(float x, float y, float z);
 	void setBlock(float x, float y, float z, Block block);
+
+	int getChunkX(float x);
+	int getChunkY(float y);
+	int getChunkZ(float z);
 
 	inline ChunkIterator begin() {
 		return this->chunkSet.begin();
@@ -84,9 +85,8 @@ public:
 		return this->renderDataSet.end();
 	}
 private:
-	ChunkHandle newChunk(int cx, int cy, int cz);
-	ChunkIterator removeChunk(const ChunkIterator& iter);
-	void removeChunk(int cx, int cy, int cz);
+	ChunkPtr newChunk(int cx, int cy, int cz);
+	//void removeChunk(int cx, int cy, int cz);	//fully removes chunk
 
 
 	void loadChunks(int chunkX, int chunkY, int chunkZ, int renderDistance);
@@ -97,33 +97,42 @@ private:
 	void chunkMeshingThread();
 
 	int hashcode(int i, int j, int k);
+	int expand(int x);
 
-	struct ChunkDestructor {
-		ChunkDestructor(ChunkManager *manager){
-			this->manager = manager;
-		}
+	int currentChunkX = 0;
+	int currentChunkY = 0;
+	int currentChunkZ = 0;
+	
 
-		void operator()(Chunk* value) {
-			manager->chunkRecycler.recycle(value);
-		}
+	typedef std::atomic<int> RefCount;
+	typedef std::pair<ChunkHandle, RefCount> ChunkRefCount;
+	typedef std::unique_ptr<ChunkRenderData> ChunkRenderDataHandle;
+	typedef std::unique_ptr<ChunkGeometry> ChunkGeometryHandle;
+	typedef std::pair<ChunkRefHandle, ChunkRenderData>  ChunkRenderDataPair;
 
-	private:
-		ChunkManager *manager;
-	};
-
-	std::atomic<bool> runThreads = true;
-	std::thread generatorThread;
-	std::thread mesherThread[CHUNK_THREAD_POOL_SIZE];
+	std::unordered_map<int, ChunkRefCount> chunkSet;
+	std::unordered_map<int, ChunkRefHandle> loadedChunkSet;
+	std::unordered_map<int, ChunkRenderDataPair> renderableChunkSet;
+	std::vector<ChunkRenderData*> visibleChunkList;
+	moodycamel::BlockingConcurrentQueue<ChunkRefHandle> chunkGenerationQueue;
+	moodycamel::BlockingConcurrentQueue<ChunkNeighbors> chunkMeshingQueue;
+	moodycamel::ConcurrentQueue<ChunkGeometryHandle> chunkMeshedQueue;
 
 	Util::Recycler<Chunk> chunkRecycler;
 	Util::Recycler<ChunkGeometry> meshRecycler;
 	Util::Recycler<ChunkRenderData> renderDataRecycler;
 	
 	Util::Allocator::LinearAllocator chunkMesherAllocator;
-	
-	moodycamel::BlockingConcurrentQueue<ChunkHandle> chunkGenQueue;
-	moodycamel::BlockingConcurrentQueue<std::pair<ChunkNeighbors, ChunkGeometry*>> chunkMeshingQueue;
-	moodycamel::ConcurrentQueue<std::pair<ChunkGeometry*, glm::ivec3>> chunkMeshQueue;
+	ChunkMesher *chunkMesherArray;
+
+
+	std::atomic<bool> runThreads = true;
+	std::thread generatorThread;
+	std::thread mesherThread[CHUNK_THREAD_POOL_SIZE];
+
+	//moodycamel::BlockingConcurrentQueue<ChunkHandle> chunkGenQueue;
+	//moodycamel::BlockingConcurrentQueue<std::pair<ChunkNeighbors, ChunkGeometry*>> chunkMeshingQueue;
+	//moodycamel::ConcurrentQueue<std::pair<ChunkGeometry*, glm::ivec3>> chunkMeshQueue;
 
 	//chunkSet
 	//generateChunkList
@@ -131,33 +140,36 @@ private:
 	//greedyMeshChunkList
 	//renderableChunkSet
 	//visibleChunkList
-	//deleteConcurrentQueue
-
-	std::unordered_map<int, ChunkHandle> chunkSet;
-	std::unordered_map<int, ChunkRenderData*> renderDataSet;
-	std::unordered_map<int, bool> chunkQueuedSet;
-
-	ChunkMesher *chunkMesherArray;
-
-	int currentChunkX = 0;
-	int currentChunkY = 0;
-	int currentChunkZ = 0;
-
-	int expand(int x);
-
-};
-
-class ChunkHandle : std::unique_ptr<Chunk>{
-public:
-	friend class ChunkManager;
-
-private:
-	ChunkHandle(ChunkManager *manager, ChunkManager::ChunkPtr ptr) : unique_ptr(ptr){
 	
-	}
 
-	Chunk *chunk_ptr;
+
+	/*std::unordered_map<int, ChunkHandle> chunkSet;
+	std::unordered_map<int, ChunkRenderData*> renderDataSet;
+	std::unordered_map<int, bool> chunkQueuedSet;*/
+
+	public:
+	struct ChunkDestructor {
+		ChunkDestructor(RefCount *ref) {
+			this->referenceCount = ref;
+			if (referenceCount) {
+				(*referenceCount)++;
+			}
+		}
+
+		void operator()(Chunk *) {
+			//decrements reference counter from chunk manager chunkSet
+			//when manager sees chunk having 0 references it will eventually
+			//recycle that chunk
+			if (referenceCount) {
+				(*referenceCount)--;
+			}
+		}
+
+	private:
+		RefCount *referenceCount;
+	};
 
 };
+
 }
 

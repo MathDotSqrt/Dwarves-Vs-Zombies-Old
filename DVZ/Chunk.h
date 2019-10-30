@@ -27,6 +27,8 @@ static constexpr float CHUNK_RENDER_WIDTH_X = CHUNK_WIDTH_X;
 static constexpr float CHUNK_RENDER_WIDTH_Y = CHUNK_WIDTH_Y;
 static constexpr float CHUNK_RENDER_WIDTH_Z = CHUNK_WIDTH_Z;
 
+typedef Chunk* ChunkPtr;
+
 //DO NOT CALL THIS ON STACK
 class Chunk {
 public:

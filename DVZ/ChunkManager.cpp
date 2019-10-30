@@ -64,57 +64,41 @@ void ChunkManager::update(float x, float y, float z) {
 	}
 }
 
+ChunkRefHandle ChunkManager::getChunk(int cx, int cy, int cz) {
+	auto iter = this->chunkSet.find(hashcode(cx, cy, cz));
 
-ChunkHandle ChunkManager::newChunk(int cx, int cy, int cz) {
-	//test if there is a free chunk.
-	Chunk* chunk_ptr = this->chunkRecycler.getNew(cx, cy, cz);
-	chunk_ptr->reinitializeChunk(cx, cy, cz);		//todo think of a better way to reinit chunks
+	if (iter != this->chunkSet.end()) {
+		ChunkRefCount *chunkRefCountPair = &iter->second;
+		Chunk* chunkPtr = chunkRefCountPair->first.get();
+		RefCount *refCount = &chunkRefCountPair->second;
+		return std::unique_ptr<Chunk, ChunkDestructor>(chunkPtr, ChunkManager::ChunkDestructor(refCount));
+	}
 
-	return ChunkHandle(chunk_ptr, ChunkDestructor(this));
+	ChunkHandle chunk = this->chunkRecycler.getUniqueNew(cx, cy, cz);
+	this->chunkSet.emplace(std::make_pair(std::move(chunk), std::move(RefCount())));
+
+	return getChunkIfMapped(cx, cy, cz);
 }
 
-ChunkManager::ChunkIterator ChunkManager::removeChunk(const ChunkManager::ChunkIterator& iter) {
-	//delete iter->second;
-	//Util::Allocator::free<Chunk>(this->chunkPoolAllocator, iter->second);
-	//iter->second = nullptr;
+ChunkRefHandle ChunkManager::getChunkIfMapped(int cx, int cy, int cz) {
+	auto iter = this->chunkSet.find(hashcode(cx, cy, cz));
+
+	if (iter == this->chunkSet.end()) {
+		return std::unique_ptr<Chunk, ChunkDestructor>(nullptr, ChunkDestructor(nullptr));
+	}
+
+	ChunkRefCount *chunkRefCountPair = &iter->second;
 	
-	int cx = iter->second->getChunkX();
-	int cy = iter->second->getChunkY();
-	int cz = iter->second->getChunkZ();
-	auto r_iter = this->renderDataSet.find(this->hashcode(cx, cy, cz));
-	if (r_iter != this->renderDataSet.end()) {
-		this->renderDataRecycler.recycle(r_iter->second);
-		this->renderDataSet.erase(r_iter);
-	}
-
-	this->chunkQueuedSet[this->hashcode(cx, cy, cz)] = false;
-
-	return this->chunkSet.erase(iter);
+	Chunk* chunkPtr = chunkRefCountPair->first.get();
+	RefCount *refCount = &chunkRefCountPair->second;
+	return std::unique_ptr<Chunk, ChunkDestructor>(chunkPtr, ChunkManager::ChunkDestructor(refCount));
 }
 
-void ChunkManager::removeChunk(int cx, int cy, int cz) {
-	auto chunk = this->chunkSet.find(this->hashcode(cx, cy, cz));
-	//todo delete from renderer
-	if (chunk != this->chunkSet.end()) {
-		this->chunkSet.erase(chunk);
-	}
-}
-
-ChunkHandle ChunkManager::getChunk(int cx, int cy, int cz) {
-	return this->chunkSet[this->hashcode(cx, cy, cz)];
-}
-
-ChunkHandle ChunkManager::getChunkIfMapped(int cx, int cy, int cz) {
-	std::unordered_map<int, ChunkHandle>::const_iterator iter;
-	iter = this->chunkSet.find(hashcode(cx, cy, cz));
-	return iter != this->chunkSet.end() ? iter->second : nullptr;
-}
-
-ChunkNeighbors ChunkManager::getChunkNeighbors(ChunkHandle chunk) {
+ChunkNeighbors ChunkManager::getChunkNeighbors(const ChunkRefHandle &chunk) {
 	int cx = chunk->getChunkX(), cy = chunk->getChunkY(), cz = chunk->getChunkZ();
 	
 	return {
-		chunk, 
+		getChunkIfMapped(cx, cy, cz),		//we make a new reference of a chunk within chunkset 
 		getChunkIfMapped(cx, cy, cz+1),
 		getChunkIfMapped(cx, cy, cz-1),
 		getChunkIfMapped(cx-1, cy, cz),
@@ -129,19 +113,24 @@ bool ChunkManager::isChunkMapped(int cx, int cy, int cz) {
 	//check to see if chunkset actually inserts a nullptr when checking for an invalid chunk
 	//Might cause lots of rehashing
 	//return this->getChunk(cx, cy, cz) == nullptr;
-	std::unordered_map<int, ChunkHandle>::const_iterator iter;
-	iter = this->chunkSet.find(hashcode(cx, cy, cz));
-
+	auto iter = this->chunkSet.find(hashcode(cx, cy, cz));
 	return iter != this->chunkSet.end();
 }
 
+bool ChunkManager::isBlockMapped(int x, int y, int z) {
+	int cx = x >> CHUNK_SHIFT_X;
+	int cy = y >> CHUNK_SHIFT_Y;
+	int cz = z >> CHUNK_SHIFT_Z;
+
+	return this->isChunkMapped(cx, cy, cz);
+}
 
 Block ChunkManager::getBlock(int x, int y, int z) {
 	int cx = x >> CHUNK_SHIFT_X;
 	int cy = y >> CHUNK_SHIFT_Y;
 	int cz = z >> CHUNK_SHIFT_Z;
 
-	ChunkHandle chunk = this->getChunk(cx, cy, cz);
+	ChunkRefHandle chunk = this->getChunk(cx, cy, cz);
 
 	assert(chunk);
 
@@ -156,7 +145,7 @@ void ChunkManager::setBlock(int x, int y, int z, Block block) {
 	int cy = y >> CHUNK_SHIFT_Y;
 	int cz = z >> CHUNK_SHIFT_Z;
 
-	ChunkHandle chunk = this->getChunk(cx, cy, cz);
+	ChunkRefHandle chunk = this->getChunk(cx, cy, cz);
 
 	assert(chunk);
 
@@ -165,14 +154,6 @@ void ChunkManager::setBlock(int x, int y, int z, Block block) {
 	int bz = z & CHUNK_BLOCK_POS_MASK_Z;
 
 	chunk->setBlock(bx, by, bz, block);
-}
-
-bool ChunkManager::isBlockMapped(int x, int y, int z) {
-	int cx = x >> CHUNK_SHIFT_X;
-	int cy = y >> CHUNK_SHIFT_Y;
-	int cz = z >> CHUNK_SHIFT_Z;
-
-	return this->isChunkMapped(cx, cy, cz);
 }
 
 //todo potential bug if chunk has weird width
@@ -192,18 +173,6 @@ void ChunkManager::setBlock(float x, float y, float z, Block block) {
 	this->setBlock((int)x, (int)y, (int)z, block);
 }
 
-int ChunkManager::getBlockX(float x) {
-	return (int)(x);
-}
-
-int ChunkManager::getBlockY(float y) {
-	return (int)(y);
-}
-
-int ChunkManager::getBlockZ(float z) {
-	return (int)(z);
-}
-
 int ChunkManager::getChunkX(float x) {
 	return (int)(x / CHUNK_RENDER_WIDTH_X);
 }
@@ -216,23 +185,16 @@ int ChunkManager::getChunkZ(float z) {
 	return (int)(z / CHUNK_RENDER_WIDTH_Z);
 }
 
-int ChunkManager::expand(int x) {
-	x &= 0x3FF;
-	x = (x | (x << 16)) & 4278190335;
-	x = (x | (x << 8))  & 251719695;
-	x = (x | (x << 4))  & 3272356035;
-	x = (x | (x << 2))  & 1227133513;
-	return x;
-}
+ChunkPtr ChunkManager::newChunk(int cx, int cy, int cz) {
+	//test if there is a free chunk.
+	ChunkPtr chunk_ptr = this->chunkRecycler.getNew(cx, cy, cz);
+	chunk_ptr->reinitializeChunk(cx, cy, cz);		//todo think of a better way to reinit chunks
 
-//todo figure out if this hashcode perserves locality with negative integers
-int ChunkManager::hashcode(int i, int j, int k) {
-	//z order curve
-	return expand(i) + (expand(j) << 1) + (expand(k) << 2);
+	return chunk_ptr;
 }
 
 void ChunkManager::loadChunks(int chunkX, int chunkY, int chunkZ, int renderDistance) {
-	std::vector<ChunkHandle> chunkList;
+	std::vector<ChunkRefHandle> chunkList;
 	for (int x = -renderDistance / 2 - 1; x < renderDistance / 2 + 1; x++) {
 		for (int z = -renderDistance / 2 - 1; z < renderDistance / 2 + 1; z++) {
 			int cx = chunkX + x;
@@ -243,7 +205,7 @@ void ChunkManager::loadChunks(int chunkX, int chunkY, int chunkZ, int renderDist
 			needsChunk = !this->isChunkMapped(cx, cy, cz);
 			if (needsChunk) {
 				Util::Performance::Timer chunkSubmit("Chunk Needs");
-				ChunkHandle chunk;
+				ChunkRefHandle chunk;
 				{
 					Util::Performance::Timer chunkAlloc("Chunk Alloc");
 					chunk = this->newChunk(cx, cy, cz);
@@ -260,7 +222,7 @@ void ChunkManager::loadChunks(int chunkX, int chunkY, int chunkZ, int renderDist
 void ChunkManager::updateAllChunks(int playerCX, int playerCY, int playerCZ) {
 	ChunkIterator iter = this->begin();
 	while (iter != this->end()) {
-		ChunkHandle chunk = iter->second;
+		ChunkRefHandle chunk = iter->second;
 		int diffX = std::abs(chunk->getChunkX() - playerCX);
 		int diffZ = std::abs(chunk->getChunkZ() - playerCZ);
 
@@ -304,7 +266,7 @@ void ChunkManager::dequeueChunkRenderData() {
 //todo fix bug where all handles are in queue and the program wants to close causing a 
 //assert in IAllocator for not freeing memory
 void ChunkManager::chunkGeneratorThread() {
-	ChunkHandle chunk;
+	ChunkRefHandle chunk;
 	while (this->runThreads) {
 		bool dequeued = this->chunkGenQueue.wait_dequeue_timed(chunk, std::chrono::milliseconds(500));
 		if (dequeued) {
@@ -341,4 +303,19 @@ void ChunkManager::chunkMeshingThread() {
 			this->chunkMeshQueue.enqueue(std::pair<ChunkGeometry*, glm::ivec3>(geometry, glm::vec3(cx, cy, cz)));
 		}
 	}
+}
+
+int ChunkManager::expand(int x) {
+	x &= 0x3FF;
+	x = (x | (x << 16)) & 4278190335;
+	x = (x | (x << 8)) & 251719695;
+	x = (x | (x << 4)) & 3272356035;
+	x = (x | (x << 2)) & 1227133513;
+	return x;
+}
+
+//todo figure out if this hashcode perserves locality with negative integers
+int ChunkManager::hashcode(int i, int j, int k) {
+	//z order curve
+	return expand(i) + (expand(j) << 1) + (expand(k) << 2);
 }

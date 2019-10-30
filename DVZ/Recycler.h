@@ -63,6 +63,18 @@ public:
 		return t;
 	}
 
+	template<typename ...ARGS>
+	std::shared_ptr<T> getSharedNew(ARGS ...args) {
+		T *ptr = getNew(args...);
+		return std::shared_ptr<T>(ptr, RecyclerDeletor(this));
+	}
+
+	template<typename ...ARGS>
+	std::unique_ptr<T> getUniqueNew(ARGS ...args) {
+		T *ptr = getNew(args...);
+		return std::unique_ptr<T>(ptr, RecyclerDeletor(this));
+	}
+
 	//todo add a handler class for this to prevent copying of pointer and funny buisness
 	void recycle(T *t) {
 		std::lock_guard<std::mutex> lock(this->mutex);
