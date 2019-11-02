@@ -82,9 +82,14 @@ ChunkRefHandle ChunkManager::getChunk(int cx, int cy, int cz) {
 
 	ChunkHandle chunk = this->chunkRecycler.getUniqueNew(cx, cy, cz);
 	chunk->reinitializeChunk(cx, cy, cz);
-	RefCount counter = 0;
-	/*ChunkRefCount pair = std::make_pair(std::move(chunk), std::move(counter));
-	this->chunkSet.emplace(chunk->getHashCode(), pair);*/
+	int chunkHashCode = chunk->getHashCode();
+
+	//pair.first = std::move(chunk);
+	//this->chunkSet.emplace(chunkHashCode, std::move(pair));
+	//this->chunkSet[chunkHashCode] = std::make_pair(chunk, std::move(a));
+
+	this->chunkSet[chunkHashCode].first = std::move(chunk);
+	this->chunkSet[chunkHashCode].second = 0;
 
 	return getChunkIfMapped(cx, cy, cz);
 }

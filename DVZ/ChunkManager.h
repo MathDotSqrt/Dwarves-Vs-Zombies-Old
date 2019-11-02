@@ -1,7 +1,5 @@
 #pragma once
-#include <unordered_map>
-#include <thread>
-#include <atomic>
+
 #include "concurrentqueue.h"
 #include "Block.h"
 #include "Chunk.h"
@@ -15,6 +13,10 @@
 #include "AllocatorHandle.h"
 
 #include "Recycler.h"
+
+#include <unordered_map>
+#include <thread>
+#include <atomic>
 
 namespace Voxel{
 
