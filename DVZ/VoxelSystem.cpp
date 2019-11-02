@@ -29,14 +29,14 @@ void VoxelSystem::update(Engine *engine, float delta) {
 
 	manager->update(playerPos.x, playerPos.y, playerPos.z);
 
-	int bx = manager->getBlockX(playerPos.x);
-	int by = manager->getBlockY(playerPos.y);
-	int bz = manager->getBlockZ(playerPos.z);
+	//int bx = manager->getBlockX(playerPos.x);
+	//int by = manager->getBlockY(playerPos.y);
+	//int bz = manager->getBlockZ(playerPos.z);
 
-	if (manager->isBlockMapped(bx, by, bz)) {
-		Voxel::Block b(Voxel::BlockType::BLOCK_TYPE_PURPLE);
-		//manager->setBlock(bx, by, bz, b);
-	}
+	//if (manager->isBlockMapped(bx, by, bz)) {
+	//	Voxel::Block b(Voxel::BlockType::BLOCK_TYPE_PURPLE);
+	//	//manager->setBlock(bx, by, bz, b);
+	//}
 }
 
 void VoxelSystem::chunkLoader() {

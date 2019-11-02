@@ -58,6 +58,16 @@ void ChunkManager::update(float x, float y, float z) {
 	updateAllChunks(chunkX, chunkY, chunkZ);
 
 	enqueueChunks();
+	dequeueChunkRenderData();
+
+	visibleChunkList.clear();
+	for (auto iter = renderableChunkSet.begin(); iter != renderableChunkSet.end(); iter++) {
+		ChunkRefHandle &chunk = iter->second.first;
+		ChunkRenderDataHandle &handle = iter->second.second;
+		if (chunk->getMeshState() != MeshState::NONE_MESH) {
+			visibleChunkList.push_back(handle.get());
+		}
+	}
 }
 
 ChunkRefHandle ChunkManager::getChunk(int cx, int cy, int cz) {
@@ -67,7 +77,7 @@ ChunkRefHandle ChunkManager::getChunk(int cx, int cy, int cz) {
 		ChunkRefCount *chunkRefCountPair = &iter->second;
 		Chunk* chunkPtr = chunkRefCountPair->first.get();
 		RefCount *refCount = &chunkRefCountPair->second;
-		return std::unique_ptr<Chunk, ChunkDestructor>(chunkPtr, ChunkManager::ChunkDestructor(refCount));
+		return std::unique_ptr<Chunk, ChunkDestructor>(chunkPtr, ChunkDestructor(refCount));
 	}
 
 	ChunkHandle chunk = this->chunkRecycler.getUniqueNew(cx, cy, cz);
@@ -87,7 +97,7 @@ ChunkRefHandle ChunkManager::getChunkIfMapped(int cx, int cy, int cz) {
 	
 	Chunk* chunkPtr = chunkRefCountPair->first.get();
 	RefCount *refCount = &chunkRefCountPair->second;
-	return std::unique_ptr<Chunk, ChunkDestructor>(chunkPtr, ChunkManager::ChunkDestructor(refCount));
+	return std::unique_ptr<Chunk, ChunkDestructor>(chunkPtr, ChunkDestructor(refCount));
 }
 
 ChunkRefHandle ChunkManager::getNullChunk() {
@@ -359,6 +369,7 @@ void ChunkManager::dequeueChunkRenderData() {
 		data->cy = chunk->chunk_y;
 		data->cz = chunk->chunk_z;
 		data->bufferGeometry(element.second.get());
+
 	}
 }
 
@@ -369,7 +380,7 @@ void ChunkManager::chunkGeneratorThread() {
 		ChunkRefHandle chunk = getNullChunk();
 		bool dequeued = this->chunkGenerationQueue.wait_dequeue_timed(chunk, std::chrono::milliseconds(500));
 		if (dequeued) {
-			if (chunk && chunk->getBlockState() == Chunk::BlockState::NONE) {
+			if (chunk && chunk->getBlockState() == BlockState::NONE) {
 				chunk->generateTerrain();
 			}
 		}
@@ -392,7 +403,7 @@ void ChunkManager::chunkMeshingThread() {
 			//if (neighbors.middle->getChunkState() == Chunk::ChunkState::EMPTY)
 			//	neighbors.middle->generateTerrain();
 			this->chunkMesherArray[workerID].loadChunkDataAsync(neighbors);
-			this->chunkMesherArray[workerID].createChunkMesh(geometry);
+			this->chunkMesherArray[workerID].createChunkMesh(geometry.get());
 
 			neighbors.middle->flagMeshValid();
 

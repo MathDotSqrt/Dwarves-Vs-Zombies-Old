@@ -18,9 +18,30 @@
 
 namespace Voxel{
 
-//struct ChunkManager::ChunkDestructor;
+struct ChunkDestructor {
+public:
+	typedef std::atomic<int> RefCount;
+	ChunkDestructor(RefCount *ref) {
+		this->referenceCount = ref;
+		if (referenceCount) {
+			(*referenceCount)++;
+		}
+	}
+
+	void operator()(Chunk *) {
+		//decrements reference counter from chunk manager chunkSet
+		//when manager sees chunk having 0 references it will eventually
+		//recycle that chunk
+		if (referenceCount) {
+			(*referenceCount)--;
+		}
+	}
+private:
+	RefCount *referenceCount;
+};
+
 typedef std::unique_ptr<Chunk> ChunkHandle;
-typedef std::unique_ptr<Chunk, ChunkManager::ChunkDestructor> ChunkRefHandle;
+typedef std::unique_ptr<Chunk, ChunkDestructor> ChunkRefHandle;
 
 struct ChunkNeighbors {
 	ChunkRefHandle middle;
@@ -35,9 +56,6 @@ struct ChunkNeighbors {
 class ChunkManager {
 public:
 	friend class ChunkMesher;
-	
-	typedef std::unordered_map<int, ChunkRefHandle>::iterator ChunkIterator;
-	typedef std::unordered_map<int, ChunkRenderData*>::iterator ChunkRenderDataIterator;
 
 	static const int CHUNK_ALLOC_SIZE = 500 * 1024 * 1024;
 	static const int CHUNK_MESH_RECYCLE_SIZE = 2 * 1024 * 1024;
@@ -45,8 +63,9 @@ public:
 	static const int CHUNK_MESHER_ALLOC_SIZE = 8 * 1024 * 1024;
 	static const int CHUNK_THREAD_POOL_SIZE = 1;	//dont change this until i fix allocate array
 	static const int RENDER_DISTANCE = 30;
-	static const int LOAD_DISTANCE = RENDER_DISTANCE+2;
+	static const int LOAD_DISTANCE = RENDER_DISTANCE + 2;
 
+public:
 	ChunkManager(Util::Allocator::IAllocator &parent);
 	~ChunkManager();
 
@@ -75,20 +94,8 @@ public:
 	int getChunkX(float x);
 	int getChunkY(float y);
 	int getChunkZ(float z);
-
-	inline ChunkIterator begin() {
-		return this->chunkSet.begin();
-	}
-
-	inline ChunkIterator end() {
-		return this->chunkSet.end();
-	}
-
-	inline ChunkRenderDataIterator beginRenderData() {
-		return this->renderDataSet.begin();
-	}
-	inline ChunkRenderDataIterator endRenderData() {
-		return this->renderDataSet.end();
+	std::vector<ChunkRenderData*>& getVisibleChunks() {
+		return this->visibleChunkList;
 	}
 private:
 	ChunkPtr newChunk(int cx, int cy, int cz);
@@ -115,8 +122,7 @@ private:
 	int currentChunkY = 0;
 	int currentChunkZ = 0;
 	
-
-	typedef std::atomic<int> RefCount;
+	typedef ChunkDestructor::RefCount RefCount;
 	typedef std::pair<ChunkHandle, RefCount> ChunkRefCount;
 	typedef std::unique_ptr<ChunkRenderData> ChunkRenderDataHandle;
 	typedef std::unique_ptr<ChunkGeometry> ChunkGeometryHandle;
@@ -163,27 +169,7 @@ private:
 	std::unordered_map<int, ChunkRenderData*> renderDataSet;
 	std::unordered_map<int, bool> chunkQueuedSet;*/
 
-	public:
-	struct ChunkDestructor {
-		ChunkDestructor(RefCount *ref) {
-			this->referenceCount = ref;
-			if (referenceCount) {
-				(*referenceCount)++;
-			}
-		}
-
-		void operator()(Chunk *) {
-			//decrements reference counter from chunk manager chunkSet
-			//when manager sees chunk having 0 references it will eventually
-			//recycle that chunk
-			if (referenceCount) {
-				(*referenceCount)--;
-			}
-		}
-
-	private:
-		RefCount *referenceCount;
-	};
+	
 
 };
 

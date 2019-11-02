@@ -2,9 +2,10 @@
 #include "Block.h"
 #include "VAO.h"
 #include "VBO.h"
-#include <vector>
 #include "Geometry.h"
 #include "Attrib.h"
+
+#include <vector>
 #include <shared_mutex>
 
 namespace Voxel{
@@ -27,27 +28,25 @@ static constexpr float CHUNK_RENDER_WIDTH_X = CHUNK_WIDTH_X;
 static constexpr float CHUNK_RENDER_WIDTH_Y = CHUNK_WIDTH_Y;
 static constexpr float CHUNK_RENDER_WIDTH_Z = CHUNK_WIDTH_Z;
 
-typedef Chunk* ChunkPtr;
+enum BlockState {
+	NONE,
+	LOADED,
+	LOADED_AND_EMPTY,
+	NUM_BLOCK_STATES
+};
+
+enum MeshState {
+	NONE_MESH,
+	VALID,
+	DIRTY,
+	NUM_MESH_STATES
+};
 
 //DO NOT CALL THIS ON STACK
 class Chunk {
 public:
 	typedef Graphics::Geometry<Graphics::PositionAttrib, Graphics::NormalAttrib, Graphics::ColorAttrib> BlockGeometry;
 	typedef BlockGeometry::GeometryVertex BlockVertex;
-
-	typedef enum _BlockState {
-		NONE,
-		LOADED,
-		LOADED_AND_EMPTY,
-		NUM_STATES
-	} BlockState;
-
-	typedef enum _MeshState {
-		NONE,
-		VALID,
-		DIRTY,
-		NUM_STATES
-	} MeshState;
 
 private:
 	friend class ChunkMesher;
@@ -95,6 +94,8 @@ public:
 	int getHashCode();
 
 private:
+	void flagDirtyMesh();
+	
 	inline Block& getBlockInternal(int x, int y, int z) {
 		//std::shared_lock<std::shared_mutex> lock(this->chunkMutex);
 		//this->assertBlockIndex(x, y, z);
@@ -112,6 +113,8 @@ private:
 
 	int expand(int i);
 };
+
+typedef Chunk* ChunkPtr;
 
 }
 

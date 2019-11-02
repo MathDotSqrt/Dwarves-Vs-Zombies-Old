@@ -328,9 +328,9 @@ void OpenGLRenderer::renderChunks(Voxel::ChunkManager *manager, glm::vec3 camera
 	shader->setUniform3f("specular_color", chunkMat.specularColor);
 	shader->setUniform1f("shinyness", chunkMat.shinyness);
 
-	for (Voxel::ChunkManager::ChunkRenderDataIterator iterator = manager->beginRenderData(); iterator != manager->endRenderData(); iterator++) {
+	for (auto iterator = manager->getVisibleChunks().begin(); iterator != manager->getVisibleChunks().end(); iterator++) {
 
-		Voxel::ChunkRenderData *data = iterator->second;
+		auto data = *iterator;
 
 		if (data == nullptr) {
 			continue;

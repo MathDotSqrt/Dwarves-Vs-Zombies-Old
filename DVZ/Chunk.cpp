@@ -13,7 +13,7 @@ Chunk::Chunk(int x, int y, int z) :
 	chunk_z(z) {
 
 	blockState = BlockState::NONE;
-	meshState = MeshState::NONE;
+	meshState = MeshState::NONE_MESH;
 }
 
 Chunk::~Chunk() {}
@@ -59,6 +59,7 @@ void Chunk::generateTerrain() {
 	}
 
 	blockState = BlockState::LOADED;
+	flagDirtyMesh();
 }
 
 void Chunk::flagMeshValid() {
@@ -71,14 +72,20 @@ bool Chunk::isEmpty() {
 	return blockState == BlockState::NONE || blockState == BlockState::LOADED_AND_EMPTY;
 }
 
-Chunk::BlockState Chunk::getBlockState() {
+BlockState Chunk::getBlockState() {
 	std::shared_lock<std::shared_mutex> lock(chunkMutex);
 	return blockState;
 }
 
-Chunk::MeshState Chunk::getMeshState() {
+MeshState Chunk::getMeshState() {
 	std::shared_lock<std::shared_mutex> lock(chunkMutex);
 	return meshState;
+}
+
+void Chunk::flagDirtyMesh() {
+	if (meshState != MeshState::NONE_MESH) {
+		meshState = MeshState::DIRTY;
+	}
 }
 
 int Chunk::toIndex(int x, int y, int z) {
@@ -113,9 +120,10 @@ void Chunk::setBlock(int x, int y, int z, Block block) {
 	if (this->data[this->toIndex(x, y, z)] != block) {
 		this->data[this->toIndex(x, y, z)] = block;
 
-		if (meshState == MeshState::VALID) { //only dirty state if it was valid, not if empty or lazy
-			meshState = MeshState::DIRTY;	 //todo only dirty chunk if there is an adjecant block that is transparent
-		}
+		//if (meshState == MeshState::VALID) { //only dirty state if it was valid, not if empty or lazy
+		//	meshState = MeshState::DIRTY;	 //todo only dirty chunk if there is an adjecant block that is transparent
+		//}
+		flagDirtyMesh();
 	}
 }
 
@@ -127,7 +135,7 @@ void Chunk::reinitializeChunk(int cx, int cy, int cz) {
 	this->chunk_z = cz;
 
 	blockState = BlockState::NONE;
-	meshState = MeshState::NONE;
+	meshState = MeshState::NONE_MESH;
 }
 
 int Chunk::expand(int x) {

@@ -2,7 +2,10 @@
 
 #include "Allocator.h"
 #include "PoolAllocator.h"
+
+#include <mutex>
 #include <vector>
+
 namespace Util{
 
 template<typename T>

@@ -2,11 +2,11 @@
 #include "Chunk.h"
 #include "ChunkGeometry.h"
 #include "Geometry.h"
-#include "ChunkManager.h"
 
 namespace Voxel {
 
 	struct ChunkNeighbors;
+
 
 	class ChunkMesher {
 	private:
@@ -34,10 +34,10 @@ namespace Voxel {
 		void loadChunkData(ChunkNeighbors &);
 		void loadChunkDataAsync(ChunkNeighbors &);
 
-		void createChunkMesh(ChunkManager::ChunkGeometryHandle &a);
+		void createChunkMesh(ChunkGeometry *);
 
 	private:
-		void createCulledCube(int x, int y, int z, BlockFaceCullTags cull, Block b, ChunkManager::ChunkGeometryHandle &geometry);
+		void createCulledCube(int x, int y, int z, BlockFaceCullTags cull, Block b, ChunkGeometry *geometry);
 		//void createFace(BlockVertex v0, BlockVertex v1, BlockVertex v2, BlockVertex v3, Chunk::BlockGeometry &geometry);
 
 		Block getBlock(int x, int y, int z);
