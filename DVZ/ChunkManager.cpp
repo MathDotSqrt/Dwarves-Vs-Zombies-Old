@@ -42,7 +42,8 @@ ChunkManager::~ChunkManager() {
 }
 
 void ChunkManager::update(float x, float y, float z) {
-	Util::Performance::Timer update("Chunk Update");
+	Util::Performance::Timer updateTimer("Chunk Update");
+	
 	int chunkX = this->getChunkX(x);
 	int chunkY = this->getChunkY(y);
 	int chunkZ = this->getChunkZ(z);
@@ -50,24 +51,36 @@ void ChunkManager::update(float x, float y, float z) {
 		this->currentChunkX = chunkX;
 		this->currentChunkY = chunkY;
 		this->currentChunkZ = chunkZ;
-		Util::Performance::Timer loadChunks("LoadChunks");
 
+		Util::Performance::Timer updateTimer("Queue Load/Mesh");
 		this->loadChunks(chunkX, chunkY, chunkZ, LOAD_DISTANCE);
 		this->meshChunks(chunkX, chunkY, chunkZ, RENDER_DISTANCE);
 	}
 
-	updateAllChunks(chunkX, chunkY, chunkZ);
+	{
+		Util::Performance::Timer updateAllChunksTimer("Updating all chunks");
+		updateAllChunks(chunkX, chunkY, chunkZ);
+	}
+	{
+		Util::Performance::Timer enqueueChunksTimer("Enqueue Chunks");
+		enqueueChunks();
+	}
+	{
+		Util::Performance::Timer dqChunksTimer("DQ Chunks");
+		dequeueChunkRenderData();
+	}
 
-	enqueueChunks();
-	dequeueChunkRenderData();
-
+	{
+	Util::Performance::Timer visibleChunkTimer("Build Visible List");
 	visibleChunkList.clear();
 	for (auto iter = renderableChunkSet.begin(); iter != renderableChunkSet.end(); iter++) {
 		ChunkRefHandle &chunk = iter->second.first;
-		ChunkRenderDataHandle &handle = iter->second.second;
-		if (chunk->getMeshState() != MeshState::NONE_MESH) {
+		MeshState state = chunk->tryGetMeshState();
+		if (state != MeshState::NONE_MESH && state != MeshState::LOCKED) {
+			ChunkRenderDataHandle &handle = iter->second.second;
 			visibleChunkList.push_back(handle.get());
 		}
+	}
 	}
 }
 
@@ -256,7 +269,6 @@ void ChunkManager::loadChunks(int chunkX, int chunkY, int chunkZ, int distance) 
 			int cz = chunkZ + z;
 
 			if (!isChunkLoaded(cx, cy, cz)) {
-				Util::Performance::Timer chunkSubmit("Chunk Needs");
 				needsLoadingCache.emplace_back(getChunk(cx, cy, cz));
 			}
 		}
@@ -376,7 +388,7 @@ void ChunkManager::enqueueChunks() {
 
 void ChunkManager::dequeueChunkRenderData() {
 	ChunkGeometryPair element;
-	for (int i = 0; this->chunkMeshedQueue.try_dequeue(element); i++) {
+	for (int i = 0; i < 10 && this->chunkMeshedQueue.try_dequeue(element); i++) {
 		ChunkRefHandle &chunk = element.first;
 		if (isChunkRenderable(chunk->chunk_x, chunk->chunk_y, chunk->chunk_z)) {
 			ChunkRenderDataHandle &data = renderableChunkSet[chunk->getHashCode()].second;
