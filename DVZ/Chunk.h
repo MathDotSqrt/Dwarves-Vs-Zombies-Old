@@ -43,6 +43,19 @@ public:
 		VALID					//has a mesh and chunk is consistant with mesh
 	} ChunkState;
 
+	typedef enum _BlockState {
+		NONE,
+		LOADED,
+		NUM_STATES
+	} BlockState;
+
+	typedef enum _MeshState {
+		NONE,
+		VALID,
+		DIRTY,
+		NUM_STATES
+	} MeshState;
+
 private:
 	friend class ChunkMesher;
 	friend class ChunkManager;

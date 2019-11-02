@@ -43,6 +43,7 @@ public:
 	static const int CHUNK_MESHER_ALLOC_SIZE = 8 * 1024 * 1024;
 	static const int CHUNK_THREAD_POOL_SIZE = 1;	//dont change this until i fix allocate array
 	static const int RENDER_DISTANCE = 30;
+	static const int LOAD_DISTANCE = RENDER_DISTANCE+2;
 
 	ChunkManager(Util::Allocator::IAllocator &parent);
 	~ChunkManager();
@@ -52,6 +53,7 @@ public:
 
 	ChunkRefHandle getChunk(int cx, int cy, int cz);
 	ChunkRefHandle getChunkIfMapped(int cx, int cy, int cz);
+	ChunkRefHandle copyChunkRefHandle(const ChunkRefHandle& handle);
 	ChunkNeighbors getChunkNeighbors(const ChunkRefHandle &chunk);
 
 	ChunkRefHandle loadChunk(int cx, int cy, int cz);
@@ -88,7 +90,12 @@ private:
 	ChunkPtr newChunk(int cx, int cy, int cz);
 	//void removeChunk(int cx, int cy, int cz);	//fully removes chunk
 
+	bool isChunkLoaded(int cx, int cy, int cz);
+	bool isChunkRenderable(int cx, int cy, int cz);
+	bool isChunkVisible(int cx, int cy, int cz);
 
+
+	void unloadFarChunks(int chunkX, int chunkY, int chunkZ, int loadDistance, int renderDistance);
 	void loadChunks(int chunkX, int chunkY, int chunkZ, int renderDistance);
 	void updateAllChunks(int playerCX, int playerCY, int playerCZ);
 	void dequeueChunkRenderData();
@@ -113,6 +120,8 @@ private:
 	std::unordered_map<int, ChunkRefCount> chunkSet;
 	std::unordered_map<int, ChunkRefHandle> loadedChunkSet;
 	std::unordered_map<int, ChunkRenderDataPair> renderableChunkSet;
+	std::vector<ChunkRefHandle> needsLoadingCache;
+	std::vector<ChunkRefHandle> needsMeshCache;
 	std::vector<ChunkRenderData*> visibleChunkList;
 	moodycamel::BlockingConcurrentQueue<ChunkRefHandle> chunkGenerationQueue;
 	moodycamel::BlockingConcurrentQueue<ChunkNeighbors> chunkMeshingQueue;
