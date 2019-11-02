@@ -66,6 +66,8 @@ public:
 		}
 
 		T* t = Util::Allocator::allocateNew<T>(this->pool);
+		assert(t);
+
 		this->allocations.push_back(t);
 		return t;
 	}
@@ -90,6 +92,7 @@ public:
 		}
 
 		T* t = Util::Allocator::allocateNew<T>(this->pool, args...);
+		assert(t);
 		this->allocations.push_back(t);
 		return t;
 	}

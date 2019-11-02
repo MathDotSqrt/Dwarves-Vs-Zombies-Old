@@ -24,6 +24,7 @@ ChunkManager::ChunkManager(Util::Allocator::IAllocator &parent) :
 
 	this->chunkSet.max_load_factor(1.0f);
 	this->loadChunks(0, 0, 0, LOAD_DISTANCE);
+	this->meshChunks(0, 0, 0, RENDER_DISTANCE);
 }
 
 
@@ -266,7 +267,7 @@ void ChunkManager::loadChunks(int chunkX, int chunkY, int chunkZ, int distance) 
 		int distL = std::abs(chunkX - lhs->getChunkX()) + std::abs(chunkY - lhs->getChunkY()) + std::abs(chunkZ - lhs->getChunkZ());
 		int distR = std::abs(chunkX - rhs->getChunkX()) + std::abs(chunkY - rhs->getChunkY()) + std::abs(chunkZ - rhs->getChunkZ());
 
-		return distL < distR;
+		return distL > distR;
 	};
 	std::sort(needsLoadingCache.begin(), needsLoadingCache.end(), compareLambda);
 }
@@ -296,7 +297,7 @@ void ChunkManager::meshChunks(int chunkX, int chunkY, int chunkZ, int distance) 
 			int cy = chunkY;
 			int cz = chunkZ + z;
 
-			if (isChunkMapped(cx, cy, cz) && !isChunkRenderable(cx, cy, cz)) {
+			if (!isChunkRenderable(cx, cy, cz)) {
 				needsMeshCache.emplace_back(getChunk(cx, cy, cz));
 			}
 		}
@@ -306,8 +307,9 @@ void ChunkManager::meshChunks(int chunkX, int chunkY, int chunkZ, int distance) 
 		int distL = std::abs(chunkX - lhs->getChunkX()) + std::abs(chunkY - lhs->getChunkY()) + std::abs(chunkZ - lhs->getChunkZ());
 		int distR = std::abs(chunkX - rhs->getChunkX()) + std::abs(chunkY - rhs->getChunkY()) + std::abs(chunkZ - rhs->getChunkZ());
 
-		return distL < distR;
+		return distL > distR;
 	};
+
 	std::sort(needsMeshCache.begin(), needsMeshCache.end(), compareLambda);
 }
 
@@ -339,7 +341,7 @@ void ChunkManager::updateAllChunks(int playerCX, int playerCY, int playerCZ) {
 }
 
 void ChunkManager::enqueueChunks() {
-	for (int i = 0; i < 4 && needsLoadingCache.size() > 0; i++) {
+	for (int i = 0; i < 16 && needsLoadingCache.size() > 0; i++) {
 		ChunkRefHandle chunk = std::move(needsLoadingCache.back());
 		loadedChunkSet.emplace(chunk->getHashCode(), copyChunkRefHandle(chunk));
 
@@ -347,16 +349,26 @@ void ChunkManager::enqueueChunks() {
 		this->chunkGenerationQueue.enqueue(std::move(chunk));
 	}
 
-	for (int i = 0; i < 4 && needsMeshCache.size() > 0; i++) {
-		ChunkRefHandle chunk = std::move(needsMeshCache.back());
+	for (int i = 0; i < 16 && needsMeshCache.size() > 0; i++) {
+		size_t chunkIndex = needsMeshCache.size() - 1;
+		while (needsMeshCache[chunkIndex]->getBlockState() == BlockState::NONE) {
+			if (chunkIndex == 0) {
+				return;	//we are done
+			}
+			chunkIndex--;
+		}
+
+		ChunkRefHandle chunk = std::move(needsMeshCache[chunkIndex]);
 		ChunkNeighbors chunkNeighbors = getChunkNeighbors(chunk);
 
+		int hashCode = chunk->getHashCode();
 		ChunkRenderDataPair pair = std::make_pair(std::move(chunk), renderDataRecycler.getUniqueNew());
-		renderableChunkSet.emplace(chunk->getHashCode(), std::move(pair));
+		renderableChunkSet.emplace(hashCode, std::move(pair));
 	
-		needsMeshCache.pop_back();
 		ChunkNeighborGeometryPair p = std::make_pair(std::move(chunkNeighbors), meshRecycler.getUniqueNew());
 		chunkMeshingQueue.enqueue(std::move(p));
+		needsMeshCache.erase(needsMeshCache.begin() + chunkIndex);
+
 	}
 }
 
@@ -364,13 +376,17 @@ void ChunkManager::dequeueChunkRenderData() {
 	ChunkGeometryPair element;
 	for (int i = 0; this->chunkMeshedQueue.try_dequeue(element); i++) {
 		ChunkRefHandle &chunk = element.first;
-		ChunkRenderDataHandle &data = renderableChunkSet[chunk->getHashCode()].second;
-		data->cx = chunk->chunk_x;
-		data->cy = chunk->chunk_y;
-		data->cz = chunk->chunk_z;
-		data->bufferGeometry(element.second.get());
+		if (isChunkRenderable(chunk->chunk_x, chunk->chunk_y, chunk->chunk_z)) {
+			ChunkRenderDataHandle &data = renderableChunkSet[chunk->getHashCode()].second;
 
-		chunk->flagMeshValid();
+			data->cx = chunk->chunk_x;
+			data->cy = chunk->chunk_y;
+			data->cz = chunk->chunk_z;
+			data->bufferGeometry(element.second.get());
+
+			chunk->flagMeshValid();
+		}
+		
 	}
 }
 
