@@ -18,7 +18,7 @@
 
 namespace Voxel{
 
-struct ChunkManager::ChunkDestructor;
+//struct ChunkManager::ChunkDestructor;
 typedef std::unique_ptr<Chunk> ChunkHandle;
 typedef std::unique_ptr<Chunk, ChunkManager::ChunkDestructor> ChunkRefHandle;
 
@@ -34,6 +34,8 @@ struct ChunkNeighbors {
 
 class ChunkManager {
 public:
+	friend class ChunkMesher;
+	
 	typedef std::unordered_map<int, ChunkRefHandle>::iterator ChunkIterator;
 	typedef std::unordered_map<int, ChunkRenderData*>::iterator ChunkRenderDataIterator;
 
@@ -53,8 +55,10 @@ public:
 
 	ChunkRefHandle getChunk(int cx, int cy, int cz);
 	ChunkRefHandle getChunkIfMapped(int cx, int cy, int cz);
-	ChunkRefHandle copyChunkRefHandle(const ChunkRefHandle& handle);
+	ChunkRefHandle getNullChunk();
 	ChunkNeighbors getChunkNeighbors(const ChunkRefHandle &chunk);
+
+	ChunkRefHandle copyChunkRefHandle(const ChunkRefHandle& handle);
 
 	ChunkRefHandle loadChunk(int cx, int cy, int cz);
 	bool loadChunkAsync(int cx, int cy, int cz);
@@ -95,9 +99,10 @@ private:
 	bool isChunkVisible(int cx, int cy, int cz);
 
 
-	void unloadFarChunks(int chunkX, int chunkY, int chunkZ, int loadDistance, int renderDistance);
-	void loadChunks(int chunkX, int chunkY, int chunkZ, int renderDistance);
+	void loadChunks(int chunkX, int chunkY, int chunkZ, int loadDistance);
+	void meshChunks(int chunkX, int chunkY, int chunkZ, int renderDistance);
 	void updateAllChunks(int playerCX, int playerCY, int playerCZ);
+	void enqueueChunks();
 	void dequeueChunkRenderData();
 
 	void chunkGeneratorThread();
@@ -115,7 +120,9 @@ private:
 	typedef std::pair<ChunkHandle, RefCount> ChunkRefCount;
 	typedef std::unique_ptr<ChunkRenderData> ChunkRenderDataHandle;
 	typedef std::unique_ptr<ChunkGeometry> ChunkGeometryHandle;
-	typedef std::pair<ChunkRefHandle, ChunkRenderData>  ChunkRenderDataPair;
+	typedef std::pair<ChunkRefHandle, ChunkRenderDataHandle>  ChunkRenderDataPair;
+	typedef std::pair<ChunkNeighbors, ChunkGeometryHandle> ChunkNeighborGeometryPair;
+	typedef std::pair<ChunkRefHandle, ChunkGeometryHandle> ChunkGeometryPair;
 
 	std::unordered_map<int, ChunkRefCount> chunkSet;
 	std::unordered_map<int, ChunkRefHandle> loadedChunkSet;
@@ -124,8 +131,8 @@ private:
 	std::vector<ChunkRefHandle> needsMeshCache;
 	std::vector<ChunkRenderData*> visibleChunkList;
 	moodycamel::BlockingConcurrentQueue<ChunkRefHandle> chunkGenerationQueue;
-	moodycamel::BlockingConcurrentQueue<ChunkNeighbors> chunkMeshingQueue;
-	moodycamel::ConcurrentQueue<ChunkGeometryHandle> chunkMeshedQueue;
+	moodycamel::BlockingConcurrentQueue<ChunkNeighborGeometryPair> chunkMeshingQueue;
+	moodycamel::ConcurrentQueue<ChunkGeometryPair> chunkMeshedQueue;
 
 	Util::Recycler<Chunk> chunkRecycler;
 	Util::Recycler<ChunkGeometry> meshRecycler;

@@ -11,34 +11,18 @@ Chunk::Chunk(int x, int y, int z) :
 	chunk_x(x), 
 	chunk_y(y), 
 	chunk_z(z) {
-	this->currentState = Chunk::EMPTY;
 
+	blockState = BlockState::NONE;
+	meshState = MeshState::NONE;
 }
 
-//Chunk::Chunk(int x, int y, int z, Block *data) : 
-//	chunk_x(x), 
-//	chunk_y(y), 
-//	chunk_z(z), 
-//	data(data),
-//	vbo(GL_ARRAY_BUFFER), 
-//	ebo(GL_ELEMENT_ARRAY_BUFFER)
-//	{
-//	this->isMeshValid = false;
-//	
-//	//glm::vec3::value_type
-//}
-
-Chunk::~Chunk() {
-	//free(data);
-	//this->vbo.dispose();
-	//this->ebo.dispose();
-	//LOG_VOXEL("Chunk {%d, %d, %d} deleted", this->chunk_x, this->chunk_y, this->chunk_z);
-}
+Chunk::~Chunk() {}
 
 void Chunk::generateTerrain() {
+	std::lock_guard<std::shared_mutex> writeLock(this->chunkMutex);
+
 	memset(&this->data, BlockType::BLOCK_TYPE_DEFAULT, sizeof(this->data));
 	
-	std::lock_guard<std::shared_mutex> writeLock(this->chunkMutex);
 	for (int bz = 0; bz < CHUNK_WIDTH_Z; bz++) {
 		for (int by = 0; by < CHUNK_WIDTH_Y; by++) {
 			for (int bx = 0; bx < CHUNK_WIDTH_X; bx++) {
@@ -74,7 +58,27 @@ void Chunk::generateTerrain() {
 		}
 	}
 
-	this->currentState = Chunk::LAZY_LOADED;
+	blockState = BlockState::LOADED;
+}
+
+void Chunk::flagMeshValid() {
+	std::lock_guard<std::shared_mutex> lock(chunkMutex);
+	meshState = MeshState::VALID;
+}
+
+bool Chunk::isEmpty() {
+	std::shared_lock<std::shared_mutex> lock(chunkMutex);
+	return blockState == BlockState::NONE || blockState == BlockState::LOADED_AND_EMPTY;
+}
+
+Chunk::BlockState Chunk::getBlockState() {
+	std::shared_lock<std::shared_mutex> lock(chunkMutex);
+	return blockState;
+}
+
+Chunk::MeshState Chunk::getMeshState() {
+	std::shared_lock<std::shared_mutex> lock(chunkMutex);
+	return meshState;
 }
 
 int Chunk::toIndex(int x, int y, int z) {
@@ -88,29 +92,30 @@ void Chunk::assertBlockIndex(int x, int y, int z) {
 }
 
 Block Chunk::getBlock(int x, int y, int z) {
-	if (this->currentState == Chunk::ChunkState::EMPTY) {
+	std::shared_lock<std::shared_mutex> lock(this->chunkMutex);
+	if (this->blockState == BlockState::NONE) {
 		return Block();
 	}
 
-	std::shared_lock<std::shared_mutex> lock(this->chunkMutex);
 	this->assertBlockIndex(x, y, z);
 	return data[this->toIndex(x, y, z)];
 }
 
 void Chunk::setBlock(int x, int y, int z, Block block) {
-	if (this->currentState != Chunk::ChunkState::EMPTY) {
+	std::lock_guard<std::shared_mutex> lock(this->chunkMutex);
+	if (this->blockState == BlockState::NONE) {
 		return;
 	}
 
-	std::lock_guard<std::shared_mutex> lock(this->chunkMutex);
 
 	this->assertBlockIndex(x, y, z);
 
 	if (this->data[this->toIndex(x, y, z)] != block) {
 		this->data[this->toIndex(x, y, z)] = block;
 
-		if(this->currentState == Chunk::VALID)		//only dirty state if it was valid, not if empty or lazy
-			this->currentState = Chunk::DIRTY_MESH;	//todo only dirty chunk if there is an adjecant block that is transparent
+		if (meshState == MeshState::VALID) { //only dirty state if it was valid, not if empty or lazy
+			meshState = MeshState::DIRTY;	 //todo only dirty chunk if there is an adjecant block that is transparent
+		}
 	}
 }
 
@@ -121,7 +126,8 @@ void Chunk::reinitializeChunk(int cx, int cy, int cz) {
 	this->chunk_y = cy;
 	this->chunk_z = cz;
 
-	this->currentState = Chunk::EMPTY;
+	blockState = BlockState::NONE;
+	meshState = MeshState::NONE;
 }
 
 int Chunk::expand(int x) {

@@ -35,17 +35,10 @@ public:
 	typedef Graphics::Geometry<Graphics::PositionAttrib, Graphics::NormalAttrib, Graphics::ColorAttrib> BlockGeometry;
 	typedef BlockGeometry::GeometryVertex BlockVertex;
 
-	typedef enum _ChunkState{
-		EMPTY,					//allocated but all of the values are nonsense
-		LAZY_LOADED,			//allocated with generated blocks, but has no render data associated. Useful for meshing algo
-		NEED_MESH,				//allocated but needs mesh
-		DIRTY_MESH,				//has a mesh but the chunk state is different than the mesh
-		VALID					//has a mesh and chunk is consistant with mesh
-	} ChunkState;
-
 	typedef enum _BlockState {
 		NONE,
 		LOADED,
+		LOADED_AND_EMPTY,
 		NUM_STATES
 	} BlockState;
 
@@ -63,7 +56,8 @@ private:
 	int chunk_x, chunk_y, chunk_z;
 	
 	Block data[CHUNK_VOLUME];
-	ChunkState currentState;
+	BlockState blockState;
+	MeshState meshState;
 
 	std::shared_mutex chunkMutex;
 
@@ -75,65 +69,16 @@ public:
 
 	void generateTerrain();
 
+	void flagMeshValid();
+	
+	bool isEmpty();
+	
+	BlockState getBlockState();
+	MeshState getMeshState();
+
+
 	Block getBlock(int x, int y, int z);
 	void setBlock(int x, int y, int z, Block block);
-
-	//needs mesh
-	inline bool needsNewMesh() {
-		std::shared_lock<std::shared_mutex> lock(chunkMutex);
-		return this->currentState == Chunk::NEED_MESH;
-	}
-	inline bool needsMeshUpdate() {
-		std::shared_lock<std::shared_mutex> lock(chunkMutex);
-		return this->currentState == Chunk::DIRTY_MESH;
-	}
-	
-	inline bool flagLoadLazy() {
-		std::lock_guard<std::shared_mutex> lock(chunkMutex);
-
-		if (this->currentState == Chunk::EMPTY) {
-			this->currentState = Chunk::LAZY_LOADED;
-			return true;
-		}
-
-		return false;
-	}
-
-	inline bool flagMeshCreation() {
-		std::lock_guard<std::shared_mutex> lock(chunkMutex);
-
-		if (this->currentState == Chunk::ChunkState::LAZY_LOADED) {
-			this->currentState = Chunk::NEED_MESH;
-			return true;
-		}
-
-		return false;
-	}
-
-	inline bool flagDirty() {
-		std::lock_guard<std::shared_mutex> lock(chunkMutex);
-		if (this->currentState == Chunk::ChunkState::VALID) {
-			this->currentState = Chunk::ChunkState::DIRTY_MESH;
-			return true;
-		}
-		return false;
-	}
-
-	inline bool flagValid() {
-		std::lock_guard<std::shared_mutex> lock(chunkMutex);
-		this->currentState = Chunk::ChunkState::VALID;
-		return true;
-	}
-
-	inline bool isEmpty() {
-		std::shared_lock<std::shared_mutex> lock(chunkMutex);
-		return this->currentState == Chunk::ChunkState::EMPTY;
-	}
-
-	inline bool isValid() {
-		std::shared_lock<std::shared_mutex> lock(chunkMutex);
-		return this->currentState == Chunk::ChunkState::VALID;
-	}
 
 	inline int getChunkX() {
 		return this->chunk_x;
@@ -145,10 +90,6 @@ public:
 
 	inline int getChunkZ() {
 		return this->chunk_z;
-	}
-
-	inline ChunkState getChunkState() {
-		return this->currentState;
 	}
 
 	int getHashCode();

@@ -1,5 +1,4 @@
 #include "ChunkMesher.h"
-#include "ChunkManager.h"
 using namespace Voxel;
 
 ChunkMesher::ChunkMesher() {
@@ -27,7 +26,6 @@ void ChunkMesher::loadChunkDataAsync(ChunkNeighbors &n) {
 				}
 			}
 		}
-		n.middle->currentState = Chunk::ChunkState::VALID;
 	}
 
 	if(n.front && !n.front->isEmpty()){	
@@ -67,7 +65,7 @@ void ChunkMesher::loadChunkDataAsync(ChunkNeighbors &n) {
 	}
 }
 
-void ChunkMesher::createChunkMesh(ChunkGeometry *geometry) {
+void ChunkMesher::createChunkMesh(ChunkManager::ChunkGeometryHandle &geometry) {
 	geometry->clear();
 	for (int z = 0; z < CHUNK_WIDTH_Z; z++) {
 		for (int y = 0; y < CHUNK_WIDTH_Y; y++) {
@@ -91,7 +89,7 @@ void ChunkMesher::createChunkMesh(ChunkGeometry *geometry) {
 	}
 }
 
-void ChunkMesher::createCulledCube(int x, int y, int z, ChunkMesher::BlockFaceCullTags tags, Block b, ChunkGeometry *geometry) {
+void ChunkMesher::createCulledCube(int x, int y, int z, ChunkMesher::BlockFaceCullTags tags, Block b, ChunkManager::ChunkGeometryHandle &geometry) {
 	constexpr unsigned int BLOCK_WIDTH = 1;
 
 	int x_ = x;
