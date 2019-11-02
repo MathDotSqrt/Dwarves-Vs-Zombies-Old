@@ -351,11 +351,13 @@ void ChunkManager::enqueueChunks() {
 
 	for (int i = 0; i < 16 && needsMeshCache.size() > 0; i++) {
 		size_t chunkIndex = needsMeshCache.size() - 1;
-		while (needsMeshCache[chunkIndex]->getBlockState() == BlockState::NONE) {
+		BlockState chunkState = needsMeshCache[chunkIndex]->tryGetBlockState();
+		while (chunkState == BlockState::NONE || chunkState == BlockState::LOCKED) {
 			if (chunkIndex == 0) {
 				return;	//we are done
 			}
 			chunkIndex--;
+			chunkState = needsMeshCache[chunkIndex]->tryGetBlockState();
 		}
 
 		ChunkRefHandle chunk = std::move(needsMeshCache[chunkIndex]);
@@ -393,8 +395,9 @@ void ChunkManager::dequeueChunkRenderData() {
 //todo fix bug where all handles are in queue and the program wants to close causing a 
 //assert in IAllocator for not freeing memory
 void ChunkManager::chunkGeneratorThread() {
+	ChunkRefHandle chunk;
+
 	while (this->runThreads) {
-		ChunkRefHandle chunk;
 		bool dequeued = this->chunkGenerationQueue.wait_dequeue_timed(chunk, std::chrono::milliseconds(500));
 		if (dequeued) {
 			if (chunk && chunk->getBlockState() == BlockState::NONE) {

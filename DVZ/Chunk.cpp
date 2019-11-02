@@ -59,7 +59,11 @@ void Chunk::generateTerrain() {
 	}
 
 	blockState = BlockState::LOADED;
-	flagDirtyMesh();
+	
+	if (meshState != MeshState::NONE_MESH) {
+		meshState = MeshState::DIRTY;
+	}
+	//flagDirtyMesh();
 }
 
 void Chunk::flagMeshValid() {
@@ -82,10 +86,27 @@ MeshState Chunk::getMeshState() {
 	return meshState;
 }
 
-void Chunk::flagDirtyMesh() {
-	if (meshState != MeshState::NONE_MESH) {
-		meshState = MeshState::DIRTY;
+BlockState Chunk::tryGetBlockState() {
+	if (chunkMutex.try_lock_shared()) {
+		BlockState state = this->blockState;
+		chunkMutex.unlock_shared();
+		return state;
 	}
+	return BlockState::LOCKED;
+}
+
+MeshState Chunk::tryGetMeshState() {
+	if (chunkMutex.try_lock_shared()) {
+		MeshState state = this->meshState;
+		chunkMutex.unlock_shared();
+		return state;
+	}
+	return MeshState::LOCKED;
+}
+
+void Chunk::flagDirtyMesh() {
+	//std::lock_guard<std::shared_mutex> lock(chunkMutex);
+	
 }
 
 int Chunk::toIndex(int x, int y, int z) {

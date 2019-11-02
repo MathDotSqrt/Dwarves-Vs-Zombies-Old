@@ -10,9 +10,9 @@
 
 namespace Voxel{
 
-static constexpr int CHUNK_SHIFT_X = 4;
-static constexpr int CHUNK_SHIFT_Y = 7;
-static constexpr int CHUNK_SHIFT_Z = 4;
+static constexpr int CHUNK_SHIFT_X = 5;
+static constexpr int CHUNK_SHIFT_Y = 6;
+static constexpr int CHUNK_SHIFT_Z = 5;
 
 static constexpr int CHUNK_WIDTH_X = 1 << CHUNK_SHIFT_X;
 static constexpr int CHUNK_WIDTH_Y = 1 << CHUNK_SHIFT_Y;
@@ -28,17 +28,19 @@ static constexpr float CHUNK_RENDER_WIDTH_X = CHUNK_WIDTH_X;
 static constexpr float CHUNK_RENDER_WIDTH_Y = CHUNK_WIDTH_Y;
 static constexpr float CHUNK_RENDER_WIDTH_Z = CHUNK_WIDTH_Z;
 
-enum BlockState {
+enum class BlockState {
 	NONE,
 	LOADED,
 	LOADED_AND_EMPTY,
+	LOCKED,
 	NUM_BLOCK_STATES
 };
 
-enum MeshState {
+enum class MeshState {
 	NONE_MESH,
 	VALID,
 	DIRTY,
+	LOCKED,
 	NUM_MESH_STATES
 };
 
@@ -75,6 +77,8 @@ public:
 	BlockState getBlockState();
 	MeshState getMeshState();
 
+	BlockState tryGetBlockState();
+	MeshState tryGetMeshState();
 
 	Block getBlock(int x, int y, int z);
 	void setBlock(int x, int y, int z, Block block);
