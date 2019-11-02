@@ -45,12 +45,9 @@ typedef Util::Recycler<Chunk>::UniqueHandle ChunkHandle;
 
 class ChunkRefHandle : public std::unique_ptr<Chunk, ChunkDestructor> {
 public:
-	ChunkRefHandle() : std::unique_ptr<Chunk, ChunkDestructor>(nullptr, ChunkDestructor(nullptr)){
-	
-	}
+	using std::unique_ptr<Chunk, ChunkDestructor>::unique_ptr;
 
-	ChunkRefHandle(ChunkPtr chunk, ChunkDestructor::RefCount *count) : 
-		std::unique_ptr<Chunk, ChunkDestructor>(chunk, ChunkDestructor(count)) {
+	ChunkRefHandle() : std::unique_ptr<Chunk, ChunkDestructor>(nullptr, ChunkDestructor(nullptr)){
 	
 	}
 };

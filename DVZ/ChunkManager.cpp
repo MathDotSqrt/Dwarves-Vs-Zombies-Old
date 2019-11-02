@@ -77,7 +77,7 @@ ChunkRefHandle ChunkManager::getChunk(int cx, int cy, int cz) {
 		ChunkRefCount *chunkRefCountPair = &iter->second;
 		Chunk* chunkPtr = chunkRefCountPair->first.get();
 		RefCount *refCount = &chunkRefCountPair->second;
-		return std::unique_ptr<Chunk, ChunkDestructor>(chunkPtr, ChunkDestructor(refCount));
+		return ChunkRefHandle(chunkPtr, ChunkDestructor(refCount));
 	}
 
 	ChunkHandle chunk = this->chunkRecycler.getUniqueNew(cx, cy, cz);
@@ -93,14 +93,14 @@ ChunkRefHandle ChunkManager::getChunkIfMapped(int cx, int cy, int cz) {
 	auto iter = this->chunkSet.find(hashcode(cx, cy, cz));
 
 	if (iter == this->chunkSet.end()) {
-		return getNullChunk();
+		return ChunkRefHandle();
 	}
 
 	ChunkRefCount &chunkRefCountPair = iter->second;
 	
 	Chunk* chunkPtr = chunkRefCountPair.first.get();
 	RefCount *refCountPtr = &chunkRefCountPair.second;
-	return ChunkRefHandle(chunkPtr, refCountPtr);
+	return ChunkRefHandle(chunkPtr, ChunkDestructor(refCountPtr));
 }
 
 ChunkRefHandle ChunkManager::getNullChunk() {
@@ -347,7 +347,7 @@ void ChunkManager::enqueueChunks() {
 		ChunkNeighbors chunkNeighbors = getChunkNeighbors(chunk);
 
 		ChunkRenderDataPair pair = std::make_pair(std::move(chunk), renderDataRecycler.getUniqueNew());
-		renderableChunkSet.emplace(chunk->getHashCode(), pair);
+		renderableChunkSet.emplace(chunk->getHashCode(), std::move(pair));
 	
 		needsMeshCache.pop_back();
 		ChunkNeighborGeometryPair p = std::make_pair(std::move(chunkNeighbors), meshRecycler.getUniqueNew());
@@ -356,7 +356,7 @@ void ChunkManager::enqueueChunks() {
 }
 
 void ChunkManager::dequeueChunkRenderData() {
-	static ChunkGeometryPair element = std::make_pair(getNullChunk(), ChunkGeometryHandle());
+	ChunkGeometryPair element;
 	for (int i = 0; this->chunkMeshedQueue.try_dequeue(element); i++) {
 		ChunkRefHandle &chunk = element.first;
 		ChunkRenderDataHandle &data = renderableChunkSet[chunk->getHashCode()].second;
@@ -373,7 +373,7 @@ void ChunkManager::dequeueChunkRenderData() {
 //assert in IAllocator for not freeing memory
 void ChunkManager::chunkGeneratorThread() {
 	while (this->runThreads) {
-		ChunkRefHandle chunk = getNullChunk();
+		ChunkRefHandle chunk;
 		bool dequeued = this->chunkGenerationQueue.wait_dequeue_timed(chunk, std::chrono::milliseconds(500));
 		if (dequeued) {
 			if (chunk && chunk->getBlockState() == BlockState::NONE) {
@@ -389,7 +389,7 @@ void ChunkManager::chunkMeshingThread() {
 	//static id for each thread
 	thread_local int workerID = threadCount++;
 
-	ChunkNeighborGeometryPair pair = std::make_pair(getChunkNeighbors(getNullChunk()), ChunkGeometryHandle());
+	ChunkNeighborGeometryPair pair;
 	while (this->runThreads) {
 		bool dequeued = this->chunkMeshingQueue.wait_dequeue_timed(pair, std::chrono::milliseconds(500));
 		if (dequeued) {
@@ -405,7 +405,7 @@ void ChunkManager::chunkMeshingThread() {
 			int cz = neighbors.middle->getChunkZ();
 
 			ChunkGeometryPair queuePair = std::make_pair(std::move(neighbors.middle), std::move(geometry));
-			this->chunkMeshedQueue.enqueue(queuePair);
+			this->chunkMeshedQueue.enqueue(std::move(queuePair));
 		}
 	}
 }

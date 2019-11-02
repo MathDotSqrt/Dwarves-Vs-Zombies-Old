@@ -38,7 +38,9 @@ public:
 
 	class UniqueHandle : public std::unique_ptr<T, RecyclerDeletor> {
 	public:
-		UniqueHandle() : unique_ptr<T, RecyclerDeletor>(nullptr, RecyclerDeletor(nullptr)){
+		using std::unique_ptr<T, RecyclerDeletor>::unique_ptr;
+		
+		UniqueHandle() : std::unique_ptr<T, RecyclerDeletor>(nullptr, RecyclerDeletor(nullptr)){
 			
 		}
 
