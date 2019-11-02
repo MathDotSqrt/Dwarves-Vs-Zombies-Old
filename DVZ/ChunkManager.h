@@ -40,8 +40,20 @@ private:
 	RefCount *referenceCount;
 };
 
-typedef std::unique_ptr<Chunk> ChunkHandle;
-typedef std::unique_ptr<Chunk, ChunkDestructor> ChunkRefHandle;
+typedef Util::Recycler<Chunk>::UniqueHandle ChunkHandle;
+//typedef std::unique_ptr<Chunk, ChunkDestructor> ChunkRefHandle;
+
+class ChunkRefHandle : public std::unique_ptr<Chunk, ChunkDestructor> {
+public:
+	ChunkRefHandle() : std::unique_ptr<Chunk, ChunkDestructor>(nullptr, ChunkDestructor(nullptr)){
+	
+	}
+
+	ChunkRefHandle(ChunkPtr chunk, ChunkDestructor::RefCount *count) : 
+		std::unique_ptr<Chunk, ChunkDestructor>(chunk, ChunkDestructor(count)) {
+	
+	}
+};
 
 struct ChunkNeighbors {
 	ChunkRefHandle middle;
@@ -124,11 +136,15 @@ private:
 	
 	typedef ChunkDestructor::RefCount RefCount;
 	typedef std::pair<ChunkHandle, RefCount> ChunkRefCount;
-	typedef std::unique_ptr<ChunkRenderData> ChunkRenderDataHandle;
-	typedef std::unique_ptr<ChunkGeometry> ChunkGeometryHandle;
+	typedef Util::Recycler<ChunkRenderData>::UniqueHandle ChunkRenderDataHandle;
+	typedef Util::Recycler<ChunkGeometry>::UniqueHandle ChunkGeometryHandle;
 	typedef std::pair<ChunkRefHandle, ChunkRenderDataHandle>  ChunkRenderDataPair;
 	typedef std::pair<ChunkNeighbors, ChunkGeometryHandle> ChunkNeighborGeometryPair;
 	typedef std::pair<ChunkRefHandle, ChunkGeometryHandle> ChunkGeometryPair;
+
+	Util::Recycler<Chunk> chunkRecycler;
+	Util::Recycler<ChunkGeometry> meshRecycler;
+	Util::Recycler<ChunkRenderData> renderDataRecycler;
 
 	std::unordered_map<int, ChunkRefCount> chunkSet;
 	std::unordered_map<int, ChunkRefHandle> loadedChunkSet;
@@ -139,10 +155,6 @@ private:
 	moodycamel::BlockingConcurrentQueue<ChunkRefHandle> chunkGenerationQueue;
 	moodycamel::BlockingConcurrentQueue<ChunkNeighborGeometryPair> chunkMeshingQueue;
 	moodycamel::ConcurrentQueue<ChunkGeometryPair> chunkMeshedQueue;
-
-	Util::Recycler<Chunk> chunkRecycler;
-	Util::Recycler<ChunkGeometry> meshRecycler;
-	Util::Recycler<ChunkRenderData> renderDataRecycler;
 	
 	Util::Allocator::LinearAllocator chunkMesherAllocator;
 	ChunkMesher *chunkMesherArray;

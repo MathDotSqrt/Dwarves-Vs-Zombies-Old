@@ -17,7 +17,33 @@ private:
 
 	std::mutex mutex;
 
+	struct RecyclerDeletor {
+	public:
+		RecyclerDeletor(Recycler *ptr) {
+			this->ptr = ptr;
+		}
+
+		void operator()(T *t) {
+			if (ptr && t) {
+				ptr->recycle(t);
+			}
+		}
+	private:
+		Recycler *ptr;
+	};
+
 public:
+	typedef std::shared_ptr<T> SharedHandle;
+	//typedef std::unique_ptr<T, RecyclerDeletor> UniqueHandle;
+
+	class UniqueHandle : public std::unique_ptr<T, RecyclerDeletor> {
+	public:
+		UniqueHandle() : unique_ptr<T, RecyclerDeletor>(nullptr, RecyclerDeletor(nullptr)){
+			
+		}
+
+	};
+
 	Recycler(size_t alloc_size, Util::Allocator::IAllocator &parent) : pool(sizeof(T), alignof(T), alloc_size, parent){
 	
 	}
@@ -42,14 +68,14 @@ public:
 		return t;
 	}
 
-	std::shared_ptr<T> getSharedNew() {
+	SharedHandle getSharedNew() {
 		T *ptr = getNew();
-		return std::shared_ptr<T>(ptr, RecyclerDeletor(this));
+		return SharedHandle(ptr, RecyclerDeletor(this));
 	}
 
-	std::unique_ptr<T> getUniqueNew() {
+	UniqueHandle getUniqueNew() {
 		T *ptr = getNew();
-		return std::unique_ptr<T>(ptr, RecyclerDeletor(this));
+		return UniqueHandle(ptr, RecyclerDeletor(this));
 	}
 
 	template<typename ...ARGS>
@@ -67,15 +93,19 @@ public:
 	}
 
 	template<typename ...ARGS>
-	std::shared_ptr<T> getSharedNew(ARGS ...args) {
+	SharedHandle getSharedNew(ARGS ...args) {
 		T *ptr = getNew(args...);
-		return std::shared_ptr<T>(ptr, RecyclerDeletor(this));
+		return SharedHandle(ptr, RecyclerDeletor(this));
 	}
 
 	template<typename ...ARGS>
-	std::unique_ptr<T> getUniqueNew(ARGS ...args) {
+	UniqueHandle getUniqueNew(ARGS ...args) {
 		T *ptr = getNew(args...);
-		return std::unique_ptr<T>(ptr, RecyclerDeletor(this));
+		return UniqueHandle(ptr, RecyclerDeletor(this));
+	}
+
+	UniqueHandle getNullUnique() {
+		return UniqueHandle(nullptr, RecyclerDeletor(nullptr));
 	}
 
 	//todo add a handler class for this to prevent copying of pointer and funny buisness
@@ -90,19 +120,7 @@ public:
 	}
 
 private:
-	template<typename T>
-	struct RecyclerDeletor {
-	public:
-		RecyclerDeletor(Recycler *ptr) {
-			this->ptr = ptr;
-		}
-
-		void operator()(T *t) {
-			ptr->recycle(t);
-		}
-	private:
-		Recycler *ptr;
-	};
+	
 
 };
 
