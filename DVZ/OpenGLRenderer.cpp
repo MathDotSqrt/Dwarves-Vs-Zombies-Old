@@ -95,6 +95,7 @@ void OpenGLRenderer::render(Voxel::ChunkManager *manager) {
 	//index = renderBasicBlock(index, camera_position, vp);
 	renderChunks(manager, camera_position, vp);
 	//glBindVertexArray(0);
+
 }
 
 int OpenGLRenderer::renderBasic(int startIndex, glm::mat4 vp) {

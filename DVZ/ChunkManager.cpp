@@ -73,12 +73,15 @@ void ChunkManager::update(float x, float y, float z) {
 	{
 	Util::Performance::Timer visibleChunkTimer("Build Visible List");
 	visibleChunkList.clear();
-	for (auto iter = renderableChunkSet.begin(); iter != renderableChunkSet.end(); iter++) {
+	auto b = renderableChunkSet.begin();
+	auto e = renderableChunkSet.end();
+	for (auto iter = b; iter != e; iter++) {
 		ChunkRefHandle &chunk = iter->second.first;
-		MeshState state = chunk->tryGetMeshState();
+		MeshState state = chunk->meshState;	//todo this might give undefined behavior
 		if (state != MeshState::NONE_MESH && state != MeshState::LOCKED) {
 			ChunkRenderDataHandle &handle = iter->second.second;
-			visibleChunkList.push_back(handle.get());
+			ChunkRenderData *ptr = handle.get();
+			visibleChunkList.push_back(ptr);
 		}
 	}
 	}
@@ -359,6 +362,7 @@ void ChunkManager::enqueueChunks() {
 
 		needsLoadingCache.pop_back();
 		this->chunkGenerationQueue.enqueue(std::move(chunk));
+		//chunk->generateTerrain();
 	}
 
 	for (int i = 0; i < 16 && needsMeshCache.size() > 0; i++) {
@@ -409,13 +413,8 @@ void ChunkManager::dequeueChunkRenderData() {
 void ChunkManager::chunkGeneratorThread() {
 	ChunkRefHandle chunk;
 
-	while (this->runThreads) {
-		bool dequeued = this->chunkGenerationQueue.wait_dequeue_timed(chunk, std::chrono::milliseconds(500));
-		if (dequeued) {
-			if (chunk && chunk->getBlockState() == BlockState::NONE) {
-				chunk->generateTerrain();
-			}
-		}
+	while (this->runThreads && false) {
+		
 	}
 
 }
@@ -425,10 +424,19 @@ void ChunkManager::chunkMeshingThread() {
 	//static id for each thread
 	thread_local int workerID = threadCount++;
 
+	ChunkRefHandle chunk;
 	ChunkNeighborGeometryPair pair;
 	while (this->runThreads) {
-		bool dequeued = this->chunkMeshingQueue.wait_dequeue_timed(pair, std::chrono::milliseconds(500));
+
+		bool dequeued = this->chunkGenerationQueue.try_dequeue(chunk);
 		if (dequeued) {
+			if (chunk && chunk->getBlockState() == BlockState::NONE) {
+				chunk->generateTerrain();
+			}
+		}
+
+		bool dequeuedRender = this->chunkMeshingQueue.wait_dequeue_timed(pair, std::chrono::milliseconds(10));
+		if (dequeuedRender) {
 			ChunkNeighbors &neighbors = pair.first;
 			ChunkGeometryHandle &geometry = pair.second;
 			//if (neighbors.middle->getChunkState() == Chunk::ChunkState::EMPTY)
