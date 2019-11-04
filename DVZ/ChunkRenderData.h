@@ -9,7 +9,7 @@ namespace Voxel{
 
 class ChunkRenderData {
 private:
-	typedef unsigned short IndexType;
+	typedef unsigned int IndexType;
 	
 	struct QuadIndicies {
 		IndexType i0;
