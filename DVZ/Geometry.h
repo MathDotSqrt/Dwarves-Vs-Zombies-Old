@@ -68,20 +68,28 @@ public:
 		indices.push_back(v2);
 	}
 
+	inline void resizeVerticies(size_t newSize) {
+		this->verticies.resize(newSize);
+	}
+
 	inline void clear() {
 		verticies.clear();
 		indices.clear();
 	}
 
-	inline std::vector<GeometryVertex>& getVerticies() {
+	inline const std::vector<GeometryVertex>& getVerticies() const {
 		return this->verticies;
 	}
 
-	inline std::vector<unsigned int>& getIndices() {
+	inline const std::vector<unsigned int>& getIndices() const {
 		return this->indices;
 	}
 
-	inline size_t getVertexCount() {
+	inline void setIndices(const std::vector<unsigned int>& newIndices) {
+		this->indices = newIndices;
+	}
+
+	inline size_t getVertexCount() const {
 		return verticies.size();
 	}
 

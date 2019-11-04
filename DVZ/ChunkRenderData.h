@@ -9,7 +9,7 @@ namespace Voxel{
 
 class ChunkRenderData {
 private:
-	typedef int IndexType;
+	typedef unsigned short IndexType;
 	
 	struct QuadIndicies {
 		IndexType i0;
@@ -19,7 +19,7 @@ private:
 		IndexType i4;
 		IndexType i5;
 
-		QuadIndicies(int startIndex) {
+		QuadIndicies(IndexType startIndex) {
 			i0 = startIndex + 0;
 			i1 = startIndex + 1;
 			i2 = startIndex + 2;
@@ -38,7 +38,6 @@ public:
 
 	Graphics::VAO vao;
 	Graphics::VBO vbo;
-	Graphics::VBO ebo;
 
 	size_t indexCount;
 

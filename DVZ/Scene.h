@@ -100,7 +100,7 @@ public:
 	~Scene();
 
 	template<typename VERTEX>
-	unsigned int createVertexBuffer(std::vector<VERTEX> &verticies) {
+	unsigned int createVertexBuffer(const std::vector<VERTEX> &verticies) {
 		VertexBuffer vb;
 		vb.vbo.bind();
 		vb.vbo.bufferData(verticies, GL_STATIC_DRAW);

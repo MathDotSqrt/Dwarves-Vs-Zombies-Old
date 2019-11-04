@@ -41,4 +41,8 @@ void ChunkGeometry::clear() {
 	this->geometry.clear();
 }
 
+const ChunkGeometry::BlockGeometry& ChunkGeometry::getBlockGeometry() {
+	return this->geometry;
+}
+
 const std::tuple<ChunkGeometry::BlockPositionAttrib, ChunkGeometry::BlockNormalAttrib, ChunkGeometry::BlockColorAttrib> ChunkGeometry::ATTRIBS = ChunkGeometry().geometry.attribs;
