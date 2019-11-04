@@ -58,4 +58,12 @@ void InputSystem::update(Engine * engine, float deltaTime) {
 		vel.vel.y += userInput.up * (userInput.ctrl ? FAST_SPEED : SPEED);
 		rotVel.eular.y = userInput.turn * TURN_SPEED;
 	});
+
+	entt::entity player =  engine->getPlayer();
+	if (Window::isPressed('T')) {
+		//engine->replace<PositionComponent>(player, glm::vec3(0, 4, 0));
+		PositionComponent &comp = engine->get<PositionComponent>(player);
+		comp.pos.x = 0;
+		comp.pos.z = 0;
+	}
 }
