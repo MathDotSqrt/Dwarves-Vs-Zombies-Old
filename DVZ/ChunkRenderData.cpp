@@ -24,7 +24,7 @@ ChunkRenderData::~ChunkRenderData() {
 }
 
 void ChunkRenderData::bufferGeometry(ChunkGeometry *geometry) {
-	size_t vertexCount = geometry->getBlockGeometry().getVertexCount();
+	size_t vertexCount = geometry->getBlockGeometry().size();
 	size_t numQuads = vertexCount / 4;
 	size_t currentNumQuads = ChunkRenderData::indices.size();
 	if (numQuads > currentNumQuads) {
@@ -33,7 +33,7 @@ void ChunkRenderData::bufferGeometry(ChunkGeometry *geometry) {
 	}
 	
 	this->vbo.bind();
-	this->vbo.bufferData(geometry->getBlockGeometry().getVerticies(), GL_STATIC_DRAW);
+	this->vbo.bufferData(geometry->getBlockGeometry(), GL_STATIC_DRAW);
 
 	//six indicies for every quad
 	this->indexCount = numQuads * 6;
