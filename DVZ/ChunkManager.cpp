@@ -70,8 +70,6 @@ void ChunkManager::update(float x, float y, float z) {
 		dequeueChunkRenderData();
 	}
 
-	ChunkRenderData::masterChunkEBO.bind();
-
 	{
 	Util::Performance::Timer visibleChunkTimer("Build Visible List");
 	visibleChunkList.clear();

@@ -9,8 +9,27 @@ namespace Voxel{
 
 class ChunkRenderData {
 private:
-	static size_t CHUNK_EBO_SIZE;
-	static size_t CHUNK_EBO_VERTEX_COUNT;
+	typedef int IndexType;
+	
+	struct QuadIndicies {
+		IndexType i0;
+		IndexType i1;
+		IndexType i2;
+		IndexType i3;
+		IndexType i4;
+		IndexType i5;
+
+		QuadIndicies(int startIndex) {
+			i0 = startIndex + 0;
+			i1 = startIndex + 1;
+			i2 = startIndex + 2;
+			i3 = startIndex + 0;
+			i4 = startIndex + 2;
+			i5 = startIndex + 3;
+		}
+	};
+
+	static std::vector<QuadIndicies> indices;
 public:
 	static std::unique_ptr<Graphics::VBO> CHUNK_EBO;
 
@@ -43,7 +62,7 @@ public:
 	}
 private:
 
-	void expandMasterEBO(size_t newSize);
+	void expandMasterEBO(size_t newQuadSize);
 };
 
 }
