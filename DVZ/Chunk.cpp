@@ -21,7 +21,7 @@ Chunk::~Chunk() {}
 void Chunk::generateTerrain() {
 	std::lock_guard<std::shared_mutex> writeLock(this->chunkMutex);
 
-	memset(&this->data, BlockType::BLOCK_TYPE_DEFAULT, sizeof(this->data));
+	memset(&this->data, (uint8)BlockType::BLOCK_TYPE_DEFAULT, sizeof(this->data));
 	
 	for (int bz = 0; bz < CHUNK_WIDTH_Z; bz++) {
 		for (int by = 0; by < CHUNK_WIDTH_Y; by++) {
@@ -30,6 +30,16 @@ void Chunk::generateTerrain() {
 				int x = this->chunk_x * CHUNK_WIDTH_X + bx;
 				int y = this->chunk_y * CHUNK_WIDTH_Y + by;
 				int z = this->chunk_z * CHUNK_WIDTH_Z + bz;
+
+				/*double heightX = sin(x / 25.0f) * 25 + 25;
+				double heightZ = tan(z / 25.0f) * 25 + 25;
+				double height = heightX + heightZ;
+				if (y < height) {
+					setBlockInternal(bx, by, bz, Block(BlockType::BLOCK_TYPE_GRASS));
+				}
+				else {
+					setBlockInternal(bx, by, bz, Block(BlockType::BLOCK_TYPE_DEFAULT));
+				}*/
 
 				/*if (y < (abs(x / 10 + z / 10))) {
 					this->setBlockInternal(bx, by, bz, (chunk_x + chunk_z) % 2 == 0 ? Block(BlockType::BLOCK_TYPE_STONE) : Block(BlockType::BLOCK_TYPE_DIRT));

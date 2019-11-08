@@ -107,40 +107,7 @@ void ChunkMesher::createCulledCube(int x, int y, int z, ChunkMesher::BlockFaceCu
 	glm::u8vec3 p6(x_, y_ + BLOCK_WIDTH, z_ );
 	glm::u8vec3 p7(x_ + BLOCK_WIDTH, y_ + BLOCK_WIDTH, z_);
 
-	glm::u8vec3 c0, c1, c2, c3;
-
-	switch (b.type) {
-	case BlockType::BLOCK_TYPE_DIRT:
-		c0 = glm::u8vec3(179, 102, 102);
-		c1 = glm::u8vec3(179, 102, 102);
-		c2 = glm::u8vec3(179, 102, 102);
-		c3 = glm::u8vec3(179, 102, 102);
-		break;
-	case BlockType::BLOCK_TYPE_STONE:
-		c0 = glm::u8vec3(77, 77, 77);
-		c1 = glm::u8vec3(77, 77, 77);
-		c2 = glm::u8vec3(77, 77, 77);
-		c3 = glm::u8vec3(77, 77, 77);
-		break;
-	case BlockType::BLOCK_TYPE_GRASS:
-		c0 = glm::u8vec3(0, 255, 0);
-		c1 = glm::u8vec3(0, 255, 0);
-		c2 = glm::u8vec3(0, 255, 0);
-		c3 = glm::u8vec3(0, 255, 0);
-		break;
-	case BlockType::BLOCK_TYPE_PURPLE:
-		c0 = glm::u8vec3(179, 0, 255);
-		c1 = glm::u8vec3(179, 0, 255);
-		c2 = glm::u8vec3(179, 0, 255);
-		c3 = glm::u8vec3(179, 0, 255);
-		break;
-	default:
-		c0 = glm::u8vec3(255, 255, 255);
-		c1 = glm::u8vec3(255, 255, 255);
-		c2 = glm::u8vec3(255, 255, 255);
-		c3 = glm::u8vec3(255, 255, 255);
-		break;
-	}
+	glm::u8vec3 c0 = b.getColor();
 
 	BlockVertex v0, v1, v2, v3;
 
@@ -148,9 +115,9 @@ void ChunkMesher::createCulledCube(int x, int y, int z, ChunkMesher::BlockFaceCu
 	if (tags.pz) {
 		glm::i8vec3 n0(0, 0, 1);
 		v0 = { p0, n0, c0 };
-		v1 = { p1, n0, c1 };
-		v2 = { p2, n0, c2 };
-		v3 = { p3, n0, c3 };
+		v1 = { p1, n0, c0 };
+		v2 = { p2, n0, c0 };
+		v3 = { p3, n0, c0 };
 		geometry->appendFace(v0, v1, v2, v3);
 	}
 
@@ -158,9 +125,9 @@ void ChunkMesher::createCulledCube(int x, int y, int z, ChunkMesher::BlockFaceCu
 	if (tags.nz) {
 		glm::i8vec3 n1(0, 0, -1);
 		v0 = { p4, n1, c0 };
-		v1 = { p5, n1, c1 };
-		v2 = { p6, n1, c2 };
-		v3 = { p7, n1, c3 };
+		v1 = { p5, n1, c0 };
+		v2 = { p6, n1, c0 };
+		v3 = { p7, n1, c0 };
 		geometry->appendFace(v0, v1, v2, v3);
 	}
 
@@ -168,9 +135,9 @@ void ChunkMesher::createCulledCube(int x, int y, int z, ChunkMesher::BlockFaceCu
 	if (tags.nx) {
 		glm::i8vec3 n2(-1, 0, 0);
 		v0 = { p5, n2, c0 };
-		v1 = { p0, n2, c1 };
-		v2 = { p3, n2, c2 };
-		v3 = { p6, n2, c3 };
+		v1 = { p0, n2, c0 };
+		v2 = { p3, n2, c0 };
+		v3 = { p6, n2, c0 };
 		geometry->appendFace(v0, v1, v2, v3);
 	}
 
@@ -178,9 +145,9 @@ void ChunkMesher::createCulledCube(int x, int y, int z, ChunkMesher::BlockFaceCu
 	if (tags.px) {
 		glm::i8vec3 n3(1, 0, 0);
 		v0 = { p1, n3, c0 };
-		v1 = { p4, n3, c1 };
-		v2 = { p7, n3, c2 };
-		v3 = { p2, n3, c3 };
+		v1 = { p4, n3, c0 };
+		v2 = { p7, n3, c0 };
+		v3 = { p2, n3, c0 };
 		geometry->appendFace(v0, v1, v2, v3);
 	}
 
@@ -188,9 +155,9 @@ void ChunkMesher::createCulledCube(int x, int y, int z, ChunkMesher::BlockFaceCu
 	if (tags.py) {
 		glm::i8vec3 n4(0, 1, 0);
 		v0 = { p3, n4, c0 };
-		v1 = { p2, n4, c1 };
-		v2 = { p7, n4, c2 };
-		v3 = { p6, n4, c3 };
+		v1 = { p2, n4, c0 };
+		v2 = { p7, n4, c0 };
+		v3 = { p6, n4, c0 };
 		geometry->appendFace(v0, v1, v2, v3);
 	}
 
@@ -198,9 +165,9 @@ void ChunkMesher::createCulledCube(int x, int y, int z, ChunkMesher::BlockFaceCu
 	if (tags.ny) {
 		glm::i8vec3 n5(0, -1, 0);
 		v0 = { p1, n5, c0 };
-		v1 = { p0, n5, c1 };
-		v2 = { p5, n5, c2 };
-		v3 = { p4, n5, c3 };
+		v1 = { p0, n5, c0 };
+		v2 = { p5, n5, c0 };
+		v3 = { p4, n5, c0 };
 		geometry->appendFace(v0, v1, v2, v3);
 	}
 }

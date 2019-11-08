@@ -65,7 +65,7 @@ struct ChunkNeighbors {
 };
 
 class ChunkManager {
-public:
+public:							//fix bug of things not destructing in order
 	friend class ChunkMesher;
 
 	static const int CHUNK_ALLOC_SIZE = 500 * 1024 * 1024;

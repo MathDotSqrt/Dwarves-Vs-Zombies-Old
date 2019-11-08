@@ -196,6 +196,7 @@
     <ClCompile Include="AllocatorHandle.cpp" />
     <ClCompile Include="Attrib.cpp" />
     <ClCompile Include="BasicRenderSystem.cpp" />
+    <ClCompile Include="Block.cpp" />
     <ClCompile Include="Chunk.cpp" />
     <ClCompile Include="ChunkGeometry.cpp" />
     <ClCompile Include="ChunkManager.cpp" />
