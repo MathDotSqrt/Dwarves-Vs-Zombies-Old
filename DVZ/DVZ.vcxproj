@@ -280,6 +280,7 @@
     <ClInclude Include="OBJLoader.h" />
     <ClInclude Include="OpenGLRenderer.h" />
     <ClInclude Include="PackedFreeList.h" />
+    <ClInclude Include="PerlinNoise.h" />
     <ClInclude Include="PlayState.h" />
     <ClInclude Include="PoolAllocator.h" />
     <ClInclude Include="QuadGeometry.h" />

@@ -237,6 +237,9 @@
     <ClInclude Include="AllocatorHandle.h">
       <Filter>Header Files\Util</Filter>
     </ClInclude>
+    <ClInclude Include="PerlinNoise.h">
+      <Filter>Header Files\Util</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">

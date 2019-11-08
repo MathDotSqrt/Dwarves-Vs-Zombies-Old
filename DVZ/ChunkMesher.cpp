@@ -72,7 +72,7 @@ void ChunkMesher::createChunkMesh(ChunkGeometry *geometry) {
 		for (int y = 0; y < CHUNK_WIDTH_Y; y++) {
 			for (int x = 0; x < CHUNK_WIDTH_X; x++) {
 				Block block = this->getBlock(x, y, z);
-				if (block.type == BlockType::BLOCK_TYPE_DEFAULT) {
+				if (block.getMeshType() == MeshType::MESH_TYPE_NONE) {
 					continue;
 				}
 				BlockFaceCullTags tags = { true, true, true, true, true, true };

@@ -152,7 +152,7 @@ private:
 	std::vector<ChunkRefHandle> needsMeshCache;
 	std::vector<ChunkRenderData*> visibleChunkList;
 	moodycamel::ConcurrentQueue<ChunkRefHandle> chunkGenerationQueue;
-	moodycamel::BlockingConcurrentQueue<ChunkNeighborGeometryPair> chunkMeshingQueue;
+	moodycamel::ConcurrentQueue<ChunkNeighborGeometryPair> chunkMeshingQueue;
 	moodycamel::ConcurrentQueue<ChunkGeometryPair> chunkMeshedQueue;
 	
 	Util::Allocator::LinearAllocator chunkMesherAllocator;

@@ -1,10 +1,13 @@
 #include "Chunk.h"
-#include <assert.h>
-#include <stdlib.h>
 #include "VBO.h"
 #include "preamble.glsl"
 #include "macrologger.h"
 #include "Timer.h"
+#include "PerlinNoise.h"
+
+#include <assert.h>
+#include <stdlib.h>
+
 using namespace Voxel;
 
 Chunk::Chunk(int x, int y, int z) : 
@@ -22,51 +25,81 @@ void Chunk::generateTerrain() {
 	std::lock_guard<std::shared_mutex> writeLock(this->chunkMutex);
 
 	memset(&this->data, (uint8)BlockType::BLOCK_TYPE_DEFAULT, sizeof(this->data));
-	
+	Util::PerlinNoise noise;
+
 	for (int bz = 0; bz < CHUNK_WIDTH_Z; bz++) {
-		for (int by = 0; by < CHUNK_WIDTH_Y; by++) {
-			for (int bx = 0; bx < CHUNK_WIDTH_X; bx++) {
-
-				int x = this->chunk_x * CHUNK_WIDTH_X + bx;
+		for (int bx = 0; bx < CHUNK_WIDTH_X; bx++) {
+			int x = this->chunk_x * CHUNK_WIDTH_X + bx;
+			int z = this->chunk_z * CHUNK_WIDTH_Z + bz;
+			double height = pow(noise.octaveNoise0_1(x / 140.0, z / 140.0, 6), 4.5) * 155;
+			
+			for (int by = 0; by < CHUNK_WIDTH_Y; by++) {
 				int y = this->chunk_y * CHUNK_WIDTH_Y + by;
-				int z = this->chunk_z * CHUNK_WIDTH_Z + bz;
-
-				/*double heightX = sin(x / 25.0f) * 25 + 25;
-				double heightZ = tan(z / 25.0f) * 25 + 25;
-				double height = heightX + heightZ;
-				if (y < height) {
+				
+				if (y == 0) {
+					setBlockInternal(bx, by, bz, Block(BlockType::BLOCK_TYPE_STONE));
+				}
+				else if (y < height) {
+					setBlockInternal(bx, by, bz, Block(BlockType::BLOCK_TYPE_DIRT));
+				}
+				else if (y < height + 1) {
 					setBlockInternal(bx, by, bz, Block(BlockType::BLOCK_TYPE_GRASS));
 				}
 				else {
 					setBlockInternal(bx, by, bz, Block(BlockType::BLOCK_TYPE_DEFAULT));
-				}*/
-
-				/*if (y < (abs(x / 10 + z / 10))) {
-					this->setBlockInternal(bx, by, bz, (chunk_x + chunk_z) % 2 == 0 ? Block(BlockType::BLOCK_TYPE_STONE) : Block(BlockType::BLOCK_TYPE_DIRT));
 				}
-				else {
-					this->setBlockInternal(bx, by, bz, Block(BlockType::BLOCK_TYPE_DEFAULT));
-				}*/
-
-				/*if (y < (getHashCode() % (CHUNK_WIDTH_Y * 4))) {
-					this->setBlockInternal(bx, by, bz, (chunk_x + chunk_z) % 2 == 0 ? Block(BlockType::BLOCK_TYPE_STONE) : Block(BlockType::BLOCK_TYPE_DIRT));
-				}
-*/
-				//std::this_thread::sleep_for(std::chrono::nanoseconds(5));
-
-				if ((x * x) % (z * z + 1) > y * y) {
-					if(y == 32)
-						this->getBlockInternal(bx, by, bz) = { BlockType::BLOCK_TYPE_GRASS };
-					else if((x * (z % (y * y + 1))) % 2 == 0)
-						this->getBlockInternal(bx, by, bz) = { BlockType::BLOCK_TYPE_DIRT };
-					else
-						this->getBlockInternal(bx, by, bz) = { BlockType::BLOCK_TYPE_STONE };
-				}
-				else
-					this->getBlockInternal(bx, by, bz) = {BlockType::BLOCK_TYPE_DEFAULT };
 			}
 		}
 	}
+
+//	for (int bz = 0; bz < CHUNK_WIDTH_Z; bz++) {
+//		for (int by = 0; by < CHUNK_WIDTH_Y; by++) {
+//			for (int bx = 0; bx < CHUNK_WIDTH_X; bx++) {
+//
+//				int x = this->chunk_x * CHUNK_WIDTH_X + bx;
+//				int y = this->chunk_y * CHUNK_WIDTH_Y + by;
+//				int z = this->chunk_z * CHUNK_WIDTH_Z + bz;
+//
+//				double height = pow(noise.octaveNoise0_1(x / 100.0, z / 100.0, 3), 4.5) * 155;
+//				if (y == 0) {
+//					setBlockInternal(bx, by, bz, Block(BlockType::BLOCK_TYPE_STONE));
+//				}
+//				else if (y < height) {
+//					setBlockInternal(bx, by, bz, Block(BlockType::BLOCK_TYPE_DIRT));
+//				}
+//				else if (y < height + 1) {
+//					setBlockInternal(bx, by, bz, Block(BlockType::BLOCK_TYPE_GRASS));
+//				}
+//				else {
+//					setBlockInternal(bx, by, bz, Block(BlockType::BLOCK_TYPE_DEFAULT));
+//				}
+//
+//				/*if (y < (abs(x / 10 + z / 10))) {
+//					this->setBlockInternal(bx, by, bz, (chunk_x + chunk_z) % 2 == 0 ? Block(BlockType::BLOCK_TYPE_STONE) : Block(BlockType::BLOCK_TYPE_DIRT));
+//				}
+//				else {
+//					this->setBlockInternal(bx, by, bz, Block(BlockType::BLOCK_TYPE_DEFAULT));
+//				}*/
+//
+//				/*if (y < (getHashCode() % (CHUNK_WIDTH_Y * 4))) {
+//					this->setBlockInternal(bx, by, bz, (chunk_x + chunk_z) % 2 == 0 ? Block(BlockType::BLOCK_TYPE_STONE) : Block(BlockType::BLOCK_TYPE_DIRT));
+//				}
+//*/
+//				//std::this_thread::sleep_for(std::chrono::nanoseconds(5));
+//
+//				/*if ((x * x) % (z * z + 1) > y * y) {
+//					if(y == 32)
+//						this->getBlockInternal(bx, by, bz) = { BlockType::BLOCK_TYPE_GRASS };
+//					else if((x * (z % (y * y + 1))) % 2 == 0)
+//						this->getBlockInternal(bx, by, bz) = { BlockType::BLOCK_TYPE_DIRT };
+//					else
+//						this->getBlockInternal(bx, by, bz) = { BlockType::BLOCK_TYPE_STONE };
+//				}
+//				else
+//					this->getBlockInternal(bx, by, bz) = {BlockType::BLOCK_TYPE_DEFAULT };*/
+//			}
+//		}
+//	}
 
 	blockState = BlockState::LOADED;
 	

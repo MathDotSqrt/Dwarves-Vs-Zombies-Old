@@ -356,7 +356,7 @@ void ChunkManager::updateAllChunks(int playerCX, int playerCY, int playerCZ) {
 }
 
 void ChunkManager::enqueueChunks() {
-	for (int i = 0; i < 16 && needsLoadingCache.size() > 0; i++) {
+	for (int i = 0; i < 4 && needsLoadingCache.size() > 0; i++) {
 		ChunkRefHandle chunk = std::move(needsLoadingCache.back());
 		loadedChunkSet.emplace(chunk->getHashCode(), copyChunkRefHandle(chunk));
 
@@ -365,7 +365,7 @@ void ChunkManager::enqueueChunks() {
 		//chunk->generateTerrain();
 	}
 
-	for (int i = 0; i < 16 && needsMeshCache.size() > 0; i++) {
+	for (int i = 0; i < 4 && needsMeshCache.size() > 0; i++) {
 		size_t chunkIndex = needsMeshCache.size() - 1;
 		BlockState chunkState = needsMeshCache[chunkIndex]->tryGetBlockState();
 		while (chunkState == BlockState::NONE || chunkState == BlockState::LOCKED) {
@@ -428,28 +428,38 @@ void ChunkManager::chunkMeshingThread() {
 	ChunkNeighborGeometryPair pair;
 	while (this->runThreads) {
 
-		bool dequeued = this->chunkGenerationQueue.try_dequeue(chunk);
-		if (dequeued) {
-			if (chunk && chunk->getBlockState() == BlockState::NONE) {
-				chunk->generateTerrain();
+		for (int i = 0; i < 10; i++) {
+			bool dequeued = this->chunkGenerationQueue.try_dequeue(chunk);
+			if (dequeued) {
+				if (chunk && chunk->getBlockState() == BlockState::NONE) {
+					chunk->generateTerrain();
+				}
+			}
+			else {
+				break;
 			}
 		}
 
-		bool dequeuedRender = this->chunkMeshingQueue.wait_dequeue_timed(pair, std::chrono::milliseconds(10));
-		if (dequeuedRender) {
-			ChunkNeighbors &neighbors = pair.first;
-			ChunkGeometryHandle &geometry = pair.second;
-			//if (neighbors.middle->getChunkState() == Chunk::ChunkState::EMPTY)
-			//	neighbors.middle->generateTerrain();
-			this->chunkMesherArray[workerID].loadChunkDataAsync(neighbors);
-			this->chunkMesherArray[workerID].createChunkMesh(geometry.get());
+		for (int i = 0; i < 1; i++) {
+			bool dequeuedRender = this->chunkMeshingQueue.try_dequeue(pair);
+			if (dequeuedRender) {
+				ChunkNeighbors &neighbors = pair.first;
+				ChunkGeometryHandle &geometry = pair.second;
+				//if (neighbors.middle->getChunkState() == Chunk::ChunkState::EMPTY)
+				//	neighbors.middle->generateTerrain();
+				this->chunkMesherArray[workerID].loadChunkDataAsync(neighbors);
+				this->chunkMesherArray[workerID].createChunkMesh(geometry.get());
 
-			int cx = neighbors.middle->getChunkX();
-			int cy = neighbors.middle->getChunkY();
-			int cz = neighbors.middle->getChunkZ();
+				int cx = neighbors.middle->getChunkX();
+				int cy = neighbors.middle->getChunkY();
+				int cz = neighbors.middle->getChunkZ();
 
-			ChunkGeometryPair queuePair = std::make_pair(std::move(neighbors.middle), std::move(geometry));
-			this->chunkMeshedQueue.enqueue(std::move(queuePair));
+				ChunkGeometryPair queuePair = std::make_pair(std::move(neighbors.middle), std::move(geometry));
+				this->chunkMeshedQueue.enqueue(std::move(queuePair));
+			}
+			else {
+				break;
+			}
 		}
 	}
 }

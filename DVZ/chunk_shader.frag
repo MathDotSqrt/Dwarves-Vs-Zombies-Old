@@ -18,10 +18,10 @@ uniform float point_light_intensity = 0;
 uniform vec3 specular_color = vec3(1, 1, 1);
 uniform float shinyness = 1;
 
-vec4 fog_color = vec4(.1, .1, .1, 1);
+vec4 fog_color = vec4(.15, .15, .15, 1);
 
-float fog_A = 1;
-float fog_B = 13;
+float fog_A = .3;
+float fog_B = 8;
 
 float fog_min = .001;
 float fog_max = 15;
@@ -64,6 +64,6 @@ void main(){
 
 	float fog = fog_mix(camera_pos, frag_pos);
 	float mix_factor = 1 - (fog_max - fog) / (fog_max - fog_min);
-	//final_color = toGamma(mix(final_color, fog_color, mix_factor)); 
+	final_color = toGamma(mix(final_color, fog_color, min(mix_factor, .7))); 
 	//final_color = toGamma(fog_color * mix_factor); 
 }

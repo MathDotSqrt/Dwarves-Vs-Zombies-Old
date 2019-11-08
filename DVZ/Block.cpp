@@ -24,7 +24,8 @@ BlockManager::BlockManager(){
 		BlockType::BLOCK_TYPE_DIRT,
 		MeshType::MESH_TYPE_BLOCK,
 		OccludeType::OCCLUDE_TYPE_ALL,
-		glm::u8vec4(179, 102, 102, 255)
+		//glm::u8vec4(179, 102, 102, 255)
+		glm::u8vec4(128, 90, 70, 255)
 	);
 	addBlock(DIRT);
 
@@ -32,7 +33,7 @@ BlockManager::BlockManager(){
 		BlockType::BLOCK_TYPE_GRASS,
 		MeshType::MESH_TYPE_BLOCK,
 		OccludeType::OCCLUDE_TYPE_ALL,
-		glm::u8vec4(0, 255, 0, 255)
+		glm::u8vec4(11, 102, 35, 255)
 	);
 	addBlock(GRASS);
 
