@@ -5,6 +5,7 @@
 in vec3 frag_pos;
 in vec3 frag_normal;
 in vec3 frag_color;
+in vec2 frag_uv;
 
 out vec4 final_color;
 
@@ -17,6 +18,8 @@ uniform float point_light_intensity = 0;
 //uniform vec3 diffuse_color = vec3(1, 1, 1);
 uniform vec3 specular_color = vec3(1, 1, 1);
 uniform float shinyness = 1;
+
+uniform sampler2D texAtlas;
 
 vec4 fog_color = vec4(.15, .15, .15, 1);
 
@@ -64,6 +67,9 @@ void main(){
 
 	float fog = fog_mix(camera_pos, frag_pos);
 	float mix_factor = 1 - (fog_max - fog) / (fog_max - fog_min);
-	final_color = toGamma(mix(final_color, fog_color, min(mix_factor, .7))); 
-	//final_color = toGamma(fog_color * mix_factor); 
+	//final_color = toGamma(mix(final_color, fog_color, min(mix_factor, .7))); 
+	//final_color = toGamma(fog_color * mix_factor);
+
+	vec4 tex_color = texture(texAtlas, frag_uv);
+	final_color = tex_color; 
 }

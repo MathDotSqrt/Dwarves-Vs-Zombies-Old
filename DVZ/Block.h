@@ -28,31 +28,50 @@ namespace Voxel {
 		OCCLUDE_TYPE_ALL
 	};
 
+	typedef uint16 UVType;
+	typedef glm::vec<2, UVType> UV;
+
+	struct SpriteTexCoords {
+		UV spritePos;
+		UVType width, height;
+
+		SpriteTexCoords() {}
+		SpriteTexCoords(glm::u16vec2 spritePos, uint16 width, uint16 height);
+
+		/*2---3*/
+		/*|   |*/
+		/*0---1*/
+
+		UV uv0();
+		UV uv1();
+		UV uv2();
+		UV uv3();
+	};
+
 	union BlockTexCoords {
 		struct {
-			glm::u16vec2 topSpritePos;
-			glm::u16vec2 bottomSpritePos;
-			glm::u16vec2 leftSpritePos;
-			glm::u16vec2 rightSpritePos;
-			glm::u16vec2 frontSpritePos;
-			glm::u16vec2 backSpritePos;
+			SpriteTexCoords top;
+			SpriteTexCoords bottom;
+			SpriteTexCoords left;
+			SpriteTexCoords right;
+			SpriteTexCoords front;
+			SpriteTexCoords back;
 		};
-		glm::u16vec2 texCoords[6];
+		SpriteTexCoords texCoords[6];
 
 		BlockTexCoords();
-		BlockTexCoords(int r, int c, int numRows, int numCols);
-		//BlockTexCoords(glm::i32 coord[6], int numRows, int numCols);
+		BlockTexCoords(uint8 r, uint8 c, uint8 numRows, uint8 numCols);
 	};
 
 	struct BlockAttribs {
 		BlockType blockType;
 		MeshType meshType;
 		OccludeType occludeType;
-		//BlockTexCoords texcoords;
+		BlockTexCoords texcoords;
 		glm::u8vec4 color;
 
 		BlockAttribs();
-		BlockAttribs(BlockType, MeshType, OccludeType, glm::u8vec4);
+		BlockAttribs(BlockType, MeshType, OccludeType, BlockTexCoords tex, glm::u8vec4);
 	};
 
 	class BlockManager {
@@ -97,16 +116,20 @@ namespace Voxel {
 			return this->type != other.type;
 		}
 		
-		inline MeshType getMeshType() {
+		inline MeshType getMeshType() const {
 			return BlockManager::getInstance()->getBlockAttrib(type)->meshType;
 
 		}
-		inline OccludeType getOccludeType() {
+		inline OccludeType getOccludeType() const {
 			return BlockManager::getInstance()->getBlockAttrib(type)->occludeType;
 
 		}
 		inline glm::u8vec4 getColor() const {
 			return BlockManager::getInstance()->getBlockAttrib(type)->color;
+		}
+
+		inline BlockTexCoords getTexCoords() const {
+			return BlockManager::getInstance()->getBlockAttrib(type)->texcoords;
 		}
 	};
 

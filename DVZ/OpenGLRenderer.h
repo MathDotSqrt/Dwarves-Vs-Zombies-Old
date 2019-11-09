@@ -26,7 +26,11 @@ private:
 	int renderBasicBlock(int startKeyIndex, glm::vec3 camera_position, glm::mat4 vp);
 
 
-	Graphics::TEX chunkTex = Graphics::TEX::Builder("terrain.png").buildTexture();
+	Graphics::TEX chunkTex = Graphics::TEX::Builder("terrain.png")
+		.nearest()
+		.clampToEdge()
+		.mipmapNearest()
+		.buildTexture();
 	void renderChunks(Voxel::ChunkManager *manager, glm::vec3 camera_position, glm::mat4 vp);
 
 public:

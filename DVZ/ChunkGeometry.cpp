@@ -38,5 +38,10 @@ const ChunkGeometry::AttribTuple ChunkGeometry::ATTRIBS = std::make_tuple(
 		ChunkGeometry::BlockColorAttrib::DataType::UNSIGNED_BYTE,
 		ChunkGeometry::BlockColorAttrib::Components::FOUR,
 		ChunkGeometry::BlockColorAttrib::AttribOption::Normalize
+	),
+	ChunkGeometry::BlockTexcoordAttrib(
+		ChunkGeometry::BlockTexcoordAttrib::DataType::UNSIGNED_SHORT,
+		ChunkGeometry::BlockTexcoordAttrib::Components::TWO,
+		ChunkGeometry::BlockTexcoordAttrib::AttribOption::Normalize
 	)
 );
