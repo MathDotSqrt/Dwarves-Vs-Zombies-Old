@@ -92,7 +92,7 @@ BlockTexCoords::BlockTexCoords(uint8 r, uint8 c, uint8 numRows, uint8 numCols) {
 	const UVType SPRITE_WIDTH = MAX / numRows;
 	const UVType SPRITE_HEIGHT = MAX / numCols;	
 	
-	const UVType epsilon = 10;
+	const UVType epsilon = 0;
 
 	UVType u = (UVType)(((float)r / numRows) * MAX);
 	UVType v = (UVType)(((float)c / numCols) * MAX);

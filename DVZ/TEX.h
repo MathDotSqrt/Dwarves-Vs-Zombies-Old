@@ -58,6 +58,7 @@ public:
 		Builder& mipmapLinear();
 
 		TEX buildTexture();
+		TEX buildTextureAtlasArray(int rows, int cols);
 	};
 
 private:

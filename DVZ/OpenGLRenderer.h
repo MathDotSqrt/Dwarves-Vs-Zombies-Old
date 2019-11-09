@@ -32,6 +32,13 @@ private:
 		.borderColor(0, 1, 0, 0)
 		//.mipmapNearest()
 		.buildTexture();
+
+	Graphics::TEX chunkTexAtlas = Graphics::TEX::Builder("terrain_debug.png")
+		.nearest()
+		.clampToEdge()
+		.borderColor(0, 1, 0, 0)
+		//.mipmapNearest()
+		.buildTextureAtlasArray(16, 16);
 	void renderChunks(Voxel::ChunkManager *manager, glm::vec3 camera_position, glm::mat4 vp);
 
 public:

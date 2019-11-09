@@ -154,3 +154,56 @@ TEX TEX::Builder::buildTexture() {
 	LOG_INFO("Creating Texture:{\n\tname: %s, texture: %d, width: %d, height: %d\n}", this->filename.c_str(), this->texID, this->width, this->height);
 	return TEX(*this);
 }
+
+TEX TEX::Builder::buildTextureAtlasArray(int rows, int cols) {
+	int channels;
+	unsigned char *image = stbi_load(this->filename.c_str(), &this->width, &this->height, &channels, 3);
+
+	size_t size = this->width * this->height * channels * sizeof(unsigned char);
+	unsigned char *imageArray = (unsigned char *)malloc(size);
+
+	int sprite_width = width / rows;
+	int sprite_height = height / cols;
+	int imageArrayIndex = 0;
+	for (int spriteIndex = 0; spriteIndex < rows*cols; spriteIndex++) {
+		int r = spriteIndex / cols;
+		int c = spriteIndex % cols;
+		for (int spritePixel = 0; spritePixel < sprite_width * sprite_height; spritePixel++) {
+			int u = spritePixel % sprite_width;
+			int v = spritePixel / sprite_width;
+
+
+			int offset = (c + r * cols) * sprite_width;
+			int index = (offset + (u + v * width))*channels;
+
+			for (int i = 0; i < channels; i++) {
+				imageArray[imageArrayIndex] = image[index+i];
+				imageArrayIndex++;
+			}
+		}
+	}
+
+	stbi_image_free(image);
+
+	int num_sprites = rows * cols;
+	int mipmapLevelCount = 1;
+
+	this->textureTarget = GL_TEXTURE_2D_ARRAY;
+	glGenTextures(1, &this->texID);
+	glBindTexture(this->textureTarget, this->texID);
+	glTexStorage3D(this->textureTarget, mipmapLevelCount, GL_RGB8, sprite_width, sprite_height, num_sprites);
+	glTexSubImage3D(this->textureTarget, 0, 0, 0, 0, sprite_width, sprite_height, num_sprites, GL_RGB, GL_UNSIGNED_BYTE, imageArray);
+
+	glTexParameteri(this->textureTarget, GL_TEXTURE_WRAP_S, this->wrapS);
+	glTexParameteri(this->textureTarget, GL_TEXTURE_WRAP_T, this->wrapT);
+	glTexParameterfv(this->textureTarget, GL_TEXTURE_BORDER_COLOR, this->color);
+	
+	glTexParameteri(this->textureTarget, GL_TEXTURE_MIN_FILTER, this->filter);
+	glTexParameteri(this->textureTarget, GL_TEXTURE_MAG_FILTER, this->filter);
+
+	glBindTexture(this->textureTarget, 0);
+
+	free(imageArray);
+
+	return TEX(*this);
+}

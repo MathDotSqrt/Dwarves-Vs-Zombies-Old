@@ -70,6 +70,6 @@ void main(){
 	//final_color = toGamma(mix(final_color, fog_color, min(mix_factor, .7))); 
 	//final_color = toGamma(fog_color * mix_factor);
 
-	vec4 tex_color = texture(texAtlas, frag_uv);
+	vec4 tex_color = texture(texAtlas, frag_uv+0.0019);
 	final_color = tex_color; 
 }
