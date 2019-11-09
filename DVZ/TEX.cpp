@@ -2,13 +2,11 @@
 
 using namespace Graphics;
 
-TEX::TEX(Builder *builder) : 
-	texID(builder->texID),
-	textureTarget(builder->textureTarget),
-	width(builder->width),
-	height(builder->height){
-
-	builder->~Builder();
+TEX::TEX(Builder &builder) : 
+	texID(builder.texID),
+	textureTarget(builder.textureTarget),
+	width(builder.width),
+	height(builder.height){
 }
 
 
@@ -39,6 +37,7 @@ TEX::Builder::Builder(std::string filename) {
 }
 
 TEX::Builder::~Builder() {
+
 }
 
 TEX::Builder* TEX::Builder::repeat() {
@@ -132,5 +131,5 @@ TEX TEX::Builder::buildTexture() {
 	glBindTexture(this->textureTarget, 0);
 
 	LOG_INFO("Creating Texture:{\n\tname: %s, texture: %d, width: %d, height: %d\n}", this->filename.c_str(), this->texID, this->width, this->height);
-	return TEX(this);
+	return TEX(*this);
 }

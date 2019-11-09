@@ -423,6 +423,9 @@
     <Image Include="checker.jpg">
       <Filter>Resource Files\Textures</Filter>
     </Image>
+    <Image Include="terrain.png">
+      <Filter>Resource Files\Textures</Filter>
+    </Image>
   </ItemGroup>
   <ItemGroup>
     <Text Include="dragon.obj">

@@ -55,7 +55,7 @@ public:
 	};
 
 private:
-	TEX(Builder *builder);
+	TEX(Builder &builder);
 };
 
 }
