@@ -2,7 +2,8 @@
 #include <GL/glew.h>
 #include <string>
 #include "macrologger.h"
-#include <stb_image.h>
+#include "stb_image.h"
+
 
 namespace Graphics {
 

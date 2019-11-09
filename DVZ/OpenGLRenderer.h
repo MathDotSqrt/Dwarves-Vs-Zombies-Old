@@ -1,5 +1,6 @@
 #pragma once
 #include "IRenderer.h"
+#include "TEX.h"
 
 namespace Graphics {
 
@@ -12,7 +13,6 @@ private:
 	};
 
 	std::vector<RenderStateKey> sortedRenderStateKeys;
-
 	glm::mat4 perspectiveProjection;
 
 	RenderStateKey createRenderStateKey(RenderState state);
@@ -24,6 +24,9 @@ private:
 	int renderNormal(int startKeyIndex, glm::mat4 vp);
 	int renderBasicLit(int startKeyIndex, glm::vec3 camera_position, glm::mat4 vp);
 	int renderBasicBlock(int startKeyIndex, glm::vec3 camera_position, glm::mat4 vp);
+
+
+	Graphics::TEX chunkTex = Graphics::TEX::Builder("terrain.png").buildTexture();
 	void renderChunks(Voxel::ChunkManager *manager, glm::vec3 camera_position, glm::mat4 vp);
 
 public:

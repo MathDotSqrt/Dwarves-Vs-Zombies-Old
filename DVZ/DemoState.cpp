@@ -1,6 +1,4 @@
 #include "DemoState.h"
-#include <GL/glew.h>
-#include <GLFW/glfw3.h>
 #include "macrologger.h"
 
 DemoState::~DemoState()
@@ -71,6 +69,6 @@ void DemoState::leaving()
 }
 
 void DemoState::update(float delta) {
-	glClear(GL_COLOR_BUFFER_BIT);
+	//glClear(GL_COLOR_BUFFER_BIT);
 	//glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 }

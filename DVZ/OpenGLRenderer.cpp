@@ -16,7 +16,7 @@ MaterialID BasicLitMaterial::type = MaterialID::BASIC_LIT_MATERIAL_ID;
 MaterialID TextureMaterial::type = MaterialID::TEXTURE_MATERIAL_ID;
 MaterialID BlockMaterial::type = MaterialID::BLOCK_MATERIAL_ID;
 
-OpenGLRenderer::OpenGLRenderer() {
+OpenGLRenderer::OpenGLRenderer(){
 }
 
 
@@ -313,8 +313,13 @@ int OpenGLRenderer::renderBasicBlock(int startIndex, glm::vec3 camera_position, 
 
 void OpenGLRenderer::renderChunks(Voxel::ChunkManager *manager, glm::vec3 camera_position, glm::mat4 vp) {
 	Util::Performance::Timer chunks("RenderChunks");
+
+	this->chunkTex.bind();
 	const Graphics::BlockMaterial chunkMat = { {.95f, .7f, .8f}, 30 };
+
 	
+
+
 	Shader::GLSLProgram *shader = Shader::getShaderSet({ "chunk_shader.vert", "chunk_shader.frag" });
 	shader->use();
 

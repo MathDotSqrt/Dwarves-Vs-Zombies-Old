@@ -2,8 +2,6 @@
 #include "PlayState.h"
 #include "macrologger.h"
 
-#include "LinearAllocator.h"
-
 #include "Components.h"
 #include "MovementSystem.h"
 #include "InputSystem.h"
@@ -13,6 +11,7 @@
 #include "ShaderUpdaterSystem.h"
 
 #include "ModelGeometry.h"
+#include "TEX.h"
 
 PlayState::PlayState(GameStateManager *gsm) : GameState(gsm) {
 
@@ -25,6 +24,7 @@ PlayState::~PlayState() {
 void PlayState::init() {
 	LOG_STATE("init");
 	Graphics::Scene *scene = e.getScene();
+	Graphics::TEX texture = Graphics::TEX::Builder("terrain.png").buildTexture();
 
 	/*PLAYER*/
 	entt::entity playerID = this->e.addPlayer(1, 0, 0);
