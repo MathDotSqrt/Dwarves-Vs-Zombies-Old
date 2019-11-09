@@ -61,6 +61,8 @@ void PlayState::init() {
 	this->e.addSystem(new BasicRenderSystem(500));
 	/*SYSTEM*/
 
+	//Graphics::TEX t = Graphics::TEX::Builder("terrain_debug.png").nearest().clampToEdge().buildTextureAtlasArray(16, 16);
+
 	LOG_SYSTEM("init");
 }
 

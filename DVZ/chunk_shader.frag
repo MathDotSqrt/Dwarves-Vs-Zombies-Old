@@ -19,7 +19,7 @@ uniform float point_light_intensity = 0;
 uniform vec3 specular_color = vec3(1, 1, 1);
 uniform float shinyness = 1;
 
-uniform sampler2D texAtlas;
+uniform sampler2DArray texAtlas;
 
 vec4 fog_color = vec4(.15, .15, .15, 1);
 
@@ -70,6 +70,6 @@ void main(){
 	//final_color = toGamma(mix(final_color, fog_color, min(mix_factor, .7))); 
 	//final_color = toGamma(fog_color * mix_factor);
 
-	vec4 tex_color = texture(texAtlas, frag_uv+0.0019);
+	vec4 tex_color = texture(texAtlas, vec3(frag_uv.xy, 0));
 	final_color = tex_color; 
 }
