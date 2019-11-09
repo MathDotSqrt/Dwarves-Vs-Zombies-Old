@@ -9,16 +9,21 @@ namespace Graphics {
 class TEX {
 
 public:
-	~TEX();
-
-	const GLuint texID;
 	const GLenum textureTarget;
 	const int width;
 	const int height;
+	
+	TEX(TEX&&);
+	~TEX();
+	TEX(const TEX&) = delete;
+	TEX& operator=(const TEX&) = delete;
+	TEX& operator=(TEX &&other);
 
 	void bind();
 	void bindActiveTexture(int unit);
 	void unbind();
+
+	void dispose();
 
 	class Builder {
 	private:
@@ -41,20 +46,22 @@ public:
 	public:
 		Builder(std::string filename);
 		~Builder();
-		Builder* repeat();
-		Builder* mirrorRepeat();
-		Builder* clampToEdge();
-		Builder* clampToBorder();
-		Builder* borderColor(float r, float g, float b, float a);
-		Builder* nearest();
-		Builder* linear();
-		Builder* mipmapNearest();
-		Builder* mipmapLinear();
+		Builder& repeat();
+		Builder& mirrorRepeat();
+		Builder& clampToEdge();
+		Builder& clampToBorder();
+		Builder& borderColor(float r, float g, float b, float a);
+		Builder& nearest();
+		Builder& linear();
+		Builder& mipmapNearest();
+		Builder& mipmapLinear();
 
 		TEX buildTexture();
 	};
 
 private:
+	GLuint texID;
+
 	TEX(Builder &builder);
 };
 

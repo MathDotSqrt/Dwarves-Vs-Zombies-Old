@@ -2,6 +2,10 @@
 
 using namespace Graphics;
 
+TEX::TEX(TEX &&other) : textureTarget(other.textureTarget), width(other.width), height(other.height){
+	texID = other.texID;
+}
+
 TEX::TEX(Builder &builder) : 
 	texID(builder.texID),
 	textureTarget(builder.textureTarget),
@@ -9,11 +13,18 @@ TEX::TEX(Builder &builder) :
 	height(builder.height){
 }
 
+TEX::~TEX() {
+	dispose();
+}
 
-TEX::~TEX()
-{
-	LOG_INFO("Deleting texture: %d", this->texID);
-	glDeleteTextures(1, &this->texID);
+TEX& TEX::operator=(TEX &&other) {
+	if (this != &other) {
+		dispose();
+
+		std::swap(texID, other.texID);
+	}
+
+	return *this;
 }
 
 void TEX::bind() {
@@ -31,67 +42,75 @@ void TEX::unbind() {
 	glBindTexture(this->textureTarget, 0);
 }
 
+void TEX::dispose() {
+	if (texID) {
+		LOG_INFO("Deleting texture: %d", this->texID);
+		glDeleteTextures(1, &this->texID);
+		texID = 0;
+	}
+}
+
 TEX::Builder::Builder(std::string filename) {
 	this->filename = filename;
-	this->repeat()->nearest()->borderColor(0, 0, 0, 1);
+	this->repeat().nearest().borderColor(0, 0, 0, 1);
 }
 
 TEX::Builder::~Builder() {
 
 }
 
-TEX::Builder* TEX::Builder::repeat() {
+TEX::Builder& TEX::Builder::repeat() {
 	this->wrapS = GL_REPEAT;
 	this->wrapT = GL_REPEAT;
-	return this;
+	return *this;
 }
 
-TEX::Builder* TEX::Builder::mirrorRepeat() {
+TEX::Builder& TEX::Builder::mirrorRepeat() {
 	this->wrapS = GL_MIRRORED_REPEAT;
 	this->wrapT = GL_MIRRORED_REPEAT;
-	return this;
+	return *this;
 }
 
-TEX::Builder* TEX::Builder::clampToEdge() {
+TEX::Builder& TEX::Builder::clampToEdge() {
 	this->wrapS = GL_CLAMP_TO_EDGE;
 	this->wrapT = GL_CLAMP_TO_EDGE;
-	return this;
+	return *this;
 }
 
-TEX::Builder* TEX::Builder::clampToBorder() {
+TEX::Builder& TEX::Builder::clampToBorder() {
 	this->wrapS = GL_CLAMP_TO_BORDER;
 	this->wrapT = GL_CLAMP_TO_BORDER;
-	return this;
+	return *this;
 }
 
-TEX::Builder* TEX::Builder::borderColor(float r, float g, float b, float a) {
+TEX::Builder& TEX::Builder::borderColor(float r, float g, float b, float a) {
 	this->color[0] = r;
 	this->color[1] = g;
 	this->color[2] = b;
 	this->color[3] = a;
-	return this;
+	return *this;
 }
 
-TEX::Builder* TEX::Builder::nearest() {
+TEX::Builder& TEX::Builder::nearest() {
 	this->filter = GL_NEAREST;
-	return this;
+	return *this;
 }
 
-TEX::Builder* TEX::Builder::linear() {
+TEX::Builder& TEX::Builder::linear() {
 	this->filter = GL_LINEAR;
-	return this;
+	return *this;
 }
 
-TEX::Builder* TEX::Builder::mipmapNearest() {
+TEX::Builder& TEX::Builder::mipmapNearest() {
 	this->mipmap = GL_LINEAR;
 	this->useMipMap = true;
-	return this;
+	return *this;
 }
 
-TEX::Builder* TEX::Builder::mipmapLinear() {
+TEX::Builder& TEX::Builder::mipmapLinear() {
 	this->mipmap = GL_LINEAR;
 	this->useMipMap = true;
-	return this;
+	return *this;
 }
 
 TEX TEX::Builder::buildTexture() {
