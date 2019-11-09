@@ -36,7 +36,7 @@ namespace Voxel {
 		UVType width, height;
 
 		SpriteTexCoords() {}
-		SpriteTexCoords(glm::u16vec2 spritePos, uint16 width, uint16 height);
+		SpriteTexCoords(UV spritePos, UVType width, UVType height);
 
 		/*2---3*/
 		/*|   |*/

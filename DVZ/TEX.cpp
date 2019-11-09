@@ -52,6 +52,8 @@ void TEX::dispose() {
 
 TEX::Builder::Builder(std::string filename) {
 	this->filename = filename;
+	this->mipmap = false;
+	this->useMipMap = false;
 	this->repeat().nearest().borderColor(0, 0, 0, 1);
 }
 

@@ -29,7 +29,8 @@ private:
 	Graphics::TEX chunkTex = Graphics::TEX::Builder("terrain.png")
 		.nearest()
 		.clampToEdge()
-		.mipmapNearest()
+		.borderColor(0, 1, 0, 0)
+		//.mipmapNearest()
 		.buildTexture();
 	void renderChunks(Voxel::ChunkManager *manager, glm::vec3 camera_position, glm::mat4 vp);
 

@@ -317,6 +317,7 @@
   <ItemGroup>
     <Image Include="checker.jpg" />
     <Image Include="terrain.png" />
+    <Image Include="terrain_debug.png" />
     <Image Include="test.png" />
   </ItemGroup>
   <ItemGroup>

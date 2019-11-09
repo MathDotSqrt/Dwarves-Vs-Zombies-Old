@@ -29,7 +29,7 @@ BlockManager::BlockManager(){
 		BlockType::BLOCK_TYPE_DIRT,
 		MeshType::MESH_TYPE_BLOCK,
 		OccludeType::OCCLUDE_TYPE_ALL,
-		BlockTexCoords(0, 2, 16, 16),
+		BlockTexCoords(2, 0, 16, 16),
 		glm::u8vec4(128, 90, 70, 255)
 	);
 	addBlock(DIRT);
@@ -47,7 +47,7 @@ BlockManager::BlockManager(){
 		BlockType::BLOCK_TYPE_SAND,
 		MeshType::MESH_TYPE_BLOCK,
 		OccludeType::OCCLUDE_TYPE_ALL,
-		BlockTexCoords(14, 8, 16, 16),
+		BlockTexCoords(14, 7, 16, 16),
 		glm::u8vec4(194, 178, 128, 255)
 	);
 	addBlock(SAND);
@@ -87,16 +87,16 @@ BlockTexCoords::BlockTexCoords(){
 
 BlockTexCoords::BlockTexCoords(uint8 r, uint8 c, uint8 numRows, uint8 numCols) {
 	constexpr UVType MAX = std::numeric_limits<UVType>::max();
+	//constexpr UVType MAX = 1;
+	
 	const UVType SPRITE_WIDTH = MAX / numRows;
-	const UVType SPRITE_HEIGHT = MAX / numCols;
+	const UVType SPRITE_HEIGHT = MAX / numCols;	
 	
 	const UVType epsilon = 10;
-	
-
 
 	UVType u = (UVType)(((float)r / numRows) * MAX);
 	UVType v = (UVType)(((float)c / numCols) * MAX);
-	UV uv(u + epsilon, v + epsilon);
+	UV uv(u+epsilon, v+epsilon);
 
 	for (int i = 0; i < 6; i++) {
 		this->texCoords[i].spritePos = uv;

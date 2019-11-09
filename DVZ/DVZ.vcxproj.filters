@@ -426,6 +426,9 @@
     <Image Include="terrain.png">
       <Filter>Resource Files\Textures</Filter>
     </Image>
+    <Image Include="terrain_debug.png">
+      <Filter>Resource Files</Filter>
+    </Image>
   </ItemGroup>
   <ItemGroup>
     <Text Include="dragon.obj">
