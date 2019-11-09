@@ -94,8 +94,8 @@ BlockTexCoords::BlockTexCoords(uint8 r, uint8 c, uint8 numRows, uint8 numCols) {
 	
 
 
-	UVType u = (UVType)(((float)r / numRows) * USHRT_MAX);
-	UVType v = (UVType)(((float)c / numCols) * USHRT_MAX);
+	UVType u = (UVType)(((float)r / numRows) * MAX);
+	UVType v = (UVType)(((float)c / numCols) * MAX);
 	UV uv(u + epsilon, v + epsilon);
 
 	for (int i = 0; i < 6; i++) {
