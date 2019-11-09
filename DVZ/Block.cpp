@@ -37,6 +37,14 @@ BlockManager::BlockManager(){
 	);
 	addBlock(GRASS);
 
+	BlockAttribs SAND(
+		BlockType::BLOCK_TYPE_SAND,
+		MeshType::MESH_TYPE_BLOCK,
+		OccludeType::OCCLUDE_TYPE_ALL,
+		glm::u8vec4(194, 178, 128, 255)
+	);
+	addBlock(SAND);
+
 	BlockAttribs PURPLE(
 		BlockType::BLOCK_TYPE_PURPLE,
 		MeshType::MESH_TYPE_BLOCK,

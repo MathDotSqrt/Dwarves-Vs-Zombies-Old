@@ -32,18 +32,32 @@ void Chunk::generateTerrain() {
 			int x = this->chunk_x * CHUNK_WIDTH_X + bx;
 			int z = this->chunk_z * CHUNK_WIDTH_Z + bz;
 			double height = pow(noise.octaveNoise0_1(x / 140.0, z / 140.0, 6), 4.5) * 155;
-			
+
 			for (int by = 0; by < CHUNK_WIDTH_Y; by++) {
+
 				int y = this->chunk_y * CHUNK_WIDTH_Y + by;
 				
 				if (y == 0) {
 					setBlockInternal(bx, by, bz, Block(BlockType::BLOCK_TYPE_STONE));
 				}
 				else if (y < height) {
+					
 					setBlockInternal(bx, by, bz, Block(BlockType::BLOCK_TYPE_DIRT));
+
 				}
 				else if (y < height + 1) {
-					setBlockInternal(bx, by, bz, Block(BlockType::BLOCK_TYPE_GRASS));
+					double sandValue = noise.octaveNoise0_1(x / 30.0, z / 30.0, 1);
+					if ((y < 10) && sandValue > .6) {
+						setBlockInternal(bx, by, bz, Block(BlockType::BLOCK_TYPE_SAND));
+
+					}
+					else
+					//else if (y < 15 && sandValue > .75) {
+					//	setBlockInternal(bx, by, bz, Block(BlockType::BLOCK_TYPE_SAND));
+					//}
+					//else {
+						setBlockInternal(bx, by, bz, Block(BlockType::BLOCK_TYPE_GRASS));
+					//}
 				}
 				else {
 					setBlockInternal(bx, by, bz, Block(BlockType::BLOCK_TYPE_DEFAULT));
