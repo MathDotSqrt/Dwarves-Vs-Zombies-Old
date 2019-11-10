@@ -158,7 +158,8 @@ TEX TEX::Builder::buildTexture() {
 TEX TEX::Builder::buildTextureAtlasArray(int rows, int cols) {
 	int channels;
 	unsigned char *image = stbi_load(this->filename.c_str(), &this->width, &this->height, &channels, 3);
-
+	printf("CHANNLES: %d\n\n\n", channels);
+	channels = 3;
 	size_t size = this->width * this->height * channels * sizeof(unsigned char);
 	unsigned char *imageArray = (unsigned char *)malloc(size);
 
@@ -173,7 +174,7 @@ TEX TEX::Builder::buildTextureAtlasArray(int rows, int cols) {
 			int v = spritePixel / sprite_width;
 
 
-			int offset = (c + r * cols) * sprite_width;
+			int offset = (c * sprite_width + r * sprite_width * sprite_height * cols);
 			int index = (offset + (u + v * width))*channels;
 
 			for (int i = 0; i < channels; i++) {
@@ -186,20 +187,39 @@ TEX TEX::Builder::buildTextureAtlasArray(int rows, int cols) {
 	stbi_image_free(image);
 
 	int num_sprites = rows * cols;
-	int mipmapLevelCount = 1;
+	int mipmapLevelCount = 4;
 
 	this->textureTarget = GL_TEXTURE_2D_ARRAY;
 	glGenTextures(1, &this->texID);
 	glBindTexture(this->textureTarget, this->texID);
-	glTexStorage3D(this->textureTarget, mipmapLevelCount, GL_RGB8, sprite_width, sprite_height, num_sprites);
-	glTexSubImage3D(this->textureTarget, 0, 0, 0, 0, sprite_width, sprite_height, num_sprites, GL_RGB, GL_UNSIGNED_BYTE, imageArray);
+	glTexStorage3D(this->textureTarget, mipmapLevelCount, channels == 3 ? GL_RGB8 : GL_RGBA8, sprite_width, sprite_height, num_sprites);
+	glTexSubImage3D(this->textureTarget, 0, 0, 0, 0, sprite_width, sprite_height, num_sprites, channels == 3 ? GL_RGB : GL_RGBA, GL_UNSIGNED_BYTE, imageArray);
 
 	glTexParameteri(this->textureTarget, GL_TEXTURE_WRAP_S, this->wrapS);
 	glTexParameteri(this->textureTarget, GL_TEXTURE_WRAP_T, this->wrapT);
 	glTexParameterfv(this->textureTarget, GL_TEXTURE_BORDER_COLOR, this->color);
 	
-	glTexParameteri(this->textureTarget, GL_TEXTURE_MIN_FILTER, this->filter);
-	glTexParameteri(this->textureTarget, GL_TEXTURE_MAG_FILTER, this->filter);
+
+
+	GLenum f;
+
+	if (this->useMipMap) {
+		glGenerateMipmap(this->textureTarget);
+		unsigned char bit1 = this->mipmap == GL_LINEAR;
+		unsigned char bit2 = this->filter == GL_LINEAR;
+		switch ((bit2 << 1) | bit1) {
+		case 0x0: f = GL_NEAREST_MIPMAP_NEAREST; break;
+		case 0x1: f = GL_LINEAR_MIPMAP_NEAREST; break;
+		case 0x2: f = GL_NEAREST_MIPMAP_LINEAR; break;
+		case 0x3: f = GL_LINEAR_MIPMAP_LINEAR; break;
+		}
+	}
+	else {
+		f = this->filter;
+	}
+
+	glTexParameteri(this->textureTarget, GL_TEXTURE_MIN_FILTER, f);
+	glTexParameteri(this->textureTarget, GL_TEXTURE_MAG_FILTER, filter);
 
 	glBindTexture(this->textureTarget, 0);
 

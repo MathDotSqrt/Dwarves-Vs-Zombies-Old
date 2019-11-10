@@ -5,7 +5,7 @@
 in vec3 frag_pos;
 in vec3 frag_normal;
 in vec3 frag_color;
-in vec2 frag_uv;
+in vec4 frag_uv;
 
 out vec4 final_color;
 
@@ -70,6 +70,7 @@ void main(){
 	//final_color = toGamma(mix(final_color, fog_color, min(mix_factor, .7))); 
 	//final_color = toGamma(fog_color * mix_factor);
 
-	vec4 tex_color = texture(texAtlas, vec3(frag_uv.xy, 0));
+
+	vec4 tex_color = texture(texAtlas, vec3(frag_uv.xy, frag_uv.z + frag_uv.w*16));
 	final_color = tex_color; 
 }

@@ -6,12 +6,12 @@
 layout(location = POSITION_ATTRIB_LOCATION) in vec3 vert_pos;
 layout(location = NORMAL_ATTRIB_LOCATION) 	in vec3 vert_norm;
 layout(location = COLOR_ATTRIB_LOCATION) 	in vec3 vert_col;
-layout(location = BLOCK_TEXCOORD_ATTRIB_LOCATION) 	in vec2 vert_uv;
+layout(location = BLOCK_TEXCOORD_ATTRIB_LOCATION) 	in vec4 vert_uv;
 
 out vec3 frag_pos;
 out vec3 frag_normal;
 out vec3 frag_color;
-out vec2 frag_uv;
+out vec4 frag_uv;
 
 //uniform mat4 M;
 uniform vec3 pos;

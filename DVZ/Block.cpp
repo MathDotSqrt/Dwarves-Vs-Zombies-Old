@@ -86,52 +86,51 @@ BlockTexCoords::BlockTexCoords(){
 }
 
 BlockTexCoords::BlockTexCoords(uint8 r, uint8 c, uint8 numRows, uint8 numCols) {
-	constexpr UVType MAX = std::numeric_limits<UVType>::max();
-	//constexpr UVType MAX = 1;
-	
-	const UVType SPRITE_WIDTH = MAX / numRows;
-	const UVType SPRITE_HEIGHT = MAX / numCols;	
-	
-	const UVType epsilon = 0;
+	//constexpr UVType MAX = std::numeric_limits<UVType>::max();
+	////constexpr UVType MAX = 1;
+	//
+	//const UVType SPRITE_WIDTH = MAX / numRows;
+	//const UVType SPRITE_HEIGHT = MAX / numCols;	
+	//
+	//const UVType epsilon = 10;
 
-	UVType u = (UVType)(((float)r / numRows) * MAX);
-	UVType v = (UVType)(((float)c / numCols) * MAX);
-	UV uv(u+epsilon, v+epsilon);
+	//UVType u = (UVType)(((float)r / numRows) * MAX);
+	//UVType v = (UVType)(((float)c / numCols) * MAX);
+	//UV uv(u+epsilon, v+epsilon);
 
 	for (int i = 0; i < 6; i++) {
-		this->texCoords[i].spritePos = uv;
-		this->texCoords[i].width = SPRITE_WIDTH - epsilon * 2;
-		this->texCoords[i].height = SPRITE_HEIGHT - epsilon * 2;
+		this->texCoords[i].row = r;
+		this->texCoords[i].col = c;
+		
 	}
 }
 
-SpriteTexCoords::SpriteTexCoords(UV spritePos, UVType width, UVType height) {
-	this->spritePos = spritePos;
-	this->width = width;
-	this->height = height;
+SpriteTexCoords::SpriteTexCoords(UVType row, UVType col) {
+	this->row = row;
+	this->col = col;
 }
 
 UV SpriteTexCoords::uv0() {
-	return spritePos;
+	return UV(0, 0, row, col);
 }
 
 UV SpriteTexCoords::uv1() {
-	UV out = spritePos;
-	out.x += width;
-	return out;
+	//UV out = spritePos;
+	//out.x += width;
+	return UV(MAX, 0, row, col);
 }
 
 UV SpriteTexCoords::uv2() {
-	UV out = spritePos;
-	out.y += height;
-	return out;
+	//UV out = spritePos;
+	//out.y += height;
+	return UV(0, MAX, row, col);
 }
 
 UV SpriteTexCoords::uv3() {
-	UV out = spritePos;
-	out.x += width;
-	out.y += height;
-	return out;
+	//UV out = spritePos;
+	//out.x += width;
+	//out.y += height;
+	return UV(MAX, MAX, row, col);;
 }
 
 BlockManager* BlockManager::BLOCK_MANAGER_PTR = nullptr;

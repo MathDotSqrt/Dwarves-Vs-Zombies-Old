@@ -28,15 +28,18 @@ namespace Voxel {
 		OCCLUDE_TYPE_ALL
 	};
 
-	typedef uint16 UVType;
-	typedef glm::vec<2, UVType> UV;
+	typedef uint8 UVType;
+	typedef glm::vec<4, UVType> UV;
 
 	struct SpriteTexCoords {
-		UV spritePos;
-		UVType width, height;
+		//static constexpr UVType MAX = std::numeric_limits<UVType>::max();
+		static constexpr UVType MAX = 1;
+
+		UVType row;
+		UVType col;
 
 		SpriteTexCoords() {}
-		SpriteTexCoords(UV spritePos, UVType width, UVType height);
+		SpriteTexCoords(UVType row, UVType col);
 
 		/*2---3*/
 		/*|   |*/
