@@ -93,7 +93,7 @@ void OpenGLRenderer::render(Voxel::ChunkManager *manager) {
 	index = renderNormal(index, vp);
 	index = renderBasicLit(index, camera_position, vp);
 	//index = renderBasicBlock(index, camera_position, vp);
-	renderChunks(manager, camera_position, vp);
+	renderChunks(manager, camera_position, view, perspectiveProjection);
 	//glBindVertexArray(0);
 
 }
@@ -311,7 +311,7 @@ int OpenGLRenderer::renderBasicBlock(int startIndex, glm::vec3 camera_position, 
 	return index;
 }
 
-void OpenGLRenderer::renderChunks(Voxel::ChunkManager *manager, glm::vec3 camera_position, glm::mat4 vp) {
+void OpenGLRenderer::renderChunks(Voxel::ChunkManager *manager, glm::vec3 camera_position, glm::mat4 v, glm::mat4 p) {
 	Util::Performance::Timer chunks("RenderChunks");
 
 	const Graphics::BlockMaterial chunkMat = { {.95f, .7f, .8f}, 30 };
@@ -331,7 +331,8 @@ void OpenGLRenderer::renderChunks(Voxel::ChunkManager *manager, glm::vec3 camera
 	shader->setUniform1f("ambient.intensity", .2f);
 
 	shader->setUniform3f("camera_pos", camera_position);
-	shader->setUniformMat4("VP", vp);
+	shader->setUniformMat4("V", v);
+	shader->setUniformMat4("P", p);
 
 	Scene::PointLight &point = this->scene->pointLightCache[0];
 

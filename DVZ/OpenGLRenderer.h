@@ -34,7 +34,7 @@ private:
 		.mipmapLinear()
 		.buildTextureAtlasArray(16, 16);
 
-	void renderChunks(Voxel::ChunkManager *manager, glm::vec3 camera_position, glm::mat4 vp);
+	void renderChunks(Voxel::ChunkManager *manager, glm::vec3 camera_position, glm::mat4 v, glm::mat4 p);
 
 public:
 	OpenGLRenderer();

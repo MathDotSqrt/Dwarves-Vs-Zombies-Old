@@ -8,6 +8,7 @@ in vec3 frag_pos;
 in vec3 frag_normal;
 in vec3 frag_color;
 in vec4 frag_uv;
+in vec4 frag_view_space;
 
 out vec4 final_color;
 
@@ -58,6 +59,19 @@ float calc_fog_factor(float start, float a){
 	return factor;
 }
 
+vec3 calc_fancy_fog(vec3 l_color, Fog fog){
+	float dist = gl_FragCoord.z / gl_FragCoord.w;
+	float d = max(dist - 200, 0);
+
+	const float b1 = 0.007;
+	const float b2 = 0.004;
+
+	float scatter = 1 / exp(d * b1 * d * b1);
+	float extincition = 1 / exp(d * b2);
+
+	return (1 - scatter) * fog.color + extincition * l_color;
+}
+
 void main(){
 	/*LIGHT*/
 	vec3 light_color = vec3(0);
@@ -77,8 +91,9 @@ void main(){
 	vec3 final_light_color = tex_color.rgb * light_color;
 
 	/*FOG*/
-	float f = calc_fog_factor(fog.start_dist, fog.attenuation);
-	vec3 frag_color = mix(fog.color, final_light_color, f);
+	//float f = calc_fog_factor(fog.start_dist, fog.attenuation);
+	//vec3 frag_color = mix(fog.color, final_light_color, f);
+	vec3 frag_color = calc_fancy_fog(final_light_color, fog);
 	/*FOG*/
 
 	final_color = vec4(frag_color, 1);
