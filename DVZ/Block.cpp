@@ -38,7 +38,7 @@ BlockManager::BlockManager(){
 		BlockType::BLOCK_TYPE_GRASS,
 		MeshType::MESH_TYPE_BLOCK,
 		OccludeType::OCCLUDE_TYPE_ALL,
-		BlockTexCoords(0, 0, 16, 16),
+		BlockTexCoords({0, 0, 3, 0}, 16, 16),
 		glm::u8vec4(11, 102, 35, 255)
 	);
 	addBlock(GRASS);
@@ -86,23 +86,27 @@ BlockTexCoords::BlockTexCoords(){
 }
 
 BlockTexCoords::BlockTexCoords(uint8 r, uint8 c, uint8 numRows, uint8 numCols) {
-	//constexpr UVType MAX = std::numeric_limits<UVType>::max();
-	////constexpr UVType MAX = 1;
-	//
-	//const UVType SPRITE_WIDTH = MAX / numRows;
-	//const UVType SPRITE_HEIGHT = MAX / numCols;	
-	//
-	//const UVType epsilon = 10;
-
-	//UVType u = (UVType)(((float)r / numRows) * MAX);
-	//UVType v = (UVType)(((float)c / numCols) * MAX);
-	//UV uv(u+epsilon, v+epsilon);
-
 	for (int i = 0; i < 6; i++) {
 		this->texCoords[i].row = r;
 		this->texCoords[i].col = c;
 		
 	}
+}
+
+BlockTexCoords::BlockTexCoords(std::vector<uint8> rc, uint8 numRows, uint8 numCols) {
+	assert(rc.size() % 2 == 0);
+	assert(rc.size() <= 6*2);
+
+	if (rc.size() == 4) {
+		for (int i = 0; i < 6; i++) {
+			this->texCoords[i].row = rc[2];
+			this->texCoords[i].col = rc[3];
+		}
+
+		this->top.row = rc[0];
+		this->top.col = rc[1];
+	}
+
 }
 
 SpriteTexCoords::SpriteTexCoords(UVType row, UVType col) {

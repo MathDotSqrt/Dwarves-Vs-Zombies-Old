@@ -21,7 +21,7 @@ uniform float shinyness = 1;
 
 uniform sampler2DArray texAtlas;
 
-vec4 fog_color = vec4(.15, .15, .15, 1);
+vec4 fog_color = vec4(.17, .15, .17, 1);
 
 float fog_A = .3;
 float fog_B = 8;
@@ -61,16 +61,16 @@ void main(){
 	vec3 ambientColor = vec3(1, 1, 1) * .5;
 	lightColor += ambientColor;
 
-
-	final_color = vec4(frag_color * lightColor, 1);
+	vec4 tex_color = toLinear(texture(texAtlas, vec3(frag_uv.xy, frag_uv.z + frag_uv.w*16)));
+	final_color = vec4(tex_color.rgb * lightColor, 1);
 	//final_color = toGamma(final_color) + (fog_color*fog_density(0));
 
 	float fog = fog_mix(camera_pos, frag_pos);
 	float mix_factor = 1 - (fog_max - fog) / (fog_max - fog_min);
 	//final_color = toGamma(mix(final_color, fog_color, min(mix_factor, .7))); 
-	//final_color = toGamma(fog_color * mix_factor);
+	//final_color = toGamma(vec4(1) * mix_factor);
+	final_color = mix(final_color, fog_color, min(mix_factor, .7));
+	final_color = toGamma(final_color);
 
-
-	vec4 tex_color = texture(texAtlas, vec3(frag_uv.xy, frag_uv.z + frag_uv.w*16));
-	final_color = tex_color; 
+	//final_color = tex_color;  
 }

@@ -1,6 +1,7 @@
 #pragma once
 #include "common.h"
 #include "glm.hpp"
+#include <vector>
 
 namespace Voxel {
 	//constexpr float BLOCK_RENDER_SIZE = 1.0f;
@@ -64,6 +65,7 @@ namespace Voxel {
 
 		BlockTexCoords();
 		BlockTexCoords(uint8 r, uint8 c, uint8 numRows, uint8 numCols);
+		BlockTexCoords(std::vector<uint8> rc, uint8 numRows, uint8 numCols);
 	};
 
 	struct BlockAttribs {
