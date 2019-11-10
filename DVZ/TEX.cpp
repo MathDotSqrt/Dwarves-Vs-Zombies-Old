@@ -54,11 +54,23 @@ TEX::Builder::Builder(std::string filename) {
 	this->filename = filename;
 	this->mipmap = false;
 	this->useMipMap = false;
-	this->repeat().nearest().borderColor(0, 0, 0, 1);
+	this->rgb().repeat().nearest().borderColor(0, 0, 0, 1);
 }
 
 TEX::Builder::~Builder() {
 
+}
+
+TEX::Builder& TEX::Builder::rgb() {
+	this->components = GL_RGB;
+	this->storage = GL_RGB8;
+	return *this;
+}
+
+TEX::Builder& TEX::Builder::rgba() {
+	this->components = GL_RGBA;
+	this->storage = GL_RGBA8;
+	return *this;
 }
 
 TEX::Builder& TEX::Builder::repeat() {
@@ -119,6 +131,7 @@ TEX TEX::Builder::buildTexture() {
 	int channels;
 	unsigned char *image = stbi_load(this->filename.c_str(), &this->width, &this->height, &channels, 3);
 	this->textureTarget = GL_TEXTURE_2D;
+	
 	glGenTextures(1, &this->texID);
 	glBindTexture(this->textureTarget, this->texID);
 	glTexImage2D(this->textureTarget, 0, GL_RGB, this->width, this->height, 0, GL_RGB, GL_UNSIGNED_BYTE, image);
@@ -156,10 +169,11 @@ TEX TEX::Builder::buildTexture() {
 }
 
 TEX TEX::Builder::buildTextureAtlasArray(int rows, int cols) {
-	int channels;
-	unsigned char *image = stbi_load(this->filename.c_str(), &this->width, &this->height, &channels, 3);
-	printf("CHANNLES: %d\n\n\n", channels);
-	channels = 3;
+	int channels = this->components == GL_RGB ? 3 : 4;
+
+	int img_channels;
+	unsigned char *image = stbi_load(this->filename.c_str(), &this->width, &this->height, &img_channels, channels);
+
 	size_t size = this->width * this->height * channels * sizeof(unsigned char);
 	unsigned char *imageArray = (unsigned char *)malloc(size);
 
@@ -192,8 +206,8 @@ TEX TEX::Builder::buildTextureAtlasArray(int rows, int cols) {
 	this->textureTarget = GL_TEXTURE_2D_ARRAY;
 	glGenTextures(1, &this->texID);
 	glBindTexture(this->textureTarget, this->texID);
-	glTexStorage3D(this->textureTarget, mipmapLevelCount, channels == 3 ? GL_RGB8 : GL_RGBA8, sprite_width, sprite_height, num_sprites);
-	glTexSubImage3D(this->textureTarget, 0, 0, 0, 0, sprite_width, sprite_height, num_sprites, channels == 3 ? GL_RGB : GL_RGBA, GL_UNSIGNED_BYTE, imageArray);
+	glTexStorage3D(this->textureTarget, mipmapLevelCount, storage, sprite_width, sprite_height, num_sprites);
+	glTexSubImage3D(this->textureTarget, 0, 0, 0, 0, sprite_width, sprite_height, num_sprites, components, GL_UNSIGNED_BYTE, imageArray);
 
 	glTexParameteri(this->textureTarget, GL_TEXTURE_WRAP_S, this->wrapS);
 	glTexParameteri(this->textureTarget, GL_TEXTURE_WRAP_T, this->wrapT);

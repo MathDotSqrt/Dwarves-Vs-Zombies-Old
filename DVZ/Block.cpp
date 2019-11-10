@@ -38,7 +38,7 @@ BlockManager::BlockManager(){
 		BlockType::BLOCK_TYPE_GRASS,
 		MeshType::MESH_TYPE_BLOCK,
 		OccludeType::OCCLUDE_TYPE_ALL,
-		BlockTexCoords({0, 0, 3, 0}, 16, 16),
+		BlockTexCoords({ 0, 0, 3, 0 }, 16, 16),
 		glm::u8vec4(11, 102, 35, 255)
 	);
 	addBlock(GRASS);

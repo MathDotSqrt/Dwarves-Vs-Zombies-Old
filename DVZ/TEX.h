@@ -35,6 +35,9 @@ public:
 		GLuint texID;
 		GLenum textureTarget;
 
+		GLenum storage;
+		GLenum components;
+
 		GLenum wrapS;
 		GLenum wrapT;
 		float color[4];
@@ -47,6 +50,8 @@ public:
 	public:
 		Builder(std::string filename);
 		~Builder();
+		Builder& rgb();
+		Builder& rgba();
 		Builder& repeat();
 		Builder& mirrorRepeat();
 		Builder& clampToEdge();

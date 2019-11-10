@@ -27,6 +27,7 @@ private:
 
 
 	Graphics::TEX chunkTex = Graphics::TEX::Builder("terrain.png")
+		.rgb()
 		.nearest()
 		.clampToEdge()
 		.borderColor(0, 1, 0, 0)
