@@ -319,19 +319,24 @@ void OpenGLRenderer::renderChunks(Voxel::ChunkManager *manager, glm::vec3 camera
 	
 
 
-	Shader::GLSLProgram *shader = Shader::getShaderSet({ "chunk_shader.vert", "chunk_shader.frag" });
+	Shader::GLSLProgram *shader = Shader::getShaderSet({ "new_chunk_shader.vert", "new_chunk_shader.frag" });
 	shader->use();
+
+	shader->setUniform3f("dirLight.dir", glm::vec3(1, -1, 3));
+	shader->setUniform3f("dirLight.color", glm::vec3(1, 1, 1));
+	shader->setUniform3f("ambient.color", glm::vec3(1, 1, 1));
+	shader->setUniform1f("ambient.intensity", .2f);
 
 	shader->setUniform3f("camera_pos", camera_position);
 	shader->setUniformMat4("VP", vp);
 
 	Scene::PointLight &point = this->scene->pointLightCache[0];
-	shader->setUniform3f("point_light_position", point.position);
-	shader->setUniform3f("point_light_color", point.color);
-	shader->setUniform1f("point_light_intensity", point.intensity);
+	//shader->setUniform3f("point_light_position", point.position);
+	//shader->setUniform3f("point_light_color", point.color);
+	//shader->setUniform1f("point_light_intensity", point.intensity);
 
-	shader->setUniform3f("specular_color", chunkMat.specularColor);
-	shader->setUniform1f("shinyness", chunkMat.shinyness);
+	//shader->setUniform3f("specular_color", chunkMat.specularColor);
+	//shader->setUniform1f("shinyness", chunkMat.shinyness);
 
 	this->chunkTex.bindActiveTexture(0);
 	for (auto iterator = manager->getVisibleChunks().begin(); iterator != manager->getVisibleChunks().end(); iterator++) {
@@ -346,7 +351,7 @@ void OpenGLRenderer::renderChunks(Voxel::ChunkManager *manager, glm::vec3 camera
 		float y = data->getChunkY() * Voxel::CHUNK_RENDER_WIDTH_Y;
 		float z = data->getChunkZ() * Voxel::CHUNK_RENDER_WIDTH_Z;
 
-		shader->setUniform3f("pos", glm::vec3(x, y, z));
+		shader->setUniform3f("chunk_pos", glm::vec3(x, y, z));
 
 		data->vao.bind();
 		glEnableVertexAttribArray(POSITION_ATTRIB_LOCATION);

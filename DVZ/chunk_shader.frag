@@ -21,7 +21,7 @@ uniform float shinyness = 1;
 
 uniform sampler2DArray texAtlas;
 
-vec4 fog_color = vec4(.17, .15, .17, 1);
+vec4 fog_color = vec4(.15, .15, .15, 1);
 
 float fog_A = .3;
 float fog_B = 8;
