@@ -37,21 +37,21 @@ struct Fog {
 //uniform PointLight lights[3];
 uniform DirLight dirLight;
 uniform Ambient ambient;
-uniform Fog fog = Fog(vec3(.13), 0, .007);
+uniform Fog fog = Fog(vec3(.13, .13, .13), 0, .002);
 
 uniform vec3 camera_pos;
 
 uniform sampler2DArray tex;
 
-const float fog_A = .98;
-const float fog_B = 10;
+const float fog_A = 3;
+const float fog_B = 20;
 
 const float fog_min = .001;
-const float fog_max = 15;
+const float fog_max = 550;
 
-const float height_fog_start = 180;
-const float min_step = 250;
-const float max_step = 300;
+const float height_fog_start = 250;
+const float min_step = 400;
+const float max_step = 650;
 
 float calc_dir_light(DirLight dlight){
 	vec3 normalized_dir = normalize(dlight.dir);
@@ -109,9 +109,8 @@ void main(){
 	float f_h = calc_height_fog(dist);
 
 	float fog_mix = smoothstep(min_step, max_step, dist);
-	float final_mix = mix(f_h, f_d, fog_mix);
-	//const float alpha = 1;
-	//const float beta = 1;
+	float final_mix = mix(f_h, 0, fog_mix);
+	
 
 	//float final_mix = (f_d * alpha+f_h*beta) / (alpha+beta);
 	vec3 frag_color = mix(fog.color, final_light_color, final_mix);
