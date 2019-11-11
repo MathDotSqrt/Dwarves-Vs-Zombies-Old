@@ -93,7 +93,7 @@ void OpenGLRenderer::render(Voxel::ChunkManager *manager) {
 	index = renderNormal(index, vp);
 	index = renderBasicLit(index, camera_position, vp);
 	//index = renderBasicBlock(index, camera_position, vp);
-	renderChunks(manager, camera_position, view, perspectiveProjection);
+	renderChunks(manager, camera_position, vp);
 	//glBindVertexArray(0);
 
 }
@@ -311,7 +311,7 @@ int OpenGLRenderer::renderBasicBlock(int startIndex, glm::vec3 camera_position, 
 	return index;
 }
 
-void OpenGLRenderer::renderChunks(Voxel::ChunkManager *manager, glm::vec3 camera_position, glm::mat4 v, glm::mat4 p) {
+void OpenGLRenderer::renderChunks(Voxel::ChunkManager *manager, glm::vec3 camera_position, glm::mat4 vp) {
 	Util::Performance::Timer chunks("RenderChunks");
 
 	const Graphics::BlockMaterial chunkMat = { {.95f, .7f, .8f}, 30 };
@@ -322,17 +322,18 @@ void OpenGLRenderer::renderChunks(Voxel::ChunkManager *manager, glm::vec3 camera
 	Shader::GLSLProgram *shader = Shader::getShaderSet({ "new_chunk_shader.vert", "new_chunk_shader.frag" });
 	shader->use();
 
-	shader->setUniform3f("fog.color", glm::vec3(.13, .13, .13));
-	shader->setUniform1f("fog.start_dist", 200);
-	shader->setUniform1f("fog.attenuation", 0.0070);
+	//shader->setUniform3f("fog.color", glm::vec3(.15, .15, .15));
+	//shader->setUniform1f("fog.start_dist", 250);
+	//shader->setUniform1f("fog.attenuation", 0.009);
+
 	shader->setUniform3f("dirLight.dir", glm::vec3(1, -1, 3));
 	shader->setUniform3f("dirLight.color", glm::vec3(1, 1, 1));
+
 	shader->setUniform3f("ambient.color", glm::vec3(1, 1, 1));
 	shader->setUniform1f("ambient.intensity", .2f);
 
 	shader->setUniform3f("camera_pos", camera_position);
-	shader->setUniformMat4("V", v);
-	shader->setUniformMat4("P", p);
+	shader->setUniformMat4("VP", vp);
 
 	Scene::PointLight &point = this->scene->pointLightCache[0];
 

@@ -8,7 +8,6 @@ in vec3 frag_pos;
 in vec3 frag_normal;
 in vec3 frag_color;
 in vec4 frag_uv;
-in vec4 frag_view_space;
 
 out vec4 final_color;
 
@@ -38,11 +37,21 @@ struct Fog {
 //uniform PointLight lights[3];
 uniform DirLight dirLight;
 uniform Ambient ambient;
-uniform Fog fog;
+uniform Fog fog = Fog(vec3(.13), 0, .007);
 
 uniform vec3 camera_pos;
 
 uniform sampler2DArray tex;
+
+const float fog_A = .98;
+const float fog_B = 10;
+
+const float fog_min = .001;
+const float fog_max = 15;
+
+const float height_fog_start = 180;
+const float min_step = 250;
+const float max_step = 300;
 
 float calc_dir_light(DirLight dlight){
 	vec3 normalized_dir = normalize(dlight.dir);
@@ -50,8 +59,8 @@ float calc_dir_light(DirLight dlight){
 	return max(dot(-normalized_dir, normalized_norm), 0);
 }
 
-float calc_fog_factor(float start, float a){
-	float dist = gl_FragCoord.z / gl_FragCoord.w;
+float calc_fog_factor(float start, float a, float dist){
+	//float dist = gl_FragCoord.z / gl_FragCoord.w;
 
 	float d = max(dist - start, 0);
 
@@ -59,17 +68,21 @@ float calc_fog_factor(float start, float a){
 	return factor;
 }
 
-vec3 calc_fancy_fog(vec3 l_color, Fog fog){
-	float dist = gl_FragCoord.z / gl_FragCoord.w;
-	float d = max(dist - 200, 0);
+float calc_height_fog(float dist){
+	//float dist = gl_FragCoord.z / gl_FragCoord.w;
+	dist = max(dist - height_fog_start, 0);
 
-	const float b1 = 0.007;
-	const float b2 = 0.004;
+	//float length = length(frag_pos-camera_pos);
+	vec3 ray = frag_pos - camera_pos + vec3(.001, .001, .001);
+	vec3 point = camera_pos;
 
-	float scatter = 1 / exp(d * b1 * d * b1);
-	float extincition = 1 / exp(d * b2);
+	float numerator = fog_A*fog_B*(exp(ray.y/fog_B) - 1) * exp(-(point.y + ray.y)/fog_B);
+	float denominator = ray.y;
 
-	return (1 - scatter) * fog.color + extincition * l_color;
+	float fog_ammount = max(dist * numerator / denominator, 0);
+
+	float fog_mix = ((fog_max - fog_ammount) / (fog_max - fog_min));
+	return min(max(fog_mix, 0), 1); 
 }
 
 void main(){
@@ -91,9 +104,17 @@ void main(){
 	vec3 final_light_color = tex_color.rgb * light_color;
 
 	/*FOG*/
-	//float f = calc_fog_factor(fog.start_dist, fog.attenuation);
-	//vec3 frag_color = mix(fog.color, final_light_color, f);
-	vec3 frag_color = calc_fancy_fog(final_light_color, fog);
+	float dist = length(frag_pos-camera_pos);//gl_FragCoord.z / gl_FragCoord.w;
+	float f_d = calc_fog_factor(fog.start_dist, fog.attenuation, dist);
+	float f_h = calc_height_fog(dist);
+
+	float fog_mix = smoothstep(min_step, max_step, dist);
+	float final_mix = mix(f_h, f_d, fog_mix);
+	//const float alpha = 1;
+	//const float beta = 1;
+
+	//float final_mix = (f_d * alpha+f_h*beta) / (alpha+beta);
+	vec3 frag_color = mix(fog.color, final_light_color, final_mix);
 	/*FOG*/
 
 	final_color = vec4(frag_color, 1);
