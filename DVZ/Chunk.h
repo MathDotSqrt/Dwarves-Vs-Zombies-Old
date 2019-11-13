@@ -1,11 +1,5 @@
 #pragma once
 #include "Block.h"
-#include "VAO.h"
-#include "VBO.h"
-#include "Geometry.h"
-#include "Attrib.h"
-
-#include <vector>
 #include <shared_mutex>
 
 namespace Voxel{
@@ -46,9 +40,6 @@ enum class MeshState {
 
 //DO NOT CALL THIS ON STACK
 class Chunk {
-public:
-	typedef Graphics::Geometry<Graphics::PositionAttrib, Graphics::NormalAttrib, Graphics::ColorAttrib> BlockGeometry;
-	typedef BlockGeometry::GeometryVertex BlockVertex;
 
 private:
 	friend class ChunkMesher;

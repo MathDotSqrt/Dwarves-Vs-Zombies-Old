@@ -241,7 +241,7 @@
       <Filter>Header Files\Util</Filter>
     </ClInclude>
     <ClInclude Include="ChunkRefHandle.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\Voxel</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -381,7 +381,7 @@
       <Filter>Source Files\Voxel</Filter>
     </ClCompile>
     <ClCompile Include="ChunkRefHandle.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\Voxel</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

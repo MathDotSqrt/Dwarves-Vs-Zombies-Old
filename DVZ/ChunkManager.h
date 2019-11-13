@@ -1,24 +1,19 @@
 #pragma once
 
-#include "concurrentqueue.h"
 #include "Block.h"
 #include "Chunk.h"
+#include "ChunkRefHandle.h"
 #include "ChunkRenderData.h"
 #include "ChunkMesher.h"
-
-#include "ChunkRefHandle.h"
-
-#include "ThreadPool.h"
 
 #include "LinearAllocator.h"
 #include "PoolAllocator.h"
 #include "AllocatorHandle.h"
 
-#include "Recycler.h"
-
-#include <unordered_map>
+#include "concurrentqueue.h"
+#include "ThreadPool.h"
 #include <thread>
-#include <atomic>
+#include <unordered_map>
 
 namespace Voxel{
 
@@ -75,6 +70,7 @@ public:
 	int getChunkX(float x);
 	int getChunkY(float y);
 	int getChunkZ(float z);
+
 	std::vector<ChunkRenderData*>& getVisibleChunks() {
 		return this->visibleChunkList;
 	}
