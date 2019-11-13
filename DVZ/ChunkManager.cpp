@@ -255,19 +255,12 @@ Block ChunkManager::getBlockRay(glm::vec3 start, glm::vec3 dir, float radius) {
 				X += stepX;
 				// Adjust tMaxX to the next X-oriented boundary crossing.
 				tMaxX += tDeltaX;
-				
-				// Record the normal vector of the cube face we entered.
-				//face[0] = -stepX;
-				//face[1] = 0;
-				//face[2] = 0;
 			}
 			else {
 				if (tMaxZ > radius) break;
 				Z += stepZ;
 				tMaxZ += tDeltaZ;
-				//face[0] = 0;
-				//face[1] = 0;
-				//face[2] = -stepZ;
+				
 			}
 		}
 		else {
@@ -275,9 +268,7 @@ Block ChunkManager::getBlockRay(glm::vec3 start, glm::vec3 dir, float radius) {
 				if (tMaxY > radius) break;
 				Y += stepY;
 				tMaxY += tDeltaY;
-				//face[0] = 0;
-				//face[1] = -stepY;
-				//face[2] = 0;
+				
 			}
 			else {
 				// Identical to the second case, repeated for simplicity in
@@ -285,9 +276,6 @@ Block ChunkManager::getBlockRay(glm::vec3 start, glm::vec3 dir, float radius) {
 				if (tMaxZ > radius) break;
 				Z += stepZ;
 				tMaxZ += tDeltaZ;
-				//face[0] = 0;
-				//face[1] = 0;
-				//face[2] = -stepZ;
 			}
 		}
 
