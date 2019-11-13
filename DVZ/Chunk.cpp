@@ -1,6 +1,4 @@
 #include "Chunk.h"
-#include "VBO.h"
-#include "preamble.glsl"
 #include "macrologger.h"
 #include "Timer.h"
 #include "PerlinNoise.h"
@@ -67,66 +65,21 @@ void Chunk::generateTerrain() {
 		}
 	}
 
-//	for (int bz = 0; bz < CHUNK_WIDTH_Z; bz++) {
-//		for (int by = 0; by < CHUNK_WIDTH_Y; by++) {
-//			for (int bx = 0; bx < CHUNK_WIDTH_X; bx++) {
-//
-//				int x = this->chunk_x * CHUNK_WIDTH_X + bx;
-//				int y = this->chunk_y * CHUNK_WIDTH_Y + by;
-//				int z = this->chunk_z * CHUNK_WIDTH_Z + bz;
-//
-//				double height = pow(noise.octaveNoise0_1(x / 100.0, z / 100.0, 3), 4.5) * 155;
-//				if (y == 0) {
-//					setBlockInternal(bx, by, bz, Block(BlockType::BLOCK_TYPE_STONE));
-//				}
-//				else if (y < height) {
-//					setBlockInternal(bx, by, bz, Block(BlockType::BLOCK_TYPE_DIRT));
-//				}
-//				else if (y < height + 1) {
-//					setBlockInternal(bx, by, bz, Block(BlockType::BLOCK_TYPE_GRASS));
-//				}
-//				else {
-//					setBlockInternal(bx, by, bz, Block(BlockType::BLOCK_TYPE_DEFAULT));
-//				}
-//
-//				/*if (y < (abs(x / 10 + z / 10))) {
-//					this->setBlockInternal(bx, by, bz, (chunk_x + chunk_z) % 2 == 0 ? Block(BlockType::BLOCK_TYPE_STONE) : Block(BlockType::BLOCK_TYPE_DIRT));
-//				}
-//				else {
-//					this->setBlockInternal(bx, by, bz, Block(BlockType::BLOCK_TYPE_DEFAULT));
-//				}*/
-//
-//				/*if (y < (getHashCode() % (CHUNK_WIDTH_Y * 4))) {
-//					this->setBlockInternal(bx, by, bz, (chunk_x + chunk_z) % 2 == 0 ? Block(BlockType::BLOCK_TYPE_STONE) : Block(BlockType::BLOCK_TYPE_DIRT));
-//				}
-//*/
-//				//std::this_thread::sleep_for(std::chrono::nanoseconds(5));
-//
-//				/*if ((x * x) % (z * z + 1) > y * y) {
-//					if(y == 32)
-//						this->getBlockInternal(bx, by, bz) = { BlockType::BLOCK_TYPE_GRASS };
-//					else if((x * (z % (y * y + 1))) % 2 == 0)
-//						this->getBlockInternal(bx, by, bz) = { BlockType::BLOCK_TYPE_DIRT };
-//					else
-//						this->getBlockInternal(bx, by, bz) = { BlockType::BLOCK_TYPE_STONE };
-//				}
-//				else
-//					this->getBlockInternal(bx, by, bz) = {BlockType::BLOCK_TYPE_DEFAULT };*/
-//			}
-//		}
-//	}
-
 	blockState = BlockState::LOADED;
 	
 	if (meshState != MeshState::NONE_MESH) {
 		meshState = MeshState::DIRTY;
 	}
-	//flagDirtyMesh();
 }
 
 void Chunk::flagMeshValid() {
 	std::lock_guard<std::shared_mutex> lock(chunkMutex);
 	meshState = MeshState::VALID;
+}
+
+void Chunk::flagMeshRemoved() {
+	std::lock_guard<std::shared_mutex> lock(chunkMutex);
+	meshState = MeshState::NONE_MESH;
 }
 
 bool Chunk::isEmpty() {
@@ -163,15 +116,17 @@ MeshState Chunk::tryGetMeshState() {
 }
 
 void Chunk::flagDirtyMesh() {
-	//std::lock_guard<std::shared_mutex> lock(chunkMutex);
-	
+	/*std::lock_guard<std::shared_mutex> lock(chunkMutex);
+	if (meshState != MeshState::NONE_MESH) {
+		meshState = MeshState::DIRTY;
+	}*/
 }
 
-int Chunk::toIndex(int x, int y, int z) {
+int Chunk::toIndex(int x, int y, int z) const {
 	return x + CHUNK_WIDTH_X * (y + CHUNK_WIDTH_Y * z);
 }
 
-void Chunk::assertBlockIndex(int x, int y, int z) {
+void Chunk::assertBlockIndex(int x, int y, int z) const {
 	assert(x >= 0 && x < CHUNK_WIDTH_X);
 	assert(y >= 0 && y < CHUNK_WIDTH_Y);
 	assert(z >= 0 && z < CHUNK_WIDTH_Z);
@@ -199,10 +154,10 @@ void Chunk::setBlock(int x, int y, int z, Block block) {
 	if (this->data[this->toIndex(x, y, z)] != block) {
 		this->data[this->toIndex(x, y, z)] = block;
 
-		//if (meshState == MeshState::VALID) { //only dirty state if it was valid, not if empty or lazy
-		//	meshState = MeshState::DIRTY;	 //todo only dirty chunk if there is an adjecant block that is transparent
-		//}
-		flagDirtyMesh();
+		if (meshState == MeshState::VALID) { //only dirty state if it was valid, not if empty or lazy
+			meshState = MeshState::DIRTY;	 //todo only dirty chunk if there is an adjecant block that is transparent
+		}
+		//flagDirtyMesh();
 	}
 }
 
@@ -217,7 +172,7 @@ void Chunk::reinitializeChunk(int cx, int cy, int cz) {
 	meshState = MeshState::NONE_MESH;
 }
 
-int Chunk::expand(int x) {
+constexpr int Chunk::expand(int x) const{
 	x &= 0x3FF;
 	x = (x | (x << 16)) & 4278190335;
 	x = (x | (x << 8)) & 251719695;

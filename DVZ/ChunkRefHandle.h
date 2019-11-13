@@ -1,7 +1,7 @@
 #pragma once
 
-#include "Recycler.h"
 #include "Chunk.h"
+#include "Recycler.h"
 #include <atomic>
 
 namespace Voxel {

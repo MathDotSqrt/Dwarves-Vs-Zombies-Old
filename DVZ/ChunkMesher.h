@@ -31,8 +31,8 @@ namespace Voxel {
 		ChunkMesher();
 		~ChunkMesher();
 
-		void loadChunkData(ChunkNeighbors &);
-		void loadChunkDataAsync(ChunkNeighbors &);
+		void loadChunkData(const ChunkNeighbors &);
+		void loadChunkDataAsync(const ChunkNeighbors &);
 
 		void createChunkMesh(ChunkGeometry *);
 

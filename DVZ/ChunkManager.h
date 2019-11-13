@@ -51,6 +51,7 @@ public:
 	ChunkRefHandle getChunk(int cx, int cy, int cz);
 	ChunkRefHandle getChunkIfMapped(int cx, int cy, int cz);
 	ChunkRefHandle getNullChunk();
+	ChunkNeighbors getChunkNeighbors(int cx, int cy, int cz);
 	ChunkNeighbors getChunkNeighbors(const ChunkRefHandle &chunk);
 
 	ChunkRefHandle copyChunkRefHandle(const ChunkRefHandle& handle);
@@ -66,6 +67,9 @@ public:
 	void setBlock(int x, int y, int z, Block block);
 	Block getBlock(float x, float y, float z);
 	void setBlock(float x, float y, float z, Block block);
+
+	Block getBlockRay(glm::vec3 start, glm::vec3 end);
+	void setBlockRay(glm::vec3 start, glm::vec3 end, Block block);
 
 	int getChunkX(float x);
 	int getChunkY(float y);
@@ -92,8 +96,8 @@ private:
 	void chunkGeneratorThread();
 	void chunkMeshingThread();
 
-	int hashcode(int i, int j, int k);
-	int expand(int x);
+	constexpr int hashcode(int i, int j, int k) const;
+	constexpr int expand(int x) const;
 
 	int currentChunkX = 0;
 	int currentChunkY = 0;
@@ -123,6 +127,7 @@ private:
 	
 	Util::Allocator::LinearAllocator chunkMesherAllocator;
 	ChunkMesher *chunkMesherArray;
+	ChunkMesher *mainChunkMesher;
 
 
 	std::atomic<bool> runThreads = true;

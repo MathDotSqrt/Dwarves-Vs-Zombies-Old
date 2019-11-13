@@ -46,7 +46,7 @@ private:
 	friend class ChunkManager;
 
 	int chunk_x, chunk_y, chunk_z;
-	
+
 	Block data[CHUNK_VOLUME];
 	BlockState blockState;
 	MeshState meshState;
@@ -62,7 +62,8 @@ public:
 	void generateTerrain();
 
 	void flagMeshValid();
-	
+	void flagMeshRemoved();
+
 	bool isEmpty();
 	
 	BlockState getBlockState();
@@ -91,9 +92,7 @@ public:
 private:
 	void flagDirtyMesh();
 	
-	inline Block& getBlockInternal(int x, int y, int z) {
-		//std::shared_lock<std::shared_mutex> lock(this->chunkMutex);
-		//this->assertBlockIndex(x, y, z);
+	inline Block getBlockInternal(int x, int y, int z) const {
 		return data[this->toIndex(x, y, z)];
 	}
 
@@ -103,10 +102,10 @@ private:
 	
 	void reinitializeChunk(int cx, int cy, int cz);
 
-	int toIndex(int x, int y, int z);
-	void assertBlockIndex(int x, int y, int z);
+	int toIndex(int x, int y, int z) const;
+	void assertBlockIndex(int x, int y, int z) const;
 
-	int expand(int i);
+	constexpr int expand(int i) const;
 };
 
 typedef Chunk* ChunkPtr;

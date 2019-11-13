@@ -11,11 +11,52 @@ ChunkMesher::~ChunkMesher() {
 
 }
 
-void ChunkMesher::loadChunkData(ChunkNeighbors &n) {
+void ChunkMesher::loadChunkData(const ChunkNeighbors &n) {
+	memset(this->block, BlockType::BLOCK_TYPE_DEFAULT, sizeof(block));
+	if (n.middle) {
+		for (int z = 0; z < CHUNK_WIDTH_Z; z++) {
+			for (int y = 0; y < CHUNK_WIDTH_Y; y++) {
+				for (int x = 0; x < CHUNK_WIDTH_X; x++) {
+					this->block[toPaddedBlockIndex(x + 1, y + 1, z + 1)] = n.middle->getBlockInternal(x, y, z);
+				}
+			}
+		}
+	}
 
+	if (n.front && !n.front->isEmpty()) {
+		for (int y = 0; y < CHUNK_WIDTH_Y; y++) {
+			for (int x = 0; x < CHUNK_WIDTH_X; x++) {
+				this->block[toPaddedBlockIndex(x + 1, y + 1, PADDED_WIDTH_Z - 1)] = n.front->getBlockInternal(x, y, 0);
+			}
+		}
+	}
+
+	if (n.back && !n.back->isEmpty()) {
+		for (int y = 0; y < CHUNK_WIDTH_Y; y++) {
+			for (int x = 0; x < CHUNK_WIDTH_X; x++) {
+				this->block[toPaddedBlockIndex(x + 1, y + 1, 0)] = n.back->getBlockInternal(x, y, CHUNK_WIDTH_Z - 1);
+			}
+		}
+	}
+
+	if (n.left && !n.left->isEmpty()) {
+		for (int z = 0; z < CHUNK_WIDTH_Z; z++) {
+			for (int y = 0; y < CHUNK_WIDTH_Y; y++) {
+				this->block[toPaddedBlockIndex(0, y + 1, z + 1)] = n.left->getBlockInternal(CHUNK_WIDTH_X - 1, y, z);
+			}
+		}
+	}
+
+	if (n.right && !n.right->isEmpty()) {
+		for (int z = 0; z < CHUNK_WIDTH_Z; z++) {
+			for (int y = 0; y < CHUNK_WIDTH_Y; y++) {
+				this->block[toPaddedBlockIndex(PADDED_WIDTH_X - 1, y + 1, z + 1)] = n.right->getBlockInternal(0, y, z);
+			}
+		}
+	}
 }
 
-void ChunkMesher::loadChunkDataAsync(ChunkNeighbors &n) {
+void ChunkMesher::loadChunkDataAsync(const ChunkNeighbors &n) {
 	memset(this->block, BlockType::BLOCK_TYPE_DEFAULT, sizeof(block));
 	
 	if(n.middle){

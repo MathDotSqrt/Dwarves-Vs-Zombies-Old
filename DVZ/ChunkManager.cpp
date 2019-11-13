@@ -22,6 +22,7 @@ ChunkManager::ChunkManager(Util::Allocator::IAllocator &parent) :
 
 
 	this->chunkMesherArray = Util::Allocator::allocateArray<ChunkMesher>(this->chunkMesherAllocator, CHUNK_THREAD_POOL_SIZE);
+	this->mainChunkMesher = Util::Allocator::allocateNew<ChunkMesher>(this->chunkMesherAllocator);
 
 	this->chunkSet.max_load_factor(1.0f);
 	this->loadChunks(0, 0, 0, LOAD_DISTANCE);
@@ -34,6 +35,7 @@ ChunkManager::~ChunkManager() {
 	this->runThreads = false;
 	this->chunkSet.clear();
 	Util::Allocator::freeArray<ChunkMesher>(this->chunkMesherAllocator, this->chunkMesherArray);
+	Util::Allocator::free<ChunkMesher>(this->chunkMesherAllocator, this->mainChunkMesher);
 
 	this->generatorThread.join();
 
@@ -130,6 +132,18 @@ ChunkRefHandle ChunkManager::getNullChunk() {
 	return ChunkRefHandle();
 }
 
+ChunkNeighbors ChunkManager::getChunkNeighbors(int cx, int cy, int cz) {
+	return {
+		getChunkIfMapped(cx, cy, cz),		//we make a new reference of a chunk within chunkset 
+		getChunkIfMapped(cx, cy, cz + 1),
+		getChunkIfMapped(cx, cy, cz - 1),
+		getChunkIfMapped(cx - 1, cy, cz),
+		getChunkIfMapped(cx + 1, cy, cz),
+		getChunkIfMapped(cx, cy + 1, cz),
+		getChunkIfMapped(cx, cy - 1, cz)
+	};
+}
+
 ChunkNeighbors ChunkManager::getChunkNeighbors(const ChunkRefHandle &chunk) {
 	if (!chunk) {
 		return ChunkNeighbors();
@@ -215,6 +229,14 @@ void ChunkManager::setBlock(float x, float y, float z, Block block) {
 	this->setBlock((int)x, (int)y, (int)z, block);
 }
 
+Block ChunkManager::getBlockRay(glm::vec3 start, glm::vec3 end) {
+	return Block(BlockType::BLOCK_TYPE_DEFAULT);
+}
+
+void ChunkManager::setBlockRay(glm::vec3 start, glm::vec3 end, Block block){
+
+}
+
 int ChunkManager::getChunkX(float x) {
 	return (int)(x / CHUNK_RENDER_WIDTH_X);
 }
@@ -298,6 +320,8 @@ void ChunkManager::meshChunks(int chunkX, int chunkY, int chunkZ, int distance) 
 		const int DELETE_RANGE = distance / 2;
 
 		if (diffX > (DELETE_RANGE) || diffZ > (DELETE_RANGE)) {
+			//todo replace flag
+			renderableIter->second.first->flagMeshRemoved();
 			renderableIter = renderableChunkSet.erase(renderableIter);
 		}
 		else {
@@ -330,30 +354,49 @@ void ChunkManager::meshChunks(int chunkX, int chunkY, int chunkZ, int distance) 
 }
 
 void ChunkManager::updateAllChunks(int playerCX, int playerCY, int playerCZ) {
+	
+	std::vector<ChunkNeighbors> neighbors;
+	
+	int num_erased = 0;
+	const int MAX_ERASE = 10;
+
 	auto iter = this->chunkSet.begin();
 	while (iter != this->chunkSet.end()) {
 		ChunkRefCount &chunkRefCountPair = iter->second;
 		ChunkHandle &chunk = chunkRefCountPair.first;
 		RefCount &referenceCount = chunkRefCountPair.second;
 
-		if (referenceCount == 0) {
+		if (num_erased <= MAX_ERASE && referenceCount == 0) {
 			iter = this->chunkSet.erase(iter);
+			num_erased++;
 			continue;
 		}
 		
+		if (iter->second.first->meshState == MeshState::DIRTY) {
+			ChunkHandle &handle = iter->second.first;
+			neighbors.emplace_back(getChunkNeighbors(handle->chunk_x, handle->chunk_y, handle->chunk_z));
+		}
+
+
 		iter++;
 	}
 
-	//auto renderIter = renderableChunkSet.begin();
-	//while (renderIter != renderableChunkSet.end()) {
-	//	ChunkRefHandle &chunk = renderIter->second.first;
+	Util::Performance::Timer timer("Chunk Main ReMeshing");
+	while (neighbors.size() > 0) {
+		ChunkNeighbors n = std::move(neighbors.back());
+		mainChunkMesher->loadChunkData(n);
+		ChunkGeometryHandle geometry = meshRecycler.getUniqueNew();
+		mainChunkMesher->createChunkMesh(geometry.get());
 
-	//	if (chunk->getMeshState() == Chunk::MeshState::DIRTY) {
-	//		
-	//	}
+		ChunkRefHandle &chunk = n.middle;
+		ChunkRenderDataHandle &renderData = renderableChunkSet[chunk->getHashCode()].second;
+		renderData->bufferGeometry(geometry.get());
+		chunk->flagMeshValid();
 
-	//	renderIter++;
-	//}
+		neighbors.pop_back();
+		break;
+	}
+	
 }
 
 void ChunkManager::enqueueChunks() {
@@ -467,7 +510,7 @@ void ChunkManager::chunkMeshingThread() {
 	}
 }
 
-int ChunkManager::expand(int x) {
+constexpr int ChunkManager::expand(int x) const {
 	x &= 0x3FF;
 	x = (x | (x << 16)) & 4278190335;
 	x = (x | (x << 8)) & 251719695;
@@ -477,7 +520,7 @@ int ChunkManager::expand(int x) {
 }
 
 //todo figure out if this hashcode perserves locality with negative integers
-int ChunkManager::hashcode(int i, int j, int k) {
+constexpr int ChunkManager::hashcode(int i, int j, int k) const {
 	//z order curve
 	return expand(i) + (expand(j) << 1) + (expand(k) << 2);
 }

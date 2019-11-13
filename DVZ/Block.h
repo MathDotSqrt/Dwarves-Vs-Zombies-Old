@@ -108,13 +108,11 @@ namespace Voxel {
 
 	struct Block {
 		BlockType type;
-		Block() {
-			this->type = BlockType::BLOCK_TYPE_DEFAULT;
+		Block() : type(BlockType::BLOCK_TYPE_DEFAULT){
 		}
 
 
-		Block(BlockType type) {
-			this->type = type;
+		Block(BlockType type) : type(type){
 		}
 
 		bool operator==(const Block &other) {
