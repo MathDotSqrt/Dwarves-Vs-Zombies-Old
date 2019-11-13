@@ -4,6 +4,7 @@
 #include "macrologger.h"
 #include "ChunkManager.h"
 #include "Scene.h"
+#include "Window.h"
 
 VoxelSystem::VoxelSystem(int priority) : System(priority){
 	LOG_SYSTEM("NUMBER OF THREADS: %d", std::thread::hardware_concurrency());
@@ -28,6 +29,15 @@ void VoxelSystem::update(Engine *engine, float delta) {
 	glm::vec3 playerPos = p.pos;
 
 	manager->update(playerPos.x, playerPos.y, playerPos.z);
+
+
+	if (Window::isPressed(Window::ONE)) {
+		DirComponent dir = engine->get<DirComponent>(engine->getPlayer());
+		RotationComponent rot = engine->get<RotationComponent>(engine->getPlayer());
+		glm::vec3 ray = glm::rotate(rot.rot, dir.forward);
+		manager->setBlockRay(playerPos, ray, 10, Voxel::Block(Voxel::BlockType::BLOCK_TYPE_GLASS));
+	}
+	
 	
 
 }

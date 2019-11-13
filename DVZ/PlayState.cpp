@@ -27,7 +27,7 @@ void PlayState::init() {
 	Graphics::TEX texture = Graphics::TEX::Builder("terrain.png").buildTexture();
 
 	/*PLAYER*/
-	entt::entity playerID = this->e.addPlayer(1, 0, 0);
+	entt::entity playerID = this->e.addPlayer(0, 0, 0);
 	unsigned int pointLightInstanceID = this->e.getScene()->createPointLightInstance();
 	this->e.assign<PointLightComponent>(playerID, pointLightInstanceID, glm::vec3(1, 1, 1), 60.0f);
 	/*PLAYER*/

@@ -1,3 +1,4 @@
+
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include <vector>
@@ -54,8 +55,9 @@ void Window::destroyWindow() {
 }
 
 void Window::update() {
-	glfwSwapBuffers(window);
 	glfwPollEvents();
+
+	glfwSwapBuffers(window);
 }
 
 void Window::addResizeCallback(IResizable *resizable) {

@@ -68,8 +68,8 @@ public:
 	Block getBlock(float x, float y, float z);
 	void setBlock(float x, float y, float z, Block block);
 
-	Block getBlockRay(glm::vec3 start, glm::vec3 end);
-	void setBlockRay(glm::vec3 start, glm::vec3 end, Block block);
+	Block getBlockRay(glm::vec3 start, glm::vec3 dir, float radius);
+	void setBlockRay(glm::vec3 start, glm::vec3 dir, float radius, Block block);
 
 	int getChunkX(float x);
 	int getChunkY(float y);
@@ -86,7 +86,6 @@ private:
 	bool isChunkRenderable(int cx, int cy, int cz);
 	bool isChunkVisible(int cx, int cy, int cz);
 
-
 	void loadChunks(int chunkX, int chunkY, int chunkZ, int loadDistance);
 	void meshChunks(int chunkX, int chunkY, int chunkZ, int renderDistance);
 	void updateAllChunks(int playerCX, int playerCY, int playerCZ);
@@ -96,6 +95,7 @@ private:
 	void chunkGeneratorThread();
 	void chunkMeshingThread();
 
+	float intbound(float s, float ds) const;
 	constexpr int hashcode(int i, int j, int k) const;
 	constexpr int expand(int x) const;
 
