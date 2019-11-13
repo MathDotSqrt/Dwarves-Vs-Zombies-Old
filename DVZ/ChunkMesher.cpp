@@ -77,12 +77,19 @@ void ChunkMesher::createChunkMesh(ChunkGeometry *geometry) {
 				}
 				BlockFaceCullTags tags = { true, true, true, true, true, true };
 
-				tags.nx = this->getBlock(x - 1, y, z).type == BlockType::BLOCK_TYPE_DEFAULT;
-				tags.px = this->getBlock(x + 1, y, z).type == BlockType::BLOCK_TYPE_DEFAULT;
-				tags.ny = this->getBlock(x, y - 1, z).type == BlockType::BLOCK_TYPE_DEFAULT;
-				tags.py = this->getBlock(x, y + 1, z).type == BlockType::BLOCK_TYPE_DEFAULT;
-				tags.nz = this->getBlock(x, y, z - 1).type == BlockType::BLOCK_TYPE_DEFAULT;
-				tags.pz = this->getBlock(x, y, z + 1).type == BlockType::BLOCK_TYPE_DEFAULT;
+				//tags.nx = this->getBlock(x - 1, y, z).type == BlockType::BLOCK_TYPE_DEFAULT;
+				//tags.px = this->getBlock(x + 1, y, z).type == BlockType::BLOCK_TYPE_DEFAULT;
+				//tags.ny = this->getBlock(x, y - 1, z).type == BlockType::BLOCK_TYPE_DEFAULT;
+				//tags.py = this->getBlock(x, y + 1, z).type == BlockType::BLOCK_TYPE_DEFAULT;
+				//tags.nz = this->getBlock(x, y, z - 1).type == BlockType::BLOCK_TYPE_DEFAULT;
+				//tags.pz = this->getBlock(x, y, z + 1).type == BlockType::BLOCK_TYPE_DEFAULT;
+
+				tags.nx = block.isOccludedBy(getBlock(x - 1, y, z));
+				tags.px = block.isOccludedBy(getBlock(x + 1, y, z));
+				tags.ny = block.isOccludedBy(getBlock(x, y - 1, z));
+				tags.py = block.isOccludedBy(getBlock(x, y + 1, z));
+				tags.nz = block.isOccludedBy(getBlock(x, y, z - 1));
+				tags.pz = block.isOccludedBy(getBlock(x, y, z + 1));
 
 				this->createCulledCube(x, y, z, tags, block, geometry);
 			}
@@ -118,7 +125,7 @@ void ChunkMesher::createCulledCube(int x, int y, int z, ChunkMesher::BlockFaceCu
 	BlockVertex v0, v1, v2, v3;
 
 	/*FRONT*/
-	if (tags.pz) {
+	if (!tags.pz) {
 		glm::i8vec3 n0(0, 0, 1);
 		v0 = { p0, n0, c0, uv.front.uv2() };
 		v1 = { p1, n0, c0, uv.front.uv3() };
@@ -128,7 +135,7 @@ void ChunkMesher::createCulledCube(int x, int y, int z, ChunkMesher::BlockFaceCu
 	}
 
 	/*BACK*/
-	if (tags.nz) {
+	if (!tags.nz) {
 		glm::i8vec3 n1(0, 0, -1);
 		v0 = { p4, n1, c0, uv.back.uv2() };
 		v1 = { p5, n1, c0, uv.back.uv3() };
@@ -138,7 +145,7 @@ void ChunkMesher::createCulledCube(int x, int y, int z, ChunkMesher::BlockFaceCu
 	}
 
 	/*LEFT*/
-	if (tags.nx) {
+	if (!tags.nx) {
 		glm::i8vec3 n2(-1, 0, 0);
 		v0 = { p5, n2, c0, uv.left.uv2() };
 		v1 = { p0, n2, c0, uv.left.uv3() };
@@ -148,7 +155,7 @@ void ChunkMesher::createCulledCube(int x, int y, int z, ChunkMesher::BlockFaceCu
 	}
 
 	/*RIGHT*/
-	if (tags.px) {
+	if (!tags.px) {
 		glm::i8vec3 n3(1, 0, 0);
 		v0 = { p1, n3, c0, uv.right.uv2() };
 		v1 = { p4, n3, c0, uv.right.uv3() };
@@ -158,7 +165,7 @@ void ChunkMesher::createCulledCube(int x, int y, int z, ChunkMesher::BlockFaceCu
 	}
 
 	/*TOP*/
-	if (tags.py) {
+	if (!tags.py) {
 		glm::i8vec3 n4(0, 1, 0);
 		v0 = { p3, n4, c0, uv.top.uv2() };
 		v1 = { p2, n4, c0, uv.top.uv3() };
@@ -168,7 +175,7 @@ void ChunkMesher::createCulledCube(int x, int y, int z, ChunkMesher::BlockFaceCu
 	}
 
 	/*BOTTOM*/
-	if (tags.ny) {
+	if (!tags.ny) {
 		glm::i8vec3 n5(0, -1, 0);
 		v0 = { p1, n5, c0, uv.bottom.uv2() };
 		v1 = { p0, n5, c0, uv.bottom.uv3() };

@@ -52,6 +52,15 @@ BlockManager::BlockManager(){
 	);
 	addBlock(SAND);
 
+	BlockAttribs ROSE(
+		BlockType::BLOCK_TYPE_ROSE,
+		MeshType::MESH_TYPE_X,
+		OccludeType::OCCLUDE_TYPE_NONE,
+		BlockTexCoords(12, 0, 16, 16),
+		glm::u8vec4(194, 178, 128, 255)
+	);
+	addBlock(ROSE);
+
 	BlockAttribs PURPLE(
 		BlockType::BLOCK_TYPE_PURPLE,
 		MeshType::MESH_TYPE_BLOCK,
