@@ -240,6 +240,9 @@
     <ClInclude Include="PerlinNoise.h">
       <Filter>Header Files\Util</Filter>
     </ClInclude>
+    <ClInclude Include="ChunkRefHandle.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -376,6 +379,9 @@
     </ClCompile>
     <ClCompile Include="Block.cpp">
       <Filter>Source Files\Voxel</Filter>
+    </ClCompile>
+    <ClCompile Include="ChunkRefHandle.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
