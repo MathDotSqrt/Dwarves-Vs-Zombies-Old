@@ -12,6 +12,7 @@ namespace Voxel {
 		BLOCK_TYPE_DIRT,
 		BLOCK_TYPE_GRASS,
 		BLOCK_TYPE_SAND,
+		BLOCK_TYPE_GLASS,
 		BLOCK_TYPE_GRASS_PLANT,
 		BLOCK_TYPE_ROSE,
 		BLOCK_TYPE_GOLDENROD,
@@ -144,7 +145,7 @@ namespace Voxel {
 			OccludeType oType = type.getOccludeType();
 			bool isOccluded = false;
 			isOccluded |= (oType == OccludeType::OCCLUDE_TYPE_ALL);
-			isOccluded |= (oType == OccludeType::OCCLUDE_TYPE_SELF) && (type == type.type);
+			isOccluded |= (oType == OccludeType::OCCLUDE_TYPE_SELF) && (this->type == type.type);
 
 			return isOccluded;
 		}

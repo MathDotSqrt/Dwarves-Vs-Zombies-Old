@@ -75,7 +75,6 @@ void ChunkMesher::createChunkMesh(ChunkGeometry *geometry) {
 				if (block.getMeshType() == MeshType::MESH_TYPE_NONE) {
 					continue;
 				}
-				BlockFaceCullTags tags = { true, true, true, true, true, true };
 
 				//tags.nx = this->getBlock(x - 1, y, z).type == BlockType::BLOCK_TYPE_DEFAULT;
 				//tags.px = this->getBlock(x + 1, y, z).type == BlockType::BLOCK_TYPE_DEFAULT;
@@ -84,14 +83,20 @@ void ChunkMesher::createChunkMesh(ChunkGeometry *geometry) {
 				//tags.nz = this->getBlock(x, y, z - 1).type == BlockType::BLOCK_TYPE_DEFAULT;
 				//tags.pz = this->getBlock(x, y, z + 1).type == BlockType::BLOCK_TYPE_DEFAULT;
 
-				tags.nx = block.isOccludedBy(getBlock(x - 1, y, z));
-				tags.px = block.isOccludedBy(getBlock(x + 1, y, z));
-				tags.ny = block.isOccludedBy(getBlock(x, y - 1, z));
-				tags.py = block.isOccludedBy(getBlock(x, y + 1, z));
-				tags.nz = block.isOccludedBy(getBlock(x, y, z - 1));
-				tags.pz = block.isOccludedBy(getBlock(x, y, z + 1));
-
-				this->createCulledCube(x, y, z, tags, block, geometry);
+				if (block.getMeshType() == MeshType::MESH_TYPE_BLOCK) {
+					BlockFaceCullTags tags;
+					tags.nx = block.isOccludedBy(getBlock(x - 1, y, z));
+					tags.px = block.isOccludedBy(getBlock(x + 1, y, z));
+					tags.ny = block.isOccludedBy(getBlock(x, y - 1, z));
+					tags.py = block.isOccludedBy(getBlock(x, y + 1, z));
+					tags.nz = block.isOccludedBy(getBlock(x, y, z - 1));
+					tags.pz = block.isOccludedBy(getBlock(x, y, z + 1));
+					createCulledCube(x, y, z, tags, block, geometry);
+				}
+				else {
+					createX(x, y, z, block, geometry);
+				}
+					
 			}
 		}
 	}
@@ -183,6 +188,48 @@ void ChunkMesher::createCulledCube(int x, int y, int z, ChunkMesher::BlockFaceCu
 		v3 = { p4, n5, c0, uv.bottom.uv0() };
 		geometry->appendFace(v0, v1, v2, v3);
 	}
+}
+
+void ChunkMesher::createX(int x, int y, int z, Block b, ChunkGeometry *geometry) { 
+	constexpr unsigned int BLOCK_WIDTH = 1;
+
+	int x_ = x;
+	int y_ = y;
+	int z_ = z;
+
+	glm::u8vec3 p0(x_, y_, z_ + BLOCK_WIDTH);
+	glm::u8vec3 p1(x_ + BLOCK_WIDTH, y_, z_ + BLOCK_WIDTH);
+	glm::u8vec3 p2(x_ + BLOCK_WIDTH, y_ + BLOCK_WIDTH, z_ + BLOCK_WIDTH);
+	glm::u8vec3 p3(x_, y_ + BLOCK_WIDTH, z_ + BLOCK_WIDTH);
+
+	glm::u8vec3 p4(x_ + BLOCK_WIDTH, y_, z_);
+	glm::u8vec3 p5(x_, y_, z_);
+	glm::u8vec3 p6(x_, y_ + BLOCK_WIDTH, z_);
+	glm::u8vec3 p7(x_ + BLOCK_WIDTH, y_ + BLOCK_WIDTH, z_);
+
+	glm::u8vec3 c0 = b.getColor();
+
+	auto uv = b.getTexCoords();
+
+	/*0---1*/
+	/*|   |*/
+	/*3---2*/
+	BlockVertex v0, v1, v2, v3;
+
+	glm::i8vec3 n0(0, 0, 0);
+	v0 = { p0, n0, c0, uv.front.uv2() };
+	v1 = { p4, n0, c0, uv.front.uv3() };
+	v2 = { p7, n0, c0, uv.front.uv1() };
+	v3 = { p3, n0, c0, uv.front.uv0() };
+	geometry->appendFace(v0, v1, v2, v3);
+	geometry->appendFace(v1, v0, v3, v2);
+
+	v0 = { p1, n0, c0, uv.front.uv2() };
+	v1 = { p5, n0, c0, uv.front.uv3() };
+	v2 = { p6, n0, c0, uv.front.uv1() };
+	v3 = { p2, n0, c0, uv.front.uv0() };
+	geometry->appendFace(v0, v1, v2, v3);
+	geometry->appendFace(v1, v0, v3, v2);
 }
 
 Block ChunkMesher::getBlock(int x, int y, int z) {
