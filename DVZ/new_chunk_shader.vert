@@ -15,11 +15,20 @@ out vec4 frag_uv;
 //uniform mat4 M;
 uniform vec3 chunk_pos;
 uniform mat4 VP;
+uniform float time;
+
+const float SPAWN_TIME = .5;
+const float DEPTH = .1;
 
 void main(){
+	//function y = x - SPA
+	//float y = min(DEPTH * (time * time - SPAWN_TIME), 0);
+	float x_d = min(time - SPAWN_TIME, 0);
+	float y = min(-100*(x_d*x_d), 0); //XD
+
 	mat4 M = mat4(1);
 	M[3].xyz = chunk_pos.xyz;
-
+	M[3].y += y;
 	vec4 world_pos = M * vec4(vert_pos, 1);
 	
 	frag_pos = world_pos.xyz;

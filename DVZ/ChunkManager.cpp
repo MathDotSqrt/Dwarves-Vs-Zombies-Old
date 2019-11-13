@@ -1,9 +1,10 @@
 #include "ChunkManager.h"
+#include "Timer.h"
+#include "Window.h"
 #include <cmath>
 #include <string>
 #include <algorithm>
 #include <random>
-#include "Timer.h"
 
 using namespace Voxel;
 
@@ -392,6 +393,7 @@ void ChunkManager::enqueueChunks() {
 
 void ChunkManager::dequeueChunkRenderData() {
 	ChunkGeometryPair element;
+	double time = Window::getTime();
 	for (int i = 0; i < 10 && this->chunkMeshedQueue.try_dequeue(element); i++) {
 		ChunkRefHandle &chunk = element.first;
 		if (isChunkRenderable(chunk->chunk_x, chunk->chunk_y, chunk->chunk_z)) {
@@ -400,6 +402,7 @@ void ChunkManager::dequeueChunkRenderData() {
 			data->cx = chunk->chunk_x;
 			data->cy = chunk->chunk_y;
 			data->cz = chunk->chunk_z;
+			data->startTime = time;
 			data->bufferGeometry(element.second.get());
 
 			chunk->flagMeshValid();

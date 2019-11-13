@@ -34,24 +34,25 @@ struct Fog {
 	float attenuation;
 };
 
+uniform vec3 camera_pos;
+uniform sampler2DArray tex;
+
 //uniform PointLight lights[3];
 uniform DirLight dirLight;
 uniform Ambient ambient;
 uniform Fog fog = Fog(vec3(.13, .13, .13), 0, .002);
 
-uniform vec3 camera_pos;
 
-uniform sampler2DArray tex;
 
-const float fog_A = 3;
+const float fog_A = 4;
 const float fog_B = 20;
 
 const float fog_min = .001;
 const float fog_max = 550;
 
-const float height_fog_start = 250;
-const float min_step = 400;
-const float max_step = 650;
+const float height_fog_start = 350;
+const float min_step = 600;
+const float max_step = 800;
 
 float calc_dir_light(DirLight dlight){
 	vec3 normalized_dir = normalize(dlight.dir);

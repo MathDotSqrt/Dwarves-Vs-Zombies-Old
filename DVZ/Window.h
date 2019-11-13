@@ -22,6 +22,8 @@ namespace Window {
 	bool isPressed(char c);
 	bool isPressed(const unsigned int c);
 
+	double getTime();
+
 	bool shouldClose();
 	int getWidth();
 	int getHeight();

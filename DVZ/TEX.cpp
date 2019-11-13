@@ -201,7 +201,7 @@ TEX TEX::Builder::buildTextureAtlasArray(int rows, int cols) {
 	stbi_image_free(image);
 
 	int num_sprites = rows * cols;
-	int mipmapLevelCount = 3;
+	int mipmapLevelCount = 4;
 
 	this->textureTarget = GL_TEXTURE_2D_ARRAY;
 	glGenTextures(1, &this->texID);

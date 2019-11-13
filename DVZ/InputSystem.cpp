@@ -24,7 +24,7 @@ void InputSystem::update(Engine * engine, float deltaTime) {
 	const float SPEED = 9.0f;
 	const float FLY = 3.0f;
 	const float TURN_SPEED = 3.0f;
-	const float FAST_SPEED = 48.0f;
+	const float FAST_SPEED = 88.0f;
 
 	struct {
 		float forward = 0;

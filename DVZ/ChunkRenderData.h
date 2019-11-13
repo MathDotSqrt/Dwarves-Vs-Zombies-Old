@@ -36,11 +36,11 @@ public:
 
 
 	int32 cx, cy, cz;
-
 	Graphics::VAO vao;
 	Graphics::VBO vbo;
-
 	size_t indexCount;
+
+	double startTime;
 
 	ChunkRenderData();
 	~ChunkRenderData();

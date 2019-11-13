@@ -40,7 +40,7 @@ void Window::createWindow(int initWidth, int initHeight, const char* initTitle) 
 	}
 
 	glfwMakeContextCurrent(window);									//Displays window and makes it active
-	//glfwSwapInterval(1);											//Wheather to enable or disable vsync
+	glfwSwapInterval(1);											//Wheather to enable or disable vsync
 
 	width = initWidth;
 	height = initHeight;
@@ -68,6 +68,10 @@ bool Window::isPressed(char c) {
 
 bool Window::isPressed(const unsigned int c) {
 	return glfwGetKey(window, c) == GLFW_PRESS;
+}
+
+double Window::getTime() {
+	return glfwGetTime();
 }
 
 bool Window::shouldClose() {

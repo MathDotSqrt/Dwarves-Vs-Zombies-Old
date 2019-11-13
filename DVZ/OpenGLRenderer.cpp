@@ -17,6 +17,7 @@ MaterialID TextureMaterial::type = MaterialID::TEXTURE_MATERIAL_ID;
 MaterialID BlockMaterial::type = MaterialID::BLOCK_MATERIAL_ID;
 
 OpenGLRenderer::OpenGLRenderer(){
+	start = Window::getTime();
 }
 
 
@@ -80,6 +81,8 @@ void OpenGLRenderer::prerender() {
 		sortedRenderStateKeys.push_back(key);
 	}
 	std::sort(this->sortedRenderStateKeys.begin(), this->sortedRenderStateKeys.end());
+
+	duration = Window::getTime() - start;
 }
 
 void OpenGLRenderer::render(Voxel::ChunkManager *manager) {
@@ -96,6 +99,10 @@ void OpenGLRenderer::render(Voxel::ChunkManager *manager) {
 	renderChunks(manager, camera_position, vp);
 	//glBindVertexArray(0);
 
+}
+
+void OpenGLRenderer::postrender() {
+	
 }
 
 int OpenGLRenderer::renderBasic(int startIndex, glm::mat4 vp) {
@@ -351,6 +358,7 @@ void OpenGLRenderer::renderChunks(Voxel::ChunkManager *manager, glm::vec3 camera
 		float z = data->getChunkZ() * Voxel::CHUNK_RENDER_WIDTH_Z;
 
 		shader->setUniform3f("chunk_pos", glm::vec3(x, y, z));
+		shader->setUniform1f("time", getShaderTime() - (float)data->startTime);
 
 		data->vao.bind();
 		glEnableVertexAttribArray(POSITION_ATTRIB_LOCATION);
