@@ -102,6 +102,10 @@ bool Window::isPressed(const unsigned int c) {
 	return glfwGetKey(window, c) == GLFW_PRESS;
 }
 
+bool Window::isMousePressed(const unsigned int b) {
+	return glfwGetMouseButton(window, b) == GLFW_PRESS;
+}
+
 bool Window::getMousePos(double &x, double &y) {
 	glfwGetCursorPos(window, &x, &y);
 	//LOG_ALWAYS("%lf %lf", x, y);

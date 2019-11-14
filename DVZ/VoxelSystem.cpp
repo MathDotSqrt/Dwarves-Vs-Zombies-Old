@@ -30,12 +30,19 @@ void VoxelSystem::update(Engine *engine, float delta) {
 
 	manager->update(playerPos.x, playerPos.y, playerPos.z);
 
+	static bool badCode = true;
 
-	if (Window::isPressed(Window::ONE)) {
+
+	if (badCode && Window::isMousePressed(Window::LEFT_CLICK)) {
 		DirComponent dir = engine->get<DirComponent>(engine->getPlayer());
 		RotationComponent rot = engine->get<RotationComponent>(engine->getPlayer());
 		glm::vec3 ray = glm::rotate(rot.rot, dir.forward);
 		manager->setBlockRay(playerPos, ray, 10, Voxel::Block(Voxel::BlockType::BLOCK_TYPE_GLASS));
+
+		badCode = false;
+	}
+	else {
+		badCode = !Window::isMousePressed(Window::LEFT_CLICK);
 	}
 	
 	

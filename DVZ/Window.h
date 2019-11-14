@@ -20,6 +20,9 @@ namespace Window {
 	const unsigned int THREE = GLFW_KEY_3;
 	const unsigned int FOUR = GLFW_KEY_4;
 
+	const unsigned int RIGHT_CLICK = GLFW_MOUSE_BUTTON_RIGHT;
+	const unsigned int LEFT_CLICK = GLFW_MOUSE_BUTTON_LEFT;
+
 	
 	void createWindow(int width, int height, const char *title);
 	void destroyWindow();
@@ -29,6 +32,7 @@ namespace Window {
 
 	bool isPressed(char c);
 	bool isPressed(const unsigned int c);
+	bool isMousePressed(const unsigned int b);
 
 	bool getMousePos(double &x, double &y);
 
