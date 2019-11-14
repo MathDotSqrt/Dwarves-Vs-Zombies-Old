@@ -289,9 +289,9 @@ void ChunkManager::setBlockRay(glm::vec3 start, glm::vec3 dir, float radius, Blo
 	const Block AIR;
 	dir = glm::normalize(dir);
 
-	int X = floor(start.x);
-	int Y = floor(start.y);
-	int Z = floor(start.z);
+	int X = (int)floor(start.x);
+	int Y = (int)floor(start.y);
+	int Z = (int)floor(start.z);
 	int stepX = dir.x >= 0 ? 1 : -1;
 	int stepY = dir.y >= 0 ? 1 : -1;
 	int stepZ = dir.z >= 0 ? 1 : -1;

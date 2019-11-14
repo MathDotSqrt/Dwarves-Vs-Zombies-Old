@@ -5,6 +5,8 @@
 
 
 namespace Window {
+	const unsigned int ESC = GLFW_KEY_ESCAPE;
+
 	const unsigned int UP = GLFW_KEY_UP;
 	const unsigned int DOWN = GLFW_KEY_DOWN;
 	const unsigned int LEFT = GLFW_KEY_LEFT;
@@ -27,6 +29,8 @@ namespace Window {
 
 	bool isPressed(char c);
 	bool isPressed(const unsigned int c);
+
+	bool getMousePos(double &x, double &y);
 
 	double getTime();
 
