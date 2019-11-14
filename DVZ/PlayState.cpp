@@ -27,9 +27,9 @@ void PlayState::init() {
 	Graphics::TEX texture = Graphics::TEX::Builder("terrain.png").buildTexture();
 
 	/*PLAYER*/
-	entt::entity playerID = this->e.addPlayer(0, 0, 0);
-	unsigned int pointLightInstanceID = this->e.getScene()->createPointLightInstance();
-	this->e.assign<PointLightComponent>(playerID, pointLightInstanceID, glm::vec3(1, 1, 1), 60.0f);
+	entt::entity playerID = e.addPlayer(0, 0, 0);
+	unsigned int pointLightInstanceID = e.getScene()->createPointLightInstance();
+	e.assign<PointLightComponent>(playerID, pointLightInstanceID, glm::vec3(1, 1, 1), 60.0f);
 	/*PLAYER*/
 	
 	/*TREE*/
@@ -38,12 +38,12 @@ void PlayState::init() {
 	unsigned int meshID = scene->createMesh(model, material);
 	unsigned int renderID = scene->createRenderInstance(meshID);
 
-	entt::entity test = this->e.create();
-	this->e.assign<PositionComponent>(test, glm::vec3(0, 0, 0));
-	this->e.assign<RotationComponent>(test, glm::quat(glm::vec3(0, 0, 0)));
-	this->e.assign<ScaleComponent>(test, glm::vec3(1, 1, 1));
-	this->e.assign<RotationalVelocityComponent>(test, glm::vec3(0, 1, 0));
-	this->e.assign<RenderInstanceComponent>(test, renderID);
+	entt::entity test = e.create();
+	e.assign<PositionComponent>(test, glm::vec3(0, 0, 0));
+	e.assign<RotationComponent>(test, glm::quat(glm::vec3(0, 0, 0)));
+	e.assign<ScaleComponent>(test, glm::vec3(1, 1, 1));
+	e.assign<RotationalVelocityComponent>(test, glm::vec3(0, 1, 0));
+	e.assign<RenderInstanceComponent>(test, renderID);
 	/*TREE*/
 
 
@@ -53,12 +53,12 @@ void PlayState::init() {
 	/*NET*/
 
 	/*SYSTEM*/
-	this->e.addSystem(new InputSystem(0));
-	this->e.addSystem(new ShaderUpdaterSystem(1.0f, 100));
-	this->e.addSystem(new MovementSystem(200));
+	e.addSystem(new InputSystem(0));
+	e.addSystem(new ShaderUpdaterSystem(1.0f, 100));
+	e.addSystem(new MovementSystem(200));
 	//this->e.addSystem(new NetPlayerSystem(.1f, 2));
-	this->e.addSystem(new VoxelSystem(300));
-	this->e.addSystem(new BasicRenderSystem(500));
+	e.addSystem(new VoxelSystem(300));
+	e.addSystem(new BasicRenderSystem(500));
 	/*SYSTEM*/
 
 	//Graphics::TEX t = Graphics::TEX::Builder("terrain_debug.png").nearest().clampToEdge().buildTextureAtlasArray(16, 16);
