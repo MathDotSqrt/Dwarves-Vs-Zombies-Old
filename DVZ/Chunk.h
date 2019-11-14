@@ -45,13 +45,17 @@ private:
 	friend class ChunkMesher;
 	friend class ChunkManager;
 
+	typedef uint8 Light;
+
 	int chunk_x, chunk_y, chunk_z;
 
-	Block data[CHUNK_VOLUME];
 	BlockState blockState;
 	MeshState meshState;
 
 	std::shared_mutex chunkMutex;
+
+	Block blockData[CHUNK_VOLUME];
+	Light lightData[CHUNK_VOLUME];
 
 public:
 	
@@ -93,11 +97,11 @@ private:
 	void flagDirtyMesh();
 	
 	inline Block getBlockInternal(int x, int y, int z) const {
-		return data[this->toIndex(x, y, z)];
+		return blockData[this->toIndex(x, y, z)];
 	}
 
 	inline void setBlockInternal(int x, int y, int z, Block b) {
-		data[this->toIndex(x, y, z)] = b;
+		blockData[this->toIndex(x, y, z)] = b;
 	}
 	
 	void reinitializeChunk(int cx, int cy, int cz);

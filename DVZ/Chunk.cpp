@@ -23,7 +23,8 @@ void Chunk::generateTerrain() {
 	static Util::PerlinNoise noise;
 	std::lock_guard<std::shared_mutex> writeLock(this->chunkMutex);
 
-	memset(&this->data, (uint8)BlockType::BLOCK_TYPE_DEFAULT, sizeof(this->data));
+	memset(&this->blockData, (uint8)BlockType::BLOCK_TYPE_DEFAULT, sizeof(this->blockData));
+	memset(&this->lightData, (uint8)0, sizeof(this->lightData));
 
 	for (int bz = 0; bz < CHUNK_WIDTH_Z; bz++) {
 		for (int bx = 0; bx < CHUNK_WIDTH_X; bx++) {
@@ -139,7 +140,7 @@ Block Chunk::getBlock(int x, int y, int z) {
 	}
 
 	this->assertBlockIndex(x, y, z);
-	return data[this->toIndex(x, y, z)];
+	return blockData[this->toIndex(x, y, z)];
 }
 
 void Chunk::setBlock(int x, int y, int z, Block block) {
@@ -151,8 +152,8 @@ void Chunk::setBlock(int x, int y, int z, Block block) {
 
 	this->assertBlockIndex(x, y, z);
 
-	if (this->data[this->toIndex(x, y, z)] != block) {
-		this->data[this->toIndex(x, y, z)] = block;
+	if (this->blockData[this->toIndex(x, y, z)] != block) {
+		this->blockData[this->toIndex(x, y, z)] = block;
 
 		if (meshState == MeshState::VALID) { //only dirty state if it was valid, not if empty or lazy
 			meshState = MeshState::DIRTY;	 //todo only dirty chunk if there is an adjecant block that is transparent
