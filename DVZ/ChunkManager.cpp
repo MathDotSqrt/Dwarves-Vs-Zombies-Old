@@ -100,7 +100,7 @@ ChunkRefHandle ChunkManager::getChunk(int cx, int cy, int cz) {
 		return ChunkRefHandle(chunkPtr, ChunkDestructor(refCount));
 	}
 
-	ChunkHandle chunk = this->chunkRecycler.getUniqueNew(cx, cy, cz);
+	ChunkHandle chunk = this->chunkRecycler.getUniqueNew(cx, cy, cz, this);
 	chunk->reinitializeChunk(cx, cy, cz);
 	int chunkHashCode = chunk->getHashCode();
 
@@ -372,7 +372,7 @@ int ChunkManager::getChunkZ(float z) {
 
 ChunkPtr ChunkManager::newChunk(int cx, int cy, int cz) {
 	//test if there is a free chunk.
-	ChunkPtr chunk_ptr = this->chunkRecycler.getNew(cx, cy, cz);
+	ChunkPtr chunk_ptr = this->chunkRecycler.getNew(cx, cy, cz, this);
 	chunk_ptr->reinitializeChunk(cx, cy, cz);		//todo think of a better way to reinit chunks
 
 	return chunk_ptr;

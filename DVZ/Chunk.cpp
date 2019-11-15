@@ -1,4 +1,5 @@
 #include "Chunk.h"
+#include "ChunkManager.h"
 #include "macrologger.h"
 #include "Timer.h"
 #include "PerlinNoise.h"
@@ -8,10 +9,11 @@
 
 using namespace Voxel;
 
-Chunk::Chunk(int x, int y, int z) : 
+Chunk::Chunk(int x, int y, int z, ChunkManager *manager) : 
 	chunk_x(x), 
 	chunk_y(y), 
-	chunk_z(z) {
+	chunk_z(z),
+	manager(manager){
 
 	blockState = BlockState::NONE;
 	meshState = MeshState::NONE_MESH;

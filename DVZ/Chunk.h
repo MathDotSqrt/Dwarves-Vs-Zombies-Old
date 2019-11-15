@@ -38,6 +38,9 @@ enum class MeshState {
 	NUM_MESH_STATES
 };
 
+class ChunkManager;
+
+
 //DO NOT CALL THIS ON STACK
 class Chunk {
 
@@ -47,20 +50,21 @@ private:
 
 	typedef uint8 Light;
 
-	int chunk_x, chunk_y, chunk_z;
+	Block blockData[CHUNK_VOLUME];
+	Light lightData[CHUNK_VOLUME];
 
 	BlockState blockState;
 	MeshState meshState;
 
 	std::shared_mutex chunkMutex;
 
-	Block blockData[CHUNK_VOLUME];
-	Light lightData[CHUNK_VOLUME];
+	int chunk_x, chunk_y, chunk_z;
+	const ChunkManager *manager;
 
 public:
 	
 	//todo make chunk contain shared pointer of render data from a recycler. Maybe
-	Chunk(int x, int y, int z);
+	Chunk(int x, int y, int z, ChunkManager *manager);
 	~Chunk();
 
 	void generateTerrain();
@@ -104,7 +108,7 @@ private:
 		blockData[this->toIndex(x, y, z)] = b;
 	}
 	
-	void reinitializeChunk(int cx, int cy, int cz);
+	void reinitializeChunk(int cx, int cy, int cz);					//todo find a code patter to get rid of this
 
 	int toIndex(int x, int y, int z) const;
 	void assertBlockIndex(int x, int y, int z) const;
