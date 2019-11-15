@@ -83,15 +83,15 @@ public:
 	Block getBlock(int x, int y, int z);
 	void setBlock(int x, int y, int z, Block block);
 
-	inline int getChunkX() {
+	inline int getChunkX() const {
 		return this->chunk_x;
 	}
 
-	inline int getChunkY() {
+	inline int getChunkY() const {
 		return this->chunk_y;
 	}
 
-	inline int getChunkZ() {
+	inline int getChunkZ() const {
 		return this->chunk_z;
 	}
 
