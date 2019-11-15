@@ -156,8 +156,9 @@ void Chunk::setBlock(int x, int y, int z, Block block) {
 	if (blockData[this->toIndex(x, y, z)] == block)
 		return;
 
-
 	this->blockData[this->toIndex(x, y, z)] = block;
+
+
 
 	if (meshState == MeshState::VALID) { //only dirty state if it was valid, not if empty or lazy
 		meshState = MeshState::DIRTY;	 //todo only dirty chunk if there is an adjecant block that is transparent

@@ -32,17 +32,26 @@ void VoxelSystem::update(Engine *engine, float delta) {
 
 	static bool badCode = true;
 
-
-	if (badCode && Window::isMousePressed(Window::LEFT_CLICK)) {
+	bool left = Window::isMousePressed(Window::LEFT_CLICK);
+	bool right = Window::isMousePressed(Window::RIGHT_CLICK);
+	if (badCode && (left || right)) {
 		DirComponent dir = engine->get<DirComponent>(engine->getPlayer());
 		RotationComponent rot = engine->get<RotationComponent>(engine->getPlayer());
+		
 		glm::vec3 ray = glm::rotate(rot.rot, dir.forward);
-		manager->setBlockRay(playerPos, ray, 10, Voxel::Block(Voxel::BlockType::BLOCK_TYPE_GLASS));
+		Voxel::BlockRayCast cast = manager->castRay(playerPos, ray, 10);
+
+		if (left && cast.block != Voxel::Block()) {
+			manager->setBlock(cast.nx, cast.ny, cast.nz, Voxel::Block(Voxel::BlockType::BLOCK_TYPE_GLASS));
+		}
+		else if (right) {
+			manager->setBlock(cast.x, cast.y, cast.z, Voxel::Block());
+		}
 
 		badCode = false;
 	}
 	else {
-		badCode = !Window::isMousePressed(Window::LEFT_CLICK);
+		badCode = !(left || right);
 	}
 	
 	

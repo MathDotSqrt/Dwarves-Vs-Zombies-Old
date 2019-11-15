@@ -29,6 +29,12 @@ struct ChunkNeighbors {
 	ChunkRefHandle down;
 };
 
+struct BlockRayCast {
+	Block block;
+	int x, y, z;
+	int nx, ny, nz;
+};
+
 class ChunkManager {
 public:							//fix bug of things not destructing in order
 	friend class ChunkMesher;
@@ -68,6 +74,8 @@ public:
 	Block getBlock(float x, float y, float z);
 	void setBlock(float x, float y, float z, Block block);
 
+
+	BlockRayCast castRay(glm::vec3 start, glm::vec3 dir, float radius);
 	Block getBlockRay(glm::vec3 start, glm::vec3 dir, float radius);
 	void setBlockRay(glm::vec3 start, glm::vec3 dir, float radius, Block block);
 

@@ -358,6 +358,84 @@ void ChunkManager::setBlockRay(glm::vec3 start, glm::vec3 dir, float radius, Blo
 		setBlock(X + norm.x, Y + norm.y, Z + norm.z, newBlock);
 }
 
+BlockRayCast ChunkManager::castRay(glm::vec3 start, glm::vec3 dir, float radius) {
+	const Block AIR;
+	dir = glm::normalize(dir);
+
+	int X = (int)floor(start.x);
+	int Y = (int)floor(start.y);
+	int Z = (int)floor(start.z);
+	int stepX = dir.x >= 0 ? 1 : -1;
+	int stepY = dir.y >= 0 ? 1 : -1;
+	int stepZ = dir.z >= 0 ? 1 : -1;
+
+	float tMaxX = intbound(start.x, dir.x);
+	float tMaxY = intbound(start.y, dir.y);
+	float tMaxZ = intbound(start.z, dir.z);
+
+	float tDeltaX = stepX / dir.x;
+	float tDeltaY = stepY / dir.y;
+	float tDeltaZ = stepZ / dir.z;
+
+	glm::ivec3 norm;
+
+	Block block;
+
+	do {
+		// tMaxX stores the t-value at which we cross a cube boundary along the
+		// X axis, and similarly for Y and Z. Therefore, choosing the least tMax
+		// chooses the closest cube boundary. Only the first case of the four
+		// has been commented in detail.
+		if (tMaxX < tMaxY) {
+			if (tMaxX < tMaxZ) {
+				if (tMaxX > radius) break;
+				// Update which cube we are now in.
+				X += stepX;
+				// Adjust tMaxX to the next X-oriented boundary crossing.
+				tMaxX += tDeltaX;
+
+				// Record the normal vector of the cube face we entered.
+				norm = glm::ivec3(-stepX, 0, 0);
+			}
+			else {
+				if (tMaxZ > radius) break;
+				Z += stepZ;
+				tMaxZ += tDeltaZ;
+				norm = glm::ivec3(0, 0, -stepZ);
+
+			}
+		}
+		else {
+			if (tMaxY < tMaxZ) {
+				if (tMaxY > radius) break;
+				Y += stepY;
+				tMaxY += tDeltaY;
+				norm = glm::ivec3(0, -stepY, 0);
+
+			}
+			else {
+				// Identical to the second case, repeated for simplicity in
+				// the conditionals.
+				if (tMaxZ > radius) break;
+				Z += stepZ;
+				tMaxZ += tDeltaZ;
+				norm = glm::ivec3(0, 0, -stepZ);
+
+			}
+		}
+
+		block = getBlock(X, Y, Z);
+	} while (block == AIR);
+
+	BlockRayCast cast = {
+		block, 
+		X, Y, Z, 
+		X + norm.x, Y + norm.y, Z + norm.z
+	};
+
+	return cast;
+}
+
 int ChunkManager::getChunkX(float x) {
 	return (int)(x / CHUNK_RENDER_WIDTH_X);
 }
