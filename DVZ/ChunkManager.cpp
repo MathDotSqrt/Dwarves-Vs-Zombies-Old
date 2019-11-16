@@ -64,6 +64,12 @@ void ChunkManager::update(float x, float y, float z) {
 		Util::Performance::Timer updateAllChunksTimer("Updating all chunks");
 		updateAllChunks(chunkX, chunkY, chunkZ);
 	}
+
+	{
+		Util::Performance::Timer updateDirtyChunk("Updating dirty chunks");
+		updateDirtyChunks();
+	}
+
 	{
 		Util::Performance::Timer enqueueChunksTimer("Enqueue Chunks");
 		enqueueChunks();
@@ -311,6 +317,13 @@ int ChunkManager::getChunkZ(float z) {
 	return (int)(z / CHUNK_RENDER_WIDTH_Z);
 }
 
+void ChunkManager::queueDirtyChunk(int cx, int cy, int cz) {
+	ChunkRefHandle chunk = getChunkIfMapped(cx, cy, cz);
+	if (chunk) {
+		mainMeshQueue.emplace(std::move(chunk));
+	}
+}
+
 ChunkPtr ChunkManager::newChunk(int cx, int cy, int cz) {
 	//test if there is a free chunk.
 	ChunkPtr chunk_ptr = this->chunkRecycler.getNew(cx, cy, cz, this);
@@ -431,7 +444,7 @@ void ChunkManager::meshChunks(int chunkX, int chunkY, int chunkZ, int distance) 
 
 void ChunkManager::updateAllChunks(int playerCX, int playerCY, int playerCZ) {
 	
-	std::vector<ChunkNeighbors> neighbors;
+//	std::vector<ChunkNeighbors> neighbors;
 	
 	int num_erased = 0;
 	const int MAX_ERASE = 100;
@@ -448,31 +461,49 @@ void ChunkManager::updateAllChunks(int playerCX, int playerCY, int playerCZ) {
 			continue;
 		}
 		
-		if (iter->second.first->meshState == MeshState::DIRTY) {
-			ChunkHandle &handle = iter->second.first;
-			neighbors.emplace_back(getChunkNeighbors(handle->chunk_x, handle->chunk_y, handle->chunk_z));
-		}
+		//if (iter->second.first->meshState == MeshState::DIRTY) {
+		//	ChunkHandle &handle = iter->second.first;
+		//	neighbors.emplace_back(getChunkNeighbors(handle->chunk_x, handle->chunk_y, handle->chunk_z));
+		//}
 
 
 		iter++;
 	}
 
-	Util::Performance::Timer timer("Chunk Main ReMeshing");
-	while (neighbors.size() > 0) {
-		ChunkNeighbors n = std::move(neighbors.back());
+	//Util::Performance::Timer timer("Chunk Main ReMeshing");
+	//while (neighbors.size() > 0) {
+	//	ChunkNeighbors n = std::move(neighbors.back());
+	//	mainChunkMesher->loadChunkData(n);
+	//	ChunkGeometryHandle geometry = meshRecycler.getUniqueNew();
+	//	mainChunkMesher->createChunkMesh(geometry.get());
+
+	//	ChunkRefHandle &chunk = n.middle;
+	//	ChunkRenderDataHandle &renderData = renderableChunkSet[chunk->getHashCode()].second;
+	//	renderData->bufferGeometry(geometry.get());
+	//	chunk->flagMeshValid();
+
+	//	neighbors.pop_back();
+	//	break;
+	//}
+	
+}
+
+void ChunkManager::updateDirtyChunks() {
+	constexpr int MAX_DQ = 3;
+
+
+	for (int i = 0; i < MAX_DQ && mainMeshQueue.size() > 0; i++) {
+		ChunkRefHandle &handle = mainMeshQueue.front();
+		ChunkNeighbors n = getChunkNeighbors(handle);
 		mainChunkMesher->loadChunkData(n);
 		ChunkGeometryHandle geometry = meshRecycler.getUniqueNew();
 		mainChunkMesher->createChunkMesh(geometry.get());
-
-		ChunkRefHandle &chunk = n.middle;
-		ChunkRenderDataHandle &renderData = renderableChunkSet[chunk->getHashCode()].second;
+		ChunkRenderDataHandle &renderData = renderableChunkSet[handle->getHashCode()].second;
 		renderData->bufferGeometry(geometry.get());
-		chunk->flagMeshValid();
+		handle->flagMeshValid();
 
-		neighbors.pop_back();
-		break;
+		mainMeshQueue.pop();
 	}
-	
 }
 
 void ChunkManager::enqueueChunks() {

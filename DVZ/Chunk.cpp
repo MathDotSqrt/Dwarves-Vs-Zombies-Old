@@ -162,6 +162,7 @@ void Chunk::setBlock(int x, int y, int z, Block block) {
 
 	if (meshState == MeshState::VALID) { //only dirty state if it was valid, not if empty or lazy
 		meshState = MeshState::DIRTY;	 //todo only dirty chunk if there is an adjecant block that is transparent
+		manager->queueDirtyChunk(chunk_x, chunk_y, chunk_z);
 	}
 }
 

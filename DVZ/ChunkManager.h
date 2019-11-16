@@ -14,6 +14,7 @@
 #include "ThreadPool.h"
 #include <thread>
 #include <unordered_map>
+#include <queue>
 
 namespace Voxel{
 
@@ -37,6 +38,7 @@ struct BlockRayCast {
 
 class ChunkManager {
 public:							//fix bug of things not destructing in order
+	friend class Chunk;
 	friend class ChunkMesher;
 
 	static const int CHUNK_ALLOC_SIZE = 1000 * 1024 * 1024;
@@ -85,9 +87,9 @@ public:
 		return this->visibleChunkList;
 	}
 private:
-	ChunkPtr newChunk(int cx, int cy, int cz);
+	void queueDirtyChunk(int cx, int cy, int cz);
 	
-
+	ChunkPtr newChunk(int cx, int cy, int cz);
 	bool isChunkLoaded(int cx, int cy, int cz);
 	bool isChunkRenderable(int cx, int cy, int cz);
 	bool isChunkVisible(int cx, int cy, int cz);
@@ -97,6 +99,7 @@ private:
 	void loadChunks(int chunkX, int chunkY, int chunkZ, int loadDistance);
 	void meshChunks(int chunkX, int chunkY, int chunkZ, int renderDistance);
 	void updateAllChunks(int playerCX, int playerCY, int playerCZ);
+	void updateDirtyChunks();
 	void enqueueChunks();
 	void dequeueChunkRenderData();
 
@@ -123,12 +126,13 @@ private:
 	Util::Recycler<ChunkGeometry> meshRecycler;
 	Util::Recycler<ChunkRenderData> renderDataRecycler;
 
-	std::unordered_map<int, ChunkRefCount> chunkSet;
-	std::unordered_map<int, ChunkRefHandle> loadedChunkSet;
-	std::unordered_map<int, ChunkRenderDataPair> renderableChunkSet;
-	std::vector<ChunkRefHandle> needsLoadingCache;
-	std::vector<ChunkRefHandle> needsMeshCache;
-	std::vector<ChunkRenderData*> visibleChunkList;
+	std::unordered_map<int, ChunkRefCount> chunkSet;					//contains all chunks
+	std::unordered_map<int, ChunkRefHandle> loadedChunkSet;				//subset of all chunks that are loaded
+	std::unordered_map<int, ChunkRenderDataPair> renderableChunkSet;	//subset of all chunks that are renderable
+	std::vector<ChunkRefHandle> needsLoadingCache;						//subset of all chunks that could be loaded
+	std::vector<ChunkRefHandle> needsMeshCache;							//subset of all chunks that could be meshed
+	std::queue<ChunkRefHandle> mainMeshQueue;							//subset of all chunks that should be meshed on main thread
+	std::vector<ChunkRenderData*> visibleChunkList;						//subset of all chunks that will be rendered
 	moodycamel::ConcurrentQueue<ChunkRefHandle> chunkGenerationQueue;
 	moodycamel::ConcurrentQueue<ChunkNeighborGeometryPair> chunkMeshingQueue;
 	moodycamel::ConcurrentQueue<ChunkGeometryPair> chunkMeshedQueue;

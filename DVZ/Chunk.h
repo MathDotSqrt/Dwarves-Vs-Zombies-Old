@@ -59,7 +59,7 @@ private:
 	std::shared_mutex chunkMutex;
 
 	int chunk_x, chunk_y, chunk_z;
-	const ChunkManager *manager;
+	ChunkManager *manager;
 
 public:
 	
