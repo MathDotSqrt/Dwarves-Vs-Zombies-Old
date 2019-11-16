@@ -76,8 +76,6 @@ public:
 
 
 	BlockRayCast castRay(glm::vec3 start, glm::vec3 dir, float radius);
-	Block getBlockRay(glm::vec3 start, glm::vec3 dir, float radius);
-	void setBlockRay(glm::vec3 start, glm::vec3 dir, float radius, Block block);
 
 	int getChunkX(float x);
 	int getChunkY(float y);
@@ -88,11 +86,13 @@ public:
 	}
 private:
 	ChunkPtr newChunk(int cx, int cy, int cz);
-	//void removeChunk(int cx, int cy, int cz);	//fully removes chunk
+	
 
 	bool isChunkLoaded(int cx, int cy, int cz);
 	bool isChunkRenderable(int cx, int cy, int cz);
 	bool isChunkVisible(int cx, int cy, int cz);
+
+	void sortChunks(int chunkX, int chunkY, int chunkZ, std::vector<ChunkRefHandle> &vector);
 
 	void loadChunks(int chunkX, int chunkY, int chunkZ, int loadDistance);
 	void meshChunks(int chunkX, int chunkY, int chunkZ, int renderDistance);

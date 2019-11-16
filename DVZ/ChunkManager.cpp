@@ -221,143 +221,6 @@ void ChunkManager::setBlock(float x, float y, float z, Block block) {
 	this->setBlock((int)x, (int)y, (int)z, block);
 }
 
-Block ChunkManager::getBlockRay(glm::vec3 start, glm::vec3 dir, float radius) {
-	const Block AIR;
-	
-	dir = glm::normalize(dir);
-
-	int X = (int)start.x;
-	int Y = (int)start.y;
-	int Z = (int)start.z;
-	int stepX = dir.x >= 0 ? 1 : -1;
-	int stepY = dir.y >= 0 ? 1 : -1;
-	int stepZ = dir.z >= 0 ? 1 : -1;
-
-	float tMaxX = intbound(start.x, dir.x);
-	float tMaxY = intbound(start.y, dir.y);
-	float tMaxZ = intbound(start.z, dir.z);
-
-	float tDeltaX = stepX / dir.x;
-	float tDeltaY = stepY / dir.y;
-	float tDeltaZ = stepZ / dir.z;
-	
-	Block block;
-
-	do{
-		// tMaxX stores the t-value at which we cross a cube boundary along the
-		// X axis, and similarly for Y and Z. Therefore, choosing the least tMax
-		// chooses the closest cube boundary. Only the first case of the four
-		// has been commented in detail.
-		if (tMaxX < tMaxY) {
-			if (tMaxX < tMaxZ) {
-				if (tMaxX > radius) break;
-				// Update which cube we are now in.
-				X += stepX;
-				// Adjust tMaxX to the next X-oriented boundary crossing.
-				tMaxX += tDeltaX;
-			}
-			else {
-				if (tMaxZ > radius) break;
-				Z += stepZ;
-				tMaxZ += tDeltaZ;
-				
-			}
-		}
-		else {
-			if (tMaxY < tMaxZ) {
-				if (tMaxY > radius) break;
-				Y += stepY;
-				tMaxY += tDeltaY;
-				
-			}
-			else {
-				// Identical to the second case, repeated for simplicity in
-				// the conditionals.
-				if (tMaxZ > radius) break;
-				Z += stepZ;
-				tMaxZ += tDeltaZ;
-			}
-		}
-
-		block = getBlock(X, Y, Z);
-	} while (block == AIR);
-
-	return block;
-}
-
-void ChunkManager::setBlockRay(glm::vec3 start, glm::vec3 dir, float radius, Block newBlock){
-	const Block AIR;
-	dir = glm::normalize(dir);
-
-	int X = (int)floor(start.x);
-	int Y = (int)floor(start.y);
-	int Z = (int)floor(start.z);
-	int stepX = dir.x >= 0 ? 1 : -1;
-	int stepY = dir.y >= 0 ? 1 : -1;
-	int stepZ = dir.z >= 0 ? 1 : -1;
-
-	float tMaxX = intbound(start.x, dir.x);
-	float tMaxY = intbound(start.y, dir.y);
-	float tMaxZ = intbound(start.z, dir.z);
-
-	float tDeltaX = stepX / dir.x;
-	float tDeltaY = stepY / dir.y;
-	float tDeltaZ = stepZ / dir.z;
-
-	glm::ivec3 norm;
-
-	Block block;
-
-	do {
-		// tMaxX stores the t-value at which we cross a cube boundary along the
-		// X axis, and similarly for Y and Z. Therefore, choosing the least tMax
-		// chooses the closest cube boundary. Only the first case of the four
-		// has been commented in detail.
-		if (tMaxX < tMaxY) {
-			if (tMaxX < tMaxZ) {
-				if (tMaxX > radius) break;
-				// Update which cube we are now in.
-				X += stepX;
-				// Adjust tMaxX to the next X-oriented boundary crossing.
-				tMaxX += tDeltaX;
-
-				// Record the normal vector of the cube face we entered.
-				norm = glm::ivec3(-stepX, 0, 0);
-			}
-			else {
-				if (tMaxZ > radius) break;
-				Z += stepZ;
-				tMaxZ += tDeltaZ;
-				norm = glm::ivec3(0, 0, -stepZ);
-
-			}
-		}
-		else {
-			if (tMaxY < tMaxZ) {
-				if (tMaxY > radius) break;
-				Y += stepY;
-				tMaxY += tDeltaY;
-				norm = glm::ivec3(0, -stepY, 0);
-
-			}
-			else {
-				// Identical to the second case, repeated for simplicity in
-				// the conditionals.
-				if (tMaxZ > radius) break;
-				Z += stepZ;
-				tMaxZ += tDeltaZ;
-				norm = glm::ivec3(0, 0, -stepZ);
-
-			}
-		}
-
-		block = getBlock(X, Y, Z);
-	} while (block == AIR);
-
-	if(block != AIR)
-		setBlock(X + norm.x, Y + norm.y, Z + norm.z, newBlock);
-}
-
 BlockRayCast ChunkManager::castRay(glm::vec3 start, glm::vec3 dir, float radius) {
 	const Block AIR;
 	dir = glm::normalize(dir);
@@ -466,6 +329,18 @@ bool ChunkManager::isChunkRenderable(int cx, int cy, int cz) {
 	return iter != this->renderableChunkSet.end();
 }
 
+
+void ChunkManager::sortChunks(int chunkX, int chunkY, int chunkZ, std::vector<ChunkRefHandle> &vector) {
+	auto lambda = [chunkX, chunkY, chunkZ](const ChunkRefHandle &rhs, const ChunkRefHandle &lhs) {
+		int distL = std::abs(chunkX - lhs->getChunkX()) + std::abs(chunkY - lhs->getChunkY()) + std::abs(chunkZ - lhs->getChunkZ());
+		int distR = std::abs(chunkX - rhs->getChunkX()) + std::abs(chunkY - rhs->getChunkY()) + std::abs(chunkZ - rhs->getChunkZ());
+
+		return distL < distR;
+	};
+
+	std::sort(vector.begin(), vector.end(), lambda);
+}
+
 void ChunkManager::loadChunks(int chunkX, int chunkY, int chunkZ, int distance) {
 	
 	//Unloading chunks that are out of load distance
@@ -506,7 +381,8 @@ void ChunkManager::loadChunks(int chunkX, int chunkY, int chunkZ, int distance) 
 
 		return distL > distR;
 	};
-	std::sort(needsLoadingCache.begin(), needsLoadingCache.end(), compareLambda);
+	//std::sort(needsLoadingCache.begin(), needsLoadingCache.end(), compareLambda);
+	sortChunks(chunkX, chunkY, chunkZ, needsLoadingCache);
 }
 
 void ChunkManager::meshChunks(int chunkX, int chunkY, int chunkZ, int distance) {
@@ -549,7 +425,8 @@ void ChunkManager::meshChunks(int chunkX, int chunkY, int chunkZ, int distance) 
 		return distL > distR;
 	};
 
-	std::sort(needsMeshCache.begin(), needsMeshCache.end(), compareLambda);
+	//std::sort(needsMeshCache.begin(), needsMeshCache.end(), compareLambda);
+	sortChunks(chunkX, chunkY, chunkZ, needsMeshCache);
 }
 
 void ChunkManager::updateAllChunks(int playerCX, int playerCY, int playerCZ) {
