@@ -485,19 +485,20 @@ void ChunkManager::updateAllChunks(int playerCX, int playerCY, int playerCZ) {
 }
 
 void ChunkManager::updateDirtyChunks() {
-	constexpr int MAX_DQ = 3;
+	constexpr int MAX_DQ = 1;
 
 
 	for (int i = 0; i < MAX_DQ && mainMeshQueue.size() > 0; i++) {
 		ChunkRefHandle &handle = mainMeshQueue.front();
 		ChunkNeighbors n = getChunkNeighbors(handle);
 		mainChunkMesher->loadChunkData(n);
-		ChunkGeometryHandle geometry = meshRecycler.getUniqueNew();
-		mainChunkMesher->createChunkMesh(geometry.get());
+		ChunkGeometry *geometry = meshRecycler.getNew();
+		mainChunkMesher->createChunkMesh(geometry);
 		ChunkRenderDataHandle &renderData = renderableChunkSet[handle->getHashCode()].second;
-		renderData->bufferGeometry(geometry.get());
+		renderData->bufferGeometry(geometry);
 		handle->flagMeshValid();
 
+		meshRecycler.recycle(geometry);
 		mainMeshQueue.pop();
 	}
 }
