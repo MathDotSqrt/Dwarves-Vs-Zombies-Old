@@ -40,6 +40,39 @@ enum class MeshState {
 
 class ChunkManager;
 
+struct Light {
+	uint8 value;
+
+	Light() {
+		value = 0;
+	}
+
+	Light(uint8 sunlight, uint8 blocklight) {
+		value = ((sunlight & 0xf) << 4) | (blocklight & 0xf);
+	}
+
+	uint8 getBlockLight() {
+		return value & 0xf;
+	}
+
+	void setBlockLight(uint8 torch) {
+		value = (value & 0xf0) | (torch & 0xf);
+	}
+
+	uint8 getSunLight() {
+		return (value >> 4) & 0xf;
+	}
+
+	void setSunLight(uint8 sun) {
+		value = ((sun & 0xf) << 4) | (value & 0xf);
+	}
+};
+
+struct LightNode {
+	Light value;
+	int32 blockIndex;
+	int32 cx, cy, cz;
+};
 
 //DO NOT CALL THIS ON STACK
 class Chunk {
@@ -48,7 +81,6 @@ private:
 	friend class ChunkMesher;
 	friend class ChunkManager;
 
-	typedef uint8 Light;
 
 	Block blockData[CHUNK_VOLUME];
 	Light lightData[CHUNK_VOLUME];
@@ -81,7 +113,12 @@ public:
 	MeshState tryGetMeshState();
 
 	Block getBlock(int x, int y, int z);
-	void setBlock(int x, int y, int z, Block block);
+	void setBlock(int x, int y, int z, Block block);			//must do it on main thread
+
+	Light getLight(int x, int y, int z);
+	void setLight(int x, int y, int z, Light light);		//must do it in main thread
+	void setSunLight(int x, int y, int z, uint8 sun);		//must do it in main thread
+	void setBlockLight(int x, int y, int z, uint8 block);	//must do it in main thread
 
 	inline int getChunkX() const {
 		return this->chunk_x;
@@ -101,13 +138,21 @@ private:
 	void flagDirtyMesh();
 	
 	inline Block getBlockInternal(int x, int y, int z) const {
-		return blockData[this->toIndex(x, y, z)];
+		return blockData[toIndex(x, y, z)];
 	}
 
 	inline void setBlockInternal(int x, int y, int z, Block b) {
-		blockData[this->toIndex(x, y, z)] = b;
+		blockData[toIndex(x, y, z)] = b;
 	}
 	
+	inline Light getLightInternal(int x, int y, int z) const {
+		return lightData[toIndex(x, y, z)];
+	}
+
+	inline void setLightInternal(int x, int y, int z, Light light) {
+		lightData[toIndex(x, y, z)] = light;
+	}
+
 	void reinitializeChunk(int cx, int cy, int cz);					//todo find a code patter to get rid of this
 
 	int toIndex(int x, int y, int z) const;

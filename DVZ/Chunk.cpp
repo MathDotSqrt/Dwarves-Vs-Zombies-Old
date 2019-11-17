@@ -173,6 +173,28 @@ void Chunk::setBlock(int x, int y, int z, Block block) {
 	}
 }
 
+Light Chunk::getLight(int x, int y, int z) {
+	std::shared_lock<std::shared_mutex> lock(chunkMutex);
+	
+	if (blockState == BlockState::NONE)
+		return Light(0, 0);
+
+	assertBlockIndex(x, y, z);
+	return lightData[toIndex(x, y, z)];
+}
+
+void Chunk::setLight(int x, int y, int z, Light light) {
+	
+}
+
+void Chunk::setSunLight(int x, int y, int z, uint8 value) {
+	
+}
+
+void Chunk::setBlockLight(int x, int y, int z, uint8 value) {
+
+}
+
 void Chunk::reinitializeChunk(int cx, int cy, int cz) {
 	//todo maybe put in lock gaurd here
 	std::lock_guard<std::shared_mutex>  lock(chunkMutex);
