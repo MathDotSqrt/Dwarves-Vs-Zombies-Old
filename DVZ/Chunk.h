@@ -22,6 +22,15 @@ static constexpr float CHUNK_RENDER_WIDTH_X = CHUNK_WIDTH_X;
 static constexpr float CHUNK_RENDER_WIDTH_Y = CHUNK_WIDTH_Y;
 static constexpr float CHUNK_RENDER_WIDTH_Z = CHUNK_WIDTH_Z;
 
+//when queuing chunks to get meshed dont queue the ones who need a light updating
+enum class LightState{
+	NONE,
+	LOADED,
+	LOADED_AND_EMPTY,
+	LOCKED,
+	NUM_LIGHT_STATES
+};
+
 enum class BlockState {
 	NONE,
 	LOADED,

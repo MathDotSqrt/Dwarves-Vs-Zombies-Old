@@ -20,14 +20,28 @@ namespace Voxel{
 
 
 
+//struct ChunkNeighbors {
+//	ChunkRefHandle middle;
+//	ChunkRefHandle front;
+//	ChunkRefHandle back;
+//	ChunkRefHandle left;
+//	ChunkRefHandle right;
+//	ChunkRefHandle up;
+//	ChunkRefHandle down;
+//};
+
 struct ChunkNeighbors {
 	ChunkRefHandle middle;
 	ChunkRefHandle front;
 	ChunkRefHandle back;
 	ChunkRefHandle left;
 	ChunkRefHandle right;
-	ChunkRefHandle up;
-	ChunkRefHandle down;
+	//ChunkRefHandle up;
+	//ChunkRefHandle down;
+	ChunkRefHandle frontLeft;
+	ChunkRefHandle frontRight;
+	ChunkRefHandle backLeft;
+	ChunkRefHandle backRight;
 };
 
 struct BlockRayCast {
