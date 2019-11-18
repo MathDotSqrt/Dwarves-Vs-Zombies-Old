@@ -223,6 +223,22 @@ void ChunkManager::setBlock(float x, float y, float z, Block block) {
 	this->setBlock((int)x, (int)y, (int)z, block);
 }
 
+void ChunkManager::setLight(int x, int y, int z, Light light) {
+	int cx = x >> CHUNK_SHIFT_X;
+	int cy = y >> CHUNK_SHIFT_Y;
+	int cz = z >> CHUNK_SHIFT_Z;
+
+	ChunkRefHandle chunk = this->getChunk(cx, cy, cz);
+
+	assert(chunk);
+
+	int bx = x & CHUNK_BLOCK_POS_MASK_X;
+	int by = y & CHUNK_BLOCK_POS_MASK_Y;
+	int bz = z & CHUNK_BLOCK_POS_MASK_Z;
+	chunk->setLight(bx, by, bz, light);
+
+}
+
 BlockRayCast ChunkManager::castRay(glm::vec3 start, glm::vec3 dir, float radius) {
 	const Block AIR;
 	dir = glm::normalize(dir);
@@ -338,7 +354,6 @@ bool ChunkManager::isChunkRenderable(int cx, int cy, int cz) {
 	auto iter = this->renderableChunkSet.find(this->hashcode(cx, cy, cz));
 	return iter != this->renderableChunkSet.end();
 }
-
 
 void ChunkManager::sortChunks(int chunkX, int chunkY, int chunkZ, std::vector<ChunkRefHandle> &vector) {
 	auto lambda = [chunkX, chunkY, chunkZ](const ChunkRefHandle &rhs, const ChunkRefHandle &lhs) {

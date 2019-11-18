@@ -91,6 +91,8 @@ public:
 	Block getBlock(float x, float y, float z);
 	void setBlock(float x, float y, float z, Block block);
 
+	void setLight(int x, int y, int z, Light light);
+
 
 	BlockRayCast castRay(glm::vec3 start, glm::vec3 dir, float radius);
 
@@ -144,7 +146,7 @@ private:
 	std::unordered_map<int, ChunkRefCount> chunkSet;					//contains all chunks
 	std::unordered_map<int, ChunkRefHandle> loadedChunkSet;				//subset of all chunks that are loaded
 	std::unordered_map<int, ChunkRenderDataPair> renderableChunkSet;	//subset of all chunks that are renderable
-	std::unordered_map<int, std::queue<LightNode>> lightUpdates;
+	//std::unordered_map<int, std::queue<LightNode>> lightUpdates;
 	std::vector<ChunkRefHandle> needsLoadingCache;						//subset of all chunks that could be loaded
 	std::vector<ChunkRefHandle> needsMeshCache;							//subset of all chunks that could be meshed
 	std::queue<ChunkRefHandle> mainMeshQueue;							//subset of all chunks that should be meshed on main thread

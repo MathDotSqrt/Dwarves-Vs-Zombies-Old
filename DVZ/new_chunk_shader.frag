@@ -5,6 +5,7 @@
 #define MAX_LIGHTS 3
 
 in vec3 frag_pos;
+flat in int frag_light;
 in vec3 frag_normal;
 in vec4 frag_uv;
 
@@ -88,7 +89,7 @@ float calc_height_fog(float dist){
 void main(){
 	/*LIGHT*/
 	vec3 light_color = vec3(0);
-	light_color += ambient.color * ambient.intensity;
+	light_color += ambient.color * ambient.intensity * frag_light;
 
 	float light_strength = calc_dir_light(dirLight);
 	light_color += dirLight.color * light_strength;

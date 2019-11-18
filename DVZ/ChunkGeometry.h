@@ -7,7 +7,7 @@
 namespace Voxel{
 class ChunkGeometry {
 private:
-	typedef Graphics::Attrib<POSITION_ATTRIB_LOCATION, glm::u8vec3> BlockPositionAttrib;
+	typedef Graphics::Attrib<POSITION_ATTRIB_LOCATION, glm::u8vec4> BlockPositionAttrib;
 	typedef Graphics::Attrib<NORMAL_ATTRIB_LOCATION, glm::i8vec3> BlockNormalAttrib;
 	//typedef Graphics::Attrib<COLOR_ATTRIB_LOCATION, glm::u8vec3> BlockColorAttrib;
 	typedef Graphics::Attrib<BLOCK_TEXCOORD_ATTRIB_LOCATION, glm::u8vec4> BlockTexcoordAttrib;

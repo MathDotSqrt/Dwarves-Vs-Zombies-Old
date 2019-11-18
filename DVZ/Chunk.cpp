@@ -120,6 +120,10 @@ MeshState Chunk::tryGetMeshState() {
 
 void Chunk::flagDirtyMesh() {
 	std::lock_guard<std::shared_mutex> lock(chunkMutex);
+	flagDirtyMeshInternal();
+}
+
+void Chunk::flagDirtyMeshInternal(){
 	if (meshState != MeshState::NONE_MESH) {
 		meshState = MeshState::DIRTY;
 	}
@@ -186,12 +190,22 @@ Light Chunk::getLight(int x, int y, int z) {
 }
 
 void Chunk::setLight(int x, int y, int z, Light light) {
-	std::lock_guard<std::shared_mutex> lock(chunkMutex);
+	std::unique_lock<std::shared_mutex> lock(chunkMutex);
 	//optimize when to add to chunk lighting update queue
 
+	assertBlockIndex(x, y, z);
 	int index = toIndex(x, y, z);
+	
+
 
 	lightData[index] = light;
+
+
+
+
+
+	lock.unlock();
+	manager->queueDirtyChunk(chunk_x, chunk_y, chunk_z);
 	//if (lightData[index] != light) {
 	//	LightNode node = { light, index, chunk_x, chunk_y, chunk_z };
 	//	manager->lightUpdates[getHashCode()].push(node);

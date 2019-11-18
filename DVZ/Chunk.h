@@ -60,12 +60,16 @@ struct Light {
 		value = ((sunlight & 0xf) << 4) | (blocklight & 0xf);
 	}
 
-	bool operator==(const Light &other) {
+	bool operator==(const Light &other) const{
 		return value == other.value;
 	}
 
-	bool operator!=(const Light &other) {
+	bool operator!=(const Light &other)  const {
 		return value != other.value;
+	}
+
+	operator uint8() const {
+		return value;
 	}
 
 	uint8 getBlockLight() {
@@ -87,8 +91,8 @@ struct Light {
 
 struct LightNode {
 	Light value;
-	int32 blockIndex;
-	int32 cx, cy, cz;
+	int32 x, y, z;
+	ChunkRefHandle *h;
 };
 
 //DO NOT CALL THIS ON STACK
@@ -120,6 +124,8 @@ public:
 
 	void flagMeshValid();
 	void flagMeshRemoved();
+	void flagDirtyMesh();
+
 
 	bool isEmpty();
 	
@@ -152,7 +158,8 @@ public:
 	int getHashCode();
 
 private:
-	void flagDirtyMesh();
+	void flagDirtyMeshInternal();
+
 	void queueDirtyChunk(int cx, int cy, int cz);
 
 	inline Block getBlockInternal(int x, int y, int z) const {
