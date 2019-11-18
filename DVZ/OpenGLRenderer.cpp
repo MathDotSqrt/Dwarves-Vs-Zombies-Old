@@ -363,7 +363,6 @@ void OpenGLRenderer::renderChunks(Voxel::ChunkManager *manager, glm::vec3 camera
 		data->vao.bind();
 		glEnableVertexAttribArray(POSITION_ATTRIB_LOCATION);
 		glEnableVertexAttribArray(NORMAL_ATTRIB_LOCATION);
-		glEnableVertexAttribArray(COLOR_ATTRIB_LOCATION);
 		glEnableVertexAttribArray(BLOCK_TEXCOORD_ATTRIB_LOCATION);
  		glDrawElements(GL_TRIANGLES, (GLsizei)data->indexCount, GL_UNSIGNED_INT, 0);
 	}

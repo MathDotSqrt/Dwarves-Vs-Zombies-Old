@@ -160,7 +160,7 @@ void ChunkMesher::createCulledCube(int x, int y, int z, ChunkMesher::BlockFaceCu
 	glm::u8vec3 p6(x_, y_ + BLOCK_WIDTH, z_ );
 	glm::u8vec3 p7(x_ + BLOCK_WIDTH, y_ + BLOCK_WIDTH, z_);
 
-	glm::u8vec3 c0 = b.getColor();
+	//glm::u8vec3 c0 = b.getColor();
 
 	auto uv = b.getTexCoords();
 
@@ -173,60 +173,60 @@ void ChunkMesher::createCulledCube(int x, int y, int z, ChunkMesher::BlockFaceCu
 	/*FRONT*/
 	if (!tags.pz) {
 		glm::i8vec3 n0(0, 0, 1);
-		v0 = { p0, n0, c0, uv.front.uv2() };
-		v1 = { p1, n0, c0, uv.front.uv3() };
-		v2 = { p2, n0, c0, uv.front.uv1() };
-		v3 = { p3, n0, c0, uv.front.uv0() };
+		v0 = { p0, n0, uv.front.uv2() };
+		v1 = { p1, n0, uv.front.uv3() };
+		v2 = { p2, n0, uv.front.uv1() };
+		v3 = { p3, n0, uv.front.uv0() };
 		geometry->appendFace(v0, v1, v2, v3);
 	}
 
 	/*BACK*/
 	if (!tags.nz) {
 		glm::i8vec3 n1(0, 0, -1);
-		v0 = { p4, n1, c0, uv.back.uv2() };
-		v1 = { p5, n1, c0, uv.back.uv3() };
-		v2 = { p6, n1, c0, uv.back.uv1() };
-		v3 = { p7, n1, c0, uv.back.uv0() };
+		v0 = { p4, n1, uv.back.uv2() };
+		v1 = { p5, n1, uv.back.uv3() };
+		v2 = { p6, n1, uv.back.uv1() };
+		v3 = { p7, n1, uv.back.uv0() };
 		geometry->appendFace(v0, v1, v2, v3);
 	}
 
 	/*LEFT*/
 	if (!tags.nx) {
 		glm::i8vec3 n2(-1, 0, 0);
-		v0 = { p5, n2, c0, uv.left.uv2() };
-		v1 = { p0, n2, c0, uv.left.uv3() };
-		v2 = { p3, n2, c0, uv.left.uv1() };
-		v3 = { p6, n2, c0, uv.left.uv0() };
+		v0 = { p5, n2, uv.left.uv2() };
+		v1 = { p0, n2, uv.left.uv3() };
+		v2 = { p3, n2, uv.left.uv1() };
+		v3 = { p6, n2, uv.left.uv0() };
 		geometry->appendFace(v0, v1, v2, v3);
 	}
 
 	/*RIGHT*/
 	if (!tags.px) {
 		glm::i8vec3 n3(1, 0, 0);
-		v0 = { p1, n3, c0, uv.right.uv2() };
-		v1 = { p4, n3, c0, uv.right.uv3() };
-		v2 = { p7, n3, c0, uv.right.uv1() };
-		v3 = { p2, n3, c0, uv.right.uv0() };
+		v0 = { p1, n3, uv.right.uv2() };
+		v1 = { p4, n3, uv.right.uv3() };
+		v2 = { p7, n3, uv.right.uv1() };
+		v3 = { p2, n3, uv.right.uv0() };
 		geometry->appendFace(v0, v1, v2, v3);
 	}
 
 	/*TOP*/
 	if (!tags.py) {
 		glm::i8vec3 n4(0, 1, 0);
-		v0 = { p3, n4, c0, uv.top.uv2() };
-		v1 = { p2, n4, c0, uv.top.uv3() };
-		v2 = { p7, n4, c0, uv.top.uv1() };
-		v3 = { p6, n4, c0, uv.top.uv0() };
+		v0 = { p3, n4, uv.top.uv2() };
+		v1 = { p2, n4, uv.top.uv3() };
+		v2 = { p7, n4, uv.top.uv1() };
+		v3 = { p6, n4, uv.top.uv0() };
 		geometry->appendFace(v0, v1, v2, v3);
 	}
 
 	/*BOTTOM*/
 	if (!tags.ny) {
 		glm::i8vec3 n5(0, -1, 0);
-		v0 = { p1, n5, c0, uv.bottom.uv2() };
-		v1 = { p0, n5, c0, uv.bottom.uv3() };
-		v2 = { p5, n5, c0, uv.bottom.uv1() };
-		v3 = { p4, n5, c0, uv.bottom.uv0() };
+		v0 = { p1, n5, uv.bottom.uv2() };
+		v1 = { p0, n5, uv.bottom.uv3() };
+		v2 = { p5, n5, uv.bottom.uv1() };
+		v3 = { p4, n5, uv.bottom.uv0() };
 		geometry->appendFace(v0, v1, v2, v3);
 	}
 }
@@ -248,8 +248,6 @@ void ChunkMesher::createX(int x, int y, int z, Block b, ChunkGeometry *geometry)
 	glm::u8vec3 p6(x_, y_ + BLOCK_WIDTH, z_);
 	glm::u8vec3 p7(x_ + BLOCK_WIDTH, y_ + BLOCK_WIDTH, z_);
 
-	glm::u8vec3 c0 = b.getColor();
-
 	auto uv = b.getTexCoords();
 
 	/*0---1*/
@@ -258,17 +256,17 @@ void ChunkMesher::createX(int x, int y, int z, Block b, ChunkGeometry *geometry)
 	BlockVertex v0, v1, v2, v3;
 
 	glm::i8vec3 n0(0, 0, 0);
-	v0 = { p0, n0, c0, uv.front.uv2() };
-	v1 = { p4, n0, c0, uv.front.uv3() };
-	v2 = { p7, n0, c0, uv.front.uv1() };
-	v3 = { p3, n0, c0, uv.front.uv0() };
+	v0 = { p0, n0, uv.front.uv2() };
+	v1 = { p4, n0, uv.front.uv3() };
+	v2 = { p7, n0, uv.front.uv1() };
+	v3 = { p3, n0, uv.front.uv0() };
 	geometry->appendFace(v0, v1, v2, v3);
 	geometry->appendFace(v1, v0, v3, v2);
 
-	v0 = { p1, n0, c0, uv.front.uv2() };
-	v1 = { p5, n0, c0, uv.front.uv3() };
-	v2 = { p6, n0, c0, uv.front.uv1() };
-	v3 = { p2, n0, c0, uv.front.uv0() };
+	v0 = { p1, n0, uv.front.uv2() };
+	v1 = { p5, n0, uv.front.uv3() };
+	v2 = { p6, n0, uv.front.uv1() };
+	v3 = { p2, n0, uv.front.uv0() };
 	geometry->appendFace(v0, v1, v2, v3);
 	geometry->appendFace(v1, v0, v3, v2);
 }

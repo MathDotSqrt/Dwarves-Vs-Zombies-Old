@@ -6,7 +6,6 @@
 
 in vec3 frag_pos;
 in vec3 frag_normal;
-in vec3 frag_color;
 in vec4 frag_uv;
 
 out vec4 final_color;

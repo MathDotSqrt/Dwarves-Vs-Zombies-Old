@@ -191,10 +191,11 @@ void Chunk::setLight(int x, int y, int z, Light light) {
 
 	int index = toIndex(x, y, z);
 
-	if (lightData[index] != light) {
-		LightNode node = { light, index, chunk_x, chunk_y, chunk_z };
-		manager->lightUpdates[getHashCode()].push(node);
-	}
+	lightData[index] = light;
+	//if (lightData[index] != light) {
+	//	LightNode node = { light, index, chunk_x, chunk_y, chunk_z };
+	//	manager->lightUpdates[getHashCode()].push(node);
+	//}
 }
 
 void Chunk::setSunLight(int x, int y, int z, uint8 value) {
