@@ -119,10 +119,10 @@ MeshState Chunk::tryGetMeshState() {
 }
 
 void Chunk::flagDirtyMesh() {
-	/*std::lock_guard<std::shared_mutex> lock(chunkMutex);
+	std::lock_guard<std::shared_mutex> lock(chunkMutex);
 	if (meshState != MeshState::NONE_MESH) {
 		meshState = MeshState::DIRTY;
-	}*/
+	}
 }
 
 int Chunk::toIndex(int x, int y, int z) const {
@@ -146,7 +146,7 @@ Block Chunk::getBlock(int x, int y, int z) {
 }
 
 void Chunk::setBlock(int x, int y, int z, Block block) {
-	std::lock_guard<std::shared_mutex> lock(this->chunkMutex);
+	std::unique_lock<std::shared_mutex> lock(this->chunkMutex);
 	if (this->blockState == BlockState::NONE) {
 		return;
 	}
@@ -162,10 +162,12 @@ void Chunk::setBlock(int x, int y, int z, Block block) {
 
 	if (meshState == MeshState::VALID) { //only dirty state if it was valid, not if empty or lazy
 		meshState = MeshState::DIRTY;	 //todo only dirty chunk if there is an adjecant block that is transparent
+
+		lock.unlock();
 		manager->queueDirtyChunk(chunk_x, chunk_y, chunk_z);
 
 		if (x == 0)					manager->queueDirtyChunk(chunk_x - 1, chunk_y, chunk_z);
-		if (x == CHUNK_WIDTH_X-1)	manager->queueDirtyChunk(chunk_x+1, chunk_y, chunk_z);
+		if (x == CHUNK_WIDTH_X-1)	manager->queueDirtyChunk(chunk_x + 1, chunk_y, chunk_z);
 		//if (y == 0)				manager->queueDirtyChunk(chunk_x, chunk_y - 1, chunk_z);
 		//if (y == CHUNK_WIDTH_Y-1)	manager->queueDirtyChunk(chunk_x, chunk_y + 1, chunk_z);
 		if (z == 0)					manager->queueDirtyChunk(chunk_x, chunk_y, chunk_z - 1);
@@ -184,7 +186,15 @@ Light Chunk::getLight(int x, int y, int z) {
 }
 
 void Chunk::setLight(int x, int y, int z, Light light) {
-	
+	std::lock_guard<std::shared_mutex> lock(chunkMutex);
+	//optimize when to add to chunk lighting update queue
+
+	int index = toIndex(x, y, z);
+
+	if (lightData[index] != light) {
+		LightNode node = { light, index, chunk_x, chunk_y, chunk_z };
+		manager->lightUpdates[getHashCode()].push(node);
+	}
 }
 
 void Chunk::setSunLight(int x, int y, int z, uint8 value) {
@@ -193,6 +203,11 @@ void Chunk::setSunLight(int x, int y, int z, uint8 value) {
 
 void Chunk::setBlockLight(int x, int y, int z, uint8 value) {
 
+}
+
+void Chunk::queueDirtyChunk(int cx, int cy, int cz) {
+	//meshState = MeshState::DIRTY;
+	//manager->queueDirtyChunk(chunk_x, chunk_y, chunk_z);
 }
 
 void Chunk::reinitializeChunk(int cx, int cy, int cz) {

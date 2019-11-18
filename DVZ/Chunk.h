@@ -60,6 +60,14 @@ struct Light {
 		value = ((sunlight & 0xf) << 4) | (blocklight & 0xf);
 	}
 
+	bool operator==(const Light &other) {
+		return value == other.value;
+	}
+
+	bool operator!=(const Light &other) {
+		return value != other.value;
+	}
+
 	uint8 getBlockLight() {
 		return value & 0xf;
 	}
@@ -145,7 +153,8 @@ public:
 
 private:
 	void flagDirtyMesh();
-	
+	void queueDirtyChunk(int cx, int cy, int cz);
+
 	inline Block getBlockInternal(int x, int y, int z) const {
 		return blockData[toIndex(x, y, z)];
 	}

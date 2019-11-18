@@ -60,7 +60,8 @@ public:							//fix bug of things not destructing in order
 	static const int CHUNK_RENDER_DATA_RECYCLE_SIZE = 4 * 1024 * 1024;
 	static const int CHUNK_MESHER_ALLOC_SIZE = 8 * 1024 * 1024;
 	static const int CHUNK_THREAD_POOL_SIZE = 1;	//dont change this until i fix allocate array
-	static const int RENDER_DISTANCE = 50;
+	static const int RENDER_DISTANCE = 10;
+	//static const int RENDER_DISTANCE = 50;
 	static const int LOAD_DISTANCE = RENDER_DISTANCE + 2;
 
 public:
@@ -143,6 +144,7 @@ private:
 	std::unordered_map<int, ChunkRefCount> chunkSet;					//contains all chunks
 	std::unordered_map<int, ChunkRefHandle> loadedChunkSet;				//subset of all chunks that are loaded
 	std::unordered_map<int, ChunkRenderDataPair> renderableChunkSet;	//subset of all chunks that are renderable
+	std::unordered_map<int, std::queue<LightNode>> lightUpdates;
 	std::vector<ChunkRefHandle> needsLoadingCache;						//subset of all chunks that could be loaded
 	std::vector<ChunkRefHandle> needsMeshCache;							//subset of all chunks that could be meshed
 	std::queue<ChunkRefHandle> mainMeshQueue;							//subset of all chunks that should be meshed on main thread

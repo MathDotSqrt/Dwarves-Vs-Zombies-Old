@@ -316,6 +316,7 @@ int ChunkManager::getChunkZ(float z) {
 void ChunkManager::queueDirtyChunk(int cx, int cy, int cz) {
 	ChunkRefHandle chunk = getChunkIfMapped(cx, cy, cz);
 	if (chunk) {
+		chunk->flagDirtyMesh();
 		mainMeshQueue.emplace(std::move(chunk));
 	}
 }
@@ -487,18 +488,25 @@ void ChunkManager::updateAllChunks(int playerCX, int playerCY, int playerCZ) {
 void ChunkManager::updateDirtyChunks() {
 	constexpr int MAX_DQ = 1;
 
-
+	//if (mainMeshQueue.size() > 0) {
+	//	ChunkRefHandle &handle = mainMeshQueue.front();
+	//	ChunkNeighborGeometryPair p = std::make_pair(std::move(getChunkNeighbors(handle)), meshRecycler.getUniqueNew());
+	//	chunkMeshingQueue.enqueue(std::move(p));
+	//	mainMeshQueue.pop();
+	//}
 	for (int i = 0; i < MAX_DQ && mainMeshQueue.size() > 0; i++) {
 		ChunkRefHandle &handle = mainMeshQueue.front();
-		ChunkNeighbors n = getChunkNeighbors(handle);
-		mainChunkMesher->loadChunkData(n);
-		ChunkGeometry *geometry = meshRecycler.getNew();
-		mainChunkMesher->createChunkMesh(geometry);
-		ChunkRenderDataHandle &renderData = renderableChunkSet[handle->getHashCode()].second;
-		renderData->bufferGeometry(geometry);
-		handle->flagMeshValid();
+		if (handle->getMeshState() == MeshState::DIRTY) {
+			ChunkNeighbors n = getChunkNeighbors(handle);
+			mainChunkMesher->loadChunkData(n);
+			ChunkGeometry *geometry = meshRecycler.getNew();
+			mainChunkMesher->createChunkMesh(geometry);
+			ChunkRenderDataHandle &renderData = renderableChunkSet[handle->getHashCode()].second;
+			renderData->bufferGeometry(geometry);
+			handle->flagMeshValid();
 
-		meshRecycler.recycle(geometry);
+			meshRecycler.recycle(geometry);
+		}
 		mainMeshQueue.pop();
 	}
 }
@@ -543,7 +551,7 @@ void ChunkManager::dequeueChunkRenderData() {
 	double time = Window::getTime();
 	for (int i = 0; i < 10 && this->chunkMeshedQueue.try_dequeue(element); i++) {
 		ChunkRefHandle &chunk = element.first;
-		if (isChunkRenderable(chunk->chunk_x, chunk->chunk_y, chunk->chunk_z)) {
+		if (isChunkRenderable(chunk->chunk_x, chunk->chunk_y, chunk->chunk_z)) {			//TODO: test if renderdata is new or not
 			ChunkRenderDataHandle &data = renderableChunkSet[chunk->getHashCode()].second;
 
 			data->cx = chunk->chunk_x;
