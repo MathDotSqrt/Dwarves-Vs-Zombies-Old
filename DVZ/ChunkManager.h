@@ -32,23 +32,24 @@ namespace Voxel{
 //};
 
 struct ChunkNeighbors {
-	struct {
-		ChunkRefHandle middle;
-		ChunkRefHandle front;
-		ChunkRefHandle back;
-		ChunkRefHandle left;
-		ChunkRefHandle right;
-		//ChunkRefHandle up;
-		//ChunkRefHandle down;
-		ChunkRefHandle frontLeft;
-		ChunkRefHandle frontRight;
-		ChunkRefHandle backLeft;
-		ChunkRefHandle backRight;
-	};
+	ChunkRefHandle backLeft;
+	ChunkRefHandle back;
+	ChunkRefHandle backRight;
+	
+	ChunkRefHandle left;
+	ChunkRefHandle middle;
+	ChunkRefHandle right;
+	
+	ChunkRefHandle frontLeft;
+	ChunkRefHandle front;
+	ChunkRefHandle frontRight;
 
-	//constexpr ChunkRefHandle& getChunk(int cx, int cz) {
-	//	return middle;
-	//}
+	constexpr const ChunkRefHandle& getChunk(int cx, int cz) const{
+		ChunkRefHandle* handle = (ChunkRefHandle*)(this);
+		cx += 1;
+		cz += 1;
+		return *(handle + (cx + cz * 3));
+	}
 };
 
 struct BlockRayCast {

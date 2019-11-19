@@ -142,17 +142,17 @@ ChunkRefHandle ChunkManager::getNullChunk() {
 
 ChunkNeighbors ChunkManager::getChunkNeighbors(int cx, int cy, int cz) {
 	return {
-		getChunkIfMapped(cx, cy, cz),		//we make a new reference of a chunk within chunkset 
-		getChunkIfMapped(cx, cy, cz + 1),
-		getChunkIfMapped(cx, cy, cz - 1),
-		getChunkIfMapped(cx - 1, cy, cz),
-		getChunkIfMapped(cx + 1, cy, cz),
-		//getChunkIfMapped(cx, cy + 1, cz),
-		//getChunkIfMapped(cx, cy - 1, cz)
-		getChunkIfMapped(cx - 1, cy, cz + 1),
-		getChunkIfMapped(cx + 1, cy, cz + 1),
 		getChunkIfMapped(cx - 1, cy, cz - 1),
+		getChunkIfMapped(cx    , cy, cz - 1),
 		getChunkIfMapped(cx + 1, cy, cz - 1),
+
+		getChunkIfMapped(cx - 1, cy, cz),
+		getChunkIfMapped(cx    , cy, cz),
+		getChunkIfMapped(cx + 1, cy, cz),
+
+		getChunkIfMapped(cx - 1, cy, cz + 1),
+		getChunkIfMapped(cx    , cy, cz + 1),
+		getChunkIfMapped(cx + 1, cy, cz + 1)
 	};
 }
 

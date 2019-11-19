@@ -11,15 +11,21 @@ ChunkLightEngine::~ChunkLightEngine() {
 }
 
 void ChunkLightEngine::loadLightData(const ChunkNeighbors &chunks) {
-	memcpy(middle, chunks.middle->lightData, sizeof(middle));
-	memcpy(left, chunks.left->lightData, sizeof(left));
-	memcpy(right, chunks.right->lightData, sizeof(right));
-	memcpy(front, chunks.front->lightData, sizeof(front));
-	memcpy(back, chunks.back->lightData, sizeof(back));
-	memcpy(frontLeft, chunks.frontLeft->lightData, sizeof(frontLeft));
-	memcpy(frontRight, chunks.frontRight->lightData, sizeof(frontRight));
-	memcpy(backLeft, chunks.backLeft->lightData, sizeof(backLeft));
-	memcpy(backRight, chunks.backRight->lightData, sizeof(backRight));
+	for (int z = -1; z <= 1; z++) {
+		for (int x = -1; x <= 1; x++) {
+			memcpy(getLightArray(x, z), chunks.getChunk(x, z)->lightData, sizeof(middle));
+		}
+	}
+	
+	//memcpy(middle, chunks.getChunk(0,0)->lightData, sizeof(middle));
+	//memcpy(left, chunks.left->lightData, sizeof(left));
+	//memcpy(right, chunks.right->lightData, sizeof(right));
+	//memcpy(front, chunks.front->lightData, sizeof(front));
+	//memcpy(back, chunks.back->lightData, sizeof(back));
+	//memcpy(frontLeft, chunks.frontLeft->lightData, sizeof(frontLeft));
+	//memcpy(frontRight, chunks.frontRight->lightData, sizeof(frontRight));
+	//memcpy(backLeft, chunks.backLeft->lightData, sizeof(backLeft));
+	//memcpy(backRight, chunks.backRight->lightData, sizeof(backRight));
 
 
 	std::lock_guard<std::shared_mutex> lock(chunks.middle->chunkMutex);
