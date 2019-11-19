@@ -5,6 +5,7 @@
 #include "ChunkRefHandle.h"
 #include "ChunkRenderData.h"
 #include "ChunkMesher.h"
+#include "ChunkLightEngine.h"
 
 #include "LinearAllocator.h"
 #include "PoolAllocator.h"
@@ -31,17 +32,23 @@ namespace Voxel{
 //};
 
 struct ChunkNeighbors {
-	ChunkRefHandle middle;
-	ChunkRefHandle front;
-	ChunkRefHandle back;
-	ChunkRefHandle left;
-	ChunkRefHandle right;
-	//ChunkRefHandle up;
-	//ChunkRefHandle down;
-	ChunkRefHandle frontLeft;
-	ChunkRefHandle frontRight;
-	ChunkRefHandle backLeft;
-	ChunkRefHandle backRight;
+	struct {
+		ChunkRefHandle middle;
+		ChunkRefHandle front;
+		ChunkRefHandle back;
+		ChunkRefHandle left;
+		ChunkRefHandle right;
+		//ChunkRefHandle up;
+		//ChunkRefHandle down;
+		ChunkRefHandle frontLeft;
+		ChunkRefHandle frontRight;
+		ChunkRefHandle backLeft;
+		ChunkRefHandle backRight;
+	};
+
+	//constexpr ChunkRefHandle& getChunk(int cx, int cz) {
+	//	return middle;
+	//}
 };
 
 struct BlockRayCast {
@@ -158,7 +165,7 @@ private:
 	Util::Allocator::LinearAllocator chunkMesherAllocator;
 	ChunkMesher *chunkMesherArray;
 	ChunkMesher *mainChunkMesher;
-
+	ChunkLightEngine *chunkLightEngine;
 
 	std::atomic<bool> runThreads = true;
 	std::thread generatorThread;

@@ -243,6 +243,9 @@
     <ClInclude Include="ChunkRefHandle.h">
       <Filter>Header Files\Voxel</Filter>
     </ClInclude>
+    <ClInclude Include="ChunkLightEngine.h">
+      <Filter>Header Files\Voxel</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -381,6 +384,9 @@
       <Filter>Source Files\Voxel</Filter>
     </ClCompile>
     <ClCompile Include="ChunkRefHandle.cpp">
+      <Filter>Source Files\Voxel</Filter>
+    </ClCompile>
+    <ClCompile Include="ChunkLightEngine.cpp">
       <Filter>Source Files\Voxel</Filter>
     </ClCompile>
   </ItemGroup>

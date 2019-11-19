@@ -128,10 +128,10 @@ void Chunk::flagDirtyMeshInternal(){
 		meshState = MeshState::DIRTY;
 	}
 }
-
-int Chunk::toIndex(int x, int y, int z) const {
-	return x + CHUNK_WIDTH_X * (y + CHUNK_WIDTH_Y * z);
-}
+//
+//constexpr int Chunk::toIndex(int x, int y, int z) {
+//	return x + CHUNK_WIDTH_X * (y + CHUNK_WIDTH_Y * z);
+//}
 
 void Chunk::assertBlockIndex(int x, int y, int z) const {
 	assert(x >= 0 && x < CHUNK_WIDTH_X);
@@ -195,14 +195,10 @@ void Chunk::setLight(int x, int y, int z, Light light) {
 
 	assertBlockIndex(x, y, z);
 	int index = toIndex(x, y, z);
-	
+	//lightData[index] = light;
 
-
-	lightData[index] = light;
-
-
-
-
+	LightNode node = { light, x, y, z };
+	lightQueue.push_back(node);
 
 	lock.unlock();
 	manager->queueDirtyChunk(chunk_x, chunk_y, chunk_z);

@@ -1,5 +1,6 @@
 #pragma once
 #include "Block.h"
+#include <queue>
 #include <shared_mutex>
 
 namespace Voxel{
@@ -89,19 +90,20 @@ struct Light {
 	}
 };
 
-struct LightNode {
-	Light value;
-	int32 x, y, z;
-	ChunkRefHandle *h;
-};
-
 //DO NOT CALL THIS ON STACK
 class Chunk {
 
 private:
 	friend class ChunkMesher;
+	friend class ChunkLightEngine;
 	friend class ChunkManager;
 
+	struct LightNode {
+		Light value;
+		int32 x, y, z;
+	};
+
+	std::deque<LightNode> lightQueue;
 
 	Block blockData[CHUNK_VOLUME];
 	Light lightData[CHUNK_VOLUME];
@@ -112,6 +114,8 @@ private:
 	std::shared_mutex chunkMutex;
 
 	int chunk_x, chunk_y, chunk_z;
+
+
 	ChunkManager *manager;
 
 public:
@@ -125,7 +129,6 @@ public:
 	void flagMeshValid();
 	void flagMeshRemoved();
 	void flagDirtyMesh();
-
 
 	bool isEmpty();
 	
@@ -180,7 +183,10 @@ private:
 
 	void reinitializeChunk(int cx, int cy, int cz);					//todo find a code patter to get rid of this
 
-	int toIndex(int x, int y, int z) const;
+	inline static constexpr int toIndex(int x, int y, int z) {
+		return x + CHUNK_WIDTH_X * (y + CHUNK_WIDTH_Y * z);
+	}
+
 	void assertBlockIndex(int x, int y, int z) const;
 
 	constexpr int expand(int i) const;

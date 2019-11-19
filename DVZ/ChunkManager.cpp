@@ -23,6 +23,7 @@ ChunkManager::ChunkManager(Util::Allocator::IAllocator &parent) :
 
 	this->chunkMesherArray = Util::Allocator::allocateArray<ChunkMesher>(this->chunkMesherAllocator, CHUNK_THREAD_POOL_SIZE);
 	this->mainChunkMesher = Util::Allocator::allocateNew<ChunkMesher>(this->chunkMesherAllocator);
+	this->chunkLightEngine = Util::Allocator::allocateNew<ChunkLightEngine>(chunkMesherAllocator);
 
 	this->chunkSet.max_load_factor(1.0f);
 	this->loadChunks(0, 0, 0, LOAD_DISTANCE);
@@ -36,6 +37,7 @@ ChunkManager::~ChunkManager() {
 	this->chunkSet.clear();
 	Util::Allocator::freeArray<ChunkMesher>(this->chunkMesherAllocator, this->chunkMesherArray);
 	Util::Allocator::free<ChunkMesher>(this->chunkMesherAllocator, this->mainChunkMesher);
+	Util::Allocator::free<ChunkLightEngine>(chunkMesherAllocator, chunkLightEngine);
 
 	this->generatorThread.join();
 
@@ -513,6 +515,8 @@ void ChunkManager::updateDirtyChunks() {
 		ChunkRefHandle &handle = mainMeshQueue.front();
 		if (handle->getMeshState() == MeshState::DIRTY) {
 			ChunkNeighbors n = getChunkNeighbors(handle);
+			chunkLightEngine->loadLightData(n);
+			chunkLightEngine->computeChunkLighting(n);
 			mainChunkMesher->loadChunkData(n);
 			ChunkGeometry *geometry = meshRecycler.getNew();
 			mainChunkMesher->createChunkMesh(geometry);

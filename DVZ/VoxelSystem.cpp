@@ -43,7 +43,7 @@ void VoxelSystem::update(Engine *engine, float delta) {
 
 		if (left && cast.block != Voxel::Block()) {
 			//manager->setBlock(cast.nx, cast.ny, cast.nz, Voxel::Block(Voxel::BlockType::BLOCK_TYPE_GLASS));
-			manager->setLight(cast.nx, cast.ny, cast.nz, Voxel::Light(0, 0x1));
+			manager->setLight(cast.nx, cast.ny, cast.nz, Voxel::Light(0, 0xf));
 			
 		}
 		else if (right) {
