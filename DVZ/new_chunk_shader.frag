@@ -89,10 +89,10 @@ float calc_height_fog(float dist){
 void main(){
 	/*LIGHT*/
 	vec3 light_color = vec3(0);
-	light_color += ambient.color * ambient.intensity * float(frag_light) / 10;
+	light_color += ambient.color * ambient.intensity * float(frag_light+1) / 10;
 
 	float light_strength = calc_dir_light(dirLight);
-	light_color += dirLight.color * light_strength / 30;
+	light_color += dirLight.color * light_strength / 20;
 	/*LIGHT*/
 
 	/*TEXTURE*/

@@ -526,7 +526,7 @@ void ChunkManager::updateAllChunks(int playerCX, int playerCY, int playerCZ) {
 }
 
 void ChunkManager::updateDirtyChunks() {
-	constexpr int MAX_DQ = 1;
+	constexpr int MAX_DQ = 4;
 
 	//if (mainMeshQueue.size() > 0) {
 	//	ChunkRefHandle &handle = mainMeshQueue.front();

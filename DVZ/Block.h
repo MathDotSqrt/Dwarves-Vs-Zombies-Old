@@ -33,6 +33,18 @@ namespace Voxel {
 		OCCLUDE_TYPE_ALL
 	};
 
+	enum class DrawType : uint8 {
+		DRAW_TYPE_OPAQUE,
+		DRAW_TYPE_TRANSLUCENT,
+		DRAW_TYPE_BLEND,
+	};
+
+	enum class LightType : uint8 {
+		LIGHT_TYPE_OPAQUE,
+		LIGHT_TYPE_TRANSPARENT,
+		LIGHT_TYPE_SOURCE
+	};
+
 	typedef uint8 UVType;
 	typedef glm::vec<4, UVType> UV;
 
@@ -76,11 +88,13 @@ namespace Voxel {
 		BlockType blockType;
 		MeshType meshType;
 		OccludeType occludeType;
+		LightType lightType;
 		BlockTexCoords texcoords;
 		glm::u8vec4 color;
 
 		BlockAttribs();
 		BlockAttribs(BlockType, MeshType, OccludeType, BlockTexCoords tex, glm::u8vec4);
+		BlockAttribs(BlockType, MeshType, OccludeType, LightType, BlockTexCoords tex, glm::u8vec4);
 	};
 
 	class BlockManager {
@@ -131,6 +145,11 @@ namespace Voxel {
 			return BlockManager::getInstance()->getBlockAttrib(type)->occludeType;
 
 		}
+
+		inline LightType getLightType() const {
+			return BlockManager::getInstance()->getBlockAttrib(type)->lightType;
+		}
+
 		inline glm::u8vec4 getColor() const {
 			return BlockManager::getInstance()->getBlockAttrib(type)->color;
 		}

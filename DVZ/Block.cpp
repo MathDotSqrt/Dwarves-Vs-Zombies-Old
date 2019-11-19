@@ -10,6 +10,7 @@ BlockManager::BlockManager(){
 		BlockType::BLOCK_TYPE_DEFAULT,
 		MeshType::MESH_TYPE_NONE,
 		OccludeType::OCCLUDE_TYPE_NONE,
+		LightType::LIGHT_TYPE_TRANSPARENT,
 		BlockTexCoords(),
 		glm::u8vec4(0, 0, 0, 0)
 	);
@@ -56,6 +57,7 @@ BlockManager::BlockManager(){
 		BlockType::BLOCK_TYPE_GLASS,
 		MeshType::MESH_TYPE_BLOCK,
 		OccludeType::OCCLUDE_TYPE_SELF,
+		LightType::LIGHT_TYPE_TRANSPARENT,
 		BlockTexCoords(1, 3, 16, 16),
 		glm::u8vec4(194, 178, 128, 255)
 	);
@@ -65,6 +67,7 @@ BlockManager::BlockManager(){
 		BlockType::BLOCK_TYPE_ROSE,
 		MeshType::MESH_TYPE_X,
 		OccludeType::OCCLUDE_TYPE_NONE,
+		LightType::LIGHT_TYPE_TRANSPARENT,
 		BlockTexCoords(12, 0, 16, 16),
 		glm::u8vec4(194, 178, 128, 255)
 	);
@@ -95,6 +98,16 @@ BlockAttribs::BlockAttribs(BlockType block, MeshType mesh, OccludeType occlude, 
 	blockType = block;
 	meshType = mesh;
 	occludeType = occlude;
+	lightType = LightType::LIGHT_TYPE_OPAQUE;
+	texcoords = tex;
+	this->color = color;
+}
+
+BlockAttribs::BlockAttribs(BlockType block, MeshType mesh, OccludeType occlude, LightType light, BlockTexCoords tex, glm::u8vec4 color) {
+	blockType = block;
+	meshType = mesh;
+	occludeType = occlude;
+	lightType = light;
 	texcoords = tex;
 	this->color = color;
 }

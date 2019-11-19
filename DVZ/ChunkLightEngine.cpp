@@ -55,7 +55,10 @@ void ChunkLightEngine::computeChunkLighting(ChunkNeighbors &chunks) {
 		for (int x = -1; x <= 1; x++) {
 			const ChunkRefHandle &chunk = chunks.getChunk(x, z);
 			std::lock_guard<std::shared_mutex> lock(chunk->chunkMutex);
-
+			if (needsUpdate[z + 1][x + 1] && !(x == 0 && z == 0)) {
+				chunk->flagDirtyMeshInternal();
+				chunk->manager->queueDirtyChunk(chunk->chunk_x, chunk->chunk_y, chunk->chunk_z);
+			}
 			memcpy(chunk->lightData, getLightArray(x, z), sizeof(middle));
 		}
 	}
@@ -84,10 +87,10 @@ void ChunkLightEngine::propagateLight(int chunkX, int chunkZ, const ChunkRefHand
 		int z = node.z;
 		int index = Chunk::toIndex(x, y, z);
 
-		BlockType type = chunk->getBlockInternal(x, y, z).type;
+		LightType type = chunk->getBlockInternal(x, y, z).getLightType();
 		Light currentLight = lightData[index];
 
-		if (type != BlockType::BLOCK_TYPE_DEFAULT || currentLight.getBlockLight() >= blockLight)
+		if (type == LightType::LIGHT_TYPE_OPAQUE || currentLight.getBlockLight() >= blockLight)
 			continue;
 
 		lightData[index].setBlockLight(blockLight);
@@ -108,7 +111,7 @@ void ChunkLightEngine::propagateLight(int chunkX, int chunkZ, const ChunkRefHand
 			queue.push_back({newLight, x - 1, y, z});
 		}
 
-		//up
+		//front
 		if (z == MAX_Z) {
 			getQueue(chunkX, chunkZ + 1).push_back({ newLight, x, y, MIN_Z });
 		}
@@ -116,7 +119,7 @@ void ChunkLightEngine::propagateLight(int chunkX, int chunkZ, const ChunkRefHand
 			queue.push_back({ newLight, x, y, z + 1 });
 		}
 
-		//down
+		//back
 		if (z == MIN_Z) {
 			getQueue(chunkX, chunkZ - 1).push_back({ newLight, x, y, MAX_Z });
 		}
@@ -124,11 +127,27 @@ void ChunkLightEngine::propagateLight(int chunkX, int chunkZ, const ChunkRefHand
 			queue.push_back({ newLight, x, y, z - 1 });
 		}
 
+		//up
+		if (y == MAX_Y) {
+			//getQueue(chunkX, chunkZ + 1).push_back({ newLight, x, y, MIN_Z });
+		}
+		else if (canPropagateLight(x, y + 1, z, newLight, lightData, chunk)) {
+			queue.push_back({ newLight, x, y + 1, z});
+		}
+
+		//down
+		if (y == MIN_Y) {
+			//getQueue(chunkX, chunkZ + 1).push_back({ newLight, x, y, MIN_Z });
+		}
+		else if (canPropagateLight(x, y - 1, z, newLight, lightData, chunk)) {
+			queue.push_back({ newLight, x, y - 1, z });
+		}
+
 	}
 }
 
 bool ChunkLightEngine::canPropagateLight(int x, int y, int z, Light light, Light *data, const ChunkRefHandle &chunk) {
-	return chunk->getBlockInternal(x, y, z).type == BlockType::BLOCK_TYPE_DEFAULT
+	return chunk->getBlockInternal(x, y, z).getLightType() != LightType::LIGHT_TYPE_OPAQUE
 		&& data[Chunk::toIndex(x, y, z)].getBlockLight() < light.getBlockLight();
 }
 //void ChunkLightEngine::computeChunkLightingAsync(ChunkNeighbors &chunks) {

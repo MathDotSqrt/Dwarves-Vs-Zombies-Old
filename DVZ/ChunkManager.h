@@ -69,8 +69,8 @@ public:							//fix bug of things not destructing in order
 	static const int CHUNK_RENDER_DATA_RECYCLE_SIZE = 4 * 1024 * 1024;
 	static const int CHUNK_MESHER_ALLOC_SIZE = 8 * 1024 * 1024;
 	static const int CHUNK_THREAD_POOL_SIZE = 1;	//dont change this until i fix allocate array
-	static const int RENDER_DISTANCE = 10;
-	//static const int RENDER_DISTANCE = 50;
+	//static const int RENDER_DISTANCE = 10;
+	static const int RENDER_DISTANCE = 50;
 	static const int LOAD_DISTANCE = RENDER_DISTANCE + 2;
 
 public:
@@ -175,7 +175,7 @@ private:
 	std::thread mesherThread[CHUNK_THREAD_POOL_SIZE];
 
 	mutable std::shared_mutex chunkSetMutex;		//gaurds chunkSet and mainMeshQueue
-	mutable std::mutex meshQueueMutex;
+	mutable std::recursive_mutex meshQueueMutex;
 
 	//moodycamel::BlockingConcurrentQueue<ChunkHandle> chunkGenQueue;
 	//moodycamel::BlockingConcurrentQueue<std::pair<ChunkNeighbors, ChunkGeometry*>> chunkMeshingQueue;
