@@ -4,6 +4,7 @@
 
 namespace Voxel {
 	struct ChunkNeighbors;
+	class ChunkRefHandle;
 
 	class ChunkLightEngine {
 	private:
@@ -37,7 +38,12 @@ namespace Voxel {
 		void computeChunkLighting(ChunkNeighbors &);
 
 	private:
-		inline constexpr std::deque<Chunk::LightNode>& getQueue(int cx, int cz) {
+		typedef Chunk::LightNode Node;
+		typedef std::deque<Node> Queue;
+
+		void propagateLight(int chunkX, int chunkZ, const ChunkRefHandle &);
+
+		inline constexpr Queue& getQueue(int cx, int cz) {
 			assert(cx >= -1 && cx <= 1);
 			assert(cz >= -1 && cz <= 1);
 			return lightQueue[cz + 1][cx + 1];
@@ -50,6 +56,8 @@ namespace Voxel {
 			cz += 1;
 			return *lightArray + (CHUNK_VOLUME * (cx + cz * 3));
 		}
+
+		inline bool canPropagateLight(int x, int y, int z, Light light, Light *data, const ChunkRefHandle &handle);
 
 	};
 }

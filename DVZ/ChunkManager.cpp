@@ -141,6 +141,7 @@ ChunkRefHandle ChunkManager::getNullChunk() {
 }
 
 ChunkNeighbors ChunkManager::getChunkNeighbors(int cx, int cy, int cz) {
+
 	return {
 		getChunkIfMapped(cx - 1, cy, cz - 1),
 		getChunkIfMapped(cx    , cy, cz - 1),
@@ -515,11 +516,14 @@ void ChunkManager::updateDirtyChunks() {
 		ChunkRefHandle &handle = mainMeshQueue.front();
 		if (handle->getMeshState() == MeshState::DIRTY) {
 			ChunkNeighbors n = getChunkNeighbors(handle);
+			
 			chunkLightEngine->loadLightData(n);
 			chunkLightEngine->computeChunkLighting(n);
 			mainChunkMesher->loadChunkData(n);
+
 			ChunkGeometry *geometry = meshRecycler.getNew();
 			mainChunkMesher->createChunkMesh(geometry);
+
 			ChunkRenderDataHandle &renderData = renderableChunkSet[handle->getHashCode()].second;
 			renderData->bufferGeometry(geometry);
 			handle->flagMeshValid();

@@ -99,7 +99,7 @@ private:
 	friend class ChunkManager;
 
 	struct LightNode {
-		Light value;
+		Light light;
 		int32 x, y, z;
 	};
 
