@@ -99,14 +99,19 @@ void ChunkManager::update(float x, float y, float z) {
 }
 
 ChunkRefHandle ChunkManager::getChunk(int cx, int cy, int cz) {
-	auto iter = this->chunkSet.find(hashcode(cx, cy, cz));
+	{
+		std::shared_lock readLock(chunkSetMutex);
+		auto iter = this->chunkSet.find(hashcode(cx, cy, cz));
 
-	if (iter != this->chunkSet.end()) {
-		ChunkRefCount *chunkRefCountPair = &iter->second;
-		Chunk* chunkPtr = chunkRefCountPair->first.get();
-		RefCount *refCount = &chunkRefCountPair->second;
-		return ChunkRefHandle(chunkPtr, ChunkDestructor(refCount));
+		if (iter != this->chunkSet.end()) {
+			ChunkRefCount *chunkRefCountPair = &iter->second;
+			Chunk* chunkPtr = chunkRefCountPair->first.get();
+			RefCount *refCount = &chunkRefCountPair->second;
+			return ChunkRefHandle(chunkPtr, ChunkDestructor(refCount));
+		}
 	}
+
+	std::lock_guard writeLock(chunkSetMutex);
 
 	ChunkHandle chunk = this->chunkRecycler.getUniqueNew(cx, cy, cz, this);
 	chunk->reinitializeChunk(cx, cy, cz);
@@ -116,13 +121,18 @@ ChunkRefHandle ChunkManager::getChunk(int cx, int cy, int cz) {
 	//this->chunkSet.emplace(chunkHashCode, std::move(pair));
 	//this->chunkSet[chunkHashCode] = std::make_pair(chunk, std::move(a));
 
-	this->chunkSet[chunkHashCode].first = std::move(chunk);
-	this->chunkSet[chunkHashCode].second = 0;
+	ChunkRefCount &pair = chunkSet[chunkHashCode];
 
-	return getChunkIfMapped(cx, cy, cz);
+	pair.first = std::move(chunk);
+	pair.second = 0;
+
+	Chunk* chunkPtr = pair.first.get();
+	RefCount *refCountPtr = &pair.second;
+	return ChunkRefHandle(chunkPtr, ChunkDestructor(refCountPtr));;
 }
 
 ChunkRefHandle ChunkManager::getChunkIfMapped(int cx, int cy, int cz) {
+	std::shared_lock readLock(chunkSetMutex);
 	auto iter = this->chunkSet.find(hashcode(cx, cy, cz));
 
 	if (iter == this->chunkSet.end()) {
@@ -170,10 +180,12 @@ ChunkRefHandle ChunkManager::copyChunkRefHandle(const ChunkRefHandle& handle) {
 	return getChunk(handle->chunk_x, handle->chunk_y, handle->chunk_z);
 }
 
-bool ChunkManager::isChunkMapped(int cx, int cy, int cz) {
+bool ChunkManager::isChunkMapped(int cx, int cy, int cz) const{
 	//check to see if chunkset actually inserts a nullptr when checking for an invalid chunk
 	//Might cause lots of rehashing
 	//return this->getChunk(cx, cy, cz) == nullptr;
+	std::shared_lock<std::shared_mutex> readLock(chunkSetMutex);
+
 	auto iter = this->chunkSet.find(hashcode(cx, cy, cz));
 	return iter != this->chunkSet.end();
 }
@@ -335,7 +347,15 @@ int ChunkManager::getChunkZ(float z) {
 void ChunkManager::queueDirtyChunk(int cx, int cy, int cz) {
 	ChunkRefHandle chunk = getChunkIfMapped(cx, cy, cz);
 	if (chunk) {
-		chunk->flagDirtyMesh();
+		std::lock_guard writeLock(meshQueueMutex);
+		mainMeshQueue.emplace(std::move(chunk));
+	}
+}
+
+void ChunkManager::queueDirtyChunk(ChunkRefHandle &&chunk) {
+	//ChunkRefHandle chunk = getChunkIfMapped(cx, cy, cz);
+	if (chunk) {
+		std::lock_guard writeLock(meshQueueMutex);
 		mainMeshQueue.emplace(std::move(chunk));
 	}
 }
@@ -348,12 +368,12 @@ ChunkPtr ChunkManager::newChunk(int cx, int cy, int cz) {
 	return chunk_ptr;
 }
 
-bool ChunkManager::isChunkLoaded(int cx, int cy, int cz) {
+bool ChunkManager::isChunkLoaded(int cx, int cy, int cz) const {
 	auto iter = this->loadedChunkSet.find(this->hashcode(cx, cy, cz));
 	return iter != this->loadedChunkSet.end();
 }
 
-bool ChunkManager::isChunkRenderable(int cx, int cy, int cz) {
+bool ChunkManager::isChunkRenderable(int cx, int cy, int cz) const {
 	auto iter = this->renderableChunkSet.find(this->hashcode(cx, cy, cz));
 	return iter != this->renderableChunkSet.end();
 }
@@ -461,6 +481,8 @@ void ChunkManager::updateAllChunks(int playerCX, int playerCY, int playerCZ) {
 	
 //	std::vector<ChunkNeighbors> neighbors;
 	
+	std::lock_guard writeLock(chunkSetMutex);
+
 	int num_erased = 0;
 	const int MAX_ERASE = 100;
 
@@ -512,6 +534,8 @@ void ChunkManager::updateDirtyChunks() {
 	//	chunkMeshingQueue.enqueue(std::move(p));
 	//	mainMeshQueue.pop();
 	//}
+
+	std::lock_guard writeLock(meshQueueMutex);
 	for (int i = 0; i < MAX_DQ && mainMeshQueue.size() > 0; i++) {
 		ChunkRefHandle &handle = mainMeshQueue.front();
 		if (handle->getMeshState() == MeshState::DIRTY) {

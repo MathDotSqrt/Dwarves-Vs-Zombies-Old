@@ -27,6 +27,7 @@ void ChunkLightEngine::computeChunkLighting(ChunkNeighbors &chunks) {
 	int chunkX = 0;
 	int chunkZ = 0;
 
+	bool needsUpdate[3][3] = {0};
 
 	//{
 	//	std::shared_lock<std::shared_mutex> lock(chunks.getChunk(0, 0)->chunkMutex);
@@ -40,6 +41,7 @@ void ChunkLightEngine::computeChunkLighting(ChunkNeighbors &chunks) {
 			for (int x = -1; x <= 1; x++) {
 				if (getQueue(x, z).size()) {
 					allEmpty = false;
+					needsUpdate[z + 1][x + 1] = true;
 					std::shared_lock<std::shared_mutex> lock(chunks.getChunk(x, z)->chunkMutex);
 					propagateLight(x, z, chunks.getChunk(x, z));
 				}
@@ -51,8 +53,10 @@ void ChunkLightEngine::computeChunkLighting(ChunkNeighbors &chunks) {
 
 	for (int z = -1; z <= 1; z++) {
 		for (int x = -1; x <= 1; x++) {
-			std::lock_guard<std::shared_mutex> lock(chunks.getChunk(x, z)->chunkMutex);
-			memcpy(chunks.getChunk(x, z)->lightData, getLightArray(x, z), sizeof(middle));
+			const ChunkRefHandle &chunk = chunks.getChunk(x, z);
+			std::lock_guard<std::shared_mutex> lock(chunk->chunkMutex);
+
+			memcpy(chunk->lightData, getLightArray(x, z), sizeof(middle));
 		}
 	}
 }

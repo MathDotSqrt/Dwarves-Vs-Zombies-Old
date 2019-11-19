@@ -29,6 +29,18 @@ namespace Voxel {
 		std::deque<Chunk::LightNode> lightQueue[3][3];
 
 	public:
+		struct MeshUpdate {
+			bool needsUpdate[9];
+
+			MeshUpdate() {
+				for (int i = 0; i < 9; i++) {
+					needsUpdate[i] = false;
+				}
+			}
+
+			//todo getters and setters for this
+		};
+
 		ChunkLightEngine();
 		~ChunkLightEngine();
 

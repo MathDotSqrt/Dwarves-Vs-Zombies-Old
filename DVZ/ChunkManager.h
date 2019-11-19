@@ -62,6 +62,7 @@ class ChunkManager {
 public:							//fix bug of things not destructing in order
 	friend class Chunk;
 	friend class ChunkMesher;
+	friend class ChunkLightEngine;
 
 	static const int CHUNK_ALLOC_SIZE = 1000 * 1024 * 1024;
 	static const int CHUNK_MESH_RECYCLE_SIZE = 4 * 1024 * 1024;
@@ -91,7 +92,7 @@ public:
 	bool loadChunkAsync(int cx, int cy, int cz);
 	bool loadChunkAsync(int cx, int cy, int cz, void *callback);
 	
-	bool isChunkMapped(int cx, int cy, int cz);
+	bool isChunkMapped(int cx, int cy, int cz) const;
 	bool isBlockMapped(int x, int y, int z);
 
 	Block getBlock(int x, int y, int z);
@@ -113,11 +114,12 @@ public:
 	}
 private:
 	void queueDirtyChunk(int cx, int cy, int cz);
+	void queueDirtyChunk(ChunkRefHandle &&);
 	
 	ChunkPtr newChunk(int cx, int cy, int cz);
-	bool isChunkLoaded(int cx, int cy, int cz);
-	bool isChunkRenderable(int cx, int cy, int cz);
-	bool isChunkVisible(int cx, int cy, int cz);
+	bool isChunkLoaded(int cx, int cy, int cz) const;
+	bool isChunkRenderable(int cx, int cy, int cz) const;
+	bool isChunkVisible(int cx, int cy, int cz) const;
 
 	void sortChunks(int chunkX, int chunkY, int chunkZ, std::vector<ChunkRefHandle> &vector);
 
@@ -171,6 +173,9 @@ private:
 	std::atomic<bool> runThreads = true;
 	std::thread generatorThread;
 	std::thread mesherThread[CHUNK_THREAD_POOL_SIZE];
+
+	mutable std::shared_mutex chunkSetMutex;		//gaurds chunkSet and mainMeshQueue
+	mutable std::mutex meshQueueMutex;
 
 	//moodycamel::BlockingConcurrentQueue<ChunkHandle> chunkGenQueue;
 	//moodycamel::BlockingConcurrentQueue<std::pair<ChunkNeighbors, ChunkGeometry*>> chunkMeshingQueue;
