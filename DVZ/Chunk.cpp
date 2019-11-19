@@ -169,9 +169,15 @@ void Chunk::setBlock(int x, int y, int z, Block block) {
 	if (blockData[this->toIndex(x, y, z)] == block)
 		return;
 
-	this->blockData[this->toIndex(x, y, z)] = block;
+	blockData[this->toIndex(x, y, z)] = block;
 
-
+	if (block.getLightType() == LightType::LIGHT_TYPE_SOURCE) {
+		queueLightInternal(x, y, z, Light(0, 0xf));
+	}
+	else if (block.getLightType() == LightType::LIGHT_TYPE_TRANSPARENT) {
+		uint8 bLight = getBrightestNeighbor(x, y, z).getBlockLight();
+		if(bLight) queueLightInternal(x, y, z, Light(0, bLight - 1));
+	}
 
 	if (meshState == MeshState::VALID) { //only dirty state if it was valid, not if empty or lazy
 		meshState = MeshState::DIRTY;	 //todo only dirty chunk if there is an adjecant block that is transparent
@@ -201,7 +207,6 @@ void Chunk::setBlock(int x, int y, int z, Block block) {
 			front->flagDirtyMesh();
 			manager->queueDirtyChunk(std::move(front));
 		}
-
 	}
 }
 
@@ -223,8 +228,7 @@ void Chunk::setLight(int x, int y, int z, Light light) {
 	int index = toIndex(x, y, z);
 	//lightData[index] = light;
 
-	LightNode node = { light, x, y, z };
-	lightQueue.push_back(node);
+	queueLightInternal(x, y, z, light);
 
 	flagDirtyMeshInternal();
 	manager->queueDirtyChunk(chunk_x, chunk_y, chunk_z);
@@ -242,9 +246,42 @@ void Chunk::setBlockLight(int x, int y, int z, uint8 value) {
 
 }
 
-void Chunk::queueDirtyChunk(int cx, int cy, int cz) {
-	//meshState = MeshState::DIRTY;
-	//manager->queueDirtyChunk(chunk_x, chunk_y, chunk_z);
+constexpr bool Chunk::isIndexInBounds(int x, int y, int z){
+	return x >= 0 && x < CHUNK_WIDTH_X
+		&& y >= 0 && y < CHUNK_WIDTH_Y
+		&& z >= 0 && z < CHUNK_WIDTH_Z;
+}
+
+Light Chunk::getBrightestNeighbor(int x, int y, int z) const{
+	uint8 maxBlockLight = 0;
+
+	if (isIndexInBounds(x - 1, y, z)) {
+		uint8 b = getLightInternal(x - 1, y, z).getBlockLight();
+		maxBlockLight = b > maxBlockLight ? b : maxBlockLight;
+	}
+	if (isIndexInBounds(x + 1, y, z)) {
+		uint8 b = getLightInternal(x + 1, y, z).getBlockLight();
+		maxBlockLight = b > maxBlockLight ? b : maxBlockLight;
+	}
+	if (isIndexInBounds(x, y - 1, z)) {
+		uint8 b = getLightInternal(x, y + 1, z).getBlockLight();
+		maxBlockLight = b > maxBlockLight ? b : maxBlockLight;
+	}
+	if (isIndexInBounds(x, y + 1, z)) {
+		uint8 b = getLightInternal(x, y + 1, z).getBlockLight();
+		maxBlockLight = b > maxBlockLight ? b : maxBlockLight;
+	}
+
+	if (isIndexInBounds(x, y, z - 1)) {
+		uint8 b = getLightInternal(x, y, z - 1).getBlockLight();
+		maxBlockLight = b > maxBlockLight ? b : maxBlockLight;
+	}
+	if (isIndexInBounds(x, y, z + 1)) {
+		uint8 b = getLightInternal(x, y, z + 1).getBlockLight();
+		maxBlockLight = b > maxBlockLight ? b : maxBlockLight;
+	}
+
+	return Light(0, maxBlockLight);
 }
 
 void Chunk::reinitializeChunk(int cx, int cy, int cz) {

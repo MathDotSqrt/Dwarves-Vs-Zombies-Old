@@ -77,6 +77,7 @@ BlockManager::BlockManager(){
 		BlockType::BLOCK_TYPE_PURPLE,
 		MeshType::MESH_TYPE_BLOCK,
 		OccludeType::OCCLUDE_TYPE_ALL,
+		LightType::LIGHT_TYPE_SOURCE,
 		BlockTexCoords(1, 12, 16, 16),
 		glm::u8vec4(179, 0, 255, 255)
 	);

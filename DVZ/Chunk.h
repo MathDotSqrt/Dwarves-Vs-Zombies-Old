@@ -158,12 +158,13 @@ public:
 		return this->chunk_z;
 	}
 
+	static constexpr bool isIndexInBounds(int x, int y, int z);
 	int getHashCode();
 
 private:
 	void flagDirtyMeshInternal();
 
-	void queueDirtyChunk(int cx, int cy, int cz);
+	Light getBrightestNeighbor(int x, int y, int z) const;
 
 	inline Block getBlockInternal(int x, int y, int z) const {
 		return blockData[toIndex(x, y, z)];
@@ -179,6 +180,11 @@ private:
 
 	inline void setLightInternal(int x, int y, int z, Light light) {
 		lightData[toIndex(x, y, z)] = light;
+	}
+
+	inline void queueLightInternal(int x, int y, int z, Light light) {
+		LightNode node = { light, x, y, z };
+		lightQueue.push_back(node);
 	}
 
 	void reinitializeChunk(int cx, int cy, int cz);					//todo find a code patter to get rid of this
