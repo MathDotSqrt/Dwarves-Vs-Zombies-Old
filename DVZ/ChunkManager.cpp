@@ -34,16 +34,19 @@ ChunkManager::ChunkManager(Util::Allocator::IAllocator &parent) :
 ChunkManager::~ChunkManager() {
 	//deleting all chunks
 	this->runThreads = false;
-	this->chunkSet.clear();
-	Util::Allocator::freeArray<ChunkMesher>(this->chunkMesherAllocator, this->chunkMesherArray);
-	Util::Allocator::free<ChunkMesher>(this->chunkMesherAllocator, this->mainChunkMesher);
-	Util::Allocator::free<ChunkLightEngine>(chunkMesherAllocator, chunkLightEngine);
 
 	this->generatorThread.join();
 
 	for (int i = 0; i < CHUNK_THREAD_POOL_SIZE; i++) {
 		mesherThread[i].join();
 	}
+
+	//this->chunkSet.clear();
+	Util::Allocator::freeArray<ChunkMesher>(this->chunkMesherAllocator, this->chunkMesherArray);
+	Util::Allocator::free<ChunkMesher>(this->chunkMesherAllocator, this->mainChunkMesher);
+	Util::Allocator::free<ChunkLightEngine>(chunkMesherAllocator, chunkLightEngine);
+
+	
 }
 
 void ChunkManager::update(float x, float y, float z) {

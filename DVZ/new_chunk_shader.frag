@@ -40,19 +40,17 @@ uniform sampler2DArray tex;
 //uniform PointLight lights[3];
 uniform DirLight dirLight;
 uniform Ambient ambient;
-uniform Fog fog = Fog(vec3(.13, .13, .13), 0, .002);
-
-
+uniform Fog fog;
 
 const float fog_A = 4;
 const float fog_B = 20;
 
-const float fog_min = .001;
-const float fog_max = 550;
+const float fog_min = .005;
+const float fog_max = 1550;
 
-const float height_fog_start = 350;
-const float min_step = 600;
-const float max_step = 800;
+const float height_fog_start = 400;
+const float min_step = 500;
+const float max_step = 900;
 
 float calc_dir_light(DirLight dlight){
 	vec3 normalized_dir = normalize(dlight.dir);
@@ -89,11 +87,11 @@ float calc_height_fog(float dist){
 void main(){
 	/*LIGHT*/
 	vec3 light_color = vec3(0);
-	//light_color += ambient.color * ambient.intensity * float(frag_light+1) / 10;
-	light_color += (float(frag_light * frag_light) + .1) / 66;
+	light_color += ambient.color * ambient.intensity * float(frag_light+1);
+	//light_color += (float(frag_light * frag_light) + .1) / 66;
 
 	float light_strength = calc_dir_light(dirLight);
-	light_color += dirLight.color * light_strength / 20;
+	light_color += dirLight.color * light_strength;
 	/*LIGHT*/
 
 	/*TEXTURE*/

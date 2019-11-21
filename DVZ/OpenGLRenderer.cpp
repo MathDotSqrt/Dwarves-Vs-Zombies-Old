@@ -329,9 +329,9 @@ void OpenGLRenderer::renderChunks(Voxel::ChunkManager *manager, glm::vec3 camera
 	Shader::GLSLProgram *shader = Shader::getShaderSet({ "new_chunk_shader.vert", "new_chunk_shader.frag" });
 	shader->use();
 
-	//shader->setUniform3f("fog.color", glm::vec3(.15, .15, .15));
-	//shader->setUniform1f("fog.start_dist", 250);
-	//shader->setUniform1f("fog.attenuation", 0.009);
+	shader->setUniform3f("fog.color", glm::vec3(.13, .13, .13));
+	shader->setUniform1f("fog.start_dist", 0);
+	shader->setUniform1f("fog.attenuation", 0.002);
 
 	shader->setUniform3f("dirLight.dir", glm::vec3(1, -1, 3));
 	shader->setUniform3f("dirLight.color", glm::vec3(1, 1, 1));

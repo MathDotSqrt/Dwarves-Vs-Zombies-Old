@@ -149,10 +149,7 @@ private:
 	typedef std::pair<ChunkNeighbors, ChunkGeometryHandle> ChunkNeighborGeometryPair;
 	typedef std::pair<ChunkRefHandle, ChunkGeometryHandle> ChunkGeometryPair;
 
-	Util::Recycler<Chunk> chunkRecycler;
-	Util::Recycler<ChunkGeometry> meshRecycler;
-	Util::Recycler<ChunkRenderData> renderDataRecycler;
-
+	
 	std::unordered_map<int, ChunkRefCount> chunkSet;					//contains all chunks
 	std::unordered_map<int, ChunkRefHandle> loadedChunkSet;				//subset of all chunks that are loaded
 	std::unordered_map<int, ChunkRenderDataPair> renderableChunkSet;	//subset of all chunks that are renderable
@@ -165,6 +162,12 @@ private:
 	moodycamel::ConcurrentQueue<ChunkNeighborGeometryPair> chunkMeshingQueue;
 	moodycamel::ConcurrentQueue<ChunkGeometryPair> chunkMeshedQueue;
 	
+	Util::Recycler<Chunk> chunkRecycler;
+	Util::Recycler<ChunkGeometry> meshRecycler;
+	Util::Recycler<ChunkRenderData> renderDataRecycler;
+
+
+
 	Util::Allocator::LinearAllocator chunkMesherAllocator;
 	ChunkMesher *chunkMesherArray;
 	ChunkMesher *mainChunkMesher;
