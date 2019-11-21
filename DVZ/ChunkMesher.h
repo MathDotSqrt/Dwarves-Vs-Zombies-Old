@@ -17,7 +17,7 @@ namespace Voxel {
 		Block blockData[PADDED_VOLUME];
 		
 		constexpr static int CHUNK_VOLUME = Voxel::CHUNK_WIDTH_X * Voxel::CHUNK_WIDTH_Y * Voxel::CHUNK_WIDTH_Z;
-		Light lightData[CHUNK_VOLUME];
+		Light lightData[PADDED_VOLUME];
 
 
 		typedef struct _BlockFaceCullTags {

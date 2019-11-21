@@ -17,18 +17,23 @@ void ChunkMesher::loadChunkData(const ChunkNeighbors &n) {
 		for (int z = 0; z < CHUNK_WIDTH_Z; z++) {
 			for (int y = 0; y < CHUNK_WIDTH_Y; y++) {
 				for (int x = 0; x < CHUNK_WIDTH_X; x++) {
-					this->blockData[toPaddedBlockIndex(x + 1, y + 1, z + 1)] = n.middle->getBlockInternal(x, y, z);
+					int index = toPaddedBlockIndex(x + 1, y + 1, z + 1);
+					this->blockData[index] = n.middle->getBlockInternal(x, y, z);
+					this->lightData[index] = n.middle->getLightInternal(x, y, z);
 				}
 			}
 		}
 
-		memcpy(this->lightData, n.middle->lightData, sizeof(Light) * CHUNK_VOLUME);
+		//memcpy(this->lightData, n.middle->lightData, sizeof(Light) * CHUNK_VOLUME);
 	}
 
 	if (n.front && !n.front->isEmpty()) {
 		for (int y = 0; y < CHUNK_WIDTH_Y; y++) {
 			for (int x = 0; x < CHUNK_WIDTH_X; x++) {
-				this->blockData[toPaddedBlockIndex(x + 1, y + 1, PADDED_WIDTH_Z - 1)] = n.front->getBlockInternal(x, y, 0);
+				int index = toPaddedBlockIndex(x + 1, y + 1, PADDED_WIDTH_Z - 1);
+				this->blockData[index] = n.front->getBlockInternal(x, y, 0);
+				this->lightData[index] = n.front->getLightInternal(x, y, 0);
+
 			}
 		}
 	}
@@ -36,7 +41,9 @@ void ChunkMesher::loadChunkData(const ChunkNeighbors &n) {
 	if (n.back && !n.back->isEmpty()) {
 		for (int y = 0; y < CHUNK_WIDTH_Y; y++) {
 			for (int x = 0; x < CHUNK_WIDTH_X; x++) {
-				this->blockData[toPaddedBlockIndex(x + 1, y + 1, 0)] = n.back->getBlockInternal(x, y, CHUNK_WIDTH_Z - 1);
+				int index = toPaddedBlockIndex(x + 1, y + 1, 0);
+				this->blockData[index] = n.back->getBlockInternal(x, y, CHUNK_WIDTH_Z - 1);
+				this->lightData[index] = n.back->getLightInternal(x, y, CHUNK_WIDTH_Z - 1);
 			}
 		}
 	}
@@ -44,7 +51,9 @@ void ChunkMesher::loadChunkData(const ChunkNeighbors &n) {
 	if (n.left && !n.left->isEmpty()) {
 		for (int z = 0; z < CHUNK_WIDTH_Z; z++) {
 			for (int y = 0; y < CHUNK_WIDTH_Y; y++) {
-				this->blockData[toPaddedBlockIndex(0, y + 1, z + 1)] = n.left->getBlockInternal(CHUNK_WIDTH_X - 1, y, z);
+				int index = toPaddedBlockIndex(0, y + 1, z + 1);
+				this->blockData[index] = n.left->getBlockInternal(CHUNK_WIDTH_X - 1, y, z);
+				this->lightData[index] = n.left->getLightInternal(CHUNK_WIDTH_X - 1, y, z);
 			}
 		}
 	}
@@ -52,7 +61,9 @@ void ChunkMesher::loadChunkData(const ChunkNeighbors &n) {
 	if (n.right && !n.right->isEmpty()) {
 		for (int z = 0; z < CHUNK_WIDTH_Z; z++) {
 			for (int y = 0; y < CHUNK_WIDTH_Y; y++) {
-				this->blockData[toPaddedBlockIndex(PADDED_WIDTH_X - 1, y + 1, z + 1)] = n.right->getBlockInternal(0, y, z);
+				int index = toPaddedBlockIndex(PADDED_WIDTH_X - 1, y + 1, z + 1);
+				this->blockData[index] = n.right->getBlockInternal(0, y, z);
+				this->lightData[index] = n.right->getLightInternal(0, y, z);
 			}
 		}
 	}
@@ -66,18 +77,22 @@ void ChunkMesher::loadChunkDataAsync(const ChunkNeighbors &n) {
 		for (int z = 0; z < CHUNK_WIDTH_Z; z++) { 
 			for (int y = 0; y < CHUNK_WIDTH_Y; y++) {
 				for (int x = 0; x < CHUNK_WIDTH_X; x++) {
-					this->blockData[toPaddedBlockIndex(x+1, y+1, z+1)] = n.middle->getBlockInternal(x, y, z);
+					int index = toPaddedBlockIndex(x + 1, y + 1, z + 1);
+					this->blockData[index] = n.middle->getBlockInternal(x, y, z);
+					this->lightData[index] = n.middle->getLightInternal(x, y, z);
 				}
 			}
 		}
-		memcpy(this->lightData, n.middle->lightData, sizeof(Light) * CHUNK_VOLUME);
+		//memcpy(this->lightData, n.middle->lightData, sizeof(Light) * CHUNK_VOLUME);
 	}
 
 	if(n.front && !n.front->isEmpty()){	
 		std::shared_lock<std::shared_mutex> front_lock(n.front->chunkMutex);
 		for(int y = 0; y < CHUNK_WIDTH_Y; y++){
 			for (int x = 0; x < CHUNK_WIDTH_X; x++) {
-				this->blockData[toPaddedBlockIndex(x + 1, y + 1, PADDED_WIDTH_Z-1)] = n.front->getBlockInternal(x, y, 0);
+				int index = toPaddedBlockIndex(x + 1, y + 1, PADDED_WIDTH_Z - 1);
+				this->blockData[index] = n.front->getBlockInternal(x, y, 0);
+				this->lightData[index] = n.front->getLightInternal(x, y, 0);
 			}
 		}
 	}
@@ -86,7 +101,9 @@ void ChunkMesher::loadChunkDataAsync(const ChunkNeighbors &n) {
 		std::shared_lock<std::shared_mutex> back_lock(n.back->chunkMutex);
 		for (int y = 0; y < CHUNK_WIDTH_Y; y++) {
 			for (int x = 0; x < CHUNK_WIDTH_X; x++) {
-				this->blockData[toPaddedBlockIndex(x + 1, y + 1, 0)] = n.back->getBlockInternal(x, y, CHUNK_WIDTH_Z-1);
+				int index = toPaddedBlockIndex(x + 1, y + 1, 0);
+				this->blockData[index] = n.back->getBlockInternal(x, y, CHUNK_WIDTH_Z - 1);
+				this->lightData[index] = n.back->getLightInternal(x, y, CHUNK_WIDTH_Z-1);
 			}
 		}
 	}
@@ -95,7 +112,9 @@ void ChunkMesher::loadChunkDataAsync(const ChunkNeighbors &n) {
 		std::shared_lock<std::shared_mutex> left_lock(n.left->chunkMutex);
 		for (int z = 0; z < CHUNK_WIDTH_Z; z++) {
 			for (int y = 0; y < CHUNK_WIDTH_Y; y++) {
-				this->blockData[toPaddedBlockIndex(0, y + 1, z+1)] = n.left->getBlockInternal(CHUNK_WIDTH_X - 1, y, z);
+				int index = toPaddedBlockIndex(0, y + 1, z + 1);
+				this->blockData[index] = n.left->getBlockInternal(CHUNK_WIDTH_X - 1, y, z);
+				this->lightData[index] = n.left->getLightInternal(CHUNK_WIDTH_X - 1, y, z);
 			}
 		}
 	}
@@ -104,7 +123,9 @@ void ChunkMesher::loadChunkDataAsync(const ChunkNeighbors &n) {
 		std::shared_lock<std::shared_mutex> right_lock(n.right->chunkMutex);
 		for (int z = 0; z < CHUNK_WIDTH_Z; z++) {
 			for (int y = 0; y < CHUNK_WIDTH_Y; y++) {
-				this->blockData[toPaddedBlockIndex(PADDED_WIDTH_X-1, y + 1, z + 1)] = n.right->getBlockInternal(0, y, z);
+				int index = toPaddedBlockIndex(PADDED_WIDTH_X - 1, y + 1, z + 1);
+				this->blockData[index] = n.right->getBlockInternal(0, y, z);
+				this->lightData[index] = n.right->getLightInternal(0, y, z);
 			}
 		}
 	}
@@ -137,12 +158,12 @@ void ChunkMesher::createChunkMesh(ChunkGeometry *geometry) {
 					tags.nz = block.isOccludedBy(getBlock(x, y, z - 1));
 
 					LightFace l;
-					if (!tags.px) l.px = getLight(x + 1, y, z);
-					if (!tags.nx) l.nx = getLight(x - 1, y, z);
-					if (!tags.py) l.py = getLight(x, y + 1, z);
-					if (!tags.ny) l.ny = getLight(x, y - 1, z);
-					if (!tags.pz) l.pz = getLight(x, y, z + 1);
-					if (!tags.nz) l.nz = getLight(x, y, z - 1);
+					l.px = getLight(x + 1, y, z);
+					l.nx = getLight(x - 1, y, z);
+					l.py = getLight(x, y + 1, z);
+					l.ny = getLight(x, y - 1, z);
+					l.pz = getLight(x, y, z + 1);
+					l.nz = getLight(x, y, z - 1);
 
 					createCulledCube(x, y, z, block, l, tags, geometry);
 				}
@@ -290,15 +311,15 @@ Block ChunkMesher::getBlock(int x, int y, int z) {
 }
 
 Light ChunkMesher::getLight(int x, int y, int z) {
-	bool bx = x < 0 || x >= CHUNK_WIDTH_X;
-	bool by = y < 0 || y >= CHUNK_WIDTH_Y;
-	bool bz = z < 0 || z >= CHUNK_WIDTH_Z;
+	bool bx = x < -1 || x > CHUNK_WIDTH_X;
+	bool by = y < -1 || y > CHUNK_WIDTH_Y;
+	bool bz = z < -1 || z > CHUNK_WIDTH_Z;
 
 	if (bx || by || bz) {
 		return Light();
 	}
 
-	return lightData[x + CHUNK_WIDTH_X * (y + CHUNK_WIDTH_Y * z)];
+	return lightData[toPaddedBlockIndex(x+1, y+1, z+1)];
 }
 
 int ChunkMesher::toPaddedBlockIndex(int x, int y, int z) {
