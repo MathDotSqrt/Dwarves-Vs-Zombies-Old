@@ -35,8 +35,16 @@ private:
 		.rgba()
 		.nearest()
 		.clampToEdge()
+		.repeat()
 		.borderColor(0, 1, 0, 0)
 		.mipmapLinear()
+		.buildTextureAtlasArray(16, 16);
+
+	Graphics::TEX debugTEX = Graphics::TEX::Builder("WorldTerrain.png")
+		.rgb()
+		.linear()
+		.mipmapLinear()
+		.mirrorRepeat()
 		.buildTextureAtlasArray(16, 16);
 
 	void renderChunks(Voxel::ChunkManager *manager, glm::vec3 camera_position, glm::mat4 vp);

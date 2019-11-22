@@ -331,7 +331,7 @@ void OpenGLRenderer::renderChunks(Voxel::ChunkManager *manager, glm::vec3 camera
 
 	shader->setUniform3f("fog.color", glm::vec3(.13, .13, .13));
 	shader->setUniform1f("fog.start_dist", 0);
-	shader->setUniform1f("fog.attenuation", 0.002);
+	shader->setUniform1f("fog.attenuation", 0.004f);
 
 	shader->setUniform3f("dirLight.dir", glm::vec3(1, -1, 3));
 	shader->setUniform3f("dirLight.color", glm::vec3(1, 1, 1));
@@ -345,6 +345,8 @@ void OpenGLRenderer::renderChunks(Voxel::ChunkManager *manager, glm::vec3 camera
 	Scene::PointLight &point = this->scene->pointLightCache[0];
 
 	this->chunkTex.bindActiveTexture(0);
+	//this->debugTEX.bindActiveTexture(0);
+
 	for (auto iterator = manager->getVisibleChunks().begin(); iterator != manager->getVisibleChunks().end(); iterator++) {
 
 		auto data = *iterator;
@@ -352,7 +354,7 @@ void OpenGLRenderer::renderChunks(Voxel::ChunkManager *manager, glm::vec3 camera
 		if (data == nullptr) {
 			continue;
 		}
-
+		
 		float x = data->getChunkX() * Voxel::CHUNK_RENDER_WIDTH_X;
 		float y = data->getChunkY() * Voxel::CHUNK_RENDER_WIDTH_Y;
 		float z = data->getChunkZ() * Voxel::CHUNK_RENDER_WIDTH_Z;

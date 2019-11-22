@@ -24,3 +24,7 @@ vec3 toLinear(vec3 x){
 vec4 toLinear(vec4 x){
 	return pow(x, vec4(GAMMA));
 }
+
+bool float_compare(float f, float value, float epsilon=.01){
+	return (f >= value - epsilon) && (f <= value + epsilon); 
+}

@@ -167,7 +167,6 @@ private:
 	Util::Recycler<ChunkRenderData> renderDataRecycler;
 
 
-
 	Util::Allocator::LinearAllocator chunkMesherAllocator;
 	ChunkMesher *chunkMesherArray;
 	ChunkMesher *mainChunkMesher;

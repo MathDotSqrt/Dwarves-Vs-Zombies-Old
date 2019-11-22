@@ -132,9 +132,12 @@ TEX TEX::Builder::buildTexture() {
 	unsigned char *image = stbi_load(this->filename.c_str(), &this->width, &this->height, &channels, 3);
 	this->textureTarget = GL_TEXTURE_2D;
 	
+	int mipmapLevelCount = 0;
+
+
 	glGenTextures(1, &this->texID);
 	glBindTexture(this->textureTarget, this->texID);
-	glTexImage2D(this->textureTarget, 0, GL_RGB, this->width, this->height, 0, GL_RGB, GL_UNSIGNED_BYTE, image);
+	glTexImage2D(this->textureTarget, mipmapLevelCount, GL_RGB, this->width, this->height, 0, GL_RGB, GL_UNSIGNED_BYTE, image);
 
 	glTexParameteri(this->textureTarget, GL_TEXTURE_WRAP_S, this->wrapS);
 	glTexParameteri(this->textureTarget, GL_TEXTURE_WRAP_T, this->wrapT);
@@ -157,7 +160,7 @@ TEX TEX::Builder::buildTexture() {
 		f = this->filter;
 	}
 
-	glTexParameteri(this->textureTarget, GL_TEXTURE_MIN_FILTER, this->filter);
+	glTexParameteri(this->textureTarget, GL_TEXTURE_MIN_FILTER, f);
 	glTexParameteri(this->textureTarget, GL_TEXTURE_MAG_FILTER, this->filter);
 
 	stbi_image_free(image);
@@ -177,8 +180,8 @@ TEX TEX::Builder::buildTextureAtlasArray(int rows, int cols) {
 	size_t size = this->width * this->height * channels * sizeof(unsigned char);
 	unsigned char *imageArray = (unsigned char *)malloc(size);
 
-	int sprite_width = width / rows;
-	int sprite_height = height / cols;
+	int sprite_width = width / cols;
+	int sprite_height = height / rows;
 	int imageArrayIndex = 0;
 	for (int spriteIndex = 0; spriteIndex < rows*cols; spriteIndex++) {
 		int r = spriteIndex / cols;

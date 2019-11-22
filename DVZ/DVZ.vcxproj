@@ -322,9 +322,12 @@
   </ItemGroup>
   <ItemGroup>
     <Image Include="checker.jpg" />
+    <Image Include="GRAS.jpg" />
+    <Image Include="purp.jpg" />
     <Image Include="terrain.png" />
     <Image Include="terrain_debug.png" />
     <Image Include="test.png" />
+    <Image Include="WorldTerrain.png" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="dragon.obj">

@@ -30,6 +30,7 @@ BlockManager::BlockManager(){
 		BlockType::BLOCK_TYPE_DIRT,
 		MeshType::MESH_TYPE_BLOCK,
 		OccludeType::OCCLUDE_TYPE_ALL,
+		//BlockTexCoords(2, 0, 1, 2),
 		BlockTexCoords(2, 0, 16, 16),
 		glm::u8vec4(128, 90, 70, 255)
 	);
@@ -39,6 +40,7 @@ BlockManager::BlockManager(){
 		BlockType::BLOCK_TYPE_GRASS,
 		MeshType::MESH_TYPE_BLOCK,
 		OccludeType::OCCLUDE_TYPE_ALL,
+		//BlockTexCoords({ 0, 1, 0, 0 }, 1, 2),
 		BlockTexCoords({ 0, 0, 3, 0 }, 16, 16),
 		glm::u8vec4(11, 102, 35, 255)
 	);
@@ -48,6 +50,7 @@ BlockManager::BlockManager(){
 		BlockType::BLOCK_TYPE_SAND,
 		MeshType::MESH_TYPE_BLOCK,
 		OccludeType::OCCLUDE_TYPE_ALL,
+		//BlockTexCoords(0, 0, 1, 2),
 		BlockTexCoords(14, 7, 16, 16),
 		glm::u8vec4(194, 178, 128, 255)
 	);

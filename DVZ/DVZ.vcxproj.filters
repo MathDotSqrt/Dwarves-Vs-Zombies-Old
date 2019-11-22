@@ -447,6 +447,15 @@
     <Image Include="terrain_debug.png">
       <Filter>Resource Files\Textures</Filter>
     </Image>
+    <Image Include="purp.jpg">
+      <Filter>Resource Files\Textures</Filter>
+    </Image>
+    <Image Include="GRAS.jpg">
+      <Filter>Resource Files\Textures</Filter>
+    </Image>
+    <Image Include="WorldTerrain.png">
+      <Filter>Resource Files\Textures</Filter>
+    </Image>
   </ItemGroup>
   <ItemGroup>
     <Text Include="dragon.obj">
