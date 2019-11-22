@@ -344,8 +344,8 @@ void OpenGLRenderer::renderChunks(Voxel::ChunkManager *manager, glm::vec3 camera
 
 	Scene::PointLight &point = this->scene->pointLightCache[0];
 
-	this->chunkTex.bindActiveTexture(0);
-	//this->debugTEX.bindActiveTexture(0);
+	//this->chunkTex.bindActiveTexture(0);
+	this->debugTEX.bindActiveTexture(0);
 
 	for (auto iterator = manager->getVisibleChunks().begin(); iterator != manager->getVisibleChunks().end(); iterator++) {
 

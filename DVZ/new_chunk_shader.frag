@@ -1,7 +1,7 @@
 #version 330 core
 #include "math.glsl"
 
-#define SPRITE_COL 16
+#define SPRITE_COL 2
 #define MAX_LIGHTS 3
 
 in vec3 frag_pos;
@@ -92,7 +92,7 @@ vec2 world_to_texcoord_space(){
 	texcoord = Y ? frag_pos.zx : texcoord; 
 
 	texcoord.y = 1 - texcoord.y;
-	return texcoord / 8;
+	return texcoord / 3;
 }
 
 void main(){
@@ -109,12 +109,12 @@ void main(){
 	vec2 texcoord = frag_uv.xy;
 	float texindex = frag_uv.z + frag_uv.w * SPRITE_COL;
 	vec3 texcoord3D = vec3(texcoord, texindex);
-	vec4 tex_color = toLinear(texture(tex, texcoord3D));
+	//vec4 tex_color = toLinear(texture(tex, texcoord3D));
 
 	vec2 world_texcoord = world_to_texcoord_space();
 	vec3 world_texcoord3D = vec3(world_texcoord, texindex);
-	//vec4 tex_color = toLinear(texture(debug, world_texcoord3D)); 
-	/*TEXTURE*/
+	vec4 tex_color = toLinear(texture(debug, world_texcoord3D)); 
+	/*TEXTURE*/ 
 
 
 	vec3 final_light_color = tex_color.rgb * light_color;

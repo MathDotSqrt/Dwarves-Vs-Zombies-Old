@@ -40,12 +40,12 @@ private:
 		.mipmapLinear()
 		.buildTextureAtlasArray(16, 16);
 
-	Graphics::TEX debugTEX = Graphics::TEX::Builder("WorldTerrain.png")
+	Graphics::TEX debugTEX = Graphics::TEX::Builder("WorldTerrain2.png")
 		.rgb()
 		.linear()
 		.mipmapLinear()
-		.mirrorRepeat()
-		.buildTextureAtlasArray(16, 16);
+		.repeat()
+		.buildTextureAtlasArray(1, 2);
 
 	void renderChunks(Voxel::ChunkManager *manager, glm::vec3 camera_position, glm::mat4 vp);
 
