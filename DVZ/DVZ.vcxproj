@@ -208,6 +208,7 @@
     <ClCompile Include="CubeGeometry.cpp" />
     <ClCompile Include="DemoState.cpp" />
     <ClCompile Include="Engine.cpp" />
+    <ClCompile Include="FBO.cpp" />
     <ClCompile Include="GameState.cpp" />
     <ClCompile Include="GameStateManager.cpp" />
     <ClCompile Include="Geometry.cpp" />
@@ -263,6 +264,7 @@
     <ClInclude Include="CubeGeometry.h" />
     <ClInclude Include="DemoState.h" />
     <ClInclude Include="Engine.h" />
+    <ClInclude Include="FBO.h" />
     <ClInclude Include="GamePacketID.h" />
     <ClInclude Include="GameState.h" />
     <ClInclude Include="GameStateManager.h" />
@@ -311,6 +313,8 @@
     <None Include="basic_shader.vert" />
     <None Include="chunk_shader.frag" />
     <None Include="chunk_shader.vert" />
+    <None Include="frame_buffer_shader.frag" />
+    <None Include="frame_buffer_shader.vert" />
     <None Include="math.glsl" />
     <None Include="new_chunk_shader.frag" />
     <None Include="new_chunk_shader.vert" />

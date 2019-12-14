@@ -26,6 +26,8 @@ public:
 
 	void dispose();
 
+	GLuint getTexID();
+
 	class Builder {
 	private:
 		friend class TEX;
@@ -48,10 +50,12 @@ public:
 
 		
 	public:
+		Builder(int width, int height);
 		Builder(std::string filename);
 		~Builder();
 		Builder& rgb();
 		Builder& rgba();
+		Builder& depth24();
 		Builder& repeat();
 		Builder& mirrorRepeat();
 		Builder& clampToEdge();
@@ -68,7 +72,6 @@ public:
 
 private:
 	GLuint texID;
-
 	TEX(Builder &builder);
 };
 

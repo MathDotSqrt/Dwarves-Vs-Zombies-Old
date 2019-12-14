@@ -246,6 +246,9 @@
     <ClInclude Include="ChunkLightEngine.h">
       <Filter>Header Files\Voxel</Filter>
     </ClInclude>
+    <ClInclude Include="FBO.h">
+      <Filter>Header Files\Graphics</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -389,6 +392,9 @@
     <ClCompile Include="ChunkLightEngine.cpp">
       <Filter>Source Files\Voxel</Filter>
     </ClCompile>
+    <ClCompile Include="FBO.cpp">
+      <Filter>Source Files\Graphics</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="test.vert">
@@ -431,6 +437,12 @@
       <Filter>Resource Files\Shaders</Filter>
     </None>
     <None Include="new_chunk_shader.frag">
+      <Filter>Resource Files\Shaders</Filter>
+    </None>
+    <None Include="frame_buffer_shader.vert">
+      <Filter>Resource Files\Shaders</Filter>
+    </None>
+    <None Include="frame_buffer_shader.frag">
       <Filter>Resource Files\Shaders</Filter>
     </None>
   </ItemGroup>
