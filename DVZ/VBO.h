@@ -2,9 +2,7 @@
 
 #include <GL/glew.h>
 #include <vector>
-#include <algorithm>
 #include "macrologger.h"
-#include <string>
 namespace Graphics {
 
 class VBO {

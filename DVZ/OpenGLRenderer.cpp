@@ -7,7 +7,7 @@
 #include <gtx/quaternion.hpp>
 #include "ChunkManager.h"
 #include "Timer.h"
-
+#include "QuadGeometry.h"
 using namespace Graphics;
 
 MaterialID ColorMaterial::type = MaterialID::COLOR_MATERIAL_ID;
@@ -16,7 +16,7 @@ MaterialID BasicLitMaterial::type = MaterialID::BASIC_LIT_MATERIAL_ID;
 MaterialID TextureMaterial::type = MaterialID::TEXTURE_MATERIAL_ID;
 MaterialID BlockMaterial::type = MaterialID::BLOCK_MATERIAL_ID;
 
-OpenGLRenderer::OpenGLRenderer(){
+OpenGLRenderer::OpenGLRenderer() : inverse(Window::getWidth(), Window::getHeight()), vbo(GL_ARRAY_BUFFER) {
 	start = Window::getTime();
 }
 
@@ -41,12 +41,29 @@ void OpenGLRenderer::init(Scene *scene) {
 	unsigned int cameraID = this->scene->createCameraInstance(camera);
 	this->scene->setMainCamera(cameraID);
 
-	//glClearColor(.1f, .4f, .7f, 1);
 	glClearColor(.4f, .4f, .4f, 1);
-	glEnable(GL_DEPTH_TEST);
+	glEnable(GL_CULL_FACE);
+	glCullFace(GL_CW);
+
+	GLbyte quad_array[]{
+		-1, -1,
+		1, -1,
+		-1,  1,
+		-1,  1,
+		1, -1,
+		1,  1,
+	};
+	quad.bind();
+	vbo.bind();
+	vbo.bufferData(sizeof(quad_array), quad_array, GL_STATIC_DRAW);
+	quad.bufferInterleavedData(vbo, Attrib<POSITION_ATTRIB_LOCATION, glm::i8vec2>());
+	vbo.unbind();
+	quad.unbind();
 
 	Window::addResizeCallback(this);
-	this->resize(Window::getWidth(), Window::getHeight());
+	resize(Window::getWidth(), Window::getHeight());
+	window_width = Window::getWidth();
+	window_height = Window::getHeight();
 }
 
 void OpenGLRenderer::resize(int newWidth, int newHeight) {
@@ -55,50 +72,44 @@ void OpenGLRenderer::resize(int newWidth, int newHeight) {
 	camera->aspect = (float)newWidth / newHeight;
 
 	this->perspectiveProjection = glm::perspective(camera->fov, camera->aspect, camera->near, camera->far);
-
-	glViewport(0, 0, newWidth, newHeight);
+	//glViewport(0, 0, newWidth, newHeight);
 }
 
 void OpenGLRenderer::prerender() {
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	glEnable(GL_CULL_FACE);
-	glCullFace(GL_CW);
-
 	this->sortedRenderStateKeys.clear();
 	for (unsigned int instanceID : scene->instanceCache) {
-		RenderStateKey key = 0L;
-		//MaterialID matID = MaterialID::NONE_MATERIAL_ID;
+		Scene::Instance &instance = scene->instanceCache[instanceID];
+		Scene::Mesh &mesh = scene->meshCache[instance.meshID];
+		MaterialID matID = mesh.typeID;
 
-		Scene::Instance *instance = &scene->instanceCache[instanceID];
-		Scene::Mesh *mesh = &scene->meshCache[instance->meshID];
-		MaterialID matID = mesh->typeID;
-
-		RenderState state;
-		state.instanceID = instanceID;
-		state.materialID = matID;	//todo figure out weird memory access error crash
-
-		key = this->createRenderStateKey(state);
+		RenderState state = {matID , instanceID};
+		RenderStateKey key = createRenderStateKey(state);
 		sortedRenderStateKeys.push_back(key);
 	}
-	std::sort(this->sortedRenderStateKeys.begin(), this->sortedRenderStateKeys.end());
+	std::sort(sortedRenderStateKeys.begin(), sortedRenderStateKeys.end());
 
 	duration = Window::getTime() - start;
 }
 
 void OpenGLRenderer::render(Voxel::ChunkManager *manager) {
+	
+	
 	Scene::Camera *camera = &scene->cameraCache[scene->getMainCameraID()];
 	glm::mat4 view = glm::lookAt(camera->eye, camera->eye + camera->target, camera->up);
 	glm::mat4 vp = perspectiveProjection * view;
 	glm::vec3 camera_position = camera->eye;
 
 	int index = 0;
+	inverse.bind();
+	glEnable(GL_DEPTH_TEST);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	index = renderBasic(index, vp);
 	index = renderNormal(index, vp);
 	index = renderBasicLit(index, camera_position, vp);
-	//index = renderBasicBlock(index, camera_position, vp);
 	renderChunks(manager, camera_position, vp);
-	//glBindVertexArray(0);
+	inverse.unbind();
 
+	renderPostProcess();
 }
 
 void OpenGLRenderer::postrender() {
@@ -371,6 +382,25 @@ void OpenGLRenderer::renderChunks(Voxel::ChunkManager *manager, glm::vec3 camera
 
 	shader->end();
 	glBindVertexArray(0);
+}
+
+void OpenGLRenderer::renderPostProcess() {
+	glDisable(GL_DEPTH_TEST);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glViewport(0, 0, window_width, window_height);
+
+	Shader::GLSLProgram *program = Shader::getShaderSet({"frame_buffer_shader.vert", "frame_buffer_shader.frag"});
+	program->use();
+
+	inverse.bindTexture(0);
+
+	this->quad.bind();
+	glEnableVertexAttribArray(POSITION_ATTRIB_LOCATION);
+	glDrawArrays(GL_TRIANGLES, 0, 6);
+	this->quad.unbind();
+
+	program->end();
+
 }
 
 bool OpenGLRenderer::isValidState(int sortedStateKeyIndex, MaterialID typeID) {

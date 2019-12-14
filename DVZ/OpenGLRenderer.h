@@ -1,6 +1,8 @@
 #pragma once
 #include "IRenderer.h"
 #include "TEX.h"
+#include "FBO.h"
+#include "Common.h"
 namespace Graphics {
 
 class OpenGLRenderer : public IRenderer {
@@ -19,18 +21,7 @@ private:
 	RenderState getRenderStateFromIndex(int sortedRenderStateKeyIndex);
 	bool isValidState(int sortedStateKeyIndex, MaterialID matID);
 
-	int renderBasic(int startKeyIndex, glm::mat4 vp);
-	int renderNormal(int startKeyIndex, glm::mat4 vp);
-	int renderBasicLit(int startKeyIndex, glm::vec3 camera_position, glm::mat4 vp);
-	int renderBasicBlock(int startKeyIndex, glm::vec3 camera_position, glm::mat4 vp);
-
-	double start;
-	double duration;
-
-	float getShaderTime() {
-		return (float)duration;
-	}
-
+	
 	Graphics::TEX chunkTex = Graphics::TEX::Builder("terrain.png")
 		.rgba()
 		.nearest()
@@ -47,7 +38,28 @@ private:
 		.repeat()
 		.buildTextureAtlasArray(2, 2);
 
+	double start;
+	double duration;
+
+	
+	int window_width = 0;
+	int window_height = 0;
+	
+	FBO inverse;
+	VAO quad;
+	VBO vbo;
+
+
+	int renderBasic(int startKeyIndex, glm::mat4 vp);
+	int renderNormal(int startKeyIndex, glm::mat4 vp);
+	int renderBasicLit(int startKeyIndex, glm::vec3 camera_position, glm::mat4 vp);
+	int renderBasicBlock(int startKeyIndex, glm::vec3 camera_position, glm::mat4 vp);
 	void renderChunks(Voxel::ChunkManager *manager, glm::vec3 camera_position, glm::mat4 vp);
+	void renderPostProcess();
+
+	float getShaderTime() {
+		return (float)duration;
+	}
 
 public:
 	OpenGLRenderer();

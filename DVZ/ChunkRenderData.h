@@ -4,6 +4,7 @@
 #include "VBO.h"
 #include "Geometry.h"
 #include "ChunkGeometry.h"
+#include <memory>
 
 namespace Voxel{
 

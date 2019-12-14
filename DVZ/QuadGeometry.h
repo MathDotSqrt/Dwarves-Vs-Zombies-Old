@@ -5,6 +5,7 @@
 namespace Graphics {
 
 	Geometry<PositionAttrib, NormalAttrib> CreateQuad();
+	Geometry<Attrib<POSITION_ATTRIB_LOCATION, glm::i8vec2>> CreateQuad2D();
 }
 
 //namespace Graphics {
