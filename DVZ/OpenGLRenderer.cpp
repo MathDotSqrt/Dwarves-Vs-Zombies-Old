@@ -392,7 +392,7 @@ void OpenGLRenderer::renderPostProcess() {
 	Shader::GLSLProgram *program = Shader::getShaderSet({"frame_buffer_shader.vert", "frame_buffer_shader.frag"});
 	program->use();
 
-	inverse.bindTexture(0);
+	inverse.getColorAttachment().bindActiveTexture(0);
 
 	this->quad.bind();
 	glEnableVertexAttribArray(POSITION_ATTRIB_LOCATION);

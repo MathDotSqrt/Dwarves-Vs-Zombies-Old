@@ -54,8 +54,12 @@ void FBO::unbind() {
 	glViewport(0, 0, Window::getWidth(), Window::getHeight());
 }
 
-void FBO::bindTexture(int unit){
-	color.bindActiveTexture(unit);
+TEX& FBO::getColorAttachment() {
+	return color;
+}
+
+TEX& FBO::getDepthAttachment() {
+	return depth;
 }
 
 int FBO::getWidth() {

@@ -23,7 +23,8 @@ namespace Graphics {
 		void bind();
 		void unbind();
 
-		void bindTexture(int unit);
+		TEX& getColorAttachment();
+		TEX& getDepthAttachment();
 
 		int getWidth();
 		int getHeight();
