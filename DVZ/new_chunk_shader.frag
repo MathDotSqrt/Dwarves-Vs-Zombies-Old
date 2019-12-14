@@ -90,7 +90,6 @@ vec2 world_to_texcoord_space(){
 	bool Y = float_compare(abs(frag_normal.y), 1);
 	vec2 texcoord =  X ? frag_pos.zy : frag_pos.xy; 
 	texcoord = Y ? frag_pos.zx : texcoord; 
-
 	texcoord.y = 1 - texcoord.y;
 	return texcoord / 3;
 }

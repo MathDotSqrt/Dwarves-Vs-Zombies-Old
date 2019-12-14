@@ -45,7 +45,7 @@ private:
 		.linear()
 		.mipmapLinear()
 		.repeat()
-		.buildTextureAtlasArray(1, 2);
+		.buildTextureAtlasArray(2, 2);
 
 	void renderChunks(Voxel::ChunkManager *manager, glm::vec3 camera_position, glm::mat4 vp);
 

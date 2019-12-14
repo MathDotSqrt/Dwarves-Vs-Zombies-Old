@@ -20,7 +20,8 @@ BlockManager::BlockManager(){
 		BlockType::BLOCK_TYPE_STONE,
 		MeshType::MESH_TYPE_BLOCK,
 		OccludeType::OCCLUDE_TYPE_ALL,
-		BlockTexCoords(0, 1, 16, 16),
+		BlockTexCoords(1, 0, 2, 2),
+		//BlockTexCoords(0, 1, 16, 16),
 		glm::u8vec4(77, 77, 77, 255)
 	);
 	addBlock(STONE);
@@ -30,7 +31,7 @@ BlockManager::BlockManager(){
 		BlockType::BLOCK_TYPE_DIRT,
 		MeshType::MESH_TYPE_BLOCK,
 		OccludeType::OCCLUDE_TYPE_ALL,
-		BlockTexCoords(2, 0, 1, 2),
+		BlockTexCoords(0, 0, 2, 2),
 		//BlockTexCoords(2, 0, 16, 16),
 		glm::u8vec4(128, 90, 70, 255)
 	);
@@ -40,7 +41,7 @@ BlockManager::BlockManager(){
 		BlockType::BLOCK_TYPE_GRASS,
 		MeshType::MESH_TYPE_BLOCK,
 		OccludeType::OCCLUDE_TYPE_ALL,
-		BlockTexCoords({ 0, 1, 0, 0 }, 1, 2),
+		BlockTexCoords({ 0, 1, 0, 1 }, 2, 2),
 		//BlockTexCoords({ 0, 0, 3, 0 }, 16, 16),
 		glm::u8vec4(11, 102, 35, 255)
 	);
@@ -50,7 +51,7 @@ BlockManager::BlockManager(){
 		BlockType::BLOCK_TYPE_SAND,
 		MeshType::MESH_TYPE_BLOCK,
 		OccludeType::OCCLUDE_TYPE_ALL,
-		BlockTexCoords(0, 0, 1, 2),
+		BlockTexCoords(0, 0, 2, 2),
 		//BlockTexCoords(14, 7, 16, 16),
 		glm::u8vec4(194, 178, 128, 255)
 	);
@@ -150,26 +151,26 @@ SpriteTexCoords::SpriteTexCoords(UVType row, UVType col) {
 }
 
 UV SpriteTexCoords::uv0() {
-	return UV(0, 0, row, col);
+	return UV(0, 0, col, row);
 }
 
 UV SpriteTexCoords::uv1() {
 	//UV out = spritePos;
 	//out.x += width;
-	return UV(MAX, 0, row, col);
+	return UV(MAX, 0, col, row);
 }
 
 UV SpriteTexCoords::uv2() {
 	//UV out = spritePos;
 	//out.y += height;
-	return UV(0, MAX, row, col);
+	return UV(0, MAX, col, row);
 }
 
 UV SpriteTexCoords::uv3() {
 	//UV out = spritePos;
 	//out.x += width;
 	//out.y += height;
-	return UV(MAX, MAX, row, col);;
+	return UV(MAX, MAX, col, row);;
 }
 
 BlockManager* BlockManager::BLOCK_MANAGER_PTR = nullptr;
