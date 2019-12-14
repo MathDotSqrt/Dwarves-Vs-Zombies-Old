@@ -7,7 +7,7 @@ using namespace Graphics;
 
 FBO::FBO(int width, int height) : 
 	color(TEX::Builder(width, height).rgb().clampToEdge().linear().buildTexture()), 
-	depth(TEX::Builder(width, height).rgb().clampToEdge().linear().buildTexture()) {
+	depth(TEX::Builder(width, height).depth24().clampToEdge().linear().buildTexture()) {
 
 	glGenFramebuffers(1, &fboID);
 
