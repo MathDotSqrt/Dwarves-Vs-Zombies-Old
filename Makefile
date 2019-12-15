@@ -18,8 +18,8 @@ CFLAGS = -I
 #DVZ_OUT = DVZ
 #DVZ_SERVER_OUT = DVZ_Server
 
-SOURCE_DIR = ./DVZ\ Server
-OBJ_DIR = ./DVZ\ Server/x64/Debug
+SOURCE_DIR = ./DVZ_Make
+OBJ_DIR = ./DVZ_Make/x64/Debug
 OUT_DIR = ./x64/Debug
 
 _OBJ = test.o
@@ -28,13 +28,13 @@ OBJ = $(patsubst %,$(OBJ_DIR)/%,$(_OBJ))
 
 all:
 	make server
+	
 
 # $(OBJ_DIR)/%.o: $(SOURCE_DIR)/%.c
 # 	$(CC) -c -o $@ $< $(CFLAGS)
 
 $(OBJ_DIR)/%.o: $(SOURCE_DIR)/%.cpp
-	echo $<
+	$(CC) -c -o $@ $< $(CFLAGS)
 
 server: $(OBJ)
-	echo $(OBJ)
-	#$(CC) -o $@ $^
+	$(CC) -o $(OUT_DIR)/$@ $^
