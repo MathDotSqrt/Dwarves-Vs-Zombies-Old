@@ -26,7 +26,7 @@ OpenGLRenderer::~OpenGLRenderer() {
 void OpenGLRenderer::init(Scene *scene) {
 	LOG_RENDER("Init");
 	this->scene = scene;
-	
+
 	Scene::Camera camera = {
 		glm::vec3(0, 0, 0),
 		glm::vec3(0, 0, -1),
@@ -126,7 +126,7 @@ int OpenGLRenderer::renderBasic(int startIndex, glm::mat4 vp) {
 		model = glm::scale(model, transformation->scale);
 
 		shader->setUniformMat4("MVP", vp * model);
-		
+
 		ColorMaterial *material = &scene->colorMaterialCache[mesh->materialInstanceID];
 		shader->setUniform3f("color", material->color);
 
@@ -312,7 +312,7 @@ int OpenGLRenderer::renderBasicBlock(int startIndex, glm::vec3 camera_position, 
 void OpenGLRenderer::renderChunks(Voxel::ChunkManager *manager, glm::vec3 camera_position, glm::mat4 vp) {
 
 	const Graphics::BlockMaterial chunkMat = { {.95f, .7f, .8f}, 30 };
-	
+
 	Shader::GLSLProgram *shader = Shader::getShaderSet({ "chunk_shader.vert", "chunk_shader.frag" });
 	shader->use();
 
