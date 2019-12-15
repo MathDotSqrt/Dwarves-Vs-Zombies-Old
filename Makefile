@@ -1,2 +1,16 @@
-clean:
-	pwd
+CC = g++
+CFLAGS = -I
+
+BINARY_64 = ./x64
+BINARY_32 = ./x86
+
+BINARY = $(BINARY_64)
+
+DEBUG_MODE = Debug
+RELEASE_MODE = Release
+
+DVZ_SOURCE_DIR = ./DVZ
+DVZ_SERVER_SOURCE_DIR = ./DVZ\ Server
+
+
+all:
