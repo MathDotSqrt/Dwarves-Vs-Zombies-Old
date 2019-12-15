@@ -28,19 +28,6 @@ void OpenGLRenderer::init(Scene *scene) {
 	LOG_RENDER("Init");
 	this->scene = scene;
 	
-	Scene::Camera camera = {
-		glm::vec3(0, 0, 0),
-		glm::vec3(0, 0, -1),
-		glm::vec3(0, 1, 0),
-		70 * 3.14159f / 180.0f,
-		(float)Window::getWidth() / Window::getHeight(),
-		.1f,
-		1000
-	};
-
-	unsigned int cameraID = this->scene->createCameraInstance(camera);
-	this->scene->setMainCamera(cameraID);
-
 	glClearColor(.4f, .4f, .4f, 1);
 	glEnable(GL_CULL_FACE);
 	glCullFace(GL_CW);
@@ -60,6 +47,19 @@ void OpenGLRenderer::init(Scene *scene) {
 	vbo.unbind();
 	quad.unbind();
 
+	Scene::Camera camera = {
+		glm::vec3(0, 0, 0),
+		glm::vec3(0, 0, -1),
+		glm::vec3(0, 1, 0),
+		70 * 3.14159f / 180.0f,
+		(float)Window::getWidth() / Window::getHeight(),
+		.1f,
+		1000
+	};
+
+	unsigned int cameraID = this->scene->createCameraInstance(camera);
+	this->scene->setMainCamera(cameraID);
+
 	Window::addResizeCallback(this);
 	resize(Window::getWidth(), Window::getHeight());
 	window_width = Window::getWidth();
@@ -72,11 +72,11 @@ void OpenGLRenderer::resize(int newWidth, int newHeight) {
 	camera->aspect = (float)newWidth / newHeight;
 
 	this->perspectiveProjection = glm::perspective(camera->fov, camera->aspect, camera->near, camera->far);
-	//glViewport(0, 0, newWidth, newHeight);
+	glViewport(0, 0, newWidth, newHeight);
 }
 
 void OpenGLRenderer::prerender() {
-	this->sortedRenderStateKeys.clear();
+	sortedRenderStateKeys.clear();
 	for (unsigned int instanceID : scene->instanceCache) {
 		Scene::Instance &instance = scene->instanceCache[instanceID];
 		Scene::Mesh &mesh = scene->meshCache[instance.meshID];
@@ -386,18 +386,18 @@ void OpenGLRenderer::renderChunks(Voxel::ChunkManager *manager, glm::vec3 camera
 
 void OpenGLRenderer::renderPostProcess() {
 	glDisable(GL_DEPTH_TEST);
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glClear(GL_COLOR_BUFFER_BIT);
 	glViewport(0, 0, window_width, window_height);
 
 	Shader::GLSLProgram *program = Shader::getShaderSet({"frame_buffer_shader.vert", "frame_buffer_shader.frag"});
 	program->use();
 
 	inverse.getColorAttachment().bindActiveTexture(0);
-
-	this->quad.bind();
+	program->setUniform1f("time", getShaderTime());
+	quad.bind();
 	glEnableVertexAttribArray(POSITION_ATTRIB_LOCATION);
 	glDrawArrays(GL_TRIANGLES, 0, 6);
-	this->quad.unbind();
+	quad.unbind();
 
 	program->end();
 

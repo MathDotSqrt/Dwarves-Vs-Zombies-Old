@@ -69,8 +69,8 @@ public:							//fix bug of things not destructing in order
 	static const int CHUNK_RENDER_DATA_RECYCLE_SIZE = 4 * 1024 * 1024;
 	static const int CHUNK_MESHER_ALLOC_SIZE = 8 * 1024 * 1024;
 	static const int CHUNK_THREAD_POOL_SIZE = 1;	//dont change this until i fix allocate array
-	//static const int RENDER_DISTANCE = 10;
-	static const int RENDER_DISTANCE = 50;
+	static const int RENDER_DISTANCE = 10;
+	//static const int RENDER_DISTANCE = 50;
 	static const int LOAD_DISTANCE = RENDER_DISTANCE + 2;
 
 public:
@@ -149,7 +149,7 @@ private:
 	typedef std::pair<ChunkNeighbors, ChunkGeometryHandle> ChunkNeighborGeometryPair;
 	typedef std::pair<ChunkRefHandle, ChunkGeometryHandle> ChunkGeometryPair;
 
-	
+	//todo see if i could just use shared_ptr
 	std::unordered_map<int, ChunkRefCount> chunkSet;					//contains all chunks
 	std::unordered_map<int, ChunkRefHandle> loadedChunkSet;				//subset of all chunks that are loaded
 	std::unordered_map<int, ChunkRenderDataPair> renderableChunkSet;	//subset of all chunks that are renderable
