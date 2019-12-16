@@ -1,5 +1,7 @@
 CC = g++
-CFLAGS = -I
+CFLAGS =
+
+
 
 #BINARY_64 = ./x64
 #BINARY_32 = ./x86
@@ -17,24 +19,25 @@ CFLAGS = -I
 
 #DVZ_OUT = DVZ
 #DVZ_SERVER_OUT = DVZ_Server
+OUT = server
 
 SOURCE_DIR = ./DVZ_Make
 OBJ_DIR = ./DVZ_Make/x64/Debug
 OUT_DIR = ./x64/Debug
 
-_OBJ = test.o
-OBJ = $(patsubst %,$(OBJ_DIR)/%,$(_OBJ))
+DEPS = $(wildcard $(SOURCE_DIR)/*.h)
+SRCS = $(wildcard $(SOURCE_DIR)/*.cpp)
 
+#_OBJ = $(patsubst %,$(OBJ_DIR)/%,$(_OBJ))
+OBJ = $(patsubst $(SOURCE_DIR)/%.cpp, $(OBJ_DIR)/%.o, $(SRCS))
 
-all:
-	make server
+server: $(OUT_DIR)/server
 	
+$(OUT_DIR)/server: $(OBJ)
+	$(CC) -o $@ $^
 
-# $(OBJ_DIR)/%.o: $(SOURCE_DIR)/%.c
-# 	$(CC) -c -o $@ $< $(CFLAGS)
-
-$(OBJ_DIR)/%.o: $(SOURCE_DIR)/%.cpp
+$(OBJ_DIR)/%.o: $(SOURCE_DIR)/%.cpp $(DEPS)
 	$(CC) -c -o $@ $< $(CFLAGS)
 
-server: $(OBJ)
-	$(CC) -o $(OUT_DIR)/$@ $^
+run:
+	$(OUT_DIR)/$(OUT)
