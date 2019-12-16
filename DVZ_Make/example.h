@@ -1,2 +1,2 @@
 
-int calc_number(int x);  
+int calc_number(int x);
