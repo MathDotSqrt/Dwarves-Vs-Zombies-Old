@@ -7,7 +7,7 @@ RenderStateKey::RenderStateKey(
 	const ViewPortLayer layer, 
 	const BlendType type, 
 	const MaterialID id, 
-	const RenderStateKey::ValueType value
+	const RenderStateKey::ValueType value 
 ) : key(0), value(value){
 	
 	key |= ((KeyType)id << 0);

@@ -57,7 +57,7 @@ namespace Graphics {
 		typedef uint32 KeyType;
 		typedef void* ValueType;
 
-		KeyType key;
+		KeyType key; 
 		const ValueType value;
 
 		RenderStateKey(const ViewPort port, const ViewPortLayer layer, const BlendType type, const MaterialID id, const ValueType value);
