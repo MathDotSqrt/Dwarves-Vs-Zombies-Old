@@ -84,6 +84,7 @@ void ChunkManager::update(float x, float y, float z) {
 		dequeueChunkRenderData();
 	}
 
+	//todo make this more performant by not invalidating the entire cache
 	{
 	Util::Performance::Timer visibleChunkTimer("Build Visible List");
 	visibleChunkList.clear();
