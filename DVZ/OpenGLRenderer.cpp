@@ -16,6 +16,10 @@ MaterialID BasicLitMaterial::type = MaterialID::BASIC_LIT_MATERIAL_ID;
 MaterialID TextureMaterial::type = MaterialID::TEXTURE_MATERIAL_ID;
 MaterialID BlockMaterial::type = MaterialID::BLOCK_MATERIAL_ID;
 
+OpenGLRenderer::RenderStateKey::RenderStateKey() {
+
+}
+
 OpenGLRenderer::OpenGLRenderer() : inverse(Window::getWidth(), Window::getHeight()), vbo(GL_ARRAY_BUFFER) {
 	start = Window::getTime();
 }

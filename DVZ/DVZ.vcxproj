@@ -227,6 +227,7 @@
     <ClCompile Include="PoolAllocator.cpp" />
     <ClCompile Include="QuadGeometry.cpp" />
     <ClCompile Include="Recycler.cpp" />
+    <ClCompile Include="RenderStateKey.cpp" />
     <ClCompile Include="Scene.cpp" />
     <ClCompile Include="ShaderSet.cpp" />
     <ClCompile Include="ShaderUpdaterSystem.cpp" />
@@ -291,6 +292,7 @@
     <ClInclude Include="PoolAllocator.h" />
     <ClInclude Include="QuadGeometry.h" />
     <ClInclude Include="Recycler.h" />
+    <ClInclude Include="RenderStateKey.h" />
     <ClInclude Include="Scene.h" />
     <ClInclude Include="ShaderSet.h" />
     <ClInclude Include="ShaderUpdaterSystem.h" />

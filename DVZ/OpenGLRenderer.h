@@ -2,20 +2,11 @@
 #include "IRenderer.h"
 #include "TEX.h"
 #include "FBO.h"
-#include "Common.h"
+#include "RenderStateKey.h"
 namespace Graphics {
 
 class OpenGLRenderer : public IRenderer {
 private:
-	typedef unsigned long long RenderStateKey;
-	struct _RenderStateKey {
-		uint64 key;
-
-		void setMaterialID();
-		void setInstanceID();
-		MaterialID getMaterialID() const;
-		uint32 getInstanceID() const;
-	};
 
 	struct RenderState {
 		MaterialID materialID;
