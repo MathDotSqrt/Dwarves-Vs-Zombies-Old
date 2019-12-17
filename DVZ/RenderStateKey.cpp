@@ -10,10 +10,10 @@ RenderStateKey::RenderStateKey(
 	const RenderStateKey::ValueType value 
 ) : key(0), value(value){
 	
-	key |= (static_cast<KeyType>(id) << 0);
-	key |= (static_cast<KeyType>(type) << BLEND_SHIFT);
-	key |= (static_cast<KeyType>(layer) << LAYER_SHIFT);
-	key |= (static_cast<KeyType>(port) << PORT_SHIFT);
+	setMaterialID(id);
+	setBlendType(type);
+	setViewPortLayer(layer);
+	setViewPort(port);
 }
 
 bool RenderStateKey::operator<(const RenderStateKey &other) {
