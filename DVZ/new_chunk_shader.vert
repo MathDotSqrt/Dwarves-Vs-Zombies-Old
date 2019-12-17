@@ -26,7 +26,7 @@ void main(){
 
 	/*CHUNK LOAD ANIMATION*/
 	float x_d = min(time - SPAWN_TIME, 0);
-	float y = min(-10*(x_d*x_d), 0); //XD
+	float y = min(-100*(x_d*x_d), 0); //XD
 	/*CHUNK LOAD ANIMATION*/
 
 	/*CHUNK TRANSFORMATION*/
