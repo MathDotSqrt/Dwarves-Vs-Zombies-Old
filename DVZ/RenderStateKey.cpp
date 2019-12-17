@@ -7,13 +7,13 @@ RenderStateKey::RenderStateKey(
 	const ViewPortLayer layer, 
 	const BlendType type, 
 	const MaterialID id, 
-	const void *value
+	const RenderStateKey::ValueType value
 ) : key(0), value(value){
 	
-	key |= ((uint32)id << 0);
-	key |= ((uint32)type << BLEND_SHIFT);
-	key |= ((uint32)layer << LAYER_SHIFT);
-	key |= ((uint32)port << PORT_SHIFT);
+	key |= ((KeyType)id << 0);
+	key |= ((KeyType)type << BLEND_SHIFT);
+	key |= ((KeyType)layer << LAYER_SHIFT);
+	key |= ((KeyType)port << PORT_SHIFT);
 }
 
 bool RenderStateKey::operator<(const RenderStateKey &other) {
@@ -21,30 +21,30 @@ bool RenderStateKey::operator<(const RenderStateKey &other) {
 }
 
 void RenderStateKey::setMaterialID(const MaterialID id) {
-	uint64 v = (uint64)id;
-	uint64 bits = 1 << MATERIAL_ID_SIZE - 1;
-	uint64 mask = ~(bits << 0);
+	KeyType v = (KeyType)id;
+	KeyType bits = (1 << MATERIAL_ID_SIZE) - 1;
+	KeyType mask = ~(bits << 0);
 	key = (key & mask) | (v << 0);
 }
 
 void RenderStateKey::setBlendType(const BlendType type) {
-	uint64 v = (uint64)type;
-	uint64 bits = 1 << BLEND_TYPE_SIZE - 1;
-	uint64 mask = ~(bits << BLEND_SHIFT);
+	KeyType v = (KeyType)type;
+	KeyType bits = (1 << BLEND_TYPE_SIZE) - 1;
+	KeyType mask = ~(bits << BLEND_SHIFT);
 	key = (key & mask) | (v << BLEND_SHIFT);
 }
 
 void RenderStateKey::setViewPortLayer(const ViewPortLayer layer) {
-	uint64 v = (uint64)layer;
-	uint64 bits = 1 << VIEW_PORT_LAYER_SIZE - 1;
-	uint64 mask = ~(bits << LAYER_SHIFT);
+	KeyType v = (KeyType)layer;
+	KeyType bits = (1 << VIEW_PORT_LAYER_SIZE) - 1;
+	KeyType mask = ~(bits << LAYER_SHIFT);
 	key = (key & mask) | (v << LAYER_SHIFT);
 }
 
 void RenderStateKey::setViewPort(const ViewPort port) {
-	uint64 v = (uint64)port;
-	uint64 bits = 1 << VIEW_PORT_SIZE - 1;
-	uint64 mask = ~(bits << PORT_SHIFT);
+	KeyType v = (KeyType)port;
+	KeyType bits = (1 << VIEW_PORT_SIZE) - 1;
+	KeyType mask = ~(bits << PORT_SHIFT);
 	key = (key & mask) | (v << PORT_SHIFT);
 }
 
@@ -62,4 +62,8 @@ ViewPortLayer RenderStateKey::getViewPortLayer() const {
 
 ViewPort RenderStateKey::getViewPort() const {
 	return (ViewPort)((key >> PORT_SHIFT) & VIEW_PORT_SIZE);
+}
+
+RenderStateKey::ValueType RenderStateKey::getValue() const {
+	return value;
 }
