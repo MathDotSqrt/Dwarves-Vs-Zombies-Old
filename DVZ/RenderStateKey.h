@@ -17,7 +17,7 @@ namespace Graphics {
 		SKYBOX,
 		NUM_VIEW_PORT_LAYERS
 	};
-
+#undef OPAQUE
 	enum class BlendType : uint8 {
 		OPAQUE = 0,
 		ADD,
@@ -50,17 +50,19 @@ namespace Graphics {
 	constexpr uint32 MATERIAL_ID_SIZE = calc_enum_size<(uint32)MaterialID::NUM_MATERIAL_ID>();
 
 	struct RenderStateKey {
-		const uint32 BLEND_SHIFT = MATERIAL_ID_SIZE;
-		const uint32 LAYER_SHIFT = BLEND_TYPE_SIZE + BLEND_SHIFT;
-		const uint32 PORT_SHIFT = VIEW_PORT_LAYER_SIZE + LAYER_SHIFT;
+		const static uint32 BLEND_SHIFT = MATERIAL_ID_SIZE;
+		const static uint32 LAYER_SHIFT = BLEND_TYPE_SIZE + BLEND_SHIFT;
+		const static uint32 PORT_SHIFT = VIEW_PORT_LAYER_SIZE + LAYER_SHIFT;
 		
 		typedef uint32 KeyType;
-		typedef void* ValueType;
+		typedef uint32 ValueType;
 
 		KeyType key; 
-		const ValueType value;
+		ValueType value;
 
+		
 		RenderStateKey(const ViewPort port, const ViewPortLayer layer, const BlendType type, const MaterialID id, const ValueType value);
+		
 
 		bool operator<(const RenderStateKey &other);
 

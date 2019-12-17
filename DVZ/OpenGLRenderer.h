@@ -8,17 +8,11 @@ namespace Graphics {
 class OpenGLRenderer : public IRenderer {
 private:
 
-	struct RenderState {
-		MaterialID materialID;
-		unsigned int instanceID;
-	};
 
 	std::vector<RenderStateKey> sortedRenderStateKeys;
 	glm::mat4 perspectiveProjection;
 
-	RenderStateKey createRenderStateKey(RenderState state);
-	RenderState getRenderStateFromKey(RenderStateKey key);
-	RenderState getRenderStateFromIndex(int sortedRenderStateKeyIndex);
+
 	bool isValidState(int sortedStateKeyIndex, MaterialID matID);
 
 	

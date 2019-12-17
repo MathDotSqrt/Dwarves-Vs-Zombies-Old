@@ -16,10 +16,6 @@ MaterialID BasicLitMaterial::type = MaterialID::BASIC_LIT_MATERIAL_ID;
 MaterialID TextureMaterial::type = MaterialID::TEXTURE_MATERIAL_ID;
 MaterialID BlockMaterial::type = MaterialID::BLOCK_MATERIAL_ID;
 
-OpenGLRenderer::RenderStateKey::RenderStateKey() {
-
-}
-
 OpenGLRenderer::OpenGLRenderer() : inverse(Window::getWidth(), Window::getHeight()), vbo(GL_ARRAY_BUFFER) {
 	start = Window::getTime();
 }
@@ -82,12 +78,11 @@ void OpenGLRenderer::resize(int newWidth, int newHeight) {
 void OpenGLRenderer::prerender() {
 	sortedRenderStateKeys.clear();
 	for (unsigned int instanceID : scene->instanceCache) {
-		Scene::Instance &instance = scene->instanceCache[instanceID];
+		Scene::Instance instance = scene->instanceCache[instanceID];
 		Scene::Mesh &mesh = scene->meshCache[instance.meshID];
 		MaterialID matID = mesh.typeID;
 
-		RenderState state = {matID , instanceID};
-		RenderStateKey key = createRenderStateKey(state);
+		RenderStateKey key(ViewPort::DEFAULT, ViewPortLayer::DEFAULT, BlendType::OPAQUE, matID, instanceID);
 		sortedRenderStateKeys.push_back(key);
 	}
 	std::sort(sortedRenderStateKeys.begin(), sortedRenderStateKeys.end());
@@ -133,9 +128,8 @@ int OpenGLRenderer::renderBasic(int startIndex, glm::mat4 vp) {
 	shader->use();
 	int index = startIndex;
 	do {
-		RenderState state = this->getRenderStateFromIndex(index);
-
-		Scene::Instance *instance = &scene->instanceCache[state.instanceID];
+		RenderStateKey key = sortedRenderStateKeys[index];
+		Scene::Instance *instance = &scene->instanceCache[key.getValue()];
 		Scene::Mesh *mesh = &scene->meshCache[instance->meshID];
 		Scene::Transformation *transformation = &scene->transformationCache[instance->transformationID];
 
@@ -180,9 +174,9 @@ int OpenGLRenderer::renderNormal(int startIndex, glm::mat4 vp) {
 
 	int index = startIndex;
 	do {
-		RenderState state = this->getRenderStateFromIndex(index);
+		RenderStateKey state = sortedRenderStateKeys[index];
 
-		Scene::Instance *instance = &scene->instanceCache[state.instanceID];
+		Scene::Instance *instance = &scene->instanceCache[state.getValue()];
 		Scene::Mesh *mesh = &scene->meshCache[instance->meshID];
 		Scene::Transformation *transformation = &scene->transformationCache[instance->transformationID];
 
@@ -233,9 +227,9 @@ int OpenGLRenderer::renderBasicLit(int startIndex, glm::vec3 camera_position, gl
 
 	int index = startIndex;
 	do {
-		RenderState state = this->getRenderStateFromIndex(index);
+		RenderStateKey state = sortedRenderStateKeys[index];
 
-		Scene::Instance *instance = &scene->instanceCache[state.instanceID];
+		Scene::Instance *instance = &scene->instanceCache[state.getValue()];
 		Scene::Mesh *mesh = &scene->meshCache[instance->meshID];
 		Scene::Transformation *transformation = &scene->transformationCache[instance->transformationID];
 
@@ -293,9 +287,9 @@ int OpenGLRenderer::renderBasicBlock(int startIndex, glm::vec3 camera_position, 
 
 	int index = startIndex;
 	do {
-		RenderState state = this->getRenderStateFromIndex(index);
+		RenderStateKey state = sortedRenderStateKeys[index];
 
-		Scene::Instance *instance = &scene->instanceCache[state.instanceID];
+		Scene::Instance *instance = &scene->instanceCache[state.getValue()];
 		Scene::Mesh *mesh = &scene->meshCache[instance->meshID];
 		Scene::Transformation *transformation = &scene->transformationCache[instance->transformationID];
 
@@ -337,8 +331,6 @@ void OpenGLRenderer::renderChunks(Voxel::ChunkManager *manager, glm::vec3 camera
 	Util::Performance::Timer chunks("RenderChunks");
 
 	const Graphics::BlockMaterial chunkMat = { {.95f, .7f, .8f}, 30 };
-
-	
 
 
 	Shader::GLSLProgram *shader = Shader::getShaderSet({ "new_chunk_shader.vert", "new_chunk_shader.frag" });
@@ -409,27 +401,6 @@ void OpenGLRenderer::renderPostProcess() {
 
 bool OpenGLRenderer::isValidState(int sortedStateKeyIndex, MaterialID typeID) {
 	return sortedStateKeyIndex < sortedRenderStateKeys.size()
-		&& typeID == getRenderStateFromKey(sortedRenderStateKeys[sortedStateKeyIndex]).materialID;
+		&& typeID == sortedRenderStateKeys[sortedStateKeyIndex].getMaterialID();
 }
 
-OpenGLRenderer::RenderStateKey OpenGLRenderer::createRenderStateKey(OpenGLRenderer::RenderState state) {
-	RenderStateKey key = 0L;
-
-	key |= state.instanceID;
-	key |= ((unsigned long long)state.materialID) << sizeof(state.instanceID) * 8;
-
-	return key;
-}
-
-OpenGLRenderer::RenderState OpenGLRenderer::getRenderStateFromKey(RenderStateKey key) {
-	RenderState state;
-
-	state.instanceID = key & 0xffffffff;
-	state.materialID = (MaterialID)((key >> sizeof(state.instanceID) * 8) & 0xff);
-
-	return state;
-}
-
-OpenGLRenderer::RenderState OpenGLRenderer::getRenderStateFromIndex(int sortedRenderStateKeyIndex) {
-	return getRenderStateFromKey(sortedRenderStateKeys[sortedRenderStateKeyIndex]);
-}
