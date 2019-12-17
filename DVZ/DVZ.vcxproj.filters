@@ -479,9 +479,17 @@
     <Text Include="dragon.obj">
       <Filter>Resource Files\Models</Filter>
     </Text>
-    <Text Include="cube.obj" />
-    <Text Include="SpunkWalker.obj" />
-    <Text Include="tree.obj" />
-    <Text Include="black.obj" />
+    <Text Include="black.obj">
+      <Filter>Resource Files\Models</Filter>
+    </Text>
+    <Text Include="cube.obj">
+      <Filter>Resource Files\Models</Filter>
+    </Text>
+    <Text Include="SpunkWalker.obj">
+      <Filter>Resource Files\Models</Filter>
+    </Text>
+    <Text Include="tree.obj">
+      <Filter>Resource Files\Models</Filter>
+    </Text>
   </ItemGroup>
 </Project>

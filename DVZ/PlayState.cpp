@@ -38,14 +38,27 @@ void PlayState::init() {
 	unsigned int meshID = scene->createMesh(model, material);
 	unsigned int renderID = scene->createRenderInstance(meshID);
 
-	entt::entity test = e.create();
-	e.assign<PositionComponent>(test, glm::vec3(0, 0, 0));
-	e.assign<RotationComponent>(test, glm::quat(glm::vec3(0, 0, 0)));
-	e.assign<ScaleComponent>(test, glm::vec3(1, 1, 1));
-	e.assign<RotationalVelocityComponent>(test, glm::vec3(0, 1, 0));
-	e.assign<RenderInstanceComponent>(test, renderID);
+	entt::entity tree = e.create();
+	e.assign<PositionComponent>(tree, glm::vec3(0, 0, 0));
+	e.assign<RotationComponent>(tree, glm::quat(glm::vec3(0, 0, 0)));
+	e.assign<ScaleComponent>(tree, glm::vec3(1, 1, 1));
+	e.assign<RotationalVelocityComponent>(tree, glm::vec3(0, 1, 0));
+	e.assign<RenderInstanceComponent>(tree, renderID);
 	/*TREE*/
 
+	/*WALKER*/
+	Graphics::Geometry walkerModel = Graphics::CreateModel("SpunkWalker.obj");
+	Graphics::BasicLitMaterial walkerMaterial = { {1, 0, 1}, {1, 1, 1}, 10};
+	uint32 walkerMeshID = scene->createMesh(walkerModel, walkerMaterial);
+	uint32 walkerRenderID = scene->createRenderInstance(walkerMeshID);
+
+	entt::entity walker = e.create();
+	e.assign<PositionComponent>(walker, glm::vec3(10, 10, 10));
+	e.assign<RotationComponent>(walker, glm::quat(glm::vec3(0, 0, 0)));
+	e.assign<ScaleComponent>(walker, glm::vec3(1));
+	e.assign<VelocityComponent>(walker, glm::vec3(-10, .1f, 2));
+	e.assign<RenderInstanceComponent>(walker, walkerRenderID);
+	/*WALKER*/
 
 	/*NET*/
 	//e.attemptConnection("54.224.40.47", 60000);	//AWS

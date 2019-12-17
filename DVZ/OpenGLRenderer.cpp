@@ -82,6 +82,8 @@ void OpenGLRenderer::prerender() {
 		Scene::Mesh &mesh = scene->meshCache[instance.meshID];
 		MaterialID matID = mesh.typeID;
 
+		
+
 		RenderStateKey key(ViewPort::DEFAULT, ViewPortLayer::DEFAULT, BlendType::OPAQUE, matID, instanceID);
 		sortedRenderStateKeys.push_back(key);
 	}
