@@ -3,9 +3,15 @@
 
 using namespace Voxel;
 
-ChunkRenderDataManager::ChunkRenderDataManager(int renderRadius) {
+ChunkRenderDataManager::ChunkRenderDataManager() {
+
 }
 
 
 ChunkRenderDataManager::~ChunkRenderDataManager() {
+
+}
+
+void ChunkRenderDataManager::update(glm::vec3 pos, glm::vec3 rot, ChunkManager &manager) {
+
 }

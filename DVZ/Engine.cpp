@@ -14,6 +14,7 @@
 #include "QuadGeometry.h"
 #include "ModelGeometry.h"
 #include "ChunkManager.h"
+#include "ChunkRenderDataManager.h"
 #include "Timer.h"
 #include <stdlib.h>
 
@@ -25,11 +26,13 @@ Engine::Engine() : linearAlloc(MEM_ALLOC_SIZE, malloc(MEM_ALLOC_SIZE)){	//todo d
 	this->peer = SLNet::RakPeerInterface::GetInstance();
 	this->serverAddress = nullptr;
 
+	//todo linearly alloc all of this
 	this->scene = new Graphics::Scene();
 	this->renderer = new Graphics::OpenGLRenderer();
 	this->renderer->init(scene);
 
 	this->chunkManager = new Voxel::ChunkManager(this->linearAlloc);
+	this->chunkRenderDataManager = new Voxel::ChunkRenderDataManager();
 
 	this->main = entt::null;
 }
@@ -40,6 +43,7 @@ Engine::~Engine(){
 	delete this->scene;
 	delete this->renderer;
 	delete this->chunkManager;
+	delete this->chunkRenderDataManager;
 
 	SLNet::RakPeerInterface::DestroyInstance(this->peer);
 	this->deleteAllActiveSystems();
@@ -279,6 +283,10 @@ Util::Allocator::LinearAllocator& Engine::getAllocator() {
 
 Voxel::ChunkManager* Engine::getChunkManager() {
 	return this->chunkManager;
+}
+
+Voxel::ChunkRenderDataManager* Engine::getChunkRenderDataManager() {
+	return chunkRenderDataManager;
 }
 
 Graphics::OpenGLRenderer* Engine::getRenderer() {

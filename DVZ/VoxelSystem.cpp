@@ -3,6 +3,7 @@
 #include "components.h"
 #include "macrologger.h"
 #include "ChunkManager.h"
+#include "ChunkRenderDataManager.h"
 #include "Scene.h"
 #include "Window.h"
 
@@ -26,7 +27,9 @@ void VoxelSystem::removedFromEngine(Engine *engine) {
 void VoxelSystem::update(Engine *engine, float delta) {
 	Voxel::ChunkManager *manager = engine->getChunkManager();
 	PositionComponent p = engine->get<PositionComponent>(engine->getPlayer());
+	RotationComponent r = engine->get<RotationComponent>(engine->getPlayer());
 	glm::vec3 playerPos = p.pos;
+	glm::vec3 playerRot = glm::eulerAngles(r.rot);
 
 	manager->update(playerPos.x, playerPos.y, playerPos.z);
 
@@ -57,7 +60,7 @@ void VoxelSystem::update(Engine *engine, float delta) {
 		badCode = !(left || right);
 	}
 	
-	
+	engine->getChunkRenderDataManager()->update(playerPos, playerRot, *manager);
 
 }
 
