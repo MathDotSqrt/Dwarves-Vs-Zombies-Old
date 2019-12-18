@@ -98,6 +98,7 @@ void Engine::update(float delta) {
 		this->renderer->prerender();
 		this->renderer->render(this->chunkManager);
 	}
+
 	/*VelocityComponent &v = this->get<VelocityComponent>(this->main);
 	RotationalVelocityComponent &rv = this->get<RotationalVelocityComponent>(this->main);
 	float velLen = glm::length2(v.vel);
