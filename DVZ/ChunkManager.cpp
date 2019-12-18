@@ -426,13 +426,6 @@ void ChunkManager::loadChunks(int chunkX, int chunkY, int chunkZ, int distance) 
 		}
 	}
 
-
-	auto compareLambda = [chunkX, chunkY, chunkZ](const ChunkRefHandle& lhs, const ChunkRefHandle& rhs) {
-		int distL = std::abs(chunkX - lhs->getChunkX()) + std::abs(chunkY - lhs->getChunkY()) + std::abs(chunkZ - lhs->getChunkZ());
-		int distR = std::abs(chunkX - rhs->getChunkX()) + std::abs(chunkY - rhs->getChunkY()) + std::abs(chunkZ - rhs->getChunkZ());
-
-		return distL > distR;
-	};
 	//std::sort(needsLoadingCache.begin(), needsLoadingCache.end(), compareLambda);
 	sortChunks(chunkX, chunkY, chunkZ, needsLoadingCache);
 }
@@ -469,13 +462,6 @@ void ChunkManager::meshChunks(int chunkX, int chunkY, int chunkZ, int distance) 
 			}
 		}
 	}
-
-	auto compareLambda = [chunkX, chunkY, chunkZ](const ChunkRefHandle& lhs, const ChunkRefHandle& rhs) {
-		int distL = std::abs(chunkX - lhs->getChunkX()) + std::abs(chunkY - lhs->getChunkY()) + std::abs(chunkZ - lhs->getChunkZ());
-		int distR = std::abs(chunkX - rhs->getChunkX()) + std::abs(chunkY - rhs->getChunkY()) + std::abs(chunkZ - rhs->getChunkZ());
-
-		return distL > distR;
-	};
 
 	//std::sort(needsMeshCache.begin(), needsMeshCache.end(), compareLambda);
 	sortChunks(chunkX, chunkY, chunkZ, needsMeshCache);
