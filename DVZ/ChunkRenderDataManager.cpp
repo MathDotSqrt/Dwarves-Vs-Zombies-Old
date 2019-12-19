@@ -45,6 +45,16 @@ void ChunkRenderDataManager::update(glm::vec3 pos, glm::vec3 rot, ChunkManager &
 		newChunk(cx, cy, cz, manager);
 	}
 
+
+
+}
+
+std::vector<RenderDataCopy>::const_iterator ChunkRenderDataManager::begin() {
+	return visibleChunks.begin();
+}
+
+std::vector<RenderDataCopy>::const_iterator ChunkRenderDataManager::end() {
+	return visibleChunks.end();
 }
 
 void ChunkRenderDataManager::updateDirtyChunks(ChunkManager &manager) {
@@ -83,7 +93,8 @@ void ChunkRenderDataManager::newChunk(int playerCX, int playerCY, int playerCZ, 
 		}
 	}
 
-	std::sort(needsMeshCache.begin(), needsMeshCache.end(), [playerCX, playerCY, playerCZ](const ChunkRefHandle &rhs, const ChunkRefHandle &lhs) {
+	std::sort(needsMeshCache.begin(), needsMeshCache.end(), 
+		[playerCX, playerCY, playerCZ](const ChunkRefHandle &rhs, const ChunkRefHandle &lhs) {
 		int distL = std::abs(playerCX - lhs->getChunkX()) + std::abs(playerCY - lhs->getChunkY()) + std::abs(playerCZ - lhs->getChunkZ());
 		int distR = std::abs(playerCX - rhs->getChunkX()) + std::abs(playerCY - rhs->getChunkY()) + std::abs(playerCZ - rhs->getChunkZ());
 
@@ -142,7 +153,7 @@ void ChunkRenderDataManager::dequeueChunks(ChunkManager &manager) {
 
 			chunk->flagMeshValid();
 		}
-
+		visibleChunks.push_back(makeRenderDataCopy(data));
 	}
 }
 
@@ -161,6 +172,15 @@ void ChunkRenderDataManager::theadedMesher() {
 			chunkMeshedQueue.enqueue(std::make_pair(std::move(neighbors.middle), std::move(geometry)));
 		}
 	}
+}
+
+RenderDataCopy ChunkRenderDataManager::makeRenderDataCopy(const ChunkRenderData &data) {
+	RenderDataCopy copy;
+	copy.pos = glm::vec3(data.cx, data.cy, data.cz);
+	copy.vaoID = data.vao.getID();
+	copy.startTime = (float)data.startTime;
+	copy.indexCount = data.indexCount;
+	return copy;
 }
 
 ChunkRenderData& ChunkRenderDataManager::getRenderableChunk(int cx, int cz) {

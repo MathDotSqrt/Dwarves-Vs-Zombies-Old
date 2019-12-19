@@ -3,6 +3,7 @@
 #include "TEX.h"
 #include "FBO.h"
 #include "RenderStateKey.h"
+
 namespace Graphics {
 
 class OpenGLRenderer : public IRenderer {
@@ -48,7 +49,7 @@ private:
 	int renderNormal(int startKeyIndex, glm::mat4 vp);
 	int renderBasicLit(int startKeyIndex, glm::vec3 camera_position, glm::mat4 vp);
 	int renderBasicBlock(int startKeyIndex, glm::vec3 camera_position, glm::mat4 vp);
-	void renderChunks(Voxel::ChunkManager *manager, glm::vec3 camera_position, glm::mat4 vp);
+	void renderChunks(Voxel::ChunkRenderDataManager *manager, glm::vec3 camera_position, glm::mat4 vp);
 	void renderPostProcess();
 
 	float getShaderTime() {
@@ -62,7 +63,7 @@ public:
 	void init(Scene *scene) override;
 	void resize(int newWidth, int newHeight) override;
 	void prerender() override;
-	void render(Voxel::ChunkManager *manager) override;
+	void render(Voxel::ChunkRenderDataManager *manager) override;
 	void postrender() override;
 };
 }

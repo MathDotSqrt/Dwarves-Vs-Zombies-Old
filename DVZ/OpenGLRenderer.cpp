@@ -5,7 +5,7 @@
 #include "glm.hpp"
 #include <gtx/transform.hpp>
 #include <gtx/quaternion.hpp>
-#include "ChunkManager.h"
+#include "ChunkRenderDataManager.h"
 #include "Timer.h"
 #include "QuadGeometry.h"
 using namespace Graphics;
@@ -92,7 +92,7 @@ void OpenGLRenderer::prerender() {
 	duration = Window::getTime() - start;
 }
 
-void OpenGLRenderer::render(Voxel::ChunkManager *manager) {
+void OpenGLRenderer::render(Voxel::ChunkRenderDataManager *manager) {
 	
 	
 	Scene::Camera *camera = &scene->cameraCache[scene->getMainCameraID()];
@@ -329,11 +329,11 @@ int OpenGLRenderer::renderBasicBlock(int startIndex, glm::vec3 camera_position, 
 	return index;
 }
 
-void OpenGLRenderer::renderChunks(Voxel::ChunkManager *manager, glm::vec3 camera_position, glm::mat4 vp) {
+void OpenGLRenderer::renderChunks(Voxel::ChunkRenderDataManager *manager, glm::vec3 camera_position, glm::mat4 vp) {
 	Util::Performance::Timer chunks("RenderChunks");
 
 	const Graphics::BlockMaterial chunkMat = { {.95f, .7f, .8f}, 30 };
-
+	const glm::vec3 CHUNK_SCALE(Voxel::CHUNK_RENDER_WIDTH_X, Voxel::CHUNK_RENDER_WIDTH_Y, Voxel::CHUNK_RENDER_WIDTH_Z);
 
 	Shader::GLSLProgram *shader = Shader::getShaderSet({ "new_chunk_shader.vert", "new_chunk_shader.frag" });
 	shader->use();
@@ -356,29 +356,21 @@ void OpenGLRenderer::renderChunks(Voxel::ChunkManager *manager, glm::vec3 camera
 	//this->chunkTex.bindActiveTexture(0);
 	this->debugTEX.bindActiveTexture(0);
 
-	//for (auto iterator = manager->getVisibleChunks().begin(); iterator != manager->getVisibleChunks().end(); iterator++) {
+	for (auto iterator = manager->begin(); iterator != manager->end(); iterator++) {
 
-	//	auto data = *iterator;
+		auto data = *iterator;
+		
+		shader->setUniform3f("chunk_pos", data.pos * CHUNK_SCALE);
+		shader->setUniform1f("time", getShaderTime() - data.startTime);
 
-	//	if (data == nullptr) {
-	//		continue;
-	//	}
-	//	
-	//	float x = data->getChunkX() * Voxel::CHUNK_RENDER_WIDTH_X;
-	//	float y = data->getChunkY() * Voxel::CHUNK_RENDER_WIDTH_Y;
-	//	float z = data->getChunkZ() * Voxel::CHUNK_RENDER_WIDTH_Z;
+		glBindVertexArray(data.vaoID);
+		glEnableVertexAttribArray(POSITION_ATTRIB_LOCATION);
+		glEnableVertexAttribArray(NORMAL_ATTRIB_LOCATION);
+		glEnableVertexAttribArray(BLOCK_TEXCOORD_ATTRIB_LOCATION);
+ 		glDrawElements(GL_TRIANGLES, (GLsizei)data.indexCount, GL_UNSIGNED_INT, 0);
+	}
 
-	//	shader->setUniform3f("chunk_pos", glm::vec3(x, y, z));
-	//	shader->setUniform1f("time", getShaderTime() - (float)data->startTime);
-
-	//	data->vao.bind();
-	//	glEnableVertexAttribArray(POSITION_ATTRIB_LOCATION);
-	//	glEnableVertexAttribArray(NORMAL_ATTRIB_LOCATION);
-	//	glEnableVertexAttribArray(BLOCK_TEXCOORD_ATTRIB_LOCATION);
- //		glDrawElements(GL_TRIANGLES, (GLsizei)data->indexCount, GL_UNSIGNED_INT, 0);
-	//}
-
-	//shader->end();
+	shader->end();
 	glBindVertexArray(0);
 }
 

@@ -16,7 +16,7 @@ namespace Voxel {
 	struct RenderDataCopy {
 		glm::vec3 pos;
 		uint32 vaoID;
-		uint32 vboID;
+		float startTime;
 		size_t indexCount;
 	};
 
@@ -32,7 +32,7 @@ namespace Voxel {
 		const static int32 GEOMETRY_ALLOC_SIZE = 100 * sizeof(ChunkGeometry);
 
 		ChunkRenderData renderable[RENDER_CHUNK_WIDTH][RENDER_CHUNK_WIDTH];
-		std::vector<RenderDataCopy> visible;
+		std::vector<RenderDataCopy> visibleChunks;
 		std::vector<ChunkRefHandle> needsMeshCache;
 		std::vector<uint32> queuedChunks;
 
@@ -54,6 +54,8 @@ namespace Voxel {
 		~ChunkRenderDataManager();
 
 		void update(glm::vec3 pos, glm::vec3 rot, ChunkManager &manager);
+		std::vector<RenderDataCopy>::const_iterator begin();
+		std::vector<RenderDataCopy>::const_iterator end();
 	
 	private:
 		void newChunk(int playerCX, int playerCY, int playerCZ, ChunkManager &manager);
@@ -62,6 +64,8 @@ namespace Voxel {
 		void dequeueChunks(ChunkManager &manager);
 		void theadedMesher();
 
+
+		RenderDataCopy makeRenderDataCopy(const ChunkRenderData &data);
 		ChunkRenderData& getRenderableChunk(int cx, int cz);
 		ChunkRenderData& getRenderableChunk(const ChunkRefHandle &handle);
 		bool isChunkRenderable(int cx, int cz);

@@ -26,6 +26,8 @@ public:
 	}
 
 	void dispose();
+
+	GLuint getID() const;
 private:
 	GLuint vboID = 0;
 	GLuint bufferType;

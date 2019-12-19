@@ -48,6 +48,8 @@ public:
 		std::apply(lambda, attribs);
 		vbo.unbind();
 	}
+
+	GLuint getID() const;
 private:
 
 

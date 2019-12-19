@@ -100,7 +100,7 @@ void Engine::update(float delta) {
 	{
 		Util::Performance::Timer render("Render");
 		this->renderer->prerender();
-		this->renderer->render(this->chunkManager);
+		this->renderer->render(this->chunkRenderDataManager);
 	}
 
 	/*VelocityComponent &v = this->get<VelocityComponent>(this->main);

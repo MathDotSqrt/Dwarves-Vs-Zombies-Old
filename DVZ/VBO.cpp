@@ -53,3 +53,7 @@ void VBO::dispose() {
 	}
 }
 
+GLuint VBO::getID() const{
+	return vboID;
+}
+
