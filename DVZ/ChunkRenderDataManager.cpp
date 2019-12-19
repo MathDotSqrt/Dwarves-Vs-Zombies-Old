@@ -48,6 +48,16 @@ void ChunkRenderDataManager::update(glm::vec3 pos, glm::vec3 rot, ChunkManager &
 	updateDirtyChunks(manager);
 	enqueueChunks(manager);
 	dequeueChunks(manager);
+
+	visibleChunks.clear();
+	for (int _cz = currentCZ - RENDER_RADIUS; _cz < currentCZ + RENDER_RADIUS; _cz++) {
+		for (int _cx = currentCX - RENDER_RADIUS; _cx < currentCX + RENDER_RADIUS; _cx++) {
+			ChunkRenderData &data = getRenderableChunk(_cx, _cz);
+			if (isChunkRenderable(_cx, _cz, data)) {
+				visibleChunks.push_back(makeRenderDataCopy(data));
+			}
+		}
+	}
 }
 
 std::vector<RenderDataCopy>::const_iterator ChunkRenderDataManager::begin() {
@@ -153,7 +163,6 @@ void ChunkRenderDataManager::dequeueChunks(ChunkManager &manager) {
 			data.bufferGeometry(element.second.get());
 
 			chunk->flagMeshValid();
-			visibleChunks.push_back(makeRenderDataCopy(data));
 		}
 	}
 }
@@ -189,11 +198,10 @@ ChunkRenderData& ChunkRenderDataManager::getRenderableChunk(int cx, int cz) {
 
 	int c = (cx + RENDER_RADIUS) % width;
 	int r = (cz + RENDER_RADIUS) % width;
-	////////
 	int new_r = r >= 0 ? r : r + width;
 	int new_c = c >= 0 ? c : c + width;
-	assert(new_c >= 0 && new_c < width);
-	assert(new_r >= 0 && new_r < width);
+	//assert(new_c >= 0 && new_c < width);
+	//assert(new_r >= 0 && new_r < width);
 	return renderable[new_r][new_c];
 }
 

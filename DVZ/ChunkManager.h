@@ -70,7 +70,7 @@ public:							//fix bug of things not destructing in order
 	static const int CHUNK_MESHER_ALLOC_SIZE = 8 * 1024 * 1024;
 	static const int CHUNK_THREAD_POOL_SIZE = 1;	//dont change this until i fix allocate array
 	//static const int RENDER_DISTANCE = 10;
-	static const int RENDER_DISTANCE = 20;
+	static const int RENDER_DISTANCE = 50;
 	static const int LOAD_DISTANCE = RENDER_DISTANCE + 2;
 
 public:
