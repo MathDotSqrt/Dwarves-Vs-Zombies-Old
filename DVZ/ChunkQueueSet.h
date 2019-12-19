@@ -22,7 +22,7 @@ namespace Voxel {
 		}
 
 		void pop() {
-			m_lookup.erase(m_queue.back()->getHashCode());
+			m_lookup.erase(m_queue.front()->getHashCode());
 			m_queue.pop_front();
 		}
 

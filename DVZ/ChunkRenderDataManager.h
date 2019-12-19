@@ -27,7 +27,7 @@ namespace Voxel {
 		typedef std::pair<ChunkRefHandle, ChunkGeometryHandle> ChunkGeometryPair;
 
 
-		const static int32 RENDER_RADIUS = 5;
+		const static int32 RENDER_RADIUS = 1;
 		const static int32 RENDER_CHUNK_WIDTH = 2 * RENDER_RADIUS + 1;
 		const static int32 GEOMETRY_ALLOC_SIZE = 100 * sizeof(ChunkGeometry);
 

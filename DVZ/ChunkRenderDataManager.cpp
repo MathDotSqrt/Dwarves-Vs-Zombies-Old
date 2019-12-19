@@ -185,10 +185,16 @@ RenderDataCopy ChunkRenderDataManager::makeRenderDataCopy(const ChunkRenderData 
 }
 
 ChunkRenderData& ChunkRenderDataManager::getRenderableChunk(int cx, int cz) {
-	int c = (cx + RENDER_RADIUS) % ChunkRenderDataManager::RENDER_CHUNK_WIDTH;
-	int r = (cz + RENDER_RADIUS) % ChunkRenderDataManager::RENDER_CHUNK_WIDTH;
-	
-	return renderable[r][c];
+	const int width = ChunkRenderDataManager::RENDER_CHUNK_WIDTH;
+
+	int c = (cx + RENDER_RADIUS) % width;
+	int r = (cz + RENDER_RADIUS) % width;
+	////////
+	int new_r = r >= 0 ? r : r + width;
+	int new_c = c >= 0 ? c : c + width;
+	assert(new_c >= 0 && new_c < width);
+	assert(new_r >= 0 && new_r < width);
+	return renderable[new_r][new_c];
 }
 
 ChunkRenderData& ChunkRenderDataManager::getRenderableChunk(const ChunkRefHandle &handle) {

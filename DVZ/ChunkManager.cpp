@@ -427,8 +427,7 @@ void ChunkManager::updateAllChunks(int playerCX, int playerCY, int playerCZ) {
 			num_erased++;
 			continue;
 		}
-
-		if (chunk->tryGetMeshState() == MeshState::DIRTY && dirtyChunks.can_push(chunk->getHashCode())) {
+		else if (chunk->tryGetMeshState() == MeshState::DIRTY && dirtyChunks.can_push(chunk->getHashCode())) {
 			ChunkRefHandle handle = getChunkInternal(chunk->getChunkX(), chunk->getChunkY(), chunk->getChunkZ());
 			dirtyChunks.push(std::move(handle));
 		}
