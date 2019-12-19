@@ -7,7 +7,7 @@
 using namespace Voxel;
 
 ChunkRenderDataManager::ChunkRenderDataManager(Util::Allocator::IAllocator &parent) : 
-	chunkMesherAllocator(sizeof(ChunkMesher), parent),
+	chunkMesherAllocator(2 * sizeof(ChunkMesher), parent),
 	geometryRecycler(GEOMETRY_ALLOC_SIZE, parent),
 	meshingThread(std::thread(&ChunkRenderDataManager::theadedMesher, this))
 {
@@ -19,11 +19,13 @@ ChunkRenderDataManager::ChunkRenderDataManager(Util::Allocator::IAllocator &pare
 			handle.cz = -1000;
 		}
 	}
+	mainMesher = Util::Allocator::allocateNew<ChunkMesher>(chunkMesherAllocator);
 	mesher = Util::Allocator::allocateNew<ChunkMesher>(chunkMesherAllocator);
 }
 
 
 ChunkRenderDataManager::~ChunkRenderDataManager() {
+	Util::Allocator::free(chunkMesherAllocator, mainMesher);
 	Util::Allocator::free(chunkMesherAllocator, mesher);
 
 	isRunning = false;
@@ -46,7 +48,26 @@ void ChunkRenderDataManager::update(glm::vec3 pos, glm::vec3 rot, ChunkManager &
 }
 
 void ChunkRenderDataManager::updateDirtyChunks(ChunkManager &manager) {
+	const int MAX_DQ = 4;
+	
+	Util::SetQueue<ChunkRefHandle> &dirtyChunks = manager.getDirtyChunkQueue();
+	for (int i = 0; i < MAX_DQ && dirtyChunks.size(); i++) {
+		ChunkRefHandle &handle = dirtyChunks.front();
+		if (handle->getMeshState() == MeshState::DIRTY) {
+			ChunkNeighbors n = manager.getChunkNeighbors(handle);
+			mainMesher->loadChunkData(n);
 
+			ChunkGeometry *geometry = geometryRecycler.getNew();
+			mainMesher->createChunkMesh(geometry);
+
+			ChunkRenderData &data = getRenderableChunk(handle);
+			data.bufferGeometry(geometry);
+			handle->flagMeshValid();
+
+			geometryRecycler.recycle(geometry);
+		}
+		dirtyChunks.pop();
+	}
 }
 
 void ChunkRenderDataManager::newChunk(int playerCX, int playerCY, int playerCZ, ChunkManager &manager){
@@ -146,6 +167,10 @@ ChunkRenderData& ChunkRenderDataManager::getRenderableChunk(int cx, int cz) {
 	int r = (cz + RENDER_RADIUS) % ChunkRenderDataManager::RENDER_CHUNK_WIDTH;
 	
 	return renderable[r][c];
+}
+
+ChunkRenderData& ChunkRenderDataManager::getRenderableChunk(const ChunkRefHandle &handle) {
+	return getRenderableChunk(handle->getChunkX(), handle->getChunkZ());
 }
 
 bool ChunkRenderDataManager::isChunkRenderable(int cx, int cz) {

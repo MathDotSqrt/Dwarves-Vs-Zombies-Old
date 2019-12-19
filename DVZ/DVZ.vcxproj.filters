@@ -255,6 +255,9 @@
     <ClInclude Include="ChunkRenderDataManager.h">
       <Filter>Header Files\Voxel</Filter>
     </ClInclude>
+    <ClInclude Include="SetQueue.h">
+      <Filter>Header Files\Util</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">

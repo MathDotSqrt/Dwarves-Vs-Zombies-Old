@@ -25,7 +25,6 @@ ChunkManager::ChunkManager(Util::Allocator::IAllocator &parent) :
 
 	this->chunkSet.max_load_factor(1.0f);
 	this->loadChunks(0, 0, 0, LOAD_DISTANCE);
-	this->meshChunks(0, 0, 0, RENDER_DISTANCE);
 }
 
 
@@ -60,7 +59,6 @@ void ChunkManager::update(float x, float y, float z) {
 
 		Util::Performance::Timer updateTimer("Queue Load/Mesh");
 		this->loadChunks(chunkX, chunkY, chunkZ, LOAD_DISTANCE);
-		this->meshChunks(chunkX, chunkY, chunkZ, RENDER_DISTANCE);
 	}
 
 	{
@@ -256,6 +254,10 @@ void ChunkManager::setLight(int x, int y, int z, Light light) {
 
 }
 
+Util::SetQueue<ChunkRefHandle>& ChunkManager::getDirtyChunkQueue() {
+	return mainMeshQueue;
+}
+
 BlockRayCast ChunkManager::castRay(glm::vec3 start, glm::vec3 dir, float radius) {
 	const Block AIR;
 	dir = glm::normalize(dir);
@@ -349,16 +351,14 @@ int ChunkManager::getChunkZ(float z) {
 void ChunkManager::queueDirtyChunk(int cx, int cy, int cz) {
 	ChunkRefHandle chunk = getChunkIfMapped(cx, cy, cz);
 	if (chunk) {
-		std::lock_guard writeLock(meshQueueMutex);
-		mainMeshQueue.emplace(std::move(chunk));
+		chunk->flagDirtyMesh();
 	}
 }
 
 void ChunkManager::queueDirtyChunk(ChunkRefHandle &&chunk) {
 	//ChunkRefHandle chunk = getChunkIfMapped(cx, cy, cz);
 	if (chunk) {
-		std::lock_guard writeLock(meshQueueMutex);
-		mainMeshQueue.emplace(std::move(chunk));
+		chunk->flagDirtyMesh();
 	}
 }
 
@@ -443,6 +443,10 @@ void ChunkManager::updateAllChunks(int playerCX, int playerCY, int playerCZ) {
 			iter = this->chunkSet.erase(iter);
 			num_erased++;
 			continue;
+		}
+
+		if (chunk->tryGetMeshState() == MeshState::DIRTY) {
+			mainMeshQueue.push(getChunk(chunk->getChunkX(), chunk->getChunkY(), chunk->getChunkZ));
 		}
 
 		iter++;

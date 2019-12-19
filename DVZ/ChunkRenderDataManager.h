@@ -43,6 +43,7 @@ namespace Voxel {
 		moodycamel::ConcurrentQueue<ChunkGeometryPair> chunkMeshedQueue;
 		Util::Recycler<ChunkGeometry> geometryRecycler;
 		Util::Allocator::LinearAllocator chunkMesherAllocator;
+		ChunkMesher *mainMesher;
 		ChunkMesher *mesher;
 
 		int currentCX;
@@ -63,6 +64,7 @@ namespace Voxel {
 		void theadedMesher();
 
 		ChunkRenderData& getRenderableChunk(int cx, int cz);
+		ChunkRenderData& getRenderableChunk(const ChunkRefHandle &handle);
 		bool isChunkRenderable(int cx, int cz);
 		bool isChunkRenderable(int cx, int cz, const ChunkRenderData& data);
 	

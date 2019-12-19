@@ -10,6 +10,7 @@
 #include "PoolAllocator.h"
 #include "AllocatorHandle.h"
 
+#include "SetQueue.h"
 #include "concurrentqueue.h"
 #include "ThreadPool.h"
 #include <thread>
@@ -96,7 +97,7 @@ public:
 	void setBlock(float x, float y, float z, Block block);
 
 	void setLight(int x, int y, int z, Light light);
-
+	Util::SetQueue<ChunkRefHandle>& getDirtyChunkQueue();
 
 	BlockRayCast castRay(glm::vec3 start, glm::vec3 dir, float radius);
 
@@ -137,7 +138,7 @@ private:
 	std::unordered_map<int, ChunkRefCount> chunkSet;					//contains all chunks
 	std::unordered_map<int, ChunkRefHandle> loadedChunkSet;				//subset of all chunks that are loaded
 	std::vector<ChunkRefHandle> needsLoadingCache;						//subset of all chunks that could be loaded
-	std::queue<ChunkRefHandle> mainMeshQueue;							//subset of all chunks that should be meshed on main thread
+	Util::SetQueue<ChunkRefHandle> mainMeshQueue;						//subset of all chunks that should be meshed on main thread
 	moodycamel::ConcurrentQueue<ChunkRefHandle> chunkGenerationQueue;
 	
 	Util::Recycler<Chunk> chunkRecycler;
