@@ -45,8 +45,9 @@ void ChunkRenderDataManager::update(glm::vec3 pos, glm::vec3 rot, ChunkManager &
 		newChunk(cx, cy, cz, manager);
 	}
 
-
-
+	updateDirtyChunks(manager);
+	enqueueChunks(manager);
+	dequeueChunks(manager);
 }
 
 std::vector<RenderDataCopy>::const_iterator ChunkRenderDataManager::begin() {
@@ -86,7 +87,7 @@ void ChunkRenderDataManager::newChunk(int playerCX, int playerCY, int playerCZ, 
 		for (int cx = playerCX - RENDER_RADIUS; cx < playerCX + RENDER_RADIUS; cx++) {
 			auto &chunk_handle = getRenderableChunk(cx, cz);
 			bool isRenderable = isChunkRenderable(cx, cz, chunk_handle);
-			bool isChunkQueued = std::find(queuedChunks.begin(), queuedChunks.end(), Chunk::calcHashCode(cx, 0, cz)) == queuedChunks.end();
+			bool isChunkQueued = std::find(queuedChunks.begin(), queuedChunks.end(), Chunk::calcHashCode(cx, 0, cz)) != queuedChunks.end();
 			if (!isRenderable && !isChunkQueued) {
 				needsMeshCache.emplace_back(manager.getChunk(cx, 0, cz));
 			}
@@ -144,7 +145,7 @@ void ChunkRenderDataManager::dequeueChunks(ChunkManager &manager) {
 
 		auto &data = getRenderableChunk(cx, cz);
 
-		if (isChunkRenderable(cx, cz, data)) {
+		if (!isChunkRenderable(cx, cz, data)) {
 			data.cx = cx;
 			data.cy = cy;
 			data.cz = cz;
@@ -152,8 +153,8 @@ void ChunkRenderDataManager::dequeueChunks(ChunkManager &manager) {
 			data.bufferGeometry(element.second.get());
 
 			chunk->flagMeshValid();
+			visibleChunks.push_back(makeRenderDataCopy(data));
 		}
-		visibleChunks.push_back(makeRenderDataCopy(data));
 	}
 }
 

@@ -182,30 +182,25 @@ void Chunk::setBlock(int x, int y, int z, Block block) {
 	if (meshState == MeshState::VALID) { //only dirty state if it was valid, not if empty or lazy
 		meshState = MeshState::DIRTY;	 //todo only dirty chunk if there is an adjecant block that is transparent
 
-		//lock.unlock();
-		ChunkRefHandle middle = manager->getChunkIfMapped(chunk_x, chunk_y, chunk_z);
-		manager->queueDirtyChunk(std::move(middle));
+		flagDirtyMeshInternal();
+		lock.unlock();
 
 		if (x == 0) {
 			ChunkRefHandle left = manager->getChunkIfMapped(chunk_x - 1, chunk_y, chunk_z);
 			left->flagDirtyMesh();
-			manager->queueDirtyChunk(std::move(left));
 		}
 		if (x == CHUNK_WIDTH_X - 1){
 			ChunkRefHandle right = manager->getChunkIfMapped(chunk_x + 1, chunk_y, chunk_z);
 			right->flagDirtyMesh();
-			manager->queueDirtyChunk(std::move(right));
 		}
 
 		if (z == 0) {
 			ChunkRefHandle back = manager->getChunkIfMapped(chunk_x, chunk_y, chunk_z - 1);
 			back->flagDirtyMesh();
-			manager->queueDirtyChunk(std::move(back));
 		}
 		if (z == CHUNK_WIDTH_Z - 1) {
 			ChunkRefHandle front = manager->getChunkIfMapped(chunk_x, chunk_y, chunk_z + 1);
 			front->flagDirtyMesh();
-			manager->queueDirtyChunk(std::move(front));
 		}
 	}
 }

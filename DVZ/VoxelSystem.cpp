@@ -45,8 +45,6 @@ void VoxelSystem::update(Engine *engine, float delta) {
 		Voxel::BlockRayCast cast = manager->castRay(playerPos, ray, 10);
 
 		if (left && cast.block != Voxel::Block()) {
-			//manager->setBlock(cast.nx, cast.ny, cast.nz, Voxel::Block(Voxel::BlockType::BLOCK_TYPE_GLASS));
-			//manager->setLight(cast.nx, cast.ny, cast.nz, Voxel::Light(0, 0xf));
 			manager->setBlock(cast.nx, cast.ny, cast.nz, Voxel::Block(Voxel::BlockType::BLOCK_TYPE_PURPLE));
 
 		}

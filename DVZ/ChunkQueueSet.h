@@ -8,9 +8,14 @@ namespace Voxel {
 	class ChunkQueueSet {
 	public:
 
+		bool can_push(int hashcode) {
+			return m_lookup.find(hashcode) == m_lookup.end();
+		}
+
+
 		void push(ChunkRefHandle &&handle) {
 			int hashcode = handle->getHashCode();
-			if (m_lookup.find(hashcode) == m_lookup.end()) {
+			if (can_push(hashcode)) {
 				m_queue.push_back(std::move(handle));
 				m_lookup.insert(hashcode);
 			}
