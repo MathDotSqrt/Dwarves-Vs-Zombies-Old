@@ -426,6 +426,7 @@ void ChunkManager::loadChunks(int chunkX, int chunkY, int chunkZ, int distance) 
 		}
 	}
 
+
 	//std::sort(needsLoadingCache.begin(), needsLoadingCache.end(), compareLambda);
 	sortChunks(chunkX, chunkY, chunkZ, needsLoadingCache);
 }

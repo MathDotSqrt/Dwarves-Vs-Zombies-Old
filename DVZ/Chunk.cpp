@@ -295,15 +295,6 @@ void Chunk::reinitializeChunk(int cx, int cy, int cz) {
 	meshState = MeshState::NONE_MESH;
 }
 
-constexpr int Chunk::expand(int x) const{
-	x &= 0x3FF;
-	x = (x | (x << 16)) & 4278190335;
-	x = (x | (x << 8)) & 251719695;
-	x = (x | (x << 4)) & 3272356035;
-	x = (x | (x << 2)) & 1227133513;
-	return x;
-}
-
 int Chunk::getHashCode() {
-	return expand(chunk_x) + (expand(chunk_y) << 1) + (expand(chunk_z) << 2);
+	return Chunk::calcHashCode(chunk_x, chunk_y, chunk_z);
 }

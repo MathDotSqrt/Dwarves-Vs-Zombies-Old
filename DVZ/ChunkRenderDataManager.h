@@ -4,11 +4,15 @@
 #include "glm.hpp"
 #include "ChunkRefHandle.h"
 #include "ConcurrentQueue.h"
+#include "LinearAllocator.h"
+#include "Recycler.h"
 #include <vector>
+#include <thread>
 
 
 namespace Voxel {
 	class ChunkManager;
+	class ChunkMesher;
 
 	struct RenderDataCopy {
 		glm::vec3 pos;
@@ -19,28 +23,43 @@ namespace Voxel {
 
 	class ChunkRenderDataManager {
 	private:
+		typedef Util::Recycler<ChunkGeometry>::UniqueHandle ChunkGeometryHandle;
+		typedef std::pair<ChunkNeighbors, ChunkGeometryHandle> ChunkNeighborGeometryPair;
+		typedef std::pair<ChunkRefHandle, ChunkGeometryHandle> ChunkGeometryPair;
+
+
 		const static int32 RENDER_RADIUS = 1;
 		const static int32 RENDER_CHUNK_WIDTH = 2 * RENDER_RADIUS + 1;
-
-		int currentCX;
-		int currentCY;
-		int currentCZ;
+		const static int32 GEOMETRY_ALLOC_SIZE = 100 * sizeof(ChunkGeometry);
 
 		ChunkRenderData renderable[RENDER_CHUNK_WIDTH][RENDER_CHUNK_WIDTH];
 		std::vector<RenderDataCopy> visible;
 		std::vector<ChunkRefHandle> needsMeshCache;
+		std::vector<uint32> queuedChunks;
 
-		moodycamel::ConcurrentQueue<std::pair<ChunkNeighbors, ChunkGeometry>> chunkMeshingQueue;
+		std::atomic<bool> isRunning = true;
+		std::thread meshingThread;
+		moodycamel::ConcurrentQueue<ChunkNeighborGeometryPair> chunkMeshingQueue;
+		moodycamel::ConcurrentQueue<ChunkGeometryPair> chunkMeshedQueue;
+		Util::Recycler<ChunkGeometry> geometryRecycler;
+		Util::Allocator::LinearAllocator chunkMesherAllocator;
+		ChunkMesher *mesher;
+
+		int currentCX;
+		int currentCY;
+		int currentCZ;
 	public:
 
-		ChunkRenderDataManager();
+		ChunkRenderDataManager(Util::Allocator::IAllocator &parent);
 		~ChunkRenderDataManager();
 
 		void update(glm::vec3 pos, glm::vec3 rot, ChunkManager &manager);
 	
 	private:
 		void newChunk(int playerCX, int playerCY, int playerCZ, ChunkManager &manager);
-		void enqueueChunks();
+		void enqueueChunks(ChunkManager &manager);
+		void dequeueChunks(ChunkManager &manager);
+		void theadedMesher();
 
 		ChunkRenderData& getRenderableChunk(int cx, int cz);
 		bool isChunkRenderable(int cx, int cz);

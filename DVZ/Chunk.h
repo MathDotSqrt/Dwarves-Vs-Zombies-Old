@@ -158,6 +158,10 @@ public:
 		return this->chunk_z;
 	}
 
+	static constexpr int calcHashCode(int cx, int cy, int cz) {
+		return expand(cx) + (expand(cy) << 1) + (expand(cz) << 2);
+	}
+
 	static constexpr bool isIndexInBounds(int x, int y, int z);
 	int getHashCode();
 
@@ -195,7 +199,14 @@ private:
 
 	void assertBlockIndex(int x, int y, int z) const;
 
-	constexpr int expand(int i) const;
+	static constexpr int expand(int x) {
+		x &= 0x3FF;
+		x = (x | (x << 16)) & 4278190335;
+		x = (x | (x << 8)) & 251719695;
+		x = (x | (x << 4)) & 3272356035;
+		x = (x | (x << 2)) & 1227133513;
+		return x;
+	}
 };
 
 typedef Chunk* ChunkPtr;

@@ -1,10 +1,16 @@
 #include "ChunkRenderDataManager.h"
 #include "ChunkManager.h"
 #include "macrologger.h"
+#include "ChunkMesher.h"
+#include "Window.h"
 
 using namespace Voxel;
 
-ChunkRenderDataManager::ChunkRenderDataManager() {
+ChunkRenderDataManager::ChunkRenderDataManager(Util::Allocator::IAllocator &parent) : 
+	chunkMesherAllocator(sizeof(ChunkMesher), parent),
+	geometryRecycler(GEOMETRY_ALLOC_SIZE, parent),
+	meshingThread(std::thread(&ChunkRenderDataManager::theadedMesher, this))
+{
 	for (int i = 0; i < RENDER_CHUNK_WIDTH; i++) {
 		for (int j = 0; j < RENDER_CHUNK_WIDTH; j++) {
 			auto &handle = renderable[i][j];
@@ -13,11 +19,15 @@ ChunkRenderDataManager::ChunkRenderDataManager() {
 			handle.cz = -1000;
 		}
 	}
+	mesher = Util::Allocator::allocateNew<ChunkMesher>(chunkMesherAllocator);
 }
 
 
 ChunkRenderDataManager::~ChunkRenderDataManager() {
+	Util::Allocator::free(chunkMesherAllocator, mesher);
 
+	isRunning = false;
+	meshingThread.join();
 }
 
 void ChunkRenderDataManager::update(glm::vec3 pos, glm::vec3 rot, ChunkManager &manager) {
@@ -40,7 +50,9 @@ void ChunkRenderDataManager::newChunk(int playerCX, int playerCY, int playerCZ, 
 	for (int cz = playerCZ - RENDER_RADIUS; cz < playerCZ + RENDER_RADIUS; cz++) {
 		for (int cx = playerCX - RENDER_RADIUS; cx < playerCX + RENDER_RADIUS; cx++) {
 			auto &chunk_handle = getRenderableChunk(cx, cz);
-			if (!isChunkRenderable(cx, cz, chunk_handle)) {
+			bool isRenderable = isChunkRenderable(cx, cz, chunk_handle);
+			bool isChunkQueued = std::find(queuedChunks.begin(), queuedChunks.end(), Chunk::calcHashCode(cx, 0, cz)) == queuedChunks.end();
+			if (!isRenderable && !isChunkQueued) {
 				needsMeshCache.emplace_back(manager.getChunk(cx, 0, cz));
 			}
 		}
@@ -56,8 +68,71 @@ void ChunkRenderDataManager::newChunk(int playerCX, int playerCY, int playerCZ, 
 	std::sort(needsMeshCache.begin(), needsMeshCache.end(), lambda);
 }
 
-void ChunkRenderDataManager::enqueueChunks() {
-	
+void ChunkRenderDataManager::enqueueChunks(ChunkManager &manager) {
+	for (int i = 0; i < 4 && needsMeshCache.size() > 0; i++) {
+		size_t chunkIndex = needsMeshCache.size() - 1;
+		BlockState chunkState = needsMeshCache[chunkIndex]->tryGetBlockState();
+		while (chunkState == BlockState::NONE || chunkState == BlockState::LOCKED) {
+			if (chunkIndex == 0) {
+				return;	//we are done
+			}
+			chunkIndex--;
+			chunkState = needsMeshCache[chunkIndex]->tryGetBlockState();
+		}
+
+		ChunkNeighbors chunkNeighbors = manager.getChunkNeighbors(needsMeshCache[chunkIndex]);
+
+		int hashCode = chunkNeighbors.middle->getHashCode();
+		queuedChunks.push_back(hashCode);
+
+		chunkMeshingQueue.enqueue(std::make_pair(std::move(chunkNeighbors), geometryRecycler.getUniqueNew()));
+		needsMeshCache.erase(needsMeshCache.begin() + chunkIndex);
+	}
+}
+
+void ChunkRenderDataManager::dequeueChunks(ChunkManager &manager) {
+	ChunkGeometryPair element;
+	double time = Window::getTime();
+
+	for (int i = 0; i < 10 && this->chunkMeshedQueue.try_dequeue(element); i++) {
+		ChunkRefHandle &chunk = element.first;
+		
+		auto hashcode = chunk->getHashCode();
+		auto found = std::find(queuedChunks.begin(), queuedChunks.end(), hashcode);
+		queuedChunks.erase(found);
+
+		int cx = chunk->getChunkX();
+		int cy = chunk->getChunkY();
+		int cz = chunk->getChunkZ();
+
+		auto &data = getRenderableChunk(cx, cz);
+
+		data.cx = cx;
+		data.cy = cy;
+		data.cz = cz;
+		data.startTime = time;
+		data.bufferGeometry(element.second.get());
+
+		chunk->flagMeshValid();
+
+	}
+}
+
+void ChunkRenderDataManager::theadedMesher() {
+	ChunkNeighborGeometryPair pair;
+
+	while (isRunning) {
+		bool dequeued = chunkMeshingQueue.try_dequeue(pair);
+		if (dequeued) {
+			ChunkNeighbors &neighbors = pair.first;
+			ChunkGeometryHandle &geometry = pair.second;
+
+			mesher->loadChunkDataAsync(neighbors);
+			mesher->createChunkMesh(geometry.get());
+
+			chunkMeshedQueue.enqueue(std::make_pair(std::move(neighbors.middle), std::move(geometry)));
+		}
+	}
 }
 
 ChunkRenderData& ChunkRenderDataManager::getRenderableChunk(int cx, int cz) {
