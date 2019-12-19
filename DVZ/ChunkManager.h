@@ -87,10 +87,6 @@ public:
 
 	ChunkRefHandle copyChunkRefHandle(const ChunkRefHandle& handle);
 
-	ChunkRefHandle loadChunk(int cx, int cy, int cz);
-	bool loadChunkAsync(int cx, int cy, int cz);
-	bool loadChunkAsync(int cx, int cy, int cz, void *callback);
-	
 	bool isChunkMapped(int cx, int cy, int cz) const;
 	bool isBlockMapped(int x, int y, int z);
 
@@ -108,22 +104,16 @@ public:
 	int getChunkY(float y);
 	int getChunkZ(float z);
 
-	std::vector<ChunkRenderData*>& getVisibleChunks() {
-		return this->visibleChunkList;
-	}
 private:
 	void queueDirtyChunk(int cx, int cy, int cz);
 	void queueDirtyChunk(ChunkRefHandle &&);
 	
 	ChunkPtr newChunk(int cx, int cy, int cz);
 	bool isChunkLoaded(int cx, int cy, int cz) const;
-	bool isChunkRenderable(int cx, int cy, int cz) const;
-	bool isChunkVisible(int cx, int cy, int cz) const;
 
 	void sortChunks(int chunkX, int chunkY, int chunkZ, std::vector<ChunkRefHandle> &vector);
 
 	void loadChunks(int chunkX, int chunkY, int chunkZ, int loadDistance);
-	void meshChunks(int chunkX, int chunkY, int chunkZ, int renderDistance);
 	void updateAllChunks(int playerCX, int playerCY, int playerCZ);
 	void updateDirtyChunks();
 	void enqueueChunks();
@@ -142,28 +132,15 @@ private:
 	
 	typedef ChunkDestructor::RefCount RefCount;
 	typedef std::pair<ChunkHandle, RefCount> ChunkRefCount;
-	typedef Util::Recycler<ChunkRenderData>::UniqueHandle ChunkRenderDataHandle;
-	typedef Util::Recycler<ChunkGeometry>::UniqueHandle ChunkGeometryHandle;
-//	typedef std::pair<ChunkRefHandle, ChunkRenderDataHandle>  ChunkRenderDataPair;
-	typedef std::pair<ChunkNeighbors, ChunkGeometryHandle> ChunkNeighborGeometryPair;
-//	typedef std::pair<ChunkRefHandle, ChunkGeometryHandle> ChunkGeometryPair;
 
 	//todo see if i could just use shared_ptr
 	std::unordered_map<int, ChunkRefCount> chunkSet;					//contains all chunks
 	std::unordered_map<int, ChunkRefHandle> loadedChunkSet;				//subset of all chunks that are loaded
-//	std::unordered_map<int, ChunkRenderDataPair> renderableChunkSet;	//subset of all chunks that are renderable
-	//std::unordered_map<int, std::queue<LightNode>> lightUpdates;
 	std::vector<ChunkRefHandle> needsLoadingCache;						//subset of all chunks that could be loaded
-	std::vector<ChunkRefHandle> needsMeshCache;							//subset of all chunks that could be meshed
 	std::queue<ChunkRefHandle> mainMeshQueue;							//subset of all chunks that should be meshed on main thread
-//	std::vector<ChunkRenderData*> visibleChunkList;						//subset of all chunks that will be rendered
 	moodycamel::ConcurrentQueue<ChunkRefHandle> chunkGenerationQueue;
-//	moodycamel::ConcurrentQueue<ChunkNeighborGeometryPair> chunkMeshingQueue;
-//	moodycamel::ConcurrentQueue<ChunkGeometryPair> chunkMeshedQueue;
 	
 	Util::Recycler<Chunk> chunkRecycler;
-	Util::Recycler<ChunkGeometry> meshRecycler;
-	Util::Recycler<ChunkRenderData> renderDataRecycler;
 
 
 	Util::Allocator::LinearAllocator chunkMesherAllocator;
@@ -177,24 +154,6 @@ private:
 
 	mutable std::shared_mutex chunkSetMutex;		//gaurds chunkSet and mainMeshQueue
 	mutable std::recursive_mutex meshQueueMutex;
-
-	//moodycamel::BlockingConcurrentQueue<ChunkHandle> chunkGenQueue;
-	//moodycamel::BlockingConcurrentQueue<std::pair<ChunkNeighbors, ChunkGeometry*>> chunkMeshingQueue;
-	//moodycamel::ConcurrentQueue<std::pair<ChunkGeometry*, glm::ivec3>> chunkMeshQueue;
-
-	//chunkSet
-	//generateChunkList
-	//meshChunkList
-	//greedyMeshChunkList
-	//renderableChunkSet
-	//visibleChunkList
-	
-
-
-	/*std::unordered_map<int, ChunkHandle> chunkSet;
-	std::unordered_map<int, ChunkRenderData*> renderDataSet;
-	std::unordered_map<int, bool> chunkQueuedSet;*/
-
 	
 
 };

@@ -57,6 +57,7 @@ namespace Voxel {
 	
 	private:
 		void newChunk(int playerCX, int playerCY, int playerCZ, ChunkManager &manager);
+		void updateDirtyChunks(ChunkManager &manager);
 		void enqueueChunks(ChunkManager &manager);
 		void dequeueChunks(ChunkManager &manager);
 		void theadedMesher();

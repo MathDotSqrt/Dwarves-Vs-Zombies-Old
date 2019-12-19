@@ -45,6 +45,10 @@ void ChunkRenderDataManager::update(glm::vec3 pos, glm::vec3 rot, ChunkManager &
 
 }
 
+void ChunkRenderDataManager::updateDirtyChunks(ChunkManager &manager) {
+
+}
+
 void ChunkRenderDataManager::newChunk(int playerCX, int playerCY, int playerCZ, ChunkManager &manager){
 	needsMeshCache.clear();
 	for (int cz = playerCZ - RENDER_RADIUS; cz < playerCZ + RENDER_RADIUS; cz++) {
@@ -58,15 +62,15 @@ void ChunkRenderDataManager::newChunk(int playerCX, int playerCY, int playerCZ, 
 		}
 	}
 
-	auto lambda = [playerCX, playerCY, playerCZ](const ChunkRefHandle &rhs, const ChunkRefHandle &lhs) {
+	std::sort(needsMeshCache.begin(), needsMeshCache.end(), [playerCX, playerCY, playerCZ](const ChunkRefHandle &rhs, const ChunkRefHandle &lhs) {
 		int distL = std::abs(playerCX - lhs->getChunkX()) + std::abs(playerCY - lhs->getChunkY()) + std::abs(playerCZ - lhs->getChunkZ());
 		int distR = std::abs(playerCX - rhs->getChunkX()) + std::abs(playerCY - rhs->getChunkY()) + std::abs(playerCZ - rhs->getChunkZ());
 
 		return distL < distR;
-	};
-
-	std::sort(needsMeshCache.begin(), needsMeshCache.end(), lambda);
+	});
 }
+
+
 
 void ChunkRenderDataManager::enqueueChunks(ChunkManager &manager) {
 	for (int i = 0; i < 4 && needsMeshCache.size() > 0; i++) {
@@ -107,13 +111,15 @@ void ChunkRenderDataManager::dequeueChunks(ChunkManager &manager) {
 
 		auto &data = getRenderableChunk(cx, cz);
 
-		data.cx = cx;
-		data.cy = cy;
-		data.cz = cz;
-		data.startTime = time;
-		data.bufferGeometry(element.second.get());
+		if (isChunkRenderable(cx, cz, data)) {
+			data.cx = cx;
+			data.cy = cy;
+			data.cz = cz;
+			data.startTime = time;
+			data.bufferGeometry(element.second.get());
 
-		chunk->flagMeshValid();
+			chunk->flagMeshValid();
+		}
 
 	}
 }
