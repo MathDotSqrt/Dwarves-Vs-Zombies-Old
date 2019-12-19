@@ -32,7 +32,7 @@ Engine::Engine() : linearAlloc(MEM_ALLOC_SIZE, malloc(MEM_ALLOC_SIZE)){	//todo d
 	this->renderer->init(scene);
 
 	this->chunkManager = new Voxel::ChunkManager(this->linearAlloc);
-	this->chunkRenderDataManager = new Voxel::ChunkRenderDataManager();
+	this->chunkRenderDataManager = new Voxel::ChunkRenderDataManager(this->linearAlloc);
 
 	this->main = entt::null;
 }

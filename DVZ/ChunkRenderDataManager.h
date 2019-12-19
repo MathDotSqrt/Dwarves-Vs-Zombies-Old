@@ -6,13 +6,12 @@
 #include "ConcurrentQueue.h"
 #include "LinearAllocator.h"
 #include "Recycler.h"
+#include "ChunkManager.h"
 #include <vector>
 #include <thread>
 
 
 namespace Voxel {
-	class ChunkManager;
-	class ChunkMesher;
 
 	struct RenderDataCopy {
 		glm::vec3 pos;

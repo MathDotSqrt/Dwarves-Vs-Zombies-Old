@@ -356,29 +356,29 @@ void OpenGLRenderer::renderChunks(Voxel::ChunkManager *manager, glm::vec3 camera
 	//this->chunkTex.bindActiveTexture(0);
 	this->debugTEX.bindActiveTexture(0);
 
-	for (auto iterator = manager->getVisibleChunks().begin(); iterator != manager->getVisibleChunks().end(); iterator++) {
+	//for (auto iterator = manager->getVisibleChunks().begin(); iterator != manager->getVisibleChunks().end(); iterator++) {
 
-		auto data = *iterator;
+	//	auto data = *iterator;
 
-		if (data == nullptr) {
-			continue;
-		}
-		
-		float x = data->getChunkX() * Voxel::CHUNK_RENDER_WIDTH_X;
-		float y = data->getChunkY() * Voxel::CHUNK_RENDER_WIDTH_Y;
-		float z = data->getChunkZ() * Voxel::CHUNK_RENDER_WIDTH_Z;
+	//	if (data == nullptr) {
+	//		continue;
+	//	}
+	//	
+	//	float x = data->getChunkX() * Voxel::CHUNK_RENDER_WIDTH_X;
+	//	float y = data->getChunkY() * Voxel::CHUNK_RENDER_WIDTH_Y;
+	//	float z = data->getChunkZ() * Voxel::CHUNK_RENDER_WIDTH_Z;
 
-		shader->setUniform3f("chunk_pos", glm::vec3(x, y, z));
-		shader->setUniform1f("time", getShaderTime() - (float)data->startTime);
+	//	shader->setUniform3f("chunk_pos", glm::vec3(x, y, z));
+	//	shader->setUniform1f("time", getShaderTime() - (float)data->startTime);
 
-		data->vao.bind();
-		glEnableVertexAttribArray(POSITION_ATTRIB_LOCATION);
-		glEnableVertexAttribArray(NORMAL_ATTRIB_LOCATION);
-		glEnableVertexAttribArray(BLOCK_TEXCOORD_ATTRIB_LOCATION);
- 		glDrawElements(GL_TRIANGLES, (GLsizei)data->indexCount, GL_UNSIGNED_INT, 0);
-	}
+	//	data->vao.bind();
+	//	glEnableVertexAttribArray(POSITION_ATTRIB_LOCATION);
+	//	glEnableVertexAttribArray(NORMAL_ATTRIB_LOCATION);
+	//	glEnableVertexAttribArray(BLOCK_TEXCOORD_ATTRIB_LOCATION);
+ //		glDrawElements(GL_TRIANGLES, (GLsizei)data->indexCount, GL_UNSIGNED_INT, 0);
+	//}
 
-	shader->end();
+	//shader->end();
 	glBindVertexArray(0);
 }
 

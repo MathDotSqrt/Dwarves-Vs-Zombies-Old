@@ -67,18 +67,10 @@ void ChunkManager::update(float x, float y, float z) {
 	}
 
 	{
-		Util::Performance::Timer updateDirtyChunk("Updating dirty chunks");
-		updateDirtyChunks();
-	}
-
-	{
 		Util::Performance::Timer enqueueChunksTimer("Enqueue Chunks");
 		enqueueChunks();
 	}
-	{
-		Util::Performance::Timer dqChunksTimer("DQ Chunks");
-		dequeueChunkRenderData();
-	}
+
 
 	////todo make this more performant by not invalidating the entire cache
 	//{
@@ -254,8 +246,8 @@ void ChunkManager::setLight(int x, int y, int z, Light light) {
 
 }
 
-Util::SetQueue<ChunkRefHandle>& ChunkManager::getDirtyChunkQueue() {
-	return mainMeshQueue;
+ChunkQueueSet& ChunkManager::getDirtyChunkQueue() {
+	return dirtyChunks;
 }
 
 BlockRayCast ChunkManager::castRay(glm::vec3 start, glm::vec3 dir, float radius) {
@@ -356,7 +348,6 @@ void ChunkManager::queueDirtyChunk(int cx, int cy, int cz) {
 }
 
 void ChunkManager::queueDirtyChunk(ChunkRefHandle &&chunk) {
-	//ChunkRefHandle chunk = getChunkIfMapped(cx, cy, cz);
 	if (chunk) {
 		chunk->flagDirtyMesh();
 	}
@@ -373,17 +364,6 @@ ChunkPtr ChunkManager::newChunk(int cx, int cy, int cz) {
 bool ChunkManager::isChunkLoaded(int cx, int cy, int cz) const {
 	auto iter = this->loadedChunkSet.find(this->hashcode(cx, cy, cz));
 	return iter != this->loadedChunkSet.end();
-}
-
-void ChunkManager::sortChunks(int chunkX, int chunkY, int chunkZ, std::vector<ChunkRefHandle> &vector) {
-	auto lambda = [chunkX, chunkY, chunkZ](const ChunkRefHandle &rhs, const ChunkRefHandle &lhs) {
-		int distL = std::abs(chunkX - lhs->getChunkX()) + std::abs(chunkY - lhs->getChunkY()) + std::abs(chunkZ - lhs->getChunkZ());
-		int distR = std::abs(chunkX - rhs->getChunkX()) + std::abs(chunkY - rhs->getChunkY()) + std::abs(chunkZ - rhs->getChunkZ());
-
-		return distL < distR;
-	};
-
-	std::sort(vector.begin(), vector.end(), lambda);
 }
 
 void ChunkManager::loadChunks(int chunkX, int chunkY, int chunkZ, int distance) {
@@ -421,7 +401,13 @@ void ChunkManager::loadChunks(int chunkX, int chunkY, int chunkZ, int distance) 
 
 
 	//std::sort(needsLoadingCache.begin(), needsLoadingCache.end(), compareLambda);
-	sortChunks(chunkX, chunkY, chunkZ, needsLoadingCache);
+	std::sort(needsLoadingCache.begin(), needsLoadingCache.end(), 
+		[chunkX, chunkY, chunkZ](const ChunkRefHandle &rhs, const ChunkRefHandle &lhs) {
+		int distL = std::abs(chunkX - lhs->getChunkX()) + std::abs(chunkY - lhs->getChunkY()) + std::abs(chunkZ - lhs->getChunkZ());
+		int distR = std::abs(chunkX - rhs->getChunkX()) + std::abs(chunkY - rhs->getChunkY()) + std::abs(chunkZ - rhs->getChunkZ());
+
+		return distL < distR;
+	});
 }
 
 void ChunkManager::updateAllChunks(int playerCX, int playerCY, int playerCZ) {
@@ -446,45 +432,13 @@ void ChunkManager::updateAllChunks(int playerCX, int playerCY, int playerCZ) {
 		}
 
 		if (chunk->tryGetMeshState() == MeshState::DIRTY) {
-			mainMeshQueue.push(getChunk(chunk->getChunkX(), chunk->getChunkY(), chunk->getChunkZ));
+			ChunkRefHandle handle = getChunk(chunk->getChunkX(), chunk->getChunkY(), chunk->getChunkZ());
+			dirtyChunks.push(std::move(handle));
 		}
 
 		iter++;
 	}
 
-}
-
-void ChunkManager::updateDirtyChunks() {
-	constexpr int MAX_DQ = 4;
-
-	//if (mainMeshQueue.size() > 0) {
-	//	ChunkRefHandle &handle = mainMeshQueue.front();
-	//	ChunkNeighborGeometryPair p = std::make_pair(std::move(getChunkNeighbors(handle)), meshRecycler.getUniqueNew());
-	//	chunkMeshingQueue.enqueue(std::move(p));
-	//	mainMeshQueue.pop();
-	//}
-
-	std::lock_guard writeLock(meshQueueMutex);
-	for (int i = 0; i < MAX_DQ && mainMeshQueue.size() > 0; i++) {
-		ChunkRefHandle &handle = mainMeshQueue.front();
-		if (handle->getMeshState() == MeshState::DIRTY) {
-			ChunkNeighbors n = getChunkNeighbors(handle);
-			
-			chunkLightEngine->loadLightData(n);
-			chunkLightEngine->computeChunkLighting(n);
-			mainChunkMesher->loadChunkData(n);
-
-			ChunkGeometry *geometry = meshRecycler.getNew();
-			mainChunkMesher->createChunkMesh(geometry);
-
-			ChunkRenderDataHandle &renderData = renderableChunkSet[handle->getHashCode()].second;
-			renderData->bufferGeometry(geometry);
-			handle->flagMeshValid();
-
-			meshRecycler.recycle(geometry);
-		}
-		mainMeshQueue.pop();
-	}
 }
 
 void ChunkManager::enqueueChunks() {
@@ -497,49 +451,6 @@ void ChunkManager::enqueueChunks() {
 		//chunk->generateTerrain();
 	}
 
-	for (int i = 0; i < 4 && needsMeshCache.size() > 0; i++) {
-		size_t chunkIndex = needsMeshCache.size() - 1;
-		BlockState chunkState = needsMeshCache[chunkIndex]->tryGetBlockState();
-		while (chunkState == BlockState::NONE || chunkState == BlockState::LOCKED) {
-			if (chunkIndex == 0) {
-				return;	//we are done
-			}
-			chunkIndex--;
-			chunkState = needsMeshCache[chunkIndex]->tryGetBlockState();
-		}
-
-		ChunkRefHandle chunk = std::move(needsMeshCache[chunkIndex]);
-		ChunkNeighbors chunkNeighbors = getChunkNeighbors(chunk);
-
-		int hashCode = chunk->getHashCode();
-		ChunkRenderDataPair pair = std::make_pair(std::move(chunk), renderDataRecycler.getUniqueNew());
-		renderableChunkSet.emplace(hashCode, std::move(pair));
-	
-		ChunkNeighborGeometryPair p = std::make_pair(std::move(chunkNeighbors), meshRecycler.getUniqueNew());
-		chunkMeshingQueue.enqueue(std::move(p));
-		needsMeshCache.erase(needsMeshCache.begin() + chunkIndex);
-
-	}
-}
-
-void ChunkManager::dequeueChunkRenderData() {
-	ChunkGeometryPair element;
-	double time = Window::getTime();
-	for (int i = 0; i < 10 && this->chunkMeshedQueue.try_dequeue(element); i++) {
-		ChunkRefHandle &chunk = element.first;
-		if (isChunkRenderable(chunk->chunk_x, chunk->chunk_y, chunk->chunk_z)) {			//TODO: test if renderdata is new or not
-			ChunkRenderDataHandle &data = renderableChunkSet[chunk->getHashCode()].second;
-
-			data->cx = chunk->chunk_x;
-			data->cy = chunk->chunk_y;
-			data->cz = chunk->chunk_z;
-			data->startTime = time;
-			data->bufferGeometry(element.second.get());
-
-			chunk->flagMeshValid();
-		}
-		
-	}
 }
 
 //todo fix bug where all handles are in queue and the program wants to close causing a 
@@ -559,7 +470,6 @@ void ChunkManager::chunkMeshingThread() {
 	thread_local int workerID = threadCount++;
 
 	ChunkRefHandle chunk;
-	ChunkNeighborGeometryPair pair;
 	while (this->runThreads) {
 
 		for (int i = 0; i < 10; i++) {
@@ -568,24 +478,6 @@ void ChunkManager::chunkMeshingThread() {
 				if (chunk && chunk->getBlockState() == BlockState::NONE) {
 					chunk->generateTerrain();
 				}
-			}
-			else {
-				break;
-			}
-		}
-
-		for (int i = 0; i < 1; i++) {
-			bool dequeuedRender = this->chunkMeshingQueue.try_dequeue(pair);
-			if (dequeuedRender) {
-				ChunkNeighbors &neighbors = pair.first;
-				ChunkGeometryHandle &geometry = pair.second;
-				//if (neighbors.middle->getChunkState() == Chunk::ChunkState::EMPTY)
-				//	neighbors.middle->generateTerrain();
-				this->chunkMesherArray[workerID].loadChunkDataAsync(neighbors);
-				this->chunkMesherArray[workerID].createChunkMesh(geometry.get());
-
-				ChunkGeometryPair queuePair = std::make_pair(std::move(neighbors.middle), std::move(geometry));
-				this->chunkMeshedQueue.enqueue(std::move(queuePair));
 			}
 			else {
 				break;

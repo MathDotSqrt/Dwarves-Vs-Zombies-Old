@@ -50,7 +50,7 @@ void ChunkRenderDataManager::update(glm::vec3 pos, glm::vec3 rot, ChunkManager &
 void ChunkRenderDataManager::updateDirtyChunks(ChunkManager &manager) {
 	const int MAX_DQ = 4;
 	
-	Util::SetQueue<ChunkRefHandle> &dirtyChunks = manager.getDirtyChunkQueue();
+	ChunkQueueSet &dirtyChunks = manager.getDirtyChunkQueue();
 	for (int i = 0; i < MAX_DQ && dirtyChunks.size(); i++) {
 		ChunkRefHandle &handle = dirtyChunks.front();
 		if (handle->getMeshState() == MeshState::DIRTY) {
@@ -110,7 +110,8 @@ void ChunkRenderDataManager::enqueueChunks(ChunkManager &manager) {
 		int hashCode = chunkNeighbors.middle->getHashCode();
 		queuedChunks.push_back(hashCode);
 
-		chunkMeshingQueue.enqueue(std::make_pair(std::move(chunkNeighbors), geometryRecycler.getUniqueNew()));
+		ChunkGeometryHandle geometryHandle = geometryRecycler.getUniqueNew();
+		chunkMeshingQueue.enqueue(std::make_pair(std::move(chunkNeighbors), std::move(geometryHandle)));
 		needsMeshCache.erase(needsMeshCache.begin() + chunkIndex);
 	}
 }

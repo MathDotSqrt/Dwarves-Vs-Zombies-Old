@@ -10,7 +10,7 @@
 #include "PoolAllocator.h"
 #include "AllocatorHandle.h"
 
-#include "SetQueue.h"
+#include "ChunkQueueSet.h"
 #include "concurrentqueue.h"
 #include "ThreadPool.h"
 #include <thread>
@@ -97,7 +97,7 @@ public:
 	void setBlock(float x, float y, float z, Block block);
 
 	void setLight(int x, int y, int z, Light light);
-	Util::SetQueue<ChunkRefHandle>& getDirtyChunkQueue();
+	ChunkQueueSet& getDirtyChunkQueue();
 
 	BlockRayCast castRay(glm::vec3 start, glm::vec3 dir, float radius);
 
@@ -112,13 +112,10 @@ private:
 	ChunkPtr newChunk(int cx, int cy, int cz);
 	bool isChunkLoaded(int cx, int cy, int cz) const;
 
-	void sortChunks(int chunkX, int chunkY, int chunkZ, std::vector<ChunkRefHandle> &vector);
 
 	void loadChunks(int chunkX, int chunkY, int chunkZ, int loadDistance);
 	void updateAllChunks(int playerCX, int playerCY, int playerCZ);
-	void updateDirtyChunks();
 	void enqueueChunks();
-	void dequeueChunkRenderData();
 
 	void chunkGeneratorThread();
 	void chunkMeshingThread();
@@ -138,7 +135,7 @@ private:
 	std::unordered_map<int, ChunkRefCount> chunkSet;					//contains all chunks
 	std::unordered_map<int, ChunkRefHandle> loadedChunkSet;				//subset of all chunks that are loaded
 	std::vector<ChunkRefHandle> needsLoadingCache;						//subset of all chunks that could be loaded
-	Util::SetQueue<ChunkRefHandle> mainMeshQueue;						//subset of all chunks that should be meshed on main thread
+	ChunkQueueSet dirtyChunks;						//subset of all chunks that should be meshed on main thread
 	moodycamel::ConcurrentQueue<ChunkRefHandle> chunkGenerationQueue;
 	
 	Util::Recycler<Chunk> chunkRecycler;

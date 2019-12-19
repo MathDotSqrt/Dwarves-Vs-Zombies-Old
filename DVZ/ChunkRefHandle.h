@@ -37,5 +37,9 @@ namespace Voxel {
 		ChunkRefHandle() : std::unique_ptr<Chunk, ChunkDestructor>(nullptr, ChunkDestructor(nullptr)) {
 
 		}
+
+
 	};
+
+
 }

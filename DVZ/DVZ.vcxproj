@@ -230,6 +230,7 @@
     <ClCompile Include="Recycler.cpp" />
     <ClCompile Include="RenderStateKey.cpp" />
     <ClCompile Include="Scene.cpp" />
+    <ClCompile Include="SetQueue.cpp" />
     <ClCompile Include="ShaderSet.cpp" />
     <ClCompile Include="ShaderUpdaterSystem.cpp" />
     <ClCompile Include="System.cpp" />
@@ -257,6 +258,7 @@
     <ClInclude Include="ChunkLightEngine.h" />
     <ClInclude Include="ChunkManager.h" />
     <ClInclude Include="ChunkMesher.h" />
+    <ClInclude Include="ChunkQueueSet.h" />
     <ClInclude Include="ChunkRefHandle.h" />
     <ClInclude Include="ChunkRenderData.h" />
     <ClInclude Include="ChunkRenderDataManager.h" />
