@@ -50,15 +50,15 @@ public:
 
 
 
-	inline int getChunkX() {
+	inline int getChunkX() const {
 		return cx;
 	}
 	
-	inline int getChunkY() {
+	inline int getChunkY() const {
 		return cy;
 	}
 
-	inline int getChunkZ() {
+	inline int getChunkZ() const {
 		return cz;
 	}
 private:

@@ -3,7 +3,6 @@
 #include "Block.h"
 #include "Chunk.h"
 #include "ChunkRefHandle.h"
-#include "ChunkRenderData.h"
 #include "ChunkMesher.h"
 #include "ChunkLightEngine.h"
 
@@ -145,22 +144,22 @@ private:
 	typedef std::pair<ChunkHandle, RefCount> ChunkRefCount;
 	typedef Util::Recycler<ChunkRenderData>::UniqueHandle ChunkRenderDataHandle;
 	typedef Util::Recycler<ChunkGeometry>::UniqueHandle ChunkGeometryHandle;
-	typedef std::pair<ChunkRefHandle, ChunkRenderDataHandle>  ChunkRenderDataPair;
+//	typedef std::pair<ChunkRefHandle, ChunkRenderDataHandle>  ChunkRenderDataPair;
 	typedef std::pair<ChunkNeighbors, ChunkGeometryHandle> ChunkNeighborGeometryPair;
-	typedef std::pair<ChunkRefHandle, ChunkGeometryHandle> ChunkGeometryPair;
+//	typedef std::pair<ChunkRefHandle, ChunkGeometryHandle> ChunkGeometryPair;
 
 	//todo see if i could just use shared_ptr
 	std::unordered_map<int, ChunkRefCount> chunkSet;					//contains all chunks
 	std::unordered_map<int, ChunkRefHandle> loadedChunkSet;				//subset of all chunks that are loaded
-	std::unordered_map<int, ChunkRenderDataPair> renderableChunkSet;	//subset of all chunks that are renderable
+//	std::unordered_map<int, ChunkRenderDataPair> renderableChunkSet;	//subset of all chunks that are renderable
 	//std::unordered_map<int, std::queue<LightNode>> lightUpdates;
 	std::vector<ChunkRefHandle> needsLoadingCache;						//subset of all chunks that could be loaded
 	std::vector<ChunkRefHandle> needsMeshCache;							//subset of all chunks that could be meshed
 	std::queue<ChunkRefHandle> mainMeshQueue;							//subset of all chunks that should be meshed on main thread
-	std::vector<ChunkRenderData*> visibleChunkList;						//subset of all chunks that will be rendered
+//	std::vector<ChunkRenderData*> visibleChunkList;						//subset of all chunks that will be rendered
 	moodycamel::ConcurrentQueue<ChunkRefHandle> chunkGenerationQueue;
-	moodycamel::ConcurrentQueue<ChunkNeighborGeometryPair> chunkMeshingQueue;
-	moodycamel::ConcurrentQueue<ChunkGeometryPair> chunkMeshedQueue;
+//	moodycamel::ConcurrentQueue<ChunkNeighborGeometryPair> chunkMeshingQueue;
+//	moodycamel::ConcurrentQueue<ChunkGeometryPair> chunkMeshedQueue;
 	
 	Util::Recycler<Chunk> chunkRecycler;
 	Util::Recycler<ChunkGeometry> meshRecycler;
