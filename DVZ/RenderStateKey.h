@@ -7,8 +7,8 @@ namespace Graphics {
 
 	//
 	enum class ViewPort : uint8 {
-		DEFAULT = 0,
-		SHADOW,
+		SHADOW = 0,
+		FINAL,
 		NUM_VIEW_PORTS
 	};
 

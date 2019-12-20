@@ -15,7 +15,6 @@ private:
 	std::vector<RenderStateKey> sortedRenderStateKeys;
 	glm::mat4 perspectiveProjection;
 
-	bool isValidState(int sortedStateKeyIndex, MaterialID matID);
 
 	double start;
 	double duration;
@@ -23,15 +22,15 @@ private:
 	int window_width = 0;
 	int window_height = 0;
 	
-	FBO inverse;
+	ViewPort currentPort;
+	FBO shadow;
+	FBO final;
 	VAO quad;
 	VBO vbo;
 
+	void swapViewPorts(RenderStateKey key);
 	void renderPostProcess();
-
-	float getShaderTime() {
-		return (float)duration;
-	}
+	float getShaderTime();
 
 public:
 	OpenGLRenderer();

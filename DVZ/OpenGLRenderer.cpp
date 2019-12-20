@@ -16,9 +16,12 @@ MaterialID BasicLitMaterial::type = MaterialID::BASIC_LIT_MATERIAL_ID;
 MaterialID TextureMaterial::type = MaterialID::TEXTURE_MATERIAL_ID;
 MaterialID BlockMaterial::type = MaterialID::BLOCK_MATERIAL_ID;
 
-OpenGLRenderer::OpenGLRenderer() : inverse(Window::getWidth(), Window::getHeight()), vbo(GL_ARRAY_BUFFER) {
-	start = Window::getTime();
-}
+OpenGLRenderer::OpenGLRenderer() : 
+	final(Window::getWidth(), Window::getHeight()), 
+	shadow(1024, 1024),
+	vbo(GL_ARRAY_BUFFER),
+	start(Window::getTime())
+	{}
 
 
 OpenGLRenderer::~OpenGLRenderer() {
@@ -84,11 +87,11 @@ void OpenGLRenderer::prerender() {
 		Scene::Mesh &mesh = scene->meshCache[instance.meshID];
 		MaterialID matID = mesh.typeID;
 
-		RenderStateKey key(ViewPort::DEFAULT, ViewPortLayer::DEFAULT, BlendType::OPAQUE, matID, instanceID);
+		RenderStateKey key(ViewPort::FINAL, ViewPortLayer::DEFAULT, BlendType::OPAQUE, matID, instanceID);
 		sortedRenderStateKeys.push_back(key);
 	}
 
-	RenderStateKey chunk_render(ViewPort::DEFAULT, ViewPortLayer::DEFAULT, BlendType::OPAQUE, MaterialID::CHUNK_MATERIAL_ID, 69);
+	RenderStateKey chunk_render(ViewPort::FINAL, ViewPortLayer::DEFAULT, BlendType::OPAQUE, MaterialID::CHUNK_MATERIAL_ID, 69);
 	sortedRenderStateKeys.push_back(chunk_render);
 
 	std::sort(sortedRenderStateKeys.begin(), sortedRenderStateKeys.end());
@@ -103,14 +106,14 @@ void OpenGLRenderer::render(Voxel::ChunkRenderDataManager *manager) {
 	ShaderVariables::v = glm::lookAt(camera->eye, camera->eye + camera->target, camera->up);
 	ShaderVariables::vp = ShaderVariables::p * ShaderVariables::v;
 
+	currentPort = ViewPort::NUM_VIEW_PORTS;
+
 	std::vector<RenderStateKey>::const_iterator start = sortedRenderStateKeys.begin();
 	std::vector<RenderStateKey>::const_iterator end = sortedRenderStateKeys.end();
 
-	inverse.bind();
-	glEnable(GL_DEPTH_TEST);
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
 	while (start != end) {
+		swapViewPorts(*start);
+
 		switch (start->getMaterialID()) {
 		case MaterialID::COLOR_MATERIAL_ID:
 			start = render_basic(scene, start, end);
@@ -128,8 +131,7 @@ void OpenGLRenderer::render(Voxel::ChunkRenderDataManager *manager) {
 			start++;
 		}
 	}
-
-	inverse.unbind();
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
 	renderPostProcess();
 }
@@ -138,6 +140,29 @@ void OpenGLRenderer::postrender() {
 	
 }
 
+void OpenGLRenderer::swapViewPorts(RenderStateKey key) {
+	ViewPort newPort = key.getViewPort();
+	if (newPort == currentPort) {
+		return;
+	}
+
+	currentPort = newPort;
+
+	switch (currentPort) {
+	case ViewPort::SHADOW:
+		shadow.bind();
+		glEnable(GL_DEPTH_TEST);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		break;
+	case ViewPort::FINAL:
+	default:
+		final.bind();
+		glEnable(GL_DEPTH_TEST);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		break;
+	}
+
+}
 
 void OpenGLRenderer::renderPostProcess() {
 	glDisable(GL_DEPTH_TEST);
@@ -147,7 +172,7 @@ void OpenGLRenderer::renderPostProcess() {
 	Shader::GLSLProgram *program = Shader::getShaderSet({"frame_buffer_shader.vert", "frame_buffer_shader.frag"});
 	program->use();
 
-	inverse.getColorAttachment().bindActiveTexture(0);
+	final.getColorAttachment().bindActiveTexture(0);
 	program->setUniform1f("time", getShaderTime());
 	quad.bind();
 	glEnableVertexAttribArray(POSITION_ATTRIB_LOCATION);
@@ -158,8 +183,6 @@ void OpenGLRenderer::renderPostProcess() {
 
 }
 
-bool OpenGLRenderer::isValidState(int sortedStateKeyIndex, MaterialID typeID) {
-	return sortedStateKeyIndex < sortedRenderStateKeys.size()
-		&& typeID == sortedRenderStateKeys[sortedStateKeyIndex].getMaterialID();
+float OpenGLRenderer::getShaderTime() {
+	return (float)duration;
 }
-
