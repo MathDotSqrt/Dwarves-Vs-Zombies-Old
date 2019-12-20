@@ -7,6 +7,7 @@
 #include "LinearAllocator.h"
 #include "Recycler.h"
 #include "ChunkManager.h"
+#include "TEX.h"
 #include <vector>
 #include <thread>
 
@@ -50,6 +51,13 @@ namespace Voxel {
 		int currentCY = -1000;
 		int currentCZ = -1000;
 	public:
+
+		Graphics::TEX debugTEX = Graphics::TEX::Builder("WorldTerrain2.png")
+			.rgb()
+			.linear()
+			.mipmapLinear()
+			.repeat()
+			.buildTextureAtlasArray(2, 2);
 
 		ChunkRenderDataManager(Util::Allocator::IAllocator &parent);
 		~ChunkRenderDataManager();

@@ -1,5 +1,9 @@
 #pragma once
 #include "glm.hpp"
+#include <gtx/transform.hpp>
+#include <gtx/quaternion.hpp>
+#include "RenderStateKey.h"
+#include <vector>
 
 namespace Voxel {
 	class ChunkRenderDataManager;
@@ -10,17 +14,25 @@ namespace Graphics {
 	class Scene;
 
 	namespace ShaderVariables {
-		glm::vec3 camera_pos;
+		constexpr glm::mat4 identity = glm::identity<glm::mat4>();
 		
-		glm::mat4 p;
-		glm::mat4 v;
-		glm::mat4 vp;
+		extern float shader_time;
+
+		extern glm::vec3 camera_pos;
+		
+		extern glm::mat4 p;
+		extern glm::mat4 v;
+		extern glm::mat4 vp;
 	}
 
-	int renderBasic(int startIndex);
-	int renderNormal(int startIndex);
-	int renderBasicLit(int startIndex);
-	int renderChunks(int startIndex);
+	typedef std::vector<RenderStateKey>::const_iterator iterator;
+
+	iterator render_basic(Scene *scene, iterator start, iterator end);
+	iterator render_normal(Scene *scene, iterator start, iterator end);
+	iterator render_basic_lit(Scene *scene, iterator start, iterator end);
+	iterator render_chunks(Voxel::ChunkRenderDataManager *manager, Scene *scene, iterator start, iterator end);
+
+	
 
 
 }

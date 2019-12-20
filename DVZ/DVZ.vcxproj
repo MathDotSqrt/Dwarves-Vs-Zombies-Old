@@ -229,6 +229,7 @@
     <ClCompile Include="QuadGeometry.cpp" />
     <ClCompile Include="Recycler.cpp" />
     <ClCompile Include="RenderStateKey.cpp" />
+    <ClCompile Include="render_functions.cpp" />
     <ClCompile Include="Scene.cpp" />
     <ClCompile Include="SetQueue.cpp" />
     <ClCompile Include="ShaderSet.cpp" />
@@ -297,6 +298,7 @@
     <ClInclude Include="QuadGeometry.h" />
     <ClInclude Include="Recycler.h" />
     <ClInclude Include="RenderStateKey.h" />
+    <ClInclude Include="render_functions.h" />
     <ClInclude Include="Scene.h" />
     <ClInclude Include="SetQueue.h" />
     <ClInclude Include="ShaderSet.h" />

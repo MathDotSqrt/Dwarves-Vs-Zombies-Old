@@ -71,23 +71,28 @@ void RenderStateKey::setViewPort(const ViewPort port) {
 }
 
 VAOType RenderStateKey::getVAOType() const {
-	return static_cast<VAOType>((key >> VAO_TYPE_SHIFT) & VAO_TYPE_SIZE);
+	constexpr uint8 mask = (1 << VAO_TYPE_SIZE) - 1;
+	return static_cast<VAOType>((key >> VAO_TYPE_SHIFT) & mask);
 }
 
 MaterialID RenderStateKey::getMaterialID() const{
-	return static_cast<MaterialID>((key >> MATERIAL_SHIFT) & MATERIAL_ID_SIZE);
+	constexpr uint8 mask = (1 << MATERIAL_ID_SIZE) - 1;
+	return static_cast<MaterialID>((key >> MATERIAL_SHIFT) & mask);
 }
 
 BlendType RenderStateKey::getBlendType() const {
-	return static_cast<BlendType>((key >> BLEND_SHIFT) & BLEND_TYPE_SIZE);
+	constexpr uint8 mask = (1 << BLEND_TYPE_SIZE) - 1;
+	return static_cast<BlendType>((key >> BLEND_SHIFT) & mask);
 }
 
 ViewPortLayer RenderStateKey::getViewPortLayer() const {
-	return static_cast<ViewPortLayer>((key >> LAYER_SHIFT) & VIEW_PORT_LAYER_SIZE);
+	constexpr uint8 mask = (1 << VIEW_PORT_LAYER_SIZE) - 1;
+	return static_cast<ViewPortLayer>((key >> LAYER_SHIFT) & mask);
 }
 
 ViewPort RenderStateKey::getViewPort() const {
-	return static_cast<ViewPort>((key >> PORT_SHIFT) & VIEW_PORT_SIZE);
+	constexpr uint8 mask = (1 << VIEW_PORT_SIZE) - 1;
+	return static_cast<ViewPort>((key >> PORT_SHIFT) & mask);
 }
 
 RenderStateKey::ValueType RenderStateKey::getValue() const {

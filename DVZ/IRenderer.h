@@ -2,13 +2,14 @@
 
 //todo delete this pointless class
 #include "IResizable.h"
-#include "Scene.h"	//todo remove this include
 
 namespace Voxel {
 	class ChunkRenderDataManager;
 }
 
 namespace Graphics {
+	class Scene;
+
 	class IRenderer  : public IResizable{
 	protected:
 		Scene *scene;
