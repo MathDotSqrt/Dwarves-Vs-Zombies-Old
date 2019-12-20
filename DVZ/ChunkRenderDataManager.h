@@ -58,6 +58,7 @@ namespace Voxel {
 		std::vector<RenderDataCopy>::const_iterator end();
 	
 	private:
+		void createVisibleList(glm::vec3 rot);
 		void newChunk(int playerCX, int playerCY, int playerCZ, ChunkManager &manager);
 		void updateDirtyChunks(ChunkManager &manager);
 		void enqueueChunks(ChunkManager &manager);

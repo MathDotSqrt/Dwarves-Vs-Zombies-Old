@@ -3,6 +3,10 @@
 #include "macrologger.h"
 #include "ChunkMesher.h"
 #include "Window.h"
+#include "Timer.h"
+#include <gtx/transform.hpp>
+#include <gtx/quaternion.hpp>
+
 
 using namespace Voxel;
 
@@ -33,6 +37,7 @@ ChunkRenderDataManager::~ChunkRenderDataManager() {
 }
 
 void ChunkRenderDataManager::update(glm::vec3 pos, glm::vec3 rot, ChunkManager &manager) {
+	Util::Performance::Timer update("RenderDataUpdate");
 	int cx = manager.getChunkX(pos.x);
 	int cy = manager.getChunkX(pos.y);
 	int cz = manager.getChunkX(pos.z);
@@ -49,15 +54,7 @@ void ChunkRenderDataManager::update(glm::vec3 pos, glm::vec3 rot, ChunkManager &
 	enqueueChunks(manager);
 	dequeueChunks(manager);
 
-	visibleChunks.clear();
-	for (int _cz = currentCZ - RENDER_RADIUS; _cz < currentCZ + RENDER_RADIUS; _cz++) {
-		for (int _cx = currentCX - RENDER_RADIUS; _cx < currentCX + RENDER_RADIUS; _cx++) {
-			ChunkRenderData &data = getRenderableChunk(_cx, _cz);
-			if (isChunkRenderable(_cx, _cz, data)) {
-				visibleChunks.push_back(makeRenderDataCopy(data));
-			}
-		}
-	}
+	createVisibleList(rot);
 }
 
 std::vector<RenderDataCopy>::const_iterator ChunkRenderDataManager::begin() {
@@ -66,6 +63,116 @@ std::vector<RenderDataCopy>::const_iterator ChunkRenderDataManager::begin() {
 
 std::vector<RenderDataCopy>::const_iterator ChunkRenderDataManager::end() {
 	return visibleChunks.end();
+}
+
+void ChunkRenderDataManager::createVisibleList(glm::vec3 rot) {
+	visibleChunks.clear();
+
+	int min_z = currentCZ - RENDER_RADIUS;
+	int max_z = currentCZ + RENDER_RADIUS;
+	int min_x = currentCX - RENDER_RADIUS;
+	int max_x = currentCX + RENDER_RADIUS;
+
+	for (int cz = min_z; cz <= max_z; cz++) {
+		for (int cx = min_x; cx <= max_x; cx++) {
+			ChunkRenderData &data = getRenderableChunk(cx, cz);
+				if (isChunkRenderable(cx, cz, data)) {
+					visibleChunks.push_back(makeRenderDataCopy(data));
+				}
+		}
+	}
+
+	//glm::vec3 up = glm::vec3(0, 1, 0);
+	//
+	//
+	//glm::vec3 forward = glm::quat(glm::vec3(0, rot.y, 0)) * glm::vec3(0, 0, -1);
+
+	
+	//LOG_ALWAYS("%f %f", forward.x, forward.z);
+
+	///*      |      */
+	///*    3 | 2    */
+	///*   ---+--- +X*/
+	///*    4 | 1    */
+	///*      |      */
+	///*      +Z     */
+
+	//float CUTOFF = .5f;
+
+	///*QUADRANT 1*/
+	//if (forward.x >= -CUTOFF && forward.z >= -CUTOFF && true) {
+	//	for (int _cz = currentCZ-1; _cz <= max_z; _cz++) {
+	//		for (int _cx = currentCX-1; _cx <= max_x; _cx++) {
+	//			ChunkRenderData &data = getRenderableChunk(_cx, _cz);
+	//			if (isChunkRenderable(_cx, _cz, data)) {
+	//				visibleChunks.push_back(makeRenderDataCopy(data));
+	//			}
+	//		}
+	//	}
+	//}
+	///*QUADRANT 1*/
+
+	///*QUADRANT 2*/
+	//if (forward.x >= -CUTOFF && forward.z <= CUTOFF && true) {
+	//	for (int _cz = min_z; _cz <= currentCZ+1; _cz++) {
+	//		for (int _cx = currentCX - 1; _cx <= max_x; _cx++) {
+	//			ChunkRenderData &data = getRenderableChunk(_cx, _cz);
+	//			if (isChunkRenderable(_cx, _cz, data)) {
+	//				visibleChunks.push_back(makeRenderDataCopy(data));
+	//			}
+	//		}
+	//	}
+	//}
+	///*QUADRANT 2*/
+
+	///*QUADRANT 3*/
+	//if (forward.x <= CUTOFF && forward.z <= CUTOFF && true) {
+	//	for (int _cz = min_z; _cz <= currentCZ + 1; _cz++) {
+	//		for (int _cx = min_z; _cx <= currentCZ + 1; _cx++) {
+	//			ChunkRenderData &data = getRenderableChunk(_cx, _cz);
+	//			if (isChunkRenderable(_cx, _cz, data)) {
+	//				visibleChunks.push_back(makeRenderDataCopy(data));
+	//			}
+	//		}
+	//	}
+	//}
+	///*QUADRANT 3*/
+
+	///*QUADRANT 4*/
+	//if (forward.x <= CUTOFF && forward.z >= -CUTOFF && true) {
+	//	for (int _cz = currentCZ - 1; _cz <= max_z; _cz++) {
+	//		for (int _cx = min_z; _cx <= currentCZ + 1; _cx++) {
+	//			ChunkRenderData &data = getRenderableChunk(_cx, _cz);
+	//			if (isChunkRenderable(_cx, _cz, data)) {
+	//				visibleChunks.push_back(makeRenderDataCopy(data));
+	//			}
+	//		}
+	//	}
+	//}
+	///*QUADRANT 4*/
+
+}
+
+void ChunkRenderDataManager::newChunk(int playerCX, int playerCY, int playerCZ, ChunkManager &manager) {
+	needsMeshCache.clear();
+	for (int cz = playerCZ - RENDER_RADIUS; cz < playerCZ + RENDER_RADIUS; cz++) {
+		for (int cx = playerCX - RENDER_RADIUS; cx < playerCX + RENDER_RADIUS; cx++) {
+			auto &chunk_handle = getRenderableChunk(cx, cz);
+			bool isRenderable = isChunkRenderable(cx, cz, chunk_handle);
+			bool isChunkQueued = std::find(queuedChunks.begin(), queuedChunks.end(), Chunk::calcHashCode(cx, 0, cz)) != queuedChunks.end();
+			if (!isRenderable && !isChunkQueued) {
+				needsMeshCache.emplace_back(manager.getChunk(cx, 0, cz));
+			}
+		}
+	}
+
+	std::sort(needsMeshCache.begin(), needsMeshCache.end(),
+		[playerCX, playerCY, playerCZ](const ChunkRefHandle &rhs, const ChunkRefHandle &lhs) {
+		int distL = std::abs(playerCX - lhs->getChunkX()) + std::abs(playerCY - lhs->getChunkY()) + std::abs(playerCZ - lhs->getChunkZ());
+		int distR = std::abs(playerCX - rhs->getChunkX()) + std::abs(playerCY - rhs->getChunkY()) + std::abs(playerCZ - rhs->getChunkZ());
+
+		return distL < distR;
+	});
 }
 
 void ChunkRenderDataManager::updateDirtyChunks(ChunkManager &manager) {
@@ -90,30 +197,6 @@ void ChunkRenderDataManager::updateDirtyChunks(ChunkManager &manager) {
 		dirtyChunks.pop();
 	}
 }
-
-void ChunkRenderDataManager::newChunk(int playerCX, int playerCY, int playerCZ, ChunkManager &manager){
-	needsMeshCache.clear();
-	for (int cz = playerCZ - RENDER_RADIUS; cz < playerCZ + RENDER_RADIUS; cz++) {
-		for (int cx = playerCX - RENDER_RADIUS; cx < playerCX + RENDER_RADIUS; cx++) {
-			auto &chunk_handle = getRenderableChunk(cx, cz);
-			bool isRenderable = isChunkRenderable(cx, cz, chunk_handle);
-			bool isChunkQueued = std::find(queuedChunks.begin(), queuedChunks.end(), Chunk::calcHashCode(cx, 0, cz)) != queuedChunks.end();
-			if (!isRenderable && !isChunkQueued) {
-				needsMeshCache.emplace_back(manager.getChunk(cx, 0, cz));
-			}
-		}
-	}
-
-	std::sort(needsMeshCache.begin(), needsMeshCache.end(), 
-		[playerCX, playerCY, playerCZ](const ChunkRefHandle &rhs, const ChunkRefHandle &lhs) {
-		int distL = std::abs(playerCX - lhs->getChunkX()) + std::abs(playerCY - lhs->getChunkY()) + std::abs(playerCZ - lhs->getChunkZ());
-		int distR = std::abs(playerCX - rhs->getChunkX()) + std::abs(playerCY - rhs->getChunkY()) + std::abs(playerCZ - rhs->getChunkZ());
-
-		return distL < distR;
-	});
-}
-
-
 
 void ChunkRenderDataManager::enqueueChunks(ChunkManager &manager) {
 	for (int i = 0; i < 4 && needsMeshCache.size() > 0; i++) {
