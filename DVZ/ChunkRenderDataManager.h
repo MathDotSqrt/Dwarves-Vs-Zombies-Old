@@ -31,6 +31,7 @@ namespace Voxel {
 		const static int32 RENDER_CHUNK_WIDTH = 2 * RENDER_RADIUS + 1;
 		const static int32 GEOMETRY_ALLOC_SIZE = 100 * sizeof(ChunkGeometry);
 
+		//todo create a set and monotor state changes here instead of chunk manager cods
 		ChunkRenderData renderable[RENDER_CHUNK_WIDTH][RENDER_CHUNK_WIDTH];
 		std::vector<RenderDataCopy> visibleChunks;
 		std::vector<ChunkRefHandle> needsMeshCache;

@@ -7,6 +7,7 @@
 #include <gtx/quaternion.hpp>
 #include "ChunkRenderDataManager.h"
 #include "Timer.h"
+#include "render_functions.h"
 #include "QuadGeometry.h"
 using namespace Graphics;
 
@@ -77,6 +78,9 @@ void OpenGLRenderer::resize(int newWidth, int newHeight) {
 
 void OpenGLRenderer::prerender() {
 	sortedRenderStateKeys.clear();
+
+
+
 	for (unsigned int instanceID : scene->instanceCache) {
 		Scene::Instance instance = scene->instanceCache[instanceID];
 		Scene::Mesh &mesh = scene->meshCache[instance.meshID];
@@ -99,6 +103,11 @@ void OpenGLRenderer::render(Voxel::ChunkRenderDataManager *manager) {
 	glm::mat4 view = glm::lookAt(camera->eye, camera->eye + camera->target, camera->up);
 	glm::mat4 vp = perspectiveProjection * view;
 	glm::vec3 camera_position = camera->eye;
+
+	ShaderVariables::camera_pos = camera->eye;
+	ShaderVariables::p = perspectiveProjection;
+	ShaderVariables::v = glm::lookAt(camera->eye, camera->eye + camera->target, camera->up);
+	ShaderVariables::vp = ShaderVariables::p * ShaderVariables::v;
 
 	int index = 0;
 	inverse.bind();

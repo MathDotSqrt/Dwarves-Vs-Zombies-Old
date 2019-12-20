@@ -181,6 +181,7 @@ void ChunkRenderDataManager::updateDirtyChunks(ChunkManager &manager) {
 	ChunkQueueSet &dirtyChunks = manager.getDirtyChunkQueue();
 	for (int i = 0; i < MAX_DQ && dirtyChunks.size(); i++) {
 		ChunkRefHandle &handle = dirtyChunks.front();
+		//todo test if queued chunk is actually visible within range
 		if (handle->getMeshState() == MeshState::DIRTY) {
 			ChunkNeighbors n = manager.getChunkNeighbors(handle);
 			mainMesher->loadChunkData(n);

@@ -9,7 +9,22 @@ RenderStateKey::RenderStateKey(
 	const MaterialID id, 
 	const RenderStateKey::ValueType value 
 ) : key(0), value(value){
-	
+	setVAOType(VAOType::SCENE_INSTANCE);
+	setMaterialID(id);
+	setBlendType(type);
+	setViewPortLayer(layer);
+	setViewPort(port);
+}
+
+RenderStateKey::RenderStateKey(
+	const ViewPort port,
+	const ViewPortLayer layer,
+	const BlendType type,
+	const MaterialID id,
+	const VAOType vaoType,
+	const RenderStateKey::ValueType value
+) : key(0), value(value) {
+	setVAOType(vaoType);
 	setMaterialID(id);
 	setBlendType(type);
 	setViewPortLayer(layer);
@@ -20,11 +35,18 @@ bool RenderStateKey::operator<(const RenderStateKey &other) {
 	return key == other.key ? value < other.value : key < other.key;
 }
 
+void RenderStateKey::setVAOType(const VAOType type) {
+	KeyType v = static_cast<KeyType>(type);
+	KeyType bits = (1 << VAO_TYPE_SIZE) - 1;
+	KeyType mask = ~(bits << VAO_TYPE_SHIFT);
+	key = (key & mask) | (v << VAO_TYPE_SHIFT);
+}
+
 void RenderStateKey::setMaterialID(const MaterialID id) {
 	KeyType v = static_cast<KeyType>(id);
 	KeyType bits = (1 << MATERIAL_ID_SIZE) - 1;
-	KeyType mask = ~(bits << 0);
-	key = (key & mask) | (v << 0);
+	KeyType mask = ~(bits << MATERIAL_SHIFT);
+	key = (key & mask) | (v << MATERIAL_SHIFT);
 }
 
 void RenderStateKey::setBlendType(const BlendType type) {
@@ -48,8 +70,12 @@ void RenderStateKey::setViewPort(const ViewPort port) {
 	key = (key & mask) | (v << PORT_SHIFT);
 }
 
+VAOType RenderStateKey::getVAOType() const {
+	return static_cast<VAOType>((key >> VAO_TYPE_SHIFT) & VAO_TYPE_SIZE);
+}
+
 MaterialID RenderStateKey::getMaterialID() const{
-	return static_cast<MaterialID>(key & MATERIAL_ID_SIZE);
+	return static_cast<MaterialID>((key >> MATERIAL_SHIFT) & MATERIAL_ID_SIZE);
 }
 
 BlendType RenderStateKey::getBlendType() const {
