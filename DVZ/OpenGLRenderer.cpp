@@ -98,15 +98,8 @@ void OpenGLRenderer::prerender() {
 }
 
 void OpenGLRenderer::render(Voxel::ChunkRenderDataManager *manager) {
-
-	Scene::Camera *camera = &scene->cameraCache[scene->getMainCameraID()];
-	ShaderVariables::shader_time = getShaderTime();
-	ShaderVariables::camera_pos = camera->eye;
-	ShaderVariables::p = perspectiveProjection;
-	ShaderVariables::v = glm::lookAt(camera->eye, camera->eye + camera->target, camera->up);
-	ShaderVariables::vp = ShaderVariables::p * ShaderVariables::v;
-
 	currentPort = ViewPort::NUM_VIEW_PORTS;
+	ShaderVariables::shader_time = getShaderTime();
 
 	std::vector<RenderStateKey>::const_iterator start = sortedRenderStateKeys.begin();
 	std::vector<RenderStateKey>::const_iterator end = sortedRenderStateKeys.end();
@@ -148,17 +141,29 @@ void OpenGLRenderer::swapViewPorts(RenderStateKey key) {
 
 	currentPort = newPort;
 
+	Scene::Camera *camera = nullptr;
+
 	switch (currentPort) {
 	case ViewPort::SHADOW:
 		shadow.bind();
 		glEnable(GL_DEPTH_TEST);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		camera = &scene->cameraCache[scene->getSunCameraID()];
+		ShaderVariables::camera_pos = camera->eye;
+		ShaderVariables::p = ShaderVariables::identity;
+		ShaderVariables::v = glm::lookAt(camera->eye, camera->eye + camera->target, camera->up);
+		ShaderVariables::vp = ShaderVariables::p * ShaderVariables::v;
 		break;
 	case ViewPort::FINAL:
 	default:
 		final.bind();
 		glEnable(GL_DEPTH_TEST);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		camera = &scene->cameraCache[scene->getMainCameraID()];
+		ShaderVariables::camera_pos = camera->eye;
+		ShaderVariables::p = perspectiveProjection;
+		ShaderVariables::v = glm::lookAt(camera->eye, camera->eye + camera->target, camera->up);
+		ShaderVariables::vp = ShaderVariables::p * ShaderVariables::v;
 		break;
 	}
 

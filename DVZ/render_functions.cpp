@@ -18,23 +18,6 @@ namespace Graphics::ShaderVariables {
 	extern glm::mat4 vp = glm::mat4(1);
 }
 
-//float Graphics::ShaderVariables::shader_time = 0;
-//glm::vec3 Graphics::ShaderVariables::camera_pos = glm::vec3(0);
-//glm::mat4 Graphics::ShaderVariables::p = glm::mat4(0);
-//glm::mat4 Graphics::ShaderVariables::v = glm::mat4(0);
-//glm::mat4 Graphics::ShaderVariables::vp = glm::mat4(0);
-
-//Graphics::TEX chunkTex = Graphics::TEX::Builder("terrain.png")
-//	.rgba()
-//	.nearest()
-//	.clampToEdge()
-//	.repeat()
-//	.borderColor(0, 1, 0, 0)
-//	.mipmapLinear()
-//	.buildTextureAtlasArray(16, 16);
-
-
-
 inline bool is_valid(iterator start, iterator end, MaterialID id) {
 	return start != end && start->getMaterialID() == id;
 }

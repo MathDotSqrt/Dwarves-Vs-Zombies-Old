@@ -116,3 +116,11 @@ void Scene::setMainCamera(unsigned int cameraID) {
 unsigned int Scene::getMainCameraID() {
 	return this->mainCameraID;
 }
+
+void Scene::setSunCameraID(unsigned int cameraID) {
+	sunCameraID = cameraID;
+}
+
+unsigned int Scene::getSunCameraID() {
+	return sunCameraID;
+}

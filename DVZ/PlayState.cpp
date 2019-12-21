@@ -31,6 +31,22 @@ void PlayState::init() {
 	unsigned int pointLightInstanceID = e.getScene()->createPointLightInstance();
 	e.assign<PointLightComponent>(playerID, pointLightInstanceID, glm::vec3(1, 1, 1), 60.0f);
 	/*PLAYER*/
+
+	/*SUN CAMERA*/
+	entt::entity sunID = e.create();
+	e.assign<PositionComponent>(sunID, glm::vec3(10, 10, 10));
+	e.assign<RotationComponent>(sunID, glm::quat(glm::vec3(0, 0, 0)));
+	e.assign<DirComponent>(sunID, glm::vec3(0, 0, -1), glm::vec3(0, 1, 0), glm::vec3(1, 0, 0));
+	Graphics::Scene::Camera sunCamera = {
+		glm::vec3(0, 10, 0),
+		glm::vec3(0, 0, 0),
+		glm::vec3(0, 1, 0),
+		70, 1, .1f, 1000 
+	};
+	auto cameraID = scene->createCameraInstance(sunCamera);
+	scene->setSunCameraID(cameraID);
+	e.assign<CameraInstanceComponent>(sunID, cameraID);
+	/*SUN CAMERA*/
 	
 	/*TREE*/
 	Graphics::Geometry model = Graphics::CreateModel("tree.obj");
