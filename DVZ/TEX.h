@@ -10,10 +10,11 @@ namespace Graphics {
 class TEX {
 
 public:
-	const GLenum textureTarget;
-	const int width;
-	const int height;
+	GLenum textureTarget;
+	int width;
+	int height;
 	
+	TEX();
 	TEX(TEX&&);
 	~TEX();
 	TEX(const TEX&) = delete;

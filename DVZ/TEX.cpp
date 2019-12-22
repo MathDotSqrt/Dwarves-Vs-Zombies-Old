@@ -2,8 +2,13 @@
 
 using namespace Graphics;
 
+TEX::TEX() : textureTarget(GL_NONE), width(0), height(0){
+
+}
+
 TEX::TEX(TEX &&other) : textureTarget(other.textureTarget), width(other.width), height(other.height){
 	texID = other.texID;
+	other.dispose();
 }
 
 TEX::TEX(Builder &builder) : 
@@ -20,7 +25,9 @@ TEX::~TEX() {
 TEX& TEX::operator=(TEX &&other) {
 	if (this != &other) {
 		dispose();
-
+		std::swap(textureTarget, other.textureTarget);
+		std::swap(width, other.width);
+		std::swap(height, other.height);
 		std::swap(texID, other.texID);
 	}
 
