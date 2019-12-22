@@ -10,7 +10,6 @@ namespace Graphics {
 		TEX depth;
 
 	public:
-		FBO(const TEX::Builder &builder1);
 		FBO(int width, int height);
 		FBO(const FBO &) = delete;
 		FBO(FBO&& other);

@@ -14,7 +14,6 @@ public:
 	int width;
 	int height;
 	
-	TEX();
 	TEX(TEX&&);
 	~TEX();
 	TEX(const TEX&) = delete;

@@ -2,10 +2,6 @@
 
 using namespace Graphics;
 
-TEX::TEX() : textureTarget(GL_NONE), width(0), height(0){
-
-}
-
 TEX::TEX(TEX &&other) : textureTarget(other.textureTarget), width(other.width), height(other.height){
 	texID = other.texID;
 	other.dispose();

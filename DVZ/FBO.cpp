@@ -4,10 +4,6 @@
 #include "Window.h"
 using namespace Graphics;
 
-FBO::FBO(const TEX::Builder &builder) {
-	
-}
-
 FBO::FBO(int width, int height) : 
 	color(TEX::Builder(width, height).rgb().clampToEdge().linear().buildTexture()), 
 	depth(TEX::Builder(width, height).depth24().clampToEdge().linear().buildTexture()) {
