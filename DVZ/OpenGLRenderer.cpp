@@ -155,10 +155,10 @@ void OpenGLRenderer::swapViewPorts(RenderStateKey key) {
 	case ViewPort::SHADOW:
 		shadow.bind();
 		glEnable(GL_DEPTH_TEST);
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		glClear(GL_DEPTH_BUFFER_BIT);
 		camera = &scene->cameraCache[scene->getSunCameraID()];
 		ShaderVariables::camera_pos = camera->eye;
-		ShaderVariables::p = ShaderVariables::identity;
+		ShaderVariables::p = glm::ortho(-20.0f, 20.0f, -20.0f, 20.0f, .1f, 100.0f);
 		ShaderVariables::v = glm::lookAt(camera->eye, camera->eye + camera->target, camera->up);
 		ShaderVariables::vp = ShaderVariables::p * ShaderVariables::v;
 		break;
@@ -185,6 +185,7 @@ void OpenGLRenderer::renderPostProcess() {
 	Shader::GLSLProgram *program = Shader::getShaderSet({"frame_buffer_shader.vert", "frame_buffer_shader.frag"});
 	program->use();
 
+	//shadow.getDepthAttachment().bindActiveTexture(0);
 	final.getColorAttachment().bindActiveTexture(0);
 	program->setUniform1f("time", getShaderTime());
 	quad.bind();

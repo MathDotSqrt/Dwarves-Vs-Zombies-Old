@@ -35,8 +35,9 @@ struct Fog {
 };
 
 uniform vec3 camera_pos;
-uniform sampler2DArray tex;
+//uniform sampler2DArray tex;
 uniform sampler2DArray debug;
+uniform sampler2D shadowTex;
 
 //uniform PointLight lights[3];
 uniform DirLight dirLight;
@@ -95,6 +96,9 @@ vec2 world_to_texcoord_space(){
 }
 
 void main(){
+	/*SHADOW*/
+	/*SHADOW*/
+
 	/*LIGHT*/
 	vec3 light_color = vec3(0);
 	light_color += ambient.color * ambient.intensity * float(frag_light+1);

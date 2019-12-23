@@ -4,12 +4,12 @@ using namespace Graphics;
 
 DepthFBO::DepthFBO(int width, int height) : 
 	FBO(width, height),
-	depth(TEX::Builder(width, height).depth24().clampToEdge().nearest().buildTexture()){
+	depth(TEX::Builder(width, height).depth24().floatType().clampToEdge().nearest().buildTexture()){
 	
 	bind();
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, depth.getTexID(), 0);
 	glDrawBuffer(GL_NONE);
 	glReadBuffer(GL_NONE);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, depth.getTexID(), 0);
 	unbind();
 }
 

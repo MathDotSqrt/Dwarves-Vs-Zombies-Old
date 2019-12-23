@@ -65,7 +65,7 @@ void PlayState::init() {
 	/*SUN CAMERA*/
 	entt::entity sunID = e.create();
 	e.assign<PositionComponent>(sunID, glm::vec3(-0, 20, 25));
-	e.assign<RotationComponent>(sunID, glm::quat(glm::vec3(-.5, 0, 0)));
+	e.assign<RotationComponent>(sunID, glm::quat(glm::vec3(-.5, .1, 0)));
 	e.assign<ScaleComponent>(sunID, glm::vec3(1, 1, 1));
 	e.assign<DirComponent>(sunID, glm::vec3(0, 0, -1), glm::vec3(0, 1, 0), glm::vec3(1, 0, 0));
 	Graphics::Scene::Camera sunCamera = {
@@ -76,6 +76,7 @@ void PlayState::init() {
 	};
 	auto cameraID = scene->createCameraInstance(sunCamera);
 	scene->setSunCameraID(cameraID);
+	//scene->setMainCamera(cameraID);
 	e.assign<CameraInstanceComponent>(sunID, cameraID);
 	e.assign<RenderInstanceComponent>(sunID, scene->createRenderInstance(walkerMeshID));
 	/*SUN CAMERA*/

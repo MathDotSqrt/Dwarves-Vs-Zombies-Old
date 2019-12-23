@@ -213,7 +213,7 @@ iterator Graphics::render_chunks_shadow(Voxel::ChunkRenderDataManager *manager, 
 
 		auto data = *iterator;
 
-		shader->setUniform3f("chunk_pos", data.pos);
+		shader->setUniform3f("chunk_pos", data.pos * CHUNK_SCALE);
 		glBindVertexArray(data.vaoID);
 		glEnableVertexAttribArray(POSITION_ATTRIB_LOCATION);
 		glDrawElements(GL_TRIANGLES, (GLsizei)data.indexCount, GL_UNSIGNED_INT, 0);
