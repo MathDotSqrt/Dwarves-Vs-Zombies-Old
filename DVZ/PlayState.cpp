@@ -32,21 +32,7 @@ void PlayState::init() {
 	e.assign<PointLightComponent>(playerID, pointLightInstanceID, glm::vec3(1, 1, 1), 60.0f);
 	/*PLAYER*/
 
-	/*SUN CAMERA*/
-	entt::entity sunID = e.create();
-	e.assign<PositionComponent>(sunID, glm::vec3(10, 10, 10));
-	e.assign<RotationComponent>(sunID, glm::quat(glm::vec3(0, 0, 0)));
-	e.assign<DirComponent>(sunID, glm::vec3(0, 0, -1), glm::vec3(0, 1, 0), glm::vec3(1, 0, 0));
-	Graphics::Scene::Camera sunCamera = {
-		glm::vec3(0, 10, 0),
-		glm::vec3(0, 0, 0),
-		glm::vec3(0, 1, 0),
-		70, 1, .1f, 1000 
-	};
-	auto cameraID = scene->createCameraInstance(sunCamera);
-	scene->setSunCameraID(cameraID);
-	e.assign<CameraInstanceComponent>(sunID, cameraID);
-	/*SUN CAMERA*/
+
 	
 	/*TREE*/
 	Graphics::Geometry model = Graphics::CreateModel("tree.obj");
@@ -75,6 +61,24 @@ void PlayState::init() {
 	e.assign<VelocityComponent>(walker, glm::vec3(-10, .1f, 2));
 	e.assign<RenderInstanceComponent>(walker, walkerRenderID);
 	/*WALKER*/
+
+	/*SUN CAMERA*/
+	entt::entity sunID = e.create();
+	e.assign<PositionComponent>(sunID, glm::vec3(-0, 20, 25));
+	e.assign<RotationComponent>(sunID, glm::quat(glm::vec3(-.5, 0, 0)));
+	e.assign<ScaleComponent>(sunID, glm::vec3(1, 1, 1));
+	e.assign<DirComponent>(sunID, glm::vec3(0, 0, -1), glm::vec3(0, 1, 0), glm::vec3(1, 0, 0));
+	Graphics::Scene::Camera sunCamera = {
+		glm::vec3(100, 10, 0),
+		glm::vec3(0, 0, 0),
+		glm::vec3(0, 1, 0),
+		70, 1, .1f, 1000
+	};
+	auto cameraID = scene->createCameraInstance(sunCamera);
+	scene->setSunCameraID(cameraID);
+	e.assign<CameraInstanceComponent>(sunID, cameraID);
+	e.assign<RenderInstanceComponent>(sunID, scene->createRenderInstance(walkerMeshID));
+	/*SUN CAMERA*/
 
 	/*NET*/
 	//e.attemptConnection("54.224.40.47", 60000);	//AWS
