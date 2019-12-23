@@ -82,8 +82,10 @@ void OpenGLRenderer::prerender() {
 	duration = Window::getTime() - start;
 
 	sortedRenderStateKeys.clear();
-
+	
+	RenderStateKey chunk_shadow_render(ViewPort::SHADOW, ViewPortLayer::DEFAULT, BlendType::OPAQUE, MaterialID::CHUNK_SHADOW_MATERIAL_ID, 69);
 	RenderStateKey chunk_render(ViewPort::FINAL, ViewPortLayer::DEFAULT, BlendType::OPAQUE, MaterialID::CHUNK_MATERIAL_ID, 69);
+	sortedRenderStateKeys.push_back(chunk_shadow_render);
 	sortedRenderStateKeys.push_back(chunk_render);
 
 	for (unsigned int instanceID : scene->instanceCache) {
@@ -122,6 +124,9 @@ void OpenGLRenderer::render(Voxel::ChunkRenderDataManager *manager) {
 			break;
 		case MaterialID::CHUNK_MATERIAL_ID:
 			start = render_chunks(manager, scene, start, end);
+			break;
+		case MaterialID::CHUNK_SHADOW_MATERIAL_ID:
+			start = render_chunks_shadow(manager, scene, start, end);
 			break;
 		default:
 			start++;

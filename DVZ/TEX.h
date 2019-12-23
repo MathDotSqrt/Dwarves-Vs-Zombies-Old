@@ -39,6 +39,7 @@ public:
 
 		GLenum storage;
 		GLenum components;
+		GLenum dataType;
 
 		GLenum wrapS;
 		GLenum wrapT;
@@ -56,6 +57,9 @@ public:
 		Builder& rgb();
 		Builder& rgba();
 		Builder& depth24();
+		Builder& unsignedByteType();
+		Builder& floatType();
+
 		Builder& repeat();
 		Builder& mirrorRepeat();
 		Builder& clampToEdge();

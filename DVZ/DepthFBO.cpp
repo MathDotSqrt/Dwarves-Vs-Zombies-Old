@@ -8,6 +8,8 @@ DepthFBO::DepthFBO(int width, int height) :
 	
 	bind();
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, depth.getTexID(), 0);
+	glDrawBuffer(GL_NONE);
+	glReadBuffer(GL_NONE);
 	unbind();
 }
 

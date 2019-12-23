@@ -201,3 +201,27 @@ iterator Graphics::render_chunks(Voxel::ChunkRenderDataManager *manager, Scene *
 
 	return ++start;
 }
+
+iterator Graphics::render_chunks_shadow(Voxel::ChunkRenderDataManager *manager, Scene *scene, iterator start, iterator end) {
+	const glm::vec3 CHUNK_SCALE(Voxel::CHUNK_RENDER_WIDTH_X, Voxel::CHUNK_RENDER_WIDTH_Y, Voxel::CHUNK_RENDER_WIDTH_Z);
+	Shader::GLSLProgram *shader = Shader::getShaderSet({ "chunk_shadow_shader.vert", "chunk_shadow_shader.frag" });
+	shader->use();
+
+	shader->setUniformMat4("VP", vp);
+
+	for (auto iterator = manager->begin(); iterator != manager->end(); iterator++) {
+
+		auto data = *iterator;
+
+		shader->setUniform3f("chunk_pos", data.pos);
+		glBindVertexArray(data.vaoID);
+		glEnableVertexAttribArray(POSITION_ATTRIB_LOCATION);
+		glDrawElements(GL_TRIANGLES, (GLsizei)data.indexCount, GL_UNSIGNED_INT, 0);
+	}
+
+	shader->end();
+	glBindVertexArray(0);
+
+	return ++start;
+
+}

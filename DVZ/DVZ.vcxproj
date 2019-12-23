@@ -326,6 +326,8 @@
     <None Include="basic_shader.vert" />
     <None Include="chunk_shader.frag" />
     <None Include="chunk_shader.vert" />
+    <None Include="chunk_shadow_shader.vert" />
+    <None Include="chunk_shadow_shader.frag" />
     <None Include="frame_buffer_shader.frag" />
     <None Include="frame_buffer_shader.vert" />
     <None Include="math.glsl" />

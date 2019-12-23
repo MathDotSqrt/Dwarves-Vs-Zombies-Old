@@ -5,6 +5,7 @@
 #include "VAO.h"
 #include "VBO.h"
 #include "ColorDepthFBO.h"
+#include "DepthFBO.h"
 
 namespace Graphics {
 
@@ -23,7 +24,7 @@ private:
 	int window_height = 0;
 	
 	ViewPort currentPort;
-	FBO shadow;
+	DepthFBO shadow;
 	ColorDepthFBO final;
 	VAO quad;
 	VBO vbo;

@@ -63,14 +63,14 @@ TEX::Builder::Builder(int width, int height) {
 	filename = "";
 	mipmap = false;
 	useMipMap = false;
-	rgb().repeat().nearest().borderColor(0, 0, 0, 1);
+	rgb().repeat().nearest().borderColor(0, 0, 0, 1).unsignedByteType();
 }
 
 TEX::Builder::Builder(std::string filename) {
 	this->filename = filename;
 	mipmap = false;
 	useMipMap = false;
-	rgb().repeat().nearest().borderColor(0, 0, 0, 1);
+	rgb().repeat().nearest().borderColor(0, 0, 0, 1).unsignedByteType();
 }
 
 TEX::Builder::~Builder() {
@@ -92,6 +92,16 @@ TEX::Builder& TEX::Builder::rgba() {
 TEX::Builder& TEX::Builder::depth24() {
 	components = GL_DEPTH_COMPONENT;
 	storage = GL_DEPTH_COMPONENT24;
+	return *this;
+}
+
+TEX::Builder& TEX::Builder::unsignedByteType() {
+	dataType = GL_UNSIGNED_BYTE;
+	return *this;
+}
+
+TEX::Builder& TEX::Builder::floatType() {
+	dataType = GL_FLOAT;
 	return *this;
 }
 
@@ -164,7 +174,7 @@ TEX TEX::Builder::buildTexture() {
 
 	glGenTextures(1, &texID);
 	glBindTexture(textureTarget, texID);
-	glTexImage2D(textureTarget, mipmapLevelCount, storage, width, height, 0, components, GL_UNSIGNED_BYTE, image);
+	glTexImage2D(textureTarget, mipmapLevelCount, storage, width, height, 0, components, dataType, image);
 	glTexParameteri(textureTarget, GL_TEXTURE_WRAP_S, wrapS);
 	glTexParameteri(textureTarget, GL_TEXTURE_WRAP_T, wrapT);
 	glTexParameterfv(textureTarget, GL_TEXTURE_BORDER_COLOR, color);
@@ -236,7 +246,7 @@ TEX TEX::Builder::buildTextureAtlasArray(int rows, int cols) {
 	glGenTextures(1, &texID);
 	glBindTexture(textureTarget, texID);
 	glTexStorage3D(textureTarget, mipmapLevelCount, storage, sprite_width, sprite_height, num_sprites);
-	glTexSubImage3D(textureTarget, 0, 0, 0, 0, sprite_width, sprite_height, num_sprites, components, GL_UNSIGNED_BYTE, imageArray);
+	glTexSubImage3D(textureTarget, 0, 0, 0, 0, sprite_width, sprite_height, num_sprites, components, dataType, imageArray);
 
 	glTexParameteri(textureTarget, GL_TEXTURE_WRAP_S, wrapS);
 	glTexParameteri(textureTarget, GL_TEXTURE_WRAP_T, wrapT);

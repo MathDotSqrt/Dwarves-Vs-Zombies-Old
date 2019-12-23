@@ -31,7 +31,7 @@ namespace Graphics {
 	iterator render_normal(Scene *scene, iterator start, iterator end);
 	iterator render_basic_lit(Scene *scene, iterator start, iterator end);
 	iterator render_chunks(Voxel::ChunkRenderDataManager *manager, Scene *scene, iterator start, iterator end);
-
+	iterator render_chunks_shadow(Voxel::ChunkRenderDataManager *manager, Scene *scene, iterator start, iterator end);
 	
 
 
