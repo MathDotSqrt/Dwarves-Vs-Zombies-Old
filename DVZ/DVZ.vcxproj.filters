@@ -265,6 +265,9 @@
       <Filter>Header Files\Graphics</Filter>
     </ClInclude>
     <ClInclude Include="ColorDepthFBO.h">
+      <Filter>Header Files\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="DepthFBO.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -426,6 +429,9 @@
       <Filter>Source Files\Graphics</Filter>
     </ClCompile>
     <ClCompile Include="ColorDepthFBO.cpp">
+      <Filter>Source Files\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="DepthFBO.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

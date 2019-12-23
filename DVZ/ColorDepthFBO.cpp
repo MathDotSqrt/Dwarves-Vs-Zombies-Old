@@ -18,7 +18,6 @@ ColorDepthFBO::ColorDepthFBO(ColorDepthFBO &&other) :
 	color(std::move(other.color)), 
 	depth(std::move(other.depth)), 
 	FBO::FBO(std::move(other)) {
-	other.fboID = 0;
 }
 
 ColorDepthFBO::~ColorDepthFBO() {
