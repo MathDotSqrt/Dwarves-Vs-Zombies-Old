@@ -4,7 +4,7 @@
 #include "TEX.h"
 #include "VAO.h"
 #include "VBO.h"
-#include "FBO.h"
+#include "ColorDepthFBO.h"
 
 namespace Graphics {
 
@@ -24,7 +24,7 @@ private:
 	
 	ViewPort currentPort;
 	FBO shadow;
-	FBO final;
+	ColorDepthFBO final;
 	VAO quad;
 	VBO vbo;
 

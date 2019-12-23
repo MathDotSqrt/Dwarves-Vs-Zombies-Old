@@ -16,6 +16,10 @@ using namespace Graphics;
 //	unbind();
 //}
 
+FBO::FBO(int width, int height) : width(width), height(height) {
+	glGenFramebuffers(1, &fboID);
+}
+
 FBO::FBO(FBO &&other) : 
 	fboID(other.fboID) {
 	//color(std::move(other.color)), 
@@ -52,21 +56,10 @@ void FBO::unbind() {
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	glViewport(0, 0, Window::getWidth(), Window::getHeight());
 }
+int FBO::getWidth() {
+	return width;
+}
 
-
-//
-//TEX& FBO::getColorAttachment() {
-//	return color;
-//}
-//
-//TEX& FBO::getDepthAttachment() {
-//	return depth;
-//}
-//
-//int FBO::getWidth() {
-//	return color.width;
-//}
-//
-//int FBO::getHeight() {
-//	return color.height;
-//}
+int FBO::getHeight() {
+	return height;
+}
