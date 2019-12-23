@@ -206,6 +206,7 @@
     <ClCompile Include="ChunkRenderData.cpp" />
     <ClCompile Include="ChunkRenderDataManager.cpp" />
     <ClCompile Include="Client.cpp" />
+    <ClCompile Include="ColorDepthFBO.cpp" />
     <ClCompile Include="CubeGeometry.cpp" />
     <ClCompile Include="DemoState.cpp" />
     <ClCompile Include="Engine.cpp" />
@@ -264,6 +265,7 @@
     <ClInclude Include="ChunkRenderData.h" />
     <ClInclude Include="ChunkRenderDataManager.h" />
     <ClInclude Include="Client.h" />
+    <ClInclude Include="ColorDepthFBO.h" />
     <ClInclude Include="Common.h" />
     <ClInclude Include="Components.h" />
     <ClInclude Include="concurrentqueue.h" />
