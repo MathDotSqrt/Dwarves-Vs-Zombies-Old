@@ -148,6 +148,8 @@ void OpenGLRenderer::swapViewPorts(RenderStateKey key) {
 		return;
 	}
 
+	currentPort = newPort;
+
 	switch (currentPort) {
 	case ViewPort::SHADOW:
 		bindShadowPort();
