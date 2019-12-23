@@ -143,38 +143,44 @@ void OpenGLRenderer::postrender() {
 
 void OpenGLRenderer::swapViewPorts(RenderStateKey key) {
 	ViewPort newPort = key.getViewPort();
+
 	if (newPort == currentPort) {
 		return;
 	}
 
-	currentPort = newPort;
-
-	Scene::Camera *camera = nullptr;
-
 	switch (currentPort) {
 	case ViewPort::SHADOW:
-		shadow.bind();
-		glEnable(GL_DEPTH_TEST);
-		glClear(GL_DEPTH_BUFFER_BIT);
-		camera = &scene->cameraCache[scene->getSunCameraID()];
-		ShaderVariables::camera_pos = camera->eye;
-		ShaderVariables::p = glm::ortho(-20.0f, 20.0f, -20.0f, 20.0f, .1f, 100.0f);
-		ShaderVariables::v = glm::lookAt(camera->eye, camera->eye + camera->target, camera->up);
-		ShaderVariables::vp = ShaderVariables::p * ShaderVariables::v;
+		bindShadowPort();
 		break;
 	case ViewPort::FINAL:
 	default:
-		final.bind();
-		glEnable(GL_DEPTH_TEST);
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		camera = &scene->cameraCache[scene->getMainCameraID()];
-		ShaderVariables::camera_pos = camera->eye;
-		ShaderVariables::p = perspectiveProjection;
-		ShaderVariables::v = glm::lookAt(camera->eye, camera->eye + camera->target, camera->up);
-		ShaderVariables::vp = ShaderVariables::p * ShaderVariables::v;
+		bindFinalPort();
 		break;
 	}
 
+}
+
+void OpenGLRenderer::bindShadowPort() {
+	shadow.bind();
+	glEnable(GL_DEPTH_TEST);
+	glClear(GL_DEPTH_BUFFER_BIT);
+	auto camera = &scene->cameraCache[scene->getSunCameraID()];
+	ShaderVariables::camera_pos = camera->eye;
+	ShaderVariables::p = glm::ortho(-20.0f, 20.0f, -20.0f, 20.0f, .1f, 100.0f);
+	ShaderVariables::v = glm::lookAt(camera->eye, camera->eye + camera->target, camera->up);
+	ShaderVariables::vp = ShaderVariables::p * ShaderVariables::v;
+}
+
+void OpenGLRenderer::bindFinalPort() {
+	final.bind();
+	glEnable(GL_DEPTH_TEST);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	auto camera = &scene->cameraCache[scene->getMainCameraID()];
+	ShaderVariables::camera_pos = camera->eye;
+	//ShaderVariables::sunVP = ShaderVariables::vp;			//this is the vp from the previous view port 
+	ShaderVariables::p = perspectiveProjection;
+	ShaderVariables::v = glm::lookAt(camera->eye, camera->eye + camera->target, camera->up);
+	ShaderVariables::vp = ShaderVariables::p * ShaderVariables::v;
 }
 
 void OpenGLRenderer::renderPostProcess() {

@@ -8,6 +8,7 @@ in vec3 frag_pos;
 flat in int frag_light;
 in vec3 frag_normal;
 in vec4 frag_uv;
+in vec4 frag_pos_sun_space;
 
 out vec4 final_color;
 
@@ -95,6 +96,11 @@ vec2 world_to_texcoord_space(){
 	return texcoord / 3;
 }
 
+float shadow_calc(vec4 position){
+	return 1;
+
+}
+
 void main(){
 	/*SHADOW*/
 	/*SHADOW*/
@@ -105,7 +111,7 @@ void main(){
 	//light_color += (float(frag_light * frag_light) + .1) / 66;
 
 	float light_strength = calc_dir_light(dirLight);
-	light_color += dirLight.color * light_strength;
+	light_color += dirLight.color * light_strength * shadow_calc(frag_pos_sun_space);
 	/*LIGHT*/
 
 	/*TEXTURE*/

@@ -16,6 +16,7 @@ namespace Graphics::ShaderVariables {
 	extern glm::mat4 p = glm::mat4(1);
 	extern glm::mat4 v = glm::mat4(1);
 	extern glm::mat4 vp = glm::mat4(1);
+	extern glm::mat4 sunVP = glm::mat4(1);
 }
 
 inline bool is_valid(iterator start, iterator end, MaterialID id) {

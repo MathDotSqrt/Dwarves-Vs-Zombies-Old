@@ -23,6 +23,8 @@ namespace Graphics {
 		extern glm::mat4 p;
 		extern glm::mat4 v;
 		extern glm::mat4 vp;
+
+		extern glm::mat4 sunVP;
 	}
 
 	typedef std::vector<RenderStateKey>::const_iterator iterator;

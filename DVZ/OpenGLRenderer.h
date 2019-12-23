@@ -30,6 +30,8 @@ private:
 	VBO vbo;
 
 	void swapViewPorts(RenderStateKey key);
+	void bindShadowPort();
+	void bindFinalPort();
 	void renderPostProcess();
 	float getShaderTime();
 

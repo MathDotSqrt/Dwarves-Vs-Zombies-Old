@@ -10,11 +10,13 @@ out vec3 frag_pos;
 flat out int frag_light; 
 out vec3 frag_normal;
 out vec4 frag_uv;
+out vec4 frag_pos_sun_space; 
 
 //uniform mat4 M;
+uniform float time;
 uniform vec3 chunk_pos;
 uniform mat4 VP;
-uniform float time;
+uniform mat4 sun_VP;
 
 const float SPAWN_TIME = .5;
 const float DEPTH = .1;
@@ -37,6 +39,10 @@ void main(){
 
 	gl_Position = VP * world_pos;
 	/*CHUNK TRANSFORMATION*/
+
+	/*SUN SPACE MATRIX*/
+	frag_pos_sun_space = sun_VP * world_pos;
+	/*SUN SPACE MATRIX*/
 
 	/*FRAG PASS*/
 	frag_pos = world_pos.xyz;
