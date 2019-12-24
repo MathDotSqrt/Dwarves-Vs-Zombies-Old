@@ -106,7 +106,7 @@ float shadow_calc(vec4 position){
 	float closest_depth = texture(shadowTex, texcoord).r;
 
 
-	float bias = .001;  
+	float bias = .0001;  
 	float current_depth = projcoords.z - bias;
 	float shadow = current_depth > closest_depth ? 0.0 : 1.0;
 	//return current_depth;

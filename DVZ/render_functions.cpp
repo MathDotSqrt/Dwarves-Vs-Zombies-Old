@@ -160,8 +160,7 @@ iterator Graphics::render_basic_lit(Scene *scene, iterator start, iterator end) 
 iterator Graphics::render_chunks(Voxel::ChunkRenderDataManager *manager, Scene *scene, DepthFBO *fbo, iterator start, iterator end) {
 	Util::Performance::Timer chunks("RenderChunks");
 
-	const Graphics::BlockMaterial chunkMat = { {.95f, .7f, .8f}, 30 };
-	const glm::vec3 CHUNK_SCALE(Voxel::CHUNK_RENDER_WIDTH_X, Voxel::CHUNK_RENDER_WIDTH_Y, Voxel::CHUNK_RENDER_WIDTH_Z);
+	constexpr glm::vec3 CHUNK_SCALE(Voxel::CHUNK_RENDER_WIDTH_X, Voxel::CHUNK_RENDER_WIDTH_Y, Voxel::CHUNK_RENDER_WIDTH_Z);
 
 	Shader::GLSLProgram *shader = Shader::getShaderSet({ "new_chunk_shader.vert", "new_chunk_shader.frag" });
 	shader->use();
@@ -221,8 +220,17 @@ iterator Graphics::render_chunks_shadow(Voxel::ChunkRenderDataManager *manager, 
 	for (auto iterator = manager->begin(); iterator != manager->end(); iterator++) {
 
 		auto data = *iterator;
+		
+		glm::mat4 M = glm::identity<glm::mat4>();
+		M = glm::translate(M, data.pos * CHUNK_SCALE);
 
-		shader->setUniform3f("chunk_pos", data.pos * CHUNK_SCALE);
+		glm::mat4 MVP = ShaderVariables::vp * M;
+		
+		glm::vec3 render_pos = data.pos * CHUNK_SCALE + CHUNK_SCALE * .5f;
+		if (render_pos.x > 20 || render_pos.x < -20 || render_pos.z > 20 || render_pos.z < -20)
+			continue;
+
+		shader->setUniformMat4("MVP", MVP);
 		glBindVertexArray(data.vaoID);
 		glEnableVertexAttribArray(POSITION_ATTRIB_LOCATION);
 		glDrawElements(GL_TRIANGLES, (GLsizei)data.indexCount, GL_UNSIGNED_INT, 0);
