@@ -123,7 +123,7 @@ void OpenGLRenderer::render(Voxel::ChunkRenderDataManager *manager) {
 			start = render_basic_lit(scene, start, end);
 			break;
 		case MaterialID::CHUNK_MATERIAL_ID:
-			start = render_chunks(manager, scene, start, end);
+			start = render_chunks(manager, scene, &shadow, start, end);
 			break;
 		case MaterialID::CHUNK_SHADOW_MATERIAL_ID:
 			start = render_chunks_shadow(manager, scene, start, end);
@@ -179,7 +179,7 @@ void OpenGLRenderer::bindFinalPort() {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	auto camera = &scene->cameraCache[scene->getMainCameraID()];
 	ShaderVariables::camera_pos = camera->eye;
-	//ShaderVariables::sunVP = ShaderVariables::vp;			//this is the vp from the previous view port 
+	ShaderVariables::sunVP = ShaderVariables::vp;			//this is the vp from the previous view port 
 	ShaderVariables::p = perspectiveProjection;
 	ShaderVariables::v = glm::lookAt(camera->eye, camera->eye + camera->target, camera->up);
 	ShaderVariables::vp = ShaderVariables::p * ShaderVariables::v;

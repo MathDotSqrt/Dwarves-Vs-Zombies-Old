@@ -4,6 +4,7 @@
 #include "ShaderSet.h"
 #include "Timer.h"
 #include "TEX.h"
+#include "DepthFBO.h"
 #include "preamble.glsl"
 
 
@@ -156,7 +157,7 @@ iterator Graphics::render_basic_lit(Scene *scene, iterator start, iterator end) 
 	return start;
 }
 
-iterator Graphics::render_chunks(Voxel::ChunkRenderDataManager *manager, Scene *scene, iterator start, iterator end) {
+iterator Graphics::render_chunks(Voxel::ChunkRenderDataManager *manager, Scene *scene, DepthFBO *fbo, iterator start, iterator end) {
 	Util::Performance::Timer chunks("RenderChunks");
 
 	const Graphics::BlockMaterial chunkMat = { {.95f, .7f, .8f}, 30 };
@@ -169,7 +170,9 @@ iterator Graphics::render_chunks(Voxel::ChunkRenderDataManager *manager, Scene *
 	shader->setUniform1f("fog.start_dist", 0);
 	shader->setUniform1f("fog.attenuation", 0.004f);
 
-	shader->setUniform3f("dirLight.dir", glm::vec3(1, -1, 3));
+	auto dir = scene->cameraCache[scene->getSunCameraID()].target;
+	//shader->setUniform3f("dirLight.dir", glm::vec3(1, -1, 3));
+	shader->setUniform3f("dirLight.dir", dir);
 	shader->setUniform3f("dirLight.color", glm::vec3(1, 1, 1));
 
 	shader->setUniform3f("ambient.color", glm::vec3(1, 1, 1));
@@ -181,7 +184,9 @@ iterator Graphics::render_chunks(Voxel::ChunkRenderDataManager *manager, Scene *
 	Scene::PointLight &point = scene->pointLightCache[0];
 
 	//this->chunkTex.bindActiveTexture(0);
-	manager->debugTEX.bindActiveTexture(0);
+	fbo->getDepthAttachment().bindActiveTexture(0);
+	manager->debugTEX.bindActiveTexture(1);
+
 
 	for (auto iterator = manager->begin(); iterator != manager->end(); iterator++) {
 

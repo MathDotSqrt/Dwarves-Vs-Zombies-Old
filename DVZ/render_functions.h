@@ -12,6 +12,7 @@ namespace Voxel {
 namespace Graphics {
 	
 	class Scene;
+	class DepthFBO;
 
 	namespace ShaderVariables {
 		constexpr glm::mat4 identity = glm::identity<glm::mat4>();
@@ -32,7 +33,7 @@ namespace Graphics {
 	iterator render_basic(Scene *scene, iterator start, iterator end);
 	iterator render_normal(Scene *scene, iterator start, iterator end);
 	iterator render_basic_lit(Scene *scene, iterator start, iterator end);
-	iterator render_chunks(Voxel::ChunkRenderDataManager *manager, Scene *scene, iterator start, iterator end);
+	iterator render_chunks(Voxel::ChunkRenderDataManager *manager, Scene *scene, DepthFBO *fbo, iterator start, iterator end);
 	iterator render_chunks_shadow(Voxel::ChunkRenderDataManager *manager, Scene *scene, iterator start, iterator end);
 	
 

@@ -37,8 +37,9 @@ struct Fog {
 
 uniform vec3 camera_pos;
 //uniform sampler2DArray tex;
-uniform sampler2DArray debug;
 uniform sampler2D shadowTex;
+uniform sampler2DArray debug;
+
 
 //uniform PointLight lights[3];
 uniform DirLight dirLight;
@@ -97,13 +98,12 @@ vec2 world_to_texcoord_space(){
 }
 
 float shadow_calc(vec4 position){
-	return 1;
+	float shadow_depth = texture(shadowTex, frag_uv.xy).r;
 
+	return position.z > shadow_depth ? 0 : 1;
 }
 
 void main(){
-	/*SHADOW*/
-	/*SHADOW*/
 
 	/*LIGHT*/
 	vec3 light_color = vec3(0);
@@ -145,6 +145,6 @@ void main(){
 	final_color = toGamma(final_color);
 
 	if(tex_color.a < .5){
-		discard;
+		discard; 
 	}
 }
