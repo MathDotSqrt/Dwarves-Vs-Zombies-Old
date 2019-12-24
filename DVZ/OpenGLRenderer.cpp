@@ -18,7 +18,7 @@ MaterialID BlockMaterial::type = MaterialID::BLOCK_MATERIAL_ID;
 
 OpenGLRenderer::OpenGLRenderer() : 
 	final(Window::getWidth(), Window::getHeight()), 
-	shadow(1024, 1024),
+	shadow(2048, 2048),
 	vbo(GL_ARRAY_BUFFER),
 	start(Window::getTime())
 	{}
@@ -166,11 +166,14 @@ void OpenGLRenderer::bindShadowPort() {
 	shadow.bind();
 	glEnable(GL_DEPTH_TEST);
 	glClear(GL_DEPTH_BUFFER_BIT);
+	glCullFace(GL_FRONT);
 	auto camera = &scene->cameraCache[scene->getSunCameraID()];
 	ShaderVariables::camera_pos = camera->eye;
 	ShaderVariables::p = glm::ortho(-20.0f, 20.0f, -20.0f, 20.0f, .1f, 100.0f);
 	ShaderVariables::v = glm::lookAt(camera->eye, camera->eye + camera->target, camera->up);
 	ShaderVariables::vp = ShaderVariables::p * ShaderVariables::v;
+	glCullFace(GL_BACK);
+
 }
 
 void OpenGLRenderer::bindFinalPort() {

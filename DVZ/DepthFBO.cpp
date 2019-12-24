@@ -4,7 +4,7 @@ using namespace Graphics;
 
 DepthFBO::DepthFBO(int width, int height) : 
 	FBO(width, height),
-	depth(TEX::Builder(width, height).depth24().floatType().clampToEdge().nearest().buildTexture()){
+	depth(TEX::Builder(width, height).depth24().floatType().clampToBorder().borderColor(1, 1, 1, 1).linear().buildTexture()){
 	
 	bind();
 	glDrawBuffer(GL_NONE);

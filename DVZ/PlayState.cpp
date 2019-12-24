@@ -68,7 +68,8 @@ void PlayState::init() {
 	e.assign<RotationComponent>(sunID, glm::quat(glm::vec3(-.5, .1, 0)));
 	e.assign<ScaleComponent>(sunID, glm::vec3(1, 1, 1));
 	e.assign<DirComponent>(sunID, glm::vec3(0, 0, -1), glm::vec3(0, 1, 0), glm::vec3(1, 0, 0));
-	//e.assign<RotationalVelocityComponent>(sunID, glm::vec3(0, 1, 0));
+	e.assign<RotationalVelocityComponent>(sunID, glm::vec3(0, .01, 0));
+	//e.assign<VelocityComponent>(sunID, glm::vec3(.1, .1, 0));
 	
 	Graphics::Scene::Camera sunCamera = {
 		glm::vec3(100, 10, 0),

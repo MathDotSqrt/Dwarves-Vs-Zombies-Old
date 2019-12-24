@@ -180,12 +180,15 @@ iterator Graphics::render_chunks(Voxel::ChunkRenderDataManager *manager, Scene *
 
 	shader->setUniform3f("camera_pos", camera_pos);
 	shader->setUniformMat4("VP", vp);
+	shader->setUniformMat4("sun_VP", ShaderVariables::sunVP);
 
 	Scene::PointLight &point = scene->pointLightCache[0];
 
 	//this->chunkTex.bindActiveTexture(0);
-	fbo->getDepthAttachment().bindActiveTexture(0);
-	manager->debugTEX.bindActiveTexture(1);
+	shader->setUniform1i("debug", 0);
+	shader->setUniform1i("shadowTex", 1);
+	manager->debugTEX.bindActiveTexture(0);
+	fbo->getDepthAttachment().bindActiveTexture(1);
 
 
 	for (auto iterator = manager->begin(); iterator != manager->end(); iterator++) {
