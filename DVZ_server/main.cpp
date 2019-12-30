@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <iostream>
 #include "MessageIdentifiers.h"
+
 #include "RakPeerInterface.h"
 #include "RakNetTypes.h"
 #include "GamePacketID.h"
