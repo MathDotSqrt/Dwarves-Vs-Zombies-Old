@@ -2,9 +2,7 @@
 
 #include <GL/glew.h>
 #include <vector>
-#include <algorithm>
 #include "macrologger.h"
-#include <string>
 namespace Graphics {
 
 class VBO {
@@ -28,6 +26,8 @@ public:
 	}
 
 	void dispose();
+
+	GLuint getID() const;
 private:
 	GLuint vboID = 0;
 	GLuint bufferType;

@@ -1,18 +1,15 @@
 #include <stdio.h>
 
-
-#define STB_IMAGE_IMPLEMENTATION //stb_image requires this for some fucking reason
-#include <stb_image.h>
-
 #include "macrologger.h"
 #include "GameStateManager.h"
 #include "PlayState.h"
 
-#include <GL/glew.h>
-#include <GLFW/glfw3.h>
 #include "ShaderSet.h"
 #include "Window.h"
 #include "Timer.h"
+
+#define STB_IMAGE_IMPLEMENTATION //stb_image requires this for some fucking reason
+#include "stb_image.h"
 
 const static unsigned int DEFAULT_WIDTH = 1024, DEFAULT_HEIGHT = 768;
 const static char* TITLE = "Dwavres Vs Zombies";

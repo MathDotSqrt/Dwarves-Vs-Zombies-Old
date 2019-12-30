@@ -1,3 +1,4 @@
+
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include <vector>
@@ -11,11 +12,32 @@ namespace {
 	int width, height;
 	const char *title;
 
+	bool isMouseDisabled = false;
+
 	std::vector<IResizable*> callbacks;
 
 	void internalResizeCallBack(GLFWwindow *window, int newWidth, int newHeight) {
 		for (auto func : callbacks) {
 			func->resize(newWidth, newHeight);
+		}
+	}
+
+	void internalFocusCallBack(GLFWwindow *window, int focused) {
+		if (focused) {
+			isMouseDisabled = true;
+			glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+
+		}
+		else {
+			isMouseDisabled = false;
+			glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+		}
+	}
+
+	void internalMouseCallBack(GLFWwindow *window, int button, int action, int mods) {
+		if (action == GLFW_PRESS) {
+			isMouseDisabled = true;
+			glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 		}
 	}
 }
@@ -41,12 +63,16 @@ void Window::createWindow(int initWidth, int initHeight, const char* initTitle) 
 
 	glfwMakeContextCurrent(window);									//Displays window and makes it active
 	glfwSwapInterval(1);											//Wheather to enable or disable vsync
-
+	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+	glfwSetCursorPos(window, 0, 0);
+	isMouseDisabled = true;
 	width = initWidth;
 	height = initHeight;
 	title = initTitle;
 
 	glfwSetWindowSizeCallback(window, internalResizeCallBack);
+	glfwSetWindowFocusCallback(window, internalFocusCallBack);
+	glfwSetMouseButtonCallback(window, internalMouseCallBack);
 }
 
 void Window::destroyWindow() {
@@ -54,8 +80,14 @@ void Window::destroyWindow() {
 }
 
 void Window::update() {
-	glfwSwapBuffers(window);
 	glfwPollEvents();
+	
+	if (Window::isPressed(Window::ESC)) {
+		glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+		isMouseDisabled = false;
+	}
+
+	glfwSwapBuffers(window);
 }
 
 void Window::addResizeCallback(IResizable *resizable) {
@@ -68,6 +100,21 @@ bool Window::isPressed(char c) {
 
 bool Window::isPressed(const unsigned int c) {
 	return glfwGetKey(window, c) == GLFW_PRESS;
+}
+
+bool Window::isMousePressed(const unsigned int b) {
+	return glfwGetMouseButton(window, b) == GLFW_PRESS;
+}
+
+bool Window::getMousePos(double &x, double &y) {
+	glfwGetCursorPos(window, &x, &y);
+	//LOG_ALWAYS("%lf %lf", x, y);
+
+	return isMouseDisabled;
+}
+
+double Window::getTime() {
+	return glfwGetTime();
 }
 
 bool Window::shouldClose() {

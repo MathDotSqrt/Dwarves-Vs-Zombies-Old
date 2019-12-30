@@ -1,128 +1,163 @@
 #pragma once
-#include <unordered_map>
-#include <thread>
-#include <atomic>
-#include "concurrentqueue.h"
+
 #include "Block.h"
 #include "Chunk.h"
-#include "ChunkRenderData.h"
+#include "ChunkRefHandle.h"
 #include "ChunkMesher.h"
-
-#include "ThreadPool.h"
+#include "ChunkLightEngine.h"
 
 #include "LinearAllocator.h"
 #include "PoolAllocator.h"
 #include "AllocatorHandle.h"
 
-#include "Recycler.h"
+#include "ChunkQueueSet.h"
+#include "concurrentqueue.h"
+#include "ThreadPool.h"
+#include <thread>
+#include <unordered_map>
+#include <queue>
 
 namespace Voxel{
 
-typedef Util::Allocator::Handle<Chunk> ChunkHandle;
+
+
+//struct ChunkNeighbors {
+//	ChunkRefHandle middle;
+//	ChunkRefHandle front;
+//	ChunkRefHandle back;
+//	ChunkRefHandle left;
+//	ChunkRefHandle right;
+//	ChunkRefHandle up;
+//	ChunkRefHandle down;
+//};
 
 struct ChunkNeighbors {
-	ChunkHandle middle;
-	ChunkHandle front;
-	ChunkHandle back;
-	ChunkHandle left;
-	ChunkHandle right;
-	ChunkHandle up;
-	ChunkHandle down;
+	ChunkRefHandle backLeft;
+	ChunkRefHandle back;
+	ChunkRefHandle backRight;
+	
+	ChunkRefHandle left;
+	ChunkRefHandle middle;
+	ChunkRefHandle right;
+	
+	ChunkRefHandle frontLeft;
+	ChunkRefHandle front;
+	ChunkRefHandle frontRight;
+
+	constexpr const ChunkRefHandle& getChunk(int cx, int cz) const{
+		ChunkRefHandle* handle = (ChunkRefHandle*)(this);
+		cx += 1;
+		cz += 1;
+		return *(handle + (cx + cz * 3));
+	}
+};
+
+struct BlockRayCast {
+	Block block;
+	int x, y, z;
+	int nx, ny, nz;
 };
 
 class ChunkManager {
-public:
-	typedef std::unordered_map<int, ChunkHandle>::iterator ChunkIterator;
-	typedef std::unordered_map<int, ChunkRenderData*>::iterator ChunkRenderDataIterator;
+public:							//fix bug of things not destructing in order
+	friend class Chunk;
+	friend class ChunkMesher;
+	friend class ChunkLightEngine;
 
-	static const int CHUNK_ALLOC_SIZE = 80 * 1024 * 1024;
+	static const int CHUNK_ALLOC_SIZE = 1000 * 1024 * 1024;
+	static const int CHUNK_MESH_RECYCLE_SIZE = 4 * 1024 * 1024;
+	static const int CHUNK_RENDER_DATA_RECYCLE_SIZE = 4 * 1024 * 1024;
 	static const int CHUNK_MESHER_ALLOC_SIZE = 8 * 1024 * 1024;
-	static const int CHUNK_MESH_RECYCLE_SIZE = 2 * 1024 * 1024;
-	static const int CHUNK_RENDER_DATA_RECYCLE_SIZE = 2 * 1024 * 1024;
 	static const int CHUNK_THREAD_POOL_SIZE = 1;	//dont change this until i fix allocate array
-	static const int RENDER_DISTANCE = 15;
+	//static const int RENDER_DISTANCE = 10;
+	static const int RENDER_DISTANCE = 50;
+	static const int LOAD_DISTANCE = RENDER_DISTANCE + 2;
 
+public:
 	ChunkManager(Util::Allocator::IAllocator &parent);
 	~ChunkManager();
 
 	//todo add frustum
 	void update(float x, float y, float z);
 
-	void chunkGeneratorThread();
-	void chunkMeshingThread();
-
-	inline ChunkIterator begin() {
-		return this->chunkSet.begin();
-	}
-
-	inline ChunkIterator end() {
-		return this->chunkSet.end();
-	}
-
-	inline ChunkRenderDataIterator beginRenderData() {
-		return this->renderDataSet.begin();
-	}
-	inline ChunkRenderDataIterator endRenderData() {
-		return this->renderDataSet.end();
-	}
-
-	inline ChunkIterator removeChunk(const ChunkIterator& iter);
-	void removeChunk(int cx, int cy, int cz);
-
-	int hashcode(int i, int j, int k);
-
-	ChunkHandle getChunk(int cx, int cy, int cz);
-	ChunkHandle getChunkIfMapped(int cx, int cy, int cz);
-	ChunkNeighbors getChunkNeighbors(ChunkHandle chunk);
+	ChunkRefHandle getChunk(int cx, int cy, int cz);
+	ChunkRefHandle getChunkIfMapped(int cx, int cy, int cz);
+	ChunkRefHandle getNullChunk();
 	ChunkNeighbors getChunkNeighbors(int cx, int cy, int cz);
+	ChunkNeighbors getChunkNeighbors(const ChunkRefHandle &chunk);
 
-	bool isChunkMapped(int cx, int cy, int cz);
+	ChunkRefHandle copyChunkRefHandle(const ChunkRefHandle& handle);
+
+	bool isChunkMapped(int cx, int cy, int cz) const;
+	bool isBlockMapped(int x, int y, int z);
 
 	Block getBlock(int x, int y, int z);
 	void setBlock(int x, int y, int z, Block block);
-	bool isBlockMapped(int x, int y, int z);
-
 	Block getBlock(float x, float y, float z);
 	void setBlock(float x, float y, float z, Block block);
 
-	int getBlockX(float x);
-	int getBlockY(float y);
-	int getBlockZ(float z);
+	void setLight(int x, int y, int z, Light light);
+	ChunkQueueSet& getDirtyChunkQueue();
+
+	BlockRayCast castRay(glm::vec3 start, glm::vec3 dir, float radius);
 
 	int getChunkX(float x);
 	int getChunkY(float y);
 	int getChunkZ(float z);
 
-
-
 private:
-	std::atomic<bool> runThreads = true;
-	std::thread generatorThread;
-	std::thread mesherThread[CHUNK_THREAD_POOL_SIZE];
+	bool isChunkMappedInternal(int cx, int cy, int cz);
+	ChunkRefHandle getChunkIfMappedInternal(int cx, int cy, int cz);
+	ChunkRefHandle getChunkIfNotMappedInternal(int cx, int cy, int cz);
+	ChunkRefHandle getChunkInternal(int cx, int cy, int cz);
 
-	//Util::Threading::ThreadPool pool;
-	Util::Allocator::PoolAllocator chunkPoolAllocator;			//todo fix chunk alloc assert bug
-	Util::Allocator::LinearAllocator chunkMesherAllocator;
-
-	Util::Recycler<ChunkRenderData> renderDataRecycler;
-	Util::Recycler<ChunkGeometry> meshRecycler;
-
-	moodycamel::BlockingConcurrentQueue<ChunkHandle> chunkGenQueue;
-	moodycamel::BlockingConcurrentQueue<std::pair<ChunkNeighbors, ChunkGeometry*>> chunkMeshingQueue;
-	moodycamel::ConcurrentQueue<std::pair<ChunkGeometry*, glm::ivec3>> chunkMeshQueue;
+	void queueDirtyChunk(int cx, int cy, int cz);
+	void queueDirtyChunk(ChunkRefHandle &&);
 	
+	ChunkPtr newChunk(int cx, int cy, int cz);
+	bool isChunkLoaded(int cx, int cy, int cz) const;
 
-	std::unordered_map<int, ChunkHandle> chunkSet;
-	std::unordered_map<int, ChunkRenderData*> renderDataSet;
-	std::unordered_map<int, bool> chunkQueuedSet;
 
-	ChunkMesher *chunkMesherArray;
+	void loadChunks(int chunkX, int chunkY, int chunkZ, int loadDistance);
+	void updateAllChunks(int playerCX, int playerCY, int playerCZ);
+	void enqueueChunks();
+
+	void chunkGeneratorThread();
+	void chunkMeshingThread();
+
+	float intbound(float s, float ds) const;
+	constexpr int hashcode(int i, int j, int k) const;
+	constexpr int expand(int x) const;
 
 	int currentChunkX = 0;
 	int currentChunkY = 0;
 	int currentChunkZ = 0;
+	
+	typedef ChunkDestructor::RefCount RefCount;
+	typedef std::pair<ChunkHandle, RefCount> ChunkRefCount;
 
-	int expand(int x);
+	//todo see if i could just use shared_ptr
+	std::unordered_map<int, ChunkRefCount> chunkSet;					//contains all chunks
+	std::unordered_map<int, ChunkRefHandle> loadedChunkSet;				//subset of all chunks that are loaded
+	std::vector<ChunkRefHandle> needsLoadingCache;						//subset of all chunks that could be loaded
+	ChunkQueueSet dirtyChunks;						//subset of all chunks that should be meshed on main thread
+	moodycamel::ConcurrentQueue<ChunkRefHandle> chunkGenerationQueue;
+	
+	Util::Recycler<Chunk> chunkRecycler;
+
+
+	Util::Allocator::LinearAllocator chunkMesherAllocator;
+	ChunkMesher *chunkMesherArray;
+	ChunkMesher *mainChunkMesher;
+	ChunkLightEngine *chunkLightEngine;
+
+	std::atomic<bool> runThreads = true;
+	std::thread generatorThread;
+	std::thread mesherThread[CHUNK_THREAD_POOL_SIZE];
+
+	mutable std::shared_mutex chunkSetMutex;		//gaurds chunkSet and mainMeshQueue
+	mutable std::recursive_mutex meshQueueMutex;
+	
 
 };
 

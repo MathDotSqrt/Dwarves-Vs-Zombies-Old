@@ -6,7 +6,10 @@ namespace Graphics {
 		NORMAL_MAERIAL_ID,
 		BASIC_LIT_MATERIAL_ID,
 		TEXTURE_MATERIAL_ID,
-		BLOCK_MATERIAL_ID
+		BLOCK_MATERIAL_ID,
+		CHUNK_MATERIAL_ID,
+		CHUNK_SHADOW_MATERIAL_ID,
+		NUM_MATERIAL_ID
 	} MaterialID;
 
 	//todo add reference counter for materials

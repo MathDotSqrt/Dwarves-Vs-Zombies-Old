@@ -1,16 +1,12 @@
 #pragma once
 #include "Block.h"
-#include "VAO.h"
-#include "VBO.h"
-#include <vector>
-#include "Geometry.h"
-#include "Attrib.h"
+#include <queue>
 #include <shared_mutex>
 
 namespace Voxel{
 
 static constexpr int CHUNK_SHIFT_X = 5;
-static constexpr int CHUNK_SHIFT_Y = 6;
+static constexpr int CHUNK_SHIFT_Y = 7;
 static constexpr int CHUNK_SHIFT_Z = 5;
 
 static constexpr int CHUNK_WIDTH_X = 1 << CHUNK_SHIFT_X;
@@ -27,121 +23,193 @@ static constexpr float CHUNK_RENDER_WIDTH_X = CHUNK_WIDTH_X;
 static constexpr float CHUNK_RENDER_WIDTH_Y = CHUNK_WIDTH_Y;
 static constexpr float CHUNK_RENDER_WIDTH_Z = CHUNK_WIDTH_Z;
 
+//when queuing chunks to get meshed dont queue the ones who need a light updating
+enum class LightState{
+	NONE,
+	LOADED,
+	LOADED_AND_EMPTY,
+	LOCKED,
+	NUM_LIGHT_STATES
+};
+
+enum class BlockState {
+	NONE,
+	LOADED,
+	LOADED_AND_EMPTY,
+	LOCKED,
+	NUM_BLOCK_STATES
+};
+
+enum class MeshState {
+	NONE_MESH,
+	VALID,
+	DIRTY,
+	LOCKED,
+	NUM_MESH_STATES
+};
+
+class ChunkManager;
+
+struct Light {
+	uint8 value;
+
+	Light() {
+		value = 0;
+	}
+
+	Light(uint8 sunlight, uint8 blocklight) {
+		value = ((sunlight & 0xf) << 4) | (blocklight & 0xf);
+	}
+
+	bool operator==(const Light &other) const{
+		return value == other.value;
+	}
+
+	bool operator!=(const Light &other)  const {
+		return value != other.value;
+	}
+
+	operator uint8() const {
+		return value;
+	}
+
+	uint8 getBlockLight() {
+		return value & 0xf;
+	}
+
+	void setBlockLight(uint8 torch) {
+		value = (value & 0xf0) | (torch & 0xf);
+	}
+
+	uint8 getSunLight() {
+		return (value >> 4) & 0xf;
+	}
+
+	void setSunLight(uint8 sun) {
+		value = ((sun & 0xf) << 4) | (value & 0xf);
+	}
+};
+
 //DO NOT CALL THIS ON STACK
 class Chunk {
-public:
-	typedef Graphics::Geometry<Graphics::PositionAttrib, Graphics::NormalAttrib, Graphics::ColorAttrib> BlockGeometry;
-	typedef BlockGeometry::GeometryVertex BlockVertex;
-
-	typedef enum _ChunkState{
-		EMPTY,					//allocated but all of the values are nonsense
-		LAZY_LOADED,			//allocated with generated blocks, but has no render data associated. Useful for meshing algo
-		NEED_MESH,				//allocated but needs mesh
-		DIRTY_MESH,				//has a mesh but the chunk state is different than the mesh
-		VALID					//has a mesh and chunk is consistant with mesh
-	} ChunkState;
 
 private:
 	friend class ChunkMesher;
+	friend class ChunkLightEngine;
+	friend class ChunkManager;
 
-	const int chunk_x, chunk_y, chunk_z;
-	
-	Block data[CHUNK_VOLUME];
-	ChunkState currentState;
+	struct LightNode {
+		Light light;
+		int32 x, y, z;
+	};
+
+	std::deque<LightNode> lightQueue;
+
+	Block blockData[CHUNK_VOLUME];
+	Light lightData[CHUNK_VOLUME];
+
+	BlockState blockState;
+	MeshState meshState;
 
 	std::shared_mutex chunkMutex;
+
+	int chunk_x, chunk_y, chunk_z;
+
+
+	ChunkManager *manager;
 
 public:
 	
 	//todo make chunk contain shared pointer of render data from a recycler. Maybe
-	Chunk(int x, int y, int z);
+	Chunk(int x, int y, int z, ChunkManager *manager);
 	~Chunk();
 
 	void generateTerrain();
 
-	Block getBlock(int x, int y, int z);
-	void setBlock(int x, int y, int z, Block block);
+	void flagMeshValid();
+	void flagMeshRemoved();
+	void flagDirtyMesh();
 
-	//needs mesh
-	inline bool needsNewMesh() {
-		return this->currentState == Chunk::NEED_MESH;
-	}
-	inline bool needsMeshUpdate() {
-		return this->currentState == Chunk::DIRTY_MESH;
-	}
+	bool isEmpty();
 	
-	inline bool flagLoadLazy() {
-		if (this->currentState == Chunk::EMPTY) {
-			this->currentState = Chunk::LAZY_LOADED;
-			return true;
-		}
+	BlockState getBlockState();
+	MeshState getMeshState();
 
-		return false;
-	}
+	BlockState tryGetBlockState();
+	MeshState tryGetMeshState();
 
-	inline bool flagMeshCreation() {
-		if (this->currentState == Chunk::ChunkState::LAZY_LOADED) {
-			this->currentState = Chunk::NEED_MESH;
-			return true;
-		}
+	Block getBlock(int x, int y, int z);
+	void setBlock(int x, int y, int z, Block block);			//must do it on main thread
 
-		return false;
-	}
+	Light getLight(int x, int y, int z);
+	void setLight(int x, int y, int z, Light light);		//must do it in main thread
+	void setSunLight(int x, int y, int z, uint8 sun);		//must do it in main thread
+	void setBlockLight(int x, int y, int z, uint8 block);	//must do it in main thread
 
-	inline bool flagDirty() {
-		if (this->currentState == Chunk::ChunkState::VALID) {
-			this->currentState = Chunk::ChunkState::DIRTY_MESH;
-			return true;
-		}
-		return false;
-	}
-
-	inline bool flagValid() {
-		this->currentState = Chunk::ChunkState::VALID;
-		return true;
-	}
-
-	inline bool isEmpty() {
-		return this->currentState == Chunk::ChunkState::EMPTY;
-	}
-
-	inline bool isValid() {
-		return this->currentState == Chunk::ChunkState::VALID;
-	}
-
-	inline int getChunkX() {
+	inline int getChunkX() const {
 		return this->chunk_x;
 	}
 
-	inline int getChunkY() {
+	inline int getChunkY() const {
 		return this->chunk_y;
 	}
 
-	inline int getChunkZ() {
+	inline int getChunkZ() const {
 		return this->chunk_z;
 	}
 
-	inline ChunkState getChunkState() {
-		return this->currentState;
+	static constexpr int calcHashCode(int cx, int cy, int cz) {
+		return expand(cx) + (expand(cy) << 1) + (expand(cz) << 2);
 	}
 
+	static constexpr bool isIndexInBounds(int x, int y, int z);
 	int getHashCode();
 
 private:
-	inline Block& getBlockInternal(int x, int y, int z) {
-		//std::shared_lock<std::shared_mutex> lock(this->chunkMutex);
-		//this->assertBlockIndex(x, y, z);
-		return data[this->toIndex(x, y, z)];
+	void flagDirtyMeshInternal();
+
+	Light getBrightestNeighbor(int x, int y, int z) const;
+
+	inline Block getBlockInternal(int x, int y, int z) const {
+		return blockData[toIndex(x, y, z)];
 	}
 
 	inline void setBlockInternal(int x, int y, int z, Block b) {
-		data[this->toIndex(x, y, z)] = b;
+		blockData[toIndex(x, y, z)] = b;
 	}
-	int toIndex(int x, int y, int z);
-	void assertBlockIndex(int x, int y, int z);
+	
+	inline Light getLightInternal(int x, int y, int z) const {
+		return lightData[toIndex(x, y, z)];
+	}
 
-	int expand(int i);
+	inline void setLightInternal(int x, int y, int z, Light light) {
+		lightData[toIndex(x, y, z)] = light;
+	}
+
+	inline void queueLightInternal(int x, int y, int z, Light light) {
+		LightNode node = { light, x, y, z };
+		lightQueue.push_back(node);
+	}
+
+	void reinitializeChunk(int cx, int cy, int cz);					//todo find a code patter to get rid of this
+
+	inline static constexpr int toIndex(int x, int y, int z) {
+		return x + CHUNK_WIDTH_X * (y + CHUNK_WIDTH_Y * z);
+	}
+
+	void assertBlockIndex(int x, int y, int z) const;
+
+	static constexpr int expand(int x) {
+		x &= 0x3FF;
+		x = (x | (x << 16)) & 4278190335;
+		x = (x | (x << 8)) & 251719695;
+		x = (x | (x << 4)) & 3272356035;
+		x = (x | (x << 2)) & 1227133513;
+		return x;
+	}
 };
+
+typedef Chunk* ChunkPtr;
 
 }
 

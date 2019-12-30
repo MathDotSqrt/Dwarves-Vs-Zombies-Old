@@ -1,30 +1,39 @@
 #pragma once
 #include "IRenderer.h"
+#include "RenderStateKey.h"
+#include "TEX.h"
+#include "VAO.h"
+#include "VBO.h"
+#include "ColorDepthFBO.h"
+#include "DepthFBO.h"
 
 namespace Graphics {
 
 class OpenGLRenderer : public IRenderer {
 private:
-	typedef unsigned long long RenderStateKey;
-	struct RenderState {
-		MaterialID materialID;
-		unsigned int instanceID;
-	};
+
 
 	std::vector<RenderStateKey> sortedRenderStateKeys;
-
 	glm::mat4 perspectiveProjection;
 
-	RenderStateKey createRenderStateKey(RenderState state);
-	RenderState getRenderStateFromKey(RenderStateKey key);
-	RenderState getRenderStateFromIndex(int sortedRenderStateKeyIndex);
-	bool isValidState(int sortedStateKeyIndex, MaterialID matID);
 
-	int renderBasic(int startKeyIndex, glm::mat4 vp);
-	int renderNormal(int startKeyIndex, glm::mat4 vp);
-	int renderBasicLit(int startKeyIndex, glm::vec3 camera_position, glm::mat4 vp);
-	int renderBasicBlock(int startKeyIndex, glm::vec3 camera_position, glm::mat4 vp);
-	void renderChunks(Voxel::ChunkManager *manager, glm::vec3 camera_position, glm::mat4 vp);
+	double start;
+	double duration;
+
+	int window_width = 0;
+	int window_height = 0;
+	
+	ViewPort currentPort;
+	DepthFBO shadow;
+	ColorDepthFBO final;
+	VAO quad;
+	VBO vbo;
+
+	void swapViewPorts(RenderStateKey key);
+	void bindShadowPort();
+	void bindFinalPort();
+	void renderPostProcess();
+	float getShaderTime();
 
 public:
 	OpenGLRenderer();
@@ -33,7 +42,8 @@ public:
 	void init(Scene *scene) override;
 	void resize(int newWidth, int newHeight) override;
 	void prerender() override;
-	void render(Voxel::ChunkManager *manager) override;
+	void render(Voxel::ChunkRenderDataManager *manager) override;
+	void postrender() override;
 };
 }
 

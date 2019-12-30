@@ -24,6 +24,25 @@ Geometry<PositionAttrib, NormalAttrib> Graphics::CreateQuad() {
 	return g;
 }
 
+Geometry<Attrib<POSITION_ATTRIB_LOCATION, glm::i8vec2>> Graphics::CreateQuad2D() {
+	typedef Geometry<Attrib<POSITION_ATTRIB_LOCATION, glm::i8vec2>> QuadGeometry;
+
+	Attrib<POSITION_ATTRIB_LOCATION, glm::i8vec2> p;
+	QuadGeometry g(p);
+	QuadGeometry::GeometryVertex v0 = { glm::i8vec2(-1, 1)};
+	QuadGeometry::GeometryVertex v1 = { glm::i8vec2(1, -1)};
+	QuadGeometry::GeometryVertex v2 = { glm::i8vec2(1, 1)};
+	QuadGeometry::GeometryVertex v3 = { glm::i8vec2(-1, -1)};
+
+	g.pushVertex(v0);
+	g.pushVertex(v1);
+	g.pushVertex(v2);
+	g.pushVertex(v3);
+	g.pushTriangle(0, 1, 2);
+	g.pushTriangle(0, 3, 1);
+	return g;
+}
+
 //#include "QuadGeometry.h"
 //#include "preamble.glsl"
 //#include "macrologger.h"

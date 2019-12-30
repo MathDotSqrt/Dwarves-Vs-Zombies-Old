@@ -1,13 +1,13 @@
 #include "OpenGLRenderer.h"
+#include "render_functions.h"
+#include "Scene.h"
 #include "Window.h"
 #include "ShaderSet.h"
-#include "preamble.glsl"
 #include "glm.hpp"
 #include <gtx/transform.hpp>
-#include <gtx/quaternion.hpp>
-#include "ChunkManager.h"
+#include "ChunkRenderDataManager.h"
 #include "Timer.h"
-
+#include "QuadGeometry.h"
 using namespace Graphics;
 
 MaterialID ColorMaterial::type = MaterialID::COLOR_MATERIAL_ID;
@@ -16,8 +16,12 @@ MaterialID BasicLitMaterial::type = MaterialID::BASIC_LIT_MATERIAL_ID;
 MaterialID TextureMaterial::type = MaterialID::TEXTURE_MATERIAL_ID;
 MaterialID BlockMaterial::type = MaterialID::BLOCK_MATERIAL_ID;
 
-OpenGLRenderer::OpenGLRenderer() {
-}
+OpenGLRenderer::OpenGLRenderer() : 
+	final(Window::getWidth(), Window::getHeight()), 
+	shadow(2048, 2048),
+	vbo(GL_ARRAY_BUFFER),
+	start(Window::getTime())
+	{}
 
 
 OpenGLRenderer::~OpenGLRenderer() {
@@ -26,6 +30,25 @@ OpenGLRenderer::~OpenGLRenderer() {
 void OpenGLRenderer::init(Scene *scene) {
 	LOG_RENDER("Init");
 	this->scene = scene;
+	
+	glClearColor(.4f, .4f, .4f, 1);
+	glEnable(GL_CULL_FACE);
+	glCullFace(GL_CW);
+
+	GLbyte quad_array[]{
+		-1, -1,
+		1, -1,
+		-1,  1,
+		-1,  1,
+		1, -1,
+		1,  1,
+	};
+	quad.bind();
+	vbo.bind();
+	vbo.bufferData(sizeof(quad_array), quad_array, GL_STATIC_DRAW);
+	quad.bufferInterleavedData(vbo, Attrib<POSITION_ATTRIB_LOCATION, glm::i8vec2>());
+	vbo.unbind();
+	quad.unbind();
 
 	Scene::Camera camera = {
 		glm::vec3(0, 0, 0),
@@ -40,11 +63,10 @@ void OpenGLRenderer::init(Scene *scene) {
 	unsigned int cameraID = this->scene->createCameraInstance(camera);
 	this->scene->setMainCamera(cameraID);
 
-	glClearColor(.1f, .4f, .7f, 1);
-	glEnable(GL_DEPTH_TEST);
-
 	Window::addResizeCallback(this);
-	this->resize(Window::getWidth(), Window::getHeight());
+	resize(Window::getWidth(), Window::getHeight());
+	window_width = Window::getWidth();
+	window_height = Window::getHeight();
 }
 
 void OpenGLRenderer::resize(int newWidth, int newHeight) {
@@ -53,327 +75,139 @@ void OpenGLRenderer::resize(int newWidth, int newHeight) {
 	camera->aspect = (float)newWidth / newHeight;
 
 	this->perspectiveProjection = glm::perspective(camera->fov, camera->aspect, camera->near, camera->far);
-
 	glViewport(0, 0, newWidth, newHeight);
 }
 
 void OpenGLRenderer::prerender() {
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	glEnable(GL_CULL_FACE);
-	glCullFace(GL_CW);
+	duration = Window::getTime() - start;
 
-	this->sortedRenderStateKeys.clear();
+	sortedRenderStateKeys.clear();
+	
+	RenderStateKey chunk_shadow_render(ViewPort::SHADOW, ViewPortLayer::DEFAULT, BlendType::OPAQUE, MaterialID::CHUNK_SHADOW_MATERIAL_ID, 69);
+	RenderStateKey chunk_render(ViewPort::FINAL, ViewPortLayer::DEFAULT, BlendType::OPAQUE, MaterialID::CHUNK_MATERIAL_ID, 69);
+	sortedRenderStateKeys.push_back(chunk_shadow_render);
+	sortedRenderStateKeys.push_back(chunk_render);
+
 	for (unsigned int instanceID : scene->instanceCache) {
-		RenderStateKey key = 0L;
-		//MaterialID matID = MaterialID::NONE_MATERIAL_ID;
+		Scene::Instance instance = scene->instanceCache[instanceID];
+		Scene::Mesh &mesh = scene->meshCache[instance.meshID];
+		MaterialID matID = mesh.typeID;
 
-		Scene::Instance *instance = &scene->instanceCache[instanceID];
-		Scene::Mesh *mesh = &scene->meshCache[instance->meshID];
-		MaterialID matID = mesh->typeID;
-
-		RenderState state;
-		state.instanceID = instanceID;
-		state.materialID = matID;	//todo figure out weird memory access error crash
-
-		key = this->createRenderStateKey(state);
+		RenderStateKey key(ViewPort::FINAL, ViewPortLayer::DEFAULT, BlendType::OPAQUE, matID, instanceID);
 		sortedRenderStateKeys.push_back(key);
 	}
-	std::sort(this->sortedRenderStateKeys.begin(), this->sortedRenderStateKeys.end());
+
+	
+
+	std::sort(sortedRenderStateKeys.begin(), sortedRenderStateKeys.end());
 }
 
-void OpenGLRenderer::render(Voxel::ChunkManager *manager) {
-	Scene::Camera *camera = &scene->cameraCache[scene->getMainCameraID()];
-	glm::mat4 view = glm::lookAt(camera->eye, camera->eye + camera->target, camera->up);
-	glm::mat4 vp = perspectiveProjection * view;
-	glm::vec3 camera_position = camera->eye;
-
-	int index = 0;
-	index = renderBasic(index, vp);
-	index = renderNormal(index, vp);
-	index = renderBasicLit(index, camera_position, vp);
-	//index = renderBasicBlock(index, camera_position, vp);
-	renderChunks(manager, camera_position, vp);
-	//glBindVertexArray(0);
-}
-
-int OpenGLRenderer::renderBasic(int startIndex, glm::mat4 vp) {
-
-	if (!this->isValidState(startIndex, MaterialID::COLOR_MATERIAL_ID)) {
-		return startIndex;
-	}
-
-	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-
-	glm::mat4 ident = glm::identity<glm::mat4>();
-	Shader::GLSLProgram *shader = Shader::getShaderSet({ "basic_shader.vert", "basic_shader.frag" });
-	shader->use();
-	int index = startIndex;
-	do {
-		RenderState state = this->getRenderStateFromIndex(index);
-
-		Scene::Instance *instance = &scene->instanceCache[state.instanceID];
-		Scene::Mesh *mesh = &scene->meshCache[instance->meshID];
-		Scene::Transformation *transformation = &scene->transformationCache[instance->transformationID];
-
-		glm::quat rot(transformation->rotation);
-		glm::vec3 axis = glm::axis(rot);
-
-		float angle = glm::angle(rot);
-
-		glm::mat4 model;
-		model = glm::translate(ident, transformation->position);
-		model = glm::rotate(model, angle, axis);
-		model = glm::scale(model, transformation->scale);
-
-		shader->setUniformMat4("MVP", vp * model);
-
-		ColorMaterial *material = &scene->colorMaterialCache[mesh->materialInstanceID];
-		shader->setUniform3f("color", material->color);
-
-		mesh->vao.bind();
-		glEnableVertexAttribArray(POSITION_ATTRIB_LOCATION);
-		glDrawElements(GL_TRIANGLES, mesh->indexCount, GL_UNSIGNED_INT, 0);
-
-		index++;
-	} while (this->isValidState(index, MaterialID::COLOR_MATERIAL_ID));
-
-	shader->end();
-	glBindVertexArray(0);
-	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-
-	return index;
-}
-
-int OpenGLRenderer::renderNormal(int startIndex, glm::mat4 vp) {
-	if (!this->isValidState(startIndex, MaterialID::NORMAL_MAERIAL_ID)) {
-		return startIndex;
-	}
-
-
-	glm::mat4 ident = glm::identity<glm::mat4>();
-	Shader::GLSLProgram *shader = Shader::getShaderSet({"normal_shader.vert", "normal_shader.frag"});
-	shader->use();
-
-	int index = startIndex;
-	do {
-		RenderState state = this->getRenderStateFromIndex(index);
-
-		Scene::Instance *instance = &scene->instanceCache[state.instanceID];
-		Scene::Mesh *mesh = &scene->meshCache[instance->meshID];
-		Scene::Transformation *transformation = &scene->transformationCache[instance->transformationID];
-
-		glm::quat rot(transformation->rotation);
-		glm::vec3 axis = glm::axis(rot);
-
-		float angle = glm::angle(rot);
-
-		glm::mat4 model;
-		model = glm::translate(ident, transformation->position);
-		model = glm::rotate(model, angle, axis);
-		model = glm::scale(model, transformation->scale);
-
-		glm::mat3 mat(model);
-		shader->setUniformMat3("inverseTransposeMatrix", glm::inverse(mat), true);
-		shader->setUniformMat4("MVP", vp * model);
-
-		mesh->vao.bind();
-		glEnableVertexAttribArray(POSITION_ATTRIB_LOCATION);
-		glEnableVertexAttribArray(NORMAL_ATTRIB_LOCATION);
-		glDrawElements(GL_TRIANGLES, mesh->indexCount, GL_UNSIGNED_INT, 0);
-
-		index++;
-	} while (this->isValidState(index, MaterialID::NORMAL_MAERIAL_ID));
-
-	shader->end();
-	glBindVertexArray(0);
-
-	return index;
-}
-
-int OpenGLRenderer::renderBasicLit(int startIndex, glm::vec3 camera_position, glm::mat4 vp) {
-	if (!this->isValidState(startIndex, MaterialID::BASIC_LIT_MATERIAL_ID)) {
-		return startIndex;
-	}
-
-	glm::mat4 ident = glm::identity<glm::mat4>();
-	Shader::GLSLProgram *shader = Shader::getShaderSet({ "basic_lit_shader.vert", "basic_lit_shader.frag" });
-	shader->use();
-
-	shader->setUniform3f("camera_pos", camera_position);
-	shader->setUniformMat4("VP", vp);
-
-	Scene::PointLight &point = this->scene->pointLightCache[0];
-	shader->setUniform3f("point_light_position", point.position);
-	shader->setUniform3f("point_light_color", point.color);
-	shader->setUniform1f("point_light_intensity", point.intensity);
-
-	int index = startIndex;
-	do {
-		RenderState state = this->getRenderStateFromIndex(index);
-
-		Scene::Instance *instance = &scene->instanceCache[state.instanceID];
-		Scene::Mesh *mesh = &scene->meshCache[instance->meshID];
-		Scene::Transformation *transformation = &scene->transformationCache[instance->transformationID];
-
-		glm::quat rot(transformation->rotation);
-		glm::vec3 axis = glm::axis(rot);
-
-		float angle = glm::angle(rot);
-
-		glm::mat4 model;
-		model = glm::translate(ident, transformation->position);
-		model = glm::rotate(model, angle, axis);
-		model = glm::scale(model, transformation->scale);
-
-		glm::mat3 mat(model);
-		shader->setUniformMat3("inverseTransposeMatrix", glm::inverse(mat), true);
-		shader->setUniformMat4("M", model);
-
-		BasicLitMaterial &material = scene->basicLitMaterialCache[mesh->materialInstanceID];
-		shader->setUniform3f("diffuse_color", material.diffuseColor);
-		shader->setUniform3f("specular_color", material.specularColor);
-		shader->setUniform1f("shinyness", material.shinyness);
-
-
-		mesh->vao.bind();
-		glEnableVertexAttribArray(POSITION_ATTRIB_LOCATION);
-		glEnableVertexAttribArray(NORMAL_ATTRIB_LOCATION);
-		glDrawElements(GL_TRIANGLES, mesh->indexCount, GL_UNSIGNED_INT, 0);
-
-		index++;
-	} while (this->isValidState(index, MaterialID::BASIC_LIT_MATERIAL_ID));
-
-	shader->end();
-	glBindVertexArray(0);
-
-	return index;
-}
-
-int OpenGLRenderer::renderBasicBlock(int startIndex, glm::vec3 camera_position, glm::mat4 vp) {
-	if (!this->isValidState(startIndex, MaterialID::BLOCK_MATERIAL_ID)) {
-		return startIndex;
-	}
-
-	glm::mat4 ident = glm::identity<glm::mat4>();
-	Shader::GLSLProgram *shader = Shader::getShaderSet({ "chunk_shader.vert", "chunk_shader.frag" });
-	shader->use();
-
-
-	shader->setUniform3f("camera_pos", camera_position);
-	shader->setUniformMat4("VP", vp);
-
-	Scene::PointLight &point = this->scene->pointLightCache[0];
-	shader->setUniform3f("point_light_position", point.position);
-	shader->setUniform3f("point_light_color", point.color);
-	shader->setUniform1f("point_light_intensity", point.intensity);
-
-	int index = startIndex;
-	do {
-		RenderState state = this->getRenderStateFromIndex(index);
-
-		Scene::Instance *instance = &scene->instanceCache[state.instanceID];
-		Scene::Mesh *mesh = &scene->meshCache[instance->meshID];
-		Scene::Transformation *transformation = &scene->transformationCache[instance->transformationID];
-
-		glm::quat rot(transformation->rotation);
-		glm::vec3 axis = glm::axis(rot);
-
-		float angle = glm::angle(rot);
-
-		glm::mat4 model;
-		model = glm::translate(ident, transformation->position);
-		model = glm::rotate(model, angle, axis);
-		model = glm::scale(model, transformation->scale);
-
-		glm::mat3 mat(model);
-		shader->setUniformMat3("inverseTransposeMatrix", glm::inverse(mat), true);
-		shader->setUniformMat4("M", model);
-
-		BlockMaterial &material = scene->blockMaterialCache[mesh->materialInstanceID];
-		shader->setUniform3f("specular_color", material.specularColor);
-		shader->setUniform1f("shinyness", material.shinyness);
-
-
-		mesh->vao.bind();
-		glEnableVertexAttribArray(POSITION_ATTRIB_LOCATION);
-		glEnableVertexAttribArray(NORMAL_ATTRIB_LOCATION);
-		glEnableVertexAttribArray(COLOR_ATTRIB_LOCATION);
-		glDrawElements(GL_TRIANGLES, mesh->indexCount, GL_UNSIGNED_INT, 0);
-
-		index++;
-	} while (this->isValidState(index, MaterialID::BLOCK_MATERIAL_ID));
-
-	shader->end();
-	glBindVertexArray(0);
-
-	return index;
-}
-
-void OpenGLRenderer::renderChunks(Voxel::ChunkManager *manager, glm::vec3 camera_position, glm::mat4 vp) {
-
-	const Graphics::BlockMaterial chunkMat = { {.95f, .7f, .8f}, 30 };
-
-	Shader::GLSLProgram *shader = Shader::getShaderSet({ "chunk_shader.vert", "chunk_shader.frag" });
-	shader->use();
-
-	shader->setUniform3f("camera_pos", camera_position);
-	shader->setUniformMat4("VP", vp);
-
-	Scene::PointLight &point = this->scene->pointLightCache[0];
-	shader->setUniform3f("point_light_position", point.position);
-	shader->setUniform3f("point_light_color", point.color);
-	shader->setUniform1f("point_light_intensity", point.intensity);
-
-	for (Voxel::ChunkManager::ChunkRenderDataIterator iterator = manager->beginRenderData(); iterator != manager->endRenderData(); iterator++) {
-
-		Voxel::ChunkRenderData *data = iterator->second;
-
-		if (data == nullptr) {
-			continue;
+void OpenGLRenderer::render(Voxel::ChunkRenderDataManager *manager) {
+	currentPort = ViewPort::NUM_VIEW_PORTS;
+	ShaderVariables::shader_time = getShaderTime();
+
+	std::vector<RenderStateKey>::const_iterator start = sortedRenderStateKeys.begin();
+	std::vector<RenderStateKey>::const_iterator end = sortedRenderStateKeys.end();
+
+	while (start != end) {
+		swapViewPorts(*start);
+
+		switch (start->getMaterialID()) {
+		case MaterialID::COLOR_MATERIAL_ID:
+			start = render_basic(scene, start, end);
+			break;
+		case MaterialID::NORMAL_MAERIAL_ID:
+			start = render_normal(scene, start, end);
+			break;
+		case MaterialID::BASIC_LIT_MATERIAL_ID:
+			start = render_basic_lit(scene, start, end);
+			break;
+		case MaterialID::CHUNK_MATERIAL_ID:
+			start = render_chunks(manager, scene, &shadow, start, end);
+			break;
+		case MaterialID::CHUNK_SHADOW_MATERIAL_ID:
+			start = render_chunks_shadow(manager, scene, start, end);
+			break;
+		default:
+			start++;
 		}
+	}
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-		float x = data->getChunkX() * Voxel::CHUNK_RENDER_WIDTH_X;
-		float y = data->getChunkY() * Voxel::CHUNK_RENDER_WIDTH_Y;
-		float z = data->getChunkZ() * Voxel::CHUNK_RENDER_WIDTH_Z;
+	renderPostProcess();
+}
 
-		shader->setUniform3f("pos", glm::vec3(x, y, z));
-		shader->setUniform3f("specular_color", chunkMat.specularColor);
-		shader->setUniform1f("shinyness", chunkMat.shinyness);
+void OpenGLRenderer::postrender() {
+	
+}
 
-		data->vao.bind();
-		glEnableVertexAttribArray(POSITION_ATTRIB_LOCATION);
-		glEnableVertexAttribArray(NORMAL_ATTRIB_LOCATION);
-		glEnableVertexAttribArray(COLOR_ATTRIB_LOCATION);
- 		glDrawElements(GL_TRIANGLES, (GLsizei)data->indexCount, GL_UNSIGNED_INT, 0);
+void OpenGLRenderer::swapViewPorts(RenderStateKey key) {
+	ViewPort newPort = key.getViewPort();
+
+	if (newPort == currentPort) {
+		return;
 	}
 
-	shader->end();
-	glBindVertexArray(0);
+	currentPort = newPort;
+
+	switch (currentPort) {
+	case ViewPort::SHADOW:
+		bindShadowPort();
+		break;
+	case ViewPort::FINAL:
+	default:
+		bindFinalPort();
+		break;
+	}
+
 }
 
-bool OpenGLRenderer::isValidState(int sortedStateKeyIndex, MaterialID typeID) {
-	return sortedStateKeyIndex < sortedRenderStateKeys.size()
-		&& typeID == getRenderStateFromKey(sortedRenderStateKeys[sortedStateKeyIndex]).materialID;
+void OpenGLRenderer::bindShadowPort() {
+	shadow.bind();
+	glEnable(GL_DEPTH_TEST);
+	glClear(GL_DEPTH_BUFFER_BIT);
+	glCullFace(GL_FRONT);
+	auto camera = &scene->cameraCache[scene->getSunCameraID()];
+	ShaderVariables::camera_pos = camera->eye;
+	ShaderVariables::p = glm::ortho(-20.0f, 20.0f, -20.0f, 20.0f, .1f, 100.0f);
+	ShaderVariables::v = glm::lookAt(camera->eye, camera->eye + camera->target, camera->up);
+	ShaderVariables::vp = ShaderVariables::p * ShaderVariables::v;
+	glCullFace(GL_BACK);
+
 }
 
-OpenGLRenderer::RenderStateKey OpenGLRenderer::createRenderStateKey(OpenGLRenderer::RenderState state) {
-	RenderStateKey key = 0L;
-
-	key |= state.instanceID;
-	key |= ((unsigned long long)state.materialID) << sizeof(state.instanceID) * 8;
-
-	return key;
+void OpenGLRenderer::bindFinalPort() {
+	final.bind();
+	glEnable(GL_DEPTH_TEST);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	auto camera = &scene->cameraCache[scene->getMainCameraID()];
+	ShaderVariables::camera_pos = camera->eye;
+	ShaderVariables::sunVP = ShaderVariables::vp;			//this is the vp from the previous view port 
+	ShaderVariables::p = perspectiveProjection;
+	ShaderVariables::v = glm::lookAt(camera->eye, camera->eye + camera->target, camera->up);
+	ShaderVariables::vp = ShaderVariables::p * ShaderVariables::v;
 }
 
-OpenGLRenderer::RenderState OpenGLRenderer::getRenderStateFromKey(RenderStateKey key) {
-	RenderState state;
+void OpenGLRenderer::renderPostProcess() {
+	glDisable(GL_DEPTH_TEST);
+	glClear(GL_COLOR_BUFFER_BIT);
+	glViewport(0, 0, window_width, window_height);
 
-	state.instanceID = key & 0xffffffff;
-	state.materialID = (MaterialID)((key >> sizeof(state.instanceID) * 8) & 0xff);
+	Shader::GLSLProgram *program = Shader::getShaderSet({"frame_buffer_shader.vert", "frame_buffer_shader.frag"});
+	program->use();
 
-	return state;
+	//shadow.getDepthAttachment().bindActiveTexture(0);
+	final.getColorAttachment().bindActiveTexture(0);
+	program->setUniform1f("time", getShaderTime());
+	quad.bind();
+	glEnableVertexAttribArray(POSITION_ATTRIB_LOCATION);
+	glDrawArrays(GL_TRIANGLES, 0, 6);
+	quad.unbind();
+
+	program->end();
+
 }
 
-OpenGLRenderer::RenderState OpenGLRenderer::getRenderStateFromIndex(int sortedRenderStateKeyIndex) {
-	return getRenderStateFromKey(sortedRenderStateKeys[sortedRenderStateKeyIndex]);
+float OpenGLRenderer::getShaderTime() {
+	return (float)duration;
 }

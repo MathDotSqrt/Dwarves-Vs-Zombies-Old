@@ -1,4 +1,5 @@
 #include "VBO.h"
+#include <assert.h>
 
 using namespace Graphics;
 
@@ -30,6 +31,7 @@ VBO& VBO::operator=(VBO &&other) {
 }
 
 void VBO::bind() {
+	assert(this->vboID);
 	glBindBuffer(this->bufferType, this->vboID);
 }
 
@@ -50,3 +52,8 @@ void VBO::dispose() {
 		this->vboID = 0;
 	}
 }
+
+GLuint VBO::getID() const{
+	return vboID;
+}
+

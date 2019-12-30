@@ -5,7 +5,7 @@
 #include "System.h"	//todo remove this
 #include "LinearAllocator.h"
 
-#define MEM_ALLOC_SIZE 128 * 1024 * 1024
+#define MEM_ALLOC_SIZE 1024 * 1024 * 1024
 
 namespace Graphics {
 	class OpenGLRenderer;
@@ -15,6 +15,7 @@ namespace Graphics {
 
 namespace Voxel {
 	class ChunkManager;
+	class ChunkRenderDataManager;
 }
 
 class Engine : public entt::registry {
@@ -36,6 +37,7 @@ private:
 	//SYSTEMS
 	Util::Allocator::LinearAllocator linearAlloc;
 	Voxel::ChunkManager *chunkManager;
+	Voxel::ChunkRenderDataManager *chunkRenderDataManager;
 	Graphics::OpenGLRenderer *renderer;
 	Graphics::Scene *scene;
 	std::set<System*, System::classcomp> systems;
@@ -67,9 +69,11 @@ public:
 
 	entt::entity getPlayer();
 
+	//todo refactor all of this
 	SLNet::ConnectionState getConnectionState();
 	Util::Allocator::LinearAllocator& getAllocator();
 	Voxel::ChunkManager* getChunkManager();
+	Voxel::ChunkRenderDataManager* getChunkRenderDataManager();
 	Graphics::OpenGLRenderer* getRenderer();
 	Graphics::Scene* getScene();
 };

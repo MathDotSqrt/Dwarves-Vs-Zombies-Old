@@ -22,6 +22,7 @@ layer, transparancy type, cmd, material id, texture id
 class Scene {
 private:
 	unsigned int mainCameraID;
+	unsigned int sunCameraID;
 
 	//todo add reference count to mesh to delete it when no transformations are applied to it
 	struct VertexBuffer {
@@ -100,7 +101,7 @@ public:
 	~Scene();
 
 	template<typename VERTEX>
-	unsigned int createVertexBuffer(std::vector<VERTEX> &verticies) {
+	unsigned int createVertexBuffer(const std::vector<VERTEX> &verticies) {
 		VertexBuffer vb;
 		vb.vbo.bind();
 		vb.vbo.bufferData(verticies, GL_STATIC_DRAW);
@@ -156,5 +157,8 @@ public:
 
 	void setMainCamera(unsigned int cameraID);
 	unsigned int getMainCameraID();
+
+	void setSunCameraID(unsigned int cameraID);
+	unsigned int getSunCameraID();
 };
 }

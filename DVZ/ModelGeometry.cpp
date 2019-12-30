@@ -19,10 +19,11 @@ Geometry<PositionAttrib, NormalAttrib, TexcoordAttrib> Graphics::CreateModel(std
 	size_t size = loader.LoadedVertices.size();
 
 
-	model.getVerticies().resize(size);	//This is unoptimal, calling constructor of geometry vertex
+	model.resizeVerticies(size);	//This is unoptimal, calling constructor of geometry vertex
 	//model.getVerticies().assign(loader.LoadedVertices.begin(), loader.LoadedVertices.end());
-	memcpy(model.getVerticies().data(), loader.LoadedVertices.data(), sizeof(ModelGeometry::GeometryVertex) * size);
-	model.getIndices() = loader.LoadedIndices;
+
+	memcpy((void*)model.getVerticies().data(), loader.LoadedVertices.data(), sizeof(ModelGeometry::GeometryVertex) * size);
+	model.setIndices(loader.LoadedIndices);
 	return model;
 }
 

@@ -43,3 +43,7 @@ void VAO::dispose() {
 		this->vaoID = 0;
 	}
 }
+
+GLuint VAO::getID() const{
+	return vaoID;
+}
