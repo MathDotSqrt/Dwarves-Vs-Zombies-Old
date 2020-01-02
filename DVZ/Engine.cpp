@@ -1,3 +1,4 @@
+
 #include "Engine.h"
 
 #include <thread>
@@ -145,4 +146,8 @@ Graphics::OpenGLRenderer* Engine::getRenderer() {
 
 Graphics::Scene* Engine::getScene() {
 	return this->scene;
+}
+
+SLNet::RakPeerInterface* Engine::getPeer() {
+	return this->peer;
 }

@@ -61,5 +61,6 @@ public:
 	Voxel::ChunkRenderDataManager* getChunkRenderDataManager();
 	Graphics::OpenGLRenderer* getRenderer();
 	Graphics::Scene* getScene();
+	SLNet::RakPeerInterface* getPeer();
 };
 

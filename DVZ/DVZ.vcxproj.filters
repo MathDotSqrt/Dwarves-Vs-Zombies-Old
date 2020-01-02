@@ -270,6 +270,9 @@
     <ClInclude Include="DepthFBO.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="PrototypeID.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">

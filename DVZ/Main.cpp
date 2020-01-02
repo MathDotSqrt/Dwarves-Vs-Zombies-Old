@@ -52,8 +52,8 @@ void run() {
 		}
 
 		if (currentTime - lastTime >= 1.0 && !info_pause) {
-			LOG_INFO("Milliseconds per Frame: %f", 1000.0 / numFrames);
-			Util::Performance::getTimerInfo();
+			//LOG_INFO("Milliseconds per Frame: %f", 1000.0 / numFrames);
+			//Util::Performance::getTimerInfo();
 
 			numFrames = 0;
 			lastTime += 1.0;

@@ -41,9 +41,9 @@ void Client::poll() {
 		/*else if (id == GamePacketID::ID_SPAWN_PLAYER) { 
 			LOG_NET("Spawn player");
 		}*/
-		else if (id == GamePacketID::ID_PLAYER_POS) {
-			LOG_NET("Player move");
-		}
+		//else if (id == GamePacketID::ID_PLAYER_POS) {
+		//	LOG_NET("Player move");
+		//}
 	}
 
 }

@@ -1,6 +1,7 @@
 #pragma once
 #include <glm.hpp>
 #include <gtx/quaternion.hpp>
+#include "PrototypeID.h"
 
 struct PositionComponent {
 	glm::vec3 pos;
@@ -54,6 +55,6 @@ struct NetworkComponent {
 	float delta;
 };
 
-struct ServerGeneratedComponent {
-	unsigned int netID;
+struct PrototypeComponent {
+	PrototypeID ID;
 };

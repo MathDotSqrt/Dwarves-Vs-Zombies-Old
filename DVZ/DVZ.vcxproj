@@ -299,6 +299,7 @@
     <ClInclude Include="PerlinNoise.h" />
     <ClInclude Include="PlayState.h" />
     <ClInclude Include="PoolAllocator.h" />
+    <ClInclude Include="PrototypeID.h" />
     <ClInclude Include="QuadGeometry.h" />
     <ClInclude Include="Recycler.h" />
     <ClInclude Include="RenderStateKey.h" />

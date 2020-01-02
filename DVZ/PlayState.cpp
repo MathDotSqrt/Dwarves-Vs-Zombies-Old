@@ -6,7 +6,7 @@
 #include "MovementSystem.h"
 #include "InputSystem.h"
 #include "BasicRenderSystem.h"
-#include "NetPlayerSystem.h"
+#include "NetWorkSystem.h"
 #include "VoxelSystem.h"
 #include "ShaderUpdaterSystem.h"
 #include "ModelGeometry.h"
@@ -23,15 +23,12 @@ PlayState::~PlayState() {
 void PlayState::init() {
 	LOG_STATE("init");
 	Graphics::Scene *scene = e.getScene();
-	Graphics::TEX texture = Graphics::TEX::Builder("terrain.png").buildTexture();
 
 	/*PLAYER*/
 	entt::entity playerID = e.addPlayer(0, 0, 0);
 	unsigned int pointLightInstanceID = e.getScene()->createPointLightInstance();
 	e.assign<PointLightComponent>(playerID, pointLightInstanceID, glm::vec3(1, 1, 1), 60.0f);
 	/*PLAYER*/
-
-
 	
 	/*TREE*/
 	Graphics::Geometry model = Graphics::CreateModel("tree.obj");
@@ -89,17 +86,14 @@ void PlayState::init() {
 	/*NET*/
 
 	/*SYSTEM*/
-	e.addSystem(new InputSystem(0));
+	e.addSystem(new NetWorkSystem(0));
+	e.addSystem(new InputSystem(10));
 	e.addSystem(new ShaderUpdaterSystem(1.0f, 100));
 	e.addSystem(new MovementSystem(200));
-	//this->e.addSystem(new NetPlayerSystem(.1f, 2));
 	e.addSystem(new VoxelSystem(300));
 	e.addSystem(new BasicRenderSystem(500));
 	/*SYSTEM*/
 
-	//Graphics::TEX t = Graphics::TEX::Builder("terrain_debug.png").nearest().clampToEdge().buildTextureAtlasArray(16, 16);
-
-	LOG_SYSTEM("init");
 }
 
 void PlayState::cleanUp() {
@@ -117,6 +111,5 @@ void PlayState::leaving() {
 
 void PlayState::update(float delta) {
 	this->e.update(delta);
-
 }
 
