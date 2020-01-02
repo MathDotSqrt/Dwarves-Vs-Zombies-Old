@@ -52,7 +52,8 @@ void NetWorkSystem::update(Engine * engine, float delta) {
 			uint32 n;
 			stream.Read(n);
 			engine->assign_or_replace<NetworkComponent>(n);
-			LOG_NET("CLIENT ID RECIEVED: %d", id);
+			LOG_NET("CLIENT ID RECIEVED: %d", n);
+			break;
 		default:
 			LOG_NET("ID CAUGHT: %d", id);
 		}

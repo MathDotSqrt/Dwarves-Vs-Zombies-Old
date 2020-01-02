@@ -1,17 +1,30 @@
 #include <stdio.h>
 #include <memory>
+#include <chrono>
+#include <vector>
+#include "entt.hpp"
+#include "Components.h"
+#include "GamePacketID.h"
 #include "MessageIdentifiers.h"
 #include "RakPeerInterface.h"
 #include "RakNetTypes.h"
+#include "BitStream.h"
+
+
+//https://fabiensanglard.net/quake3/network.php
+
+#define FPS 60
 
 #define MAX_CONNECTIONS 10
 #define SERVER_PORT 60000
 
 using namespace SLNet;
 
+void networkSystem(entt::registry &registry, RakPeerInterface *peer);
 MessageID getPacketID(Packet *p);
 
 int main(void) {
+	printf("Starting server...\n");
 	auto deleter = [](RakPeerInterface *peer) {
 		RakPeerInterface::DestroyInstance(peer);
 	};
@@ -21,25 +34,58 @@ int main(void) {
 	peer->Startup(MAX_CONNECTIONS, &sd, 1);
 	peer->SetMaximumIncomingConnections(MAX_CONNECTIONS - 1);
 
-	printf("Starting server...\n");
+	entt::registry registry;
+
+	auto lastTime = std::chrono::system_clock::now();
 
 	while (1) {
-		Packet *packet;
-		for (packet = peer->Receive(); packet; peer->DeallocatePacket(packet), packet = peer->Receive()) {
-			MessageID id = getPacketID(packet);
 
-			switch (id) {
-			case ID_NEW_INCOMING_CONNECTION:
-				printf("New connection from [%s]\n", packet->systemAddress.ToString());
-				break;
-			default:
-				printf("SOMETHING REVICEDC\n");
-				break;
-			}
+		auto currentTime = std::chrono::system_clock::now();
+
+		std::chrono::duration<double> duration = currentTime - lastTime;
+		if (duration.count() >= 1.0 / FPS) {
+			networkSystem(registry, peer.get());
+			
+
+			lastTime = currentTime;
 		}
 	}
 
 	return 0;
+}
+
+
+void networkSystem(entt::registry &registry, RakPeerInterface *peer) {
+	Packet *packet;
+	for (packet = peer->Receive(); packet; peer->DeallocatePacket(packet), packet = peer->Receive()) {
+		MessageID id = getPacketID(packet);
+		BitStream out;
+
+		switch (id) {
+		case ID_NEW_INCOMING_CONNECTION: 
+		{
+			printf("New connection from [%s]\n", packet->systemAddress.ToString());
+
+			entt::entity player = registry.create();
+			registry.assign<PositionComponent>(player, glm::vec3(0, 0, 0));
+			registry.assign<VelocityComponent>(player, glm::vec3(0, 0, 0));
+			registry.assign<RotationComponent>(player, glm::vec3(0, 0, 0));
+			registry.assign<DirComponent>(player, glm::vec3(0, 0, -1), glm::vec3(0, 1, 0), glm::vec3(1, 0, 0));
+
+			out.Write((MessageID)ID_CLIENT_NET_ID);
+			out.Write(player);
+			peer->Send(&out, PacketPriority::IMMEDIATE_PRIORITY, PacketReliability::RELIABLE, 0, packet->systemAddress, false);
+		}
+			break;
+
+		case ID_DISCONNECTION_NOTIFICATION:
+			printf("CLIENT DISCONNECTED\n");
+			break;
+		default:
+			printf("SOMETHING REVICEDC\n");
+			break;
+		}
+	}
 }
 
 

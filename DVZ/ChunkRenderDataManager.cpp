@@ -29,11 +29,11 @@ ChunkRenderDataManager::ChunkRenderDataManager(Util::Allocator::IAllocator &pare
 
 
 ChunkRenderDataManager::~ChunkRenderDataManager() {
-	Util::Allocator::free(chunkMesherAllocator, mainMesher);
-	Util::Allocator::free(chunkMesherAllocator, mesher);
-
 	isRunning = false;
 	meshingThread.join();
+
+	Util::Allocator::free(chunkMesherAllocator, mainMesher);
+	Util::Allocator::free(chunkMesherAllocator, mesher);
 }
 
 void ChunkRenderDataManager::update(glm::vec3 pos, glm::vec3 rot, ChunkManager &manager) {

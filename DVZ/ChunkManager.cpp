@@ -38,6 +38,9 @@ ChunkManager::~ChunkManager() {
 		mesherThread[i].join();
 	}
 
+	ChunkRefHandle handle;
+	while (chunkGenerationQueue.try_dequeue(handle));
+
 	//this->chunkSet.clear();
 	Util::Allocator::freeArray<ChunkMesher>(this->chunkMesherAllocator, this->chunkMesherArray);
 	Util::Allocator::free<ChunkMesher>(this->chunkMesherAllocator, this->mainChunkMesher);

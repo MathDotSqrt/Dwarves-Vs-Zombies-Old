@@ -40,8 +40,12 @@ Engine::Engine() : linearAlloc(MEM_ALLOC_SIZE, malloc(MEM_ALLOC_SIZE)){	//todo d
 Engine::~Engine(){
 	delete this->scene;
 	delete this->renderer;
-	delete this->chunkManager;
 	delete this->chunkRenderDataManager;
+	delete this->chunkManager;				//chunkmanager has to deallocate last because chunkRenderDataManager has atomic pointers to chunkManager. 
+											//todo refactor this bad ownership model
+
+	this->peer->Shutdown(100, 0, PacketPriority::HIGH_PRIORITY);
+	SLNet::RakPeerInterface::DestroyInstance(this->peer);
 
 	this->deleteAllActiveSystems();
 }
