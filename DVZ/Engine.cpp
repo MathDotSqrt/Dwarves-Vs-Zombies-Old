@@ -24,10 +24,11 @@ using namespace std;
 
 Engine::Engine() : linearAlloc(MEM_ALLOC_SIZE, malloc(MEM_ALLOC_SIZE)){	//todo delete
 	//todo linearly alloc all of this
+	this->peer = SLNet::RakPeerInterface::GetInstance();
+
 	this->scene = new Graphics::Scene();
 	this->renderer = new Graphics::OpenGLRenderer();
 	this->renderer->init(scene);
-
 	this->chunkManager = new Voxel::ChunkManager(this->linearAlloc);
 	this->chunkRenderDataManager = new Voxel::ChunkRenderDataManager(this->linearAlloc);
 
@@ -42,27 +43,6 @@ Engine::~Engine(){
 	delete this->chunkRenderDataManager;
 
 	this->deleteAllActiveSystems();
-}
-
-entt::entity Engine::addPlayer(float x, float y, float z) {
-	if (this->main != entt::null) {
-		LOG_WARNING("Attempting to make two main entities...");
-		return this->main;
-	}
-	
-	entt::entity id = this->create();
-	this->assign<PositionComponent>(id, glm::vec3(x, y, z));
-	this->assign<RotationComponent>(id, glm::quat(1, 0, 0, 0));
-	this->assign<VelocityComponent>(id, glm::vec3(0, 0, 0));
-	this->assign<RotationalVelocityComponent>(id, glm::vec3(0, 0, 0));
-	this->assign<DirComponent>(id, glm::vec3(0, 0, -1), glm::vec3(0, 1, 0), glm::vec3(1, 0, 0));
-	this->assign<InputComponent>(id);
-	this->assign<CameraInstanceComponent>(id, this->scene->getMainCameraID());
-	this->assign<NetworkComponent>(id);
-
-	this->main = id;
-
-	return id;
 }
 
 void Engine::update(float delta) {
@@ -110,6 +90,33 @@ void Engine::deleteAllActiveSystems() {
 	}
 
 	this->systems.clear();
+}
+
+bool Engine::attemptConnection(const char *ip, uint16 port) {
+	peer->Startup(1, &SLNet::SocketDescriptor(), 1);
+	auto result = peer->Connect(ip, port, nullptr, 0);
+	return result = SLNet::ConnectionAttemptResult::CONNECTION_ATTEMPT_STARTED;
+}
+
+entt::entity Engine::addPlayer(float x, float y, float z) {
+	if (this->main != entt::null) {
+		LOG_WARNING("Attempting to make two main entities...");
+		return this->main;
+	}
+
+	entt::entity id = this->create();
+	this->assign<PositionComponent>(id, glm::vec3(x, y, z));
+	this->assign<RotationComponent>(id, glm::quat(1, 0, 0, 0));
+	this->assign<VelocityComponent>(id, glm::vec3(0, 0, 0));
+	this->assign<RotationalVelocityComponent>(id, glm::vec3(0, 0, 0));
+	this->assign<DirComponent>(id, glm::vec3(0, 0, -1), glm::vec3(0, 1, 0), glm::vec3(1, 0, 0));
+	this->assign<InputComponent>(id);
+	this->assign<CameraInstanceComponent>(id, this->scene->getMainCameraID());
+	this->assign<NetworkComponent>(id);
+
+	this->main = id;
+
+	return id;
 }
 
 entt::entity Engine::getPlayer() {

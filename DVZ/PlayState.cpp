@@ -85,7 +85,7 @@ void PlayState::init() {
 
 	/*NET*/
 	//e.attemptConnection("54.224.40.47", 60000);	//AWS
-	//e.attemptConnection("127.0.0.1", 60000);		//LOCAL
+	e.attemptConnection("127.0.0.1", 60000);		//LOCAL
 	/*NET*/
 
 	/*SYSTEM*/

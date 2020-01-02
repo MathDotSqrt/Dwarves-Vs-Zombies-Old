@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <memory>
 #include "MessageIdentifiers.h"
 #include "RakPeerInterface.h"
 #include "RakNetTypes.h"
@@ -6,15 +7,50 @@
 #define MAX_CONNECTIONS 10
 #define SERVER_PORT 60000
 
+using namespace SLNet;
+
+MessageID getPacketID(Packet *p);
 
 int main(void) {
-	SLNet::RakPeerInterface *peer = SLNet::RakPeerInterface::GetInstance();
+	auto deleter = [](RakPeerInterface *peer) {
+		RakPeerInterface::DestroyInstance(peer);
+	};
+	std::unique_ptr<RakPeerInterface, decltype(deleter)> peer(RakPeerInterface::GetInstance(), deleter);
 
-	SLNet::SocketDescriptor sd(SERVER_PORT, "127.0.0.1");
+	SocketDescriptor sd(SERVER_PORT, "127.0.0.1");
 	peer->Startup(MAX_CONNECTIONS, &sd, 1);
 	peer->SetMaximumIncomingConnections(MAX_CONNECTIONS - 1);
 
+	printf("Starting server...\n");
+
+	while (1) {
+		Packet *packet;
+		for (packet = peer->Receive(); packet; peer->DeallocatePacket(packet), packet = peer->Receive()) {
+			MessageID id = getPacketID(packet);
+
+			switch (id) {
+			case ID_NEW_INCOMING_CONNECTION:
+				printf("New connection from [%s]\n", packet->systemAddress.ToString());
+				break;
+			default:
+				break;
+			}
+		}
+	}
+
 	return 0;
+}
+
+
+MessageID getPacketID(Packet *packet) {
+	MessageID id = (MessageID)packet->data[0];
+	
+	if (id == ID_TIMESTAMP) {
+		return (MessageID)packet->data[sizeof(MessageID) + sizeof(Time)];
+	}
+	else {
+		return (MessageID)packet->data[0];
+	}
 }
 
 
