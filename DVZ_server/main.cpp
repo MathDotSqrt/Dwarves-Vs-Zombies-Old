@@ -1,5 +1,7 @@
 #include <stdio.h>
-#include <RakPeerInterface.h>
+#include "MessageIdentifiers.h"
+#include "RakPeerInterface.h"
+#include "RakNetTypes.h"
 
 #define MAX_CONNECTIONS 10
 #define SERVER_PORT 60000

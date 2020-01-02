@@ -25,13 +25,6 @@ private:
 	//MAIN PLAYER
 
 	//NET
-	bool canSendPackets = false;
-	const char* host;
-	unsigned short port;
-	SLNet::RakPeerInterface *peer;
-	SLNet::SystemAddress *serverAddress;
-	std::unordered_map<entt::entity, entt::entity> netToClientID;
-	SLNet::MessageID getPacketID(SLNet::Packet *packet);
 	//NET
 
 	//SYSTEMS
@@ -51,14 +44,6 @@ public:
 	void update(float delta);
 
 	entt::entity addPlayer(float x, float y, float z);
-	entt::entity addNetPlayer(float x, float y, float z);
-	entt::entity addBullet(entt::entity shooter);
-
-	void attemptConnection(const char* host, unsigned short port);
-	bool isConnected();
-
-	void pollNetwork();
-	void sendPacket();
 	
 	entt::entity getNetEntity(entt::entity netID);
 	
@@ -70,7 +55,6 @@ public:
 	entt::entity getPlayer();
 
 	//todo refactor all of this
-	SLNet::ConnectionState getConnectionState();
 	Util::Allocator::LinearAllocator& getAllocator();
 	Voxel::ChunkManager* getChunkManager();
 	Voxel::ChunkRenderDataManager* getChunkRenderDataManager();
