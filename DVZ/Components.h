@@ -3,6 +3,10 @@
 #include <gtx/quaternion.hpp>
 #include "PrototypeID.h"
 
+struct PlayerComponent {
+
+};
+
 struct PositionComponent {
 	glm::vec3 pos;
 };
@@ -37,22 +41,21 @@ struct BulletComponent {
 };
 
 struct RenderInstanceComponent {
-	unsigned int instanceID;
+	uint32 instanceID;
 };
 
 struct PointLightComponent {
-	unsigned int lightInstanceID;
+	uint32 lightInstanceID;
 	glm::vec3 color;
 	float intensity;
 };
 
 struct CameraInstanceComponent {
-	unsigned int cameraID;
+	uint32 cameraID;
 };
 
 struct NetworkComponent {
-	unsigned int netID;
-	float delta;
+	uint32 netID;
 };
 
 struct PrototypeComponent {

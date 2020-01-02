@@ -6,4 +6,5 @@
 
 enum GamePacketID : unsigned char{
 	ID_SPAWN_ENTITY = ID_USER_PACKET_ENUM + 1,	//packet enum for spawning an entity
+	ID_CLIENT_NET_ID
 };
