@@ -52,6 +52,7 @@ public:
 	void deleteAllActiveSystems();
 
 	bool attemptConnection(const char *ip, uint16 port);
+	bool isConnected();
 
 	entt::entity addPlayer(float x, float y, float z);
 	entt::entity getPlayer();

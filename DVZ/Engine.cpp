@@ -98,6 +98,10 @@ bool Engine::attemptConnection(const char *ip, uint16 port) {
 	return result = SLNet::ConnectionAttemptResult::CONNECTION_ATTEMPT_STARTED;
 }
 
+bool Engine::isConnected() {
+	return peer->NumberOfConnections() > 0;
+}
+
 entt::entity Engine::addPlayer(float x, float y, float z) {
 	if (this->main != entt::null) {
 		LOG_WARNING("Attempting to make two main entities...");
