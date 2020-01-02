@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <memory>
 #include <chrono>
-#include <vector>
+#include <map>
 #include "entt.hpp"
 #include "Components.h"
 #include "GamePacketID.h"
@@ -10,15 +10,15 @@
 #include "RakNetTypes.h"
 #include "BitStream.h"
 
-
 //https://fabiensanglard.net/quake3/network.php
 
 #define FPS 60
-
 #define MAX_CONNECTIONS 10
 #define SERVER_PORT 60000
 
 using namespace SLNet;
+
+std::map<RakNetGUID, entt::entity> connectedClients;
 
 void networkSystem(entt::registry &registry, RakPeerInterface *peer);
 MessageID getPacketID(Packet *p);
@@ -75,11 +75,14 @@ void networkSystem(entt::registry &registry, RakPeerInterface *peer) {
 			out.Write((MessageID)ID_CLIENT_NET_ID);
 			out.Write(player);
 			peer->Send(&out, PacketPriority::IMMEDIATE_PRIORITY, PacketReliability::RELIABLE, 0, packet->systemAddress, false);
+			connectedClients[packet->guid] = player;
 		}
 			break;
-
-		case ID_DISCONNECTION_NOTIFICATION:
+		case ID_DISCONNECTION_NOTIFICATION: 
+		{
 			printf("CLIENT DISCONNECTED\n");
+			connectedClients.erase(packet->guid);
+		}
 			break;
 		default:
 			printf("SOMETHING REVICEDC\n");
@@ -87,7 +90,6 @@ void networkSystem(entt::registry &registry, RakPeerInterface *peer) {
 		}
 	}
 }
-
 
 MessageID getPacketID(Packet *packet) {
 	MessageID id = (MessageID)packet->data[0];
