@@ -1,13 +1,8 @@
 #pragma once
+#include "glm.hpp"
+#include "gtx/quaternion.hpp"
 
-struct PositionComponent {
-	float x;
-	float y;
-	float z;
-};
 
-struct RotationComponent {
-	float x;
-	float y;
-	float z;
-};
+struct PositionComponent : glm::vec3 { };
+
+struct RotationComponent : glm::quat { };

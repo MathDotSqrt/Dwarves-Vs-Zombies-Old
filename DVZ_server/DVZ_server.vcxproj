@@ -100,7 +100,7 @@
     <LibraryPath>$(SolutionDir)RakNet\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DebugSpeed|x64'">
-    <IncludePath>$(SolutionDir)ENTT\single_include\entt;$(SolutionDir)RakNet\include;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)ENTT\single_include\entt;$(SolutionDir)GLM;$(SolutionDir)RakNet\include;$(IncludePath)</IncludePath>
     <LibraryPath>$(SolutionDir)RakNet\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -125,12 +125,14 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='DebugSpeed|x64'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
-      <Optimization>Disabled</Optimization>
+      <Optimization>Full</Optimization>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>$(SolutionDir)ENTT\single_include\entt;$(SolutionDir)RakNet\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <ExceptionHandling>false</ExceptionHandling>
+      <BasicRuntimeChecks>Default</BasicRuntimeChecks>
     </ClCompile>
     <Link>
       <AdditionalLibraryDirectories>$(SolutionDir)RakNet\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
