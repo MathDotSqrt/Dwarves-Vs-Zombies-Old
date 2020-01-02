@@ -31,6 +31,10 @@ RAKNET_OBJ = $(patsubst $(RAKNET_SRC_DIR)/%.cpp, $(RAKNET_OBJ_DIR)/%.o, $(RAKNET
 INCLUDES = -I $(RAKNET_INC_DIR)/ -I ./ENTT/single_include/entt/ -I ./GLM/  
 LIBS = -L $(RAKNET_LIB_DIR) -lRakNet -lpthread 
 
+#SERVER RUN
+run: $(OUT)
+	$(OUT_DIR)/$(OUT)
+
 #SERVER BUILD
 $(OUT): $(RAKNET_LIB) $(OUT_DIR)/$(OUT) 
 

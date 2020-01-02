@@ -17,7 +17,7 @@ int main(void) {
 	};
 	std::unique_ptr<RakPeerInterface, decltype(deleter)> peer(RakPeerInterface::GetInstance(), deleter);
 
-	SocketDescriptor sd(SERVER_PORT, "127.0.0.1");
+	SocketDescriptor sd(SERVER_PORT, nullptr);
 	peer->Startup(MAX_CONNECTIONS, &sd, 1);
 	peer->SetMaximumIncomingConnections(MAX_CONNECTIONS - 1);
 
@@ -33,6 +33,7 @@ int main(void) {
 				printf("New connection from [%s]\n", packet->systemAddress.ToString());
 				break;
 			default:
+				printf("SOMETHING REVICEDC\n");
 				break;
 			}
 		}
