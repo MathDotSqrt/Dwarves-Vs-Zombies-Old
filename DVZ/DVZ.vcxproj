@@ -233,6 +233,7 @@
     <ClCompile Include="RenderStateKey.cpp" />
     <ClCompile Include="render_functions.cpp" />
     <ClCompile Include="Scene.cpp" />
+    <ClCompile Include="SendPacketSystem.cpp" />
     <ClCompile Include="SetQueue.cpp" />
     <ClCompile Include="ShaderSet.cpp" />
     <ClCompile Include="ShaderUpdaterSystem.cpp" />
@@ -305,6 +306,7 @@
     <ClInclude Include="RenderStateKey.h" />
     <ClInclude Include="render_functions.h" />
     <ClInclude Include="Scene.h" />
+    <ClInclude Include="SendPacketSystem.h" />
     <ClInclude Include="SetQueue.h" />
     <ClInclude Include="ShaderSet.h" />
     <ClInclude Include="ShaderUpdaterSystem.h" />

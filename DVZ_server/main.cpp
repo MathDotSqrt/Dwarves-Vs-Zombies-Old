@@ -2,6 +2,8 @@
 #include <memory>
 #include <chrono>
 #include <map>
+#include <thread>
+
 #include "entt.hpp"
 #include "Components.h"
 #include "GamePacketID.h"
@@ -21,6 +23,8 @@ using namespace SLNet;
 std::map<RakNetGUID, entt::entity> connectedClients;
 
 void networkSystem(entt::registry &registry, RakPeerInterface *peer);
+void update(entt::registry &registry);
+void broadcast(entt::registry &registry, RakPeerInterface *peer);
 MessageID getPacketID(Packet *p);
 
 int main(void) {
@@ -45,10 +49,12 @@ int main(void) {
 		std::chrono::duration<double> duration = currentTime - lastTime;
 		if (duration.count() >= 1.0 / FPS) {
 			networkSystem(registry, peer.get());
-			
+			broadcast(registry, peer.get());
 
 			lastTime = currentTime;
 		}
+
+		std::this_thread::sleep_for(std::chrono::milliseconds(10));
 	}
 
 	return 0;
@@ -59,6 +65,7 @@ void networkSystem(entt::registry &registry, RakPeerInterface *peer) {
 	Packet *packet;
 	for (packet = peer->Receive(); packet; peer->DeallocatePacket(packet), packet = peer->Receive()) {
 		MessageID id = getPacketID(packet);
+		BitStream in(packet->data, packet->length, false);
 		BitStream out;
 
 		switch (id) {
@@ -71,6 +78,7 @@ void networkSystem(entt::registry &registry, RakPeerInterface *peer) {
 			registry.assign<VelocityComponent>(player, glm::vec3(0, 0, 0));
 			registry.assign<RotationComponent>(player, glm::vec3(0, 0, 0));
 			registry.assign<DirComponent>(player, glm::vec3(0, 0, -1), glm::vec3(0, 1, 0), glm::vec3(1, 0, 0));
+			registry.assign<InputComponent>(player, false, false, false, false, glm::vec2());
 
 			out.Write((MessageID)ID_CLIENT_NET_ID);
 			out.Write(player);
@@ -81,13 +89,43 @@ void networkSystem(entt::registry &registry, RakPeerInterface *peer) {
 		case ID_DISCONNECTION_NOTIFICATION: 
 		{
 			printf("CLIENT DISCONNECTED\n");
+			entt::entity playerID = connectedClients[packet->guid];
+			registry.destroy(playerID);
 			connectedClients.erase(packet->guid);
+		}
+			break;
+		case ID_CLIENT_INPUT:
+		{
+			in.IgnoreBytes(sizeof(MessageID));
+			entt::entity clientEntity;
+			in.Read(clientEntity);
+			auto &pos = registry.get<PositionComponent>(clientEntity);
+			in.Read(pos);
 		}
 			break;
 		default:
 			printf("SOMETHING REVICEDC\n");
 			break;
 		}
+	}
+}
+
+void update(entt::registry &registry) {
+	
+}
+
+void broadcast(entt::registry &registry, RakPeerInterface *peer) {
+	auto view = registry.view<PositionComponent>();
+
+	BitStream stream;
+
+	for (entt::entity e : view) {
+		stream.Reset();
+		stream.Write((MessageID)ID_PLAYER_MOVE);
+		stream.Write(e);
+		stream.Write(registry.get<PositionComponent>(e));
+
+		peer->Send(&stream, PacketPriority::MEDIUM_PRIORITY, PacketReliability::UNRELIABLE, 0, UNASSIGNED_RAKNET_GUID, true);
 	}
 }
 

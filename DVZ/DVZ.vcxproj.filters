@@ -273,6 +273,9 @@
     <ClInclude Include="PrototypeID.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="SendPacketSystem.h">
+      <Filter>Header Files\Systems</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -436,6 +439,9 @@
     </ClCompile>
     <ClCompile Include="DepthFBO.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="SendPacketSystem.cpp">
+      <Filter>Source Files\Systems</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

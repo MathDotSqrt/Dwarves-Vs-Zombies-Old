@@ -8,9 +8,12 @@
 #include "BasicRenderSystem.h"
 #include "NetWorkSystem.h"
 #include "VoxelSystem.h"
+#include "SendPacketSystem.h"
 #include "ShaderUpdaterSystem.h"
 #include "ModelGeometry.h"
 #include "TEX.h"
+
+
 
 PlayState::PlayState(GameStateManager *gsm) : GameState(gsm) {
 
@@ -81,7 +84,7 @@ void PlayState::init() {
 	/*SUN CAMERA*/
 
 	/*NET*/
-	//e.attemptConnection("54.152.117.147", 60000);	//AWS
+	//e.attemptConnection("52.90.78.193", 60000);		//AWS
 	e.attemptConnection("127.0.0.1", 60000);		//LOCAL
 	/*NET*/
 
@@ -91,6 +94,7 @@ void PlayState::init() {
 	e.addSystem(new ShaderUpdaterSystem(1.0f, 100));
 	e.addSystem(new MovementSystem(200));
 	e.addSystem(new VoxelSystem(300));
+	e.addSystem(new SendPacketSystem(400));
 	e.addSystem(new BasicRenderSystem(500));
 	/*SYSTEM*/
 
@@ -111,5 +115,7 @@ void PlayState::leaving() {
 
 void PlayState::update(float delta) {
 	this->e.update(delta);
+
+	
 }
 

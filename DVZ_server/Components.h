@@ -14,3 +14,11 @@ struct DirComponent {
 	glm::vec3 up;
 	glm::vec3 right;
 };
+
+struct InputComponent {
+	bool up;
+	bool down;
+	bool left;
+	bool right;
+	glm::vec2 mouseDelta;
+};
