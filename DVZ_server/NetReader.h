@@ -2,6 +2,6 @@
 #include "EntityAdmin.h"
 
 namespace System {
-	void net_update(EntityAdmin &admin);
-	void net_broadcast(EntityAdmin &admin);
+	void net_update(EntityAdmin &admin, float delta);
+	void net_broadcast(EntityAdmin &admin, float delta);
 }

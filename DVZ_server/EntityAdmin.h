@@ -8,7 +8,7 @@ namespace SLNet {
 
 class EntityAdmin {
 public:
-	typedef void(*function_ptr)(EntityAdmin &admin);
+	typedef void(*function_ptr)(EntityAdmin &admin, float delta);
 
 	
 	entt::registry registry;

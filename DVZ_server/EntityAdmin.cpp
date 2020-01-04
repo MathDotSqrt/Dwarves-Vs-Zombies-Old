@@ -1,6 +1,7 @@
 #include "EntityAdmin.h"
 #include "RakPeerInterface.h"
 #include "NetReader.h"
+#include "GameLogic.h"
 #include "SingletonComponents.h"
 
 #define MAX_CONNECTIONS 10
@@ -8,9 +9,11 @@
 
 EntityAdmin::EntityAdmin() : peer(SLNet::RakPeerInterface::GetInstance()){
 	addSystemUpdateFunction(System::net_update);
+	addSystemUpdateFunction(GameLogic::input_system);
+	addSystemUpdateFunction(GameLogic::movement_system);
 	addSystemUpdateFunction(System::net_broadcast);
 
-	peer->ApplyNetworkSimulator(0, 0, 0);
+	//peer->ApplyNetworkSimulator(0, 0, 0);
 
 	SLNet::SocketDescriptor sd(SERVER_PORT, nullptr);
 	peer->Startup(MAX_CONNECTIONS, &sd, 1);
@@ -26,7 +29,7 @@ EntityAdmin::~EntityAdmin() {
 
 void EntityAdmin::update(float delta) {
 	for (auto f : updateFunctions) {
-		f(*this);
+		f(*this, delta);
 	}
 }
 

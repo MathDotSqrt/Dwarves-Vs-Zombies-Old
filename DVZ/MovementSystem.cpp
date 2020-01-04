@@ -28,8 +28,4 @@ void MovementSystem::update(Engine * engine, float delta) {
 	engine->group<PositionComponent, VelocityComponent>().each([delta](auto &pos, auto &vel) {
 		pos.pos += vel.vel * delta;
 	});
-
-	engine->group<RotationComponent, RotationalVelocityComponent>().each([delta] (auto &rot, auto &rotVel){
-		rot.rot = glm::quat(rotVel.eular * delta) * rot.rot;
-	});
 }

@@ -13,7 +13,7 @@ InputSystem::~InputSystem() {
 void InputSystem::addedToEngine(Engine * engine) {
 	LOG_SYSTEM("Added to engine");
 
-	engine->group<InputComponent>(entt::get<DirComponent, RotationComponent, VelocityComponent, RotationalVelocityComponent>);
+	engine->group<InputComponent>(entt::get<DirComponent, RotationComponent, VelocityComponent>);
 }
 
 void InputSystem::removedFromEngine(Engine * engine) {
@@ -40,8 +40,8 @@ void InputSystem::update(Engine * engine, float deltaTime) {
 		
 	});
 
-	engine->group<InputComponent>(entt::get<DirComponent, RotationComponent, VelocityComponent, RotationalVelocityComponent>)
-		.each([deltaTime] (auto &input, auto &dir, auto &rot, auto &vel, auto &rotVel){
+	engine->group<InputComponent>(entt::get<DirComponent, RotationComponent, VelocityComponent>)
+		.each([deltaTime] (auto &input, auto &dir, auto &rot, auto &vel){
 		
 		const float SPEED = 9.0f;
 		const float TURN_SPEED = .5f;
@@ -52,7 +52,6 @@ void InputSystem::update(Engine * engine, float deltaTime) {
 		float up = (float)input.space - (float)input.shift;
 		glm::vec2 mouseDelta = input.mousePos[1] - input.mousePos[0];
 
-
 		glm::vec3 userForward = dir.forward * forward * (input.ctrl ? FAST_SPEED : SPEED);
 		glm::vec3 userRight = dir.right * right * (input.ctrl ? FAST_SPEED : SPEED);
 
@@ -62,6 +61,7 @@ void InputSystem::update(Engine * engine, float deltaTime) {
 		vel.vel = newForward + newRight;
 		vel.vel.y += up * (input.ctrl ? FAST_SPEED : SPEED);
 
+		//todo see if i need to put this above newForward and newRight code
 		glm::quat qYaw = glm::angleAxis((float)-mouseDelta.x * TURN_SPEED / 100.0f, (glm::vec3)dir.up);
 		glm::quat qPitch = glm::angleAxis((float)-mouseDelta.y * TURN_SPEED / 100.0f, (glm::vec3)dir.right);
 		rot.rot = (qYaw * (rot.rot)) * qPitch;

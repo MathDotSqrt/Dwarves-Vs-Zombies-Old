@@ -14,51 +14,73 @@
 using namespace System;
 using namespace SLNet;
 
-void System::net_update(EntityAdmin &admin) {
+void incomming_connection_packet(RakPeerInterface *peer, Packet *packet, entt::registry &registry) {
+	printf("New connection from [%s]\n", packet->systemAddress.ToString());
+
+	entt::entity player = registry.create();
+	registry.assign<PositionComponent>(player, glm::vec3(0, 0, 0));
+	registry.assign<RotationComponent>(player, glm::vec3(0, 0, 0));
+	registry.assign<VelocityComponent>(player, glm::vec3(0, 0, 0));
+	registry.assign<DirComponent>(player, glm::vec3(0, 0, -1), glm::vec3(0, 1, 0), glm::vec3(1, 0, 0));
+	registry.assign<InputComponent>(player);
+	BitStream out;
+	out.Write((MessageID)ID_CLIENT_NET_ID);
+	out.Write(player);
+	peer->Send(&out, PacketPriority::IMMEDIATE_PRIORITY, PacketReliability::RELIABLE, 0, packet->systemAddress, false);
+	registry.ctx<ConnectedClientMap>()[packet->guid] = player;
+}
+
+void disconnection_packet(Packet *packet, entt::registry &registry) {
+	printf("CLIENT DISCONNECTED\n");
+	auto &map = registry.ctx<ConnectedClientMap>();
+	
+	entt::entity playerID = map[packet->guid];
+	registry.destroy(playerID);
+	map.erase(packet->guid);
+}
+
+void client_input_packet(Packet *packet, entt::registry &registry) {
+	auto &map = registry.ctx<ConnectedClientMap>();
+	auto iter = map.find(packet->guid);
+	assert(iter != map.end());
+	entt::entity clientEntity = map[packet->guid];
+
+	auto &pos = registry.get<PositionComponent>(clientEntity);
+	auto &rot = registry.get<RotationComponent>(clientEntity);
+	auto &input = registry.get<InputComponent>(clientEntity);
+
+	BitStream in(packet->data, packet->length, false);
+	in.IgnoreBytes(sizeof(MessageID));
+	in.Read(pos);
+	in.Read(rot);
+	input.up = in.ReadBit();
+	input.down = in.ReadBit();
+	input.left = in.ReadBit();
+	input.right = in.ReadBit();
+	input.space = in.ReadBit();
+	input.shift = in.ReadBit();
+	input.ctrl = in.ReadBit();
+}
+
+
+
+void System::net_update(EntityAdmin &admin, float delta) {
 	entt::registry &registry = admin.registry;
 	auto peer = admin.getPeer();
-	auto &map = registry.ctx<ConnectedClientMap>();
 
 	Packet *packet = nullptr;
 	for (packet = peer->Receive(); packet; peer->DeallocatePacket(packet), packet = peer->Receive()) {
 		MessageID id = getPacketID(packet);
-		BitStream in(packet->data, packet->length, false);
-		BitStream out;
 
 		switch (id) {
 		case ID_NEW_INCOMING_CONNECTION: 
-		{
-			printf("New connection from [%s]\n", packet->systemAddress.ToString());
-
-			entt::entity player = registry.create();
-			registry.assign<PositionComponent>(player, glm::vec3(0, 0, 0));
-			registry.assign<VelocityComponent>(player, glm::vec3(0, 0, 0));
-			registry.assign<RotationComponent>(player, glm::vec3(0, 0, 0));
-			registry.assign<DirComponent>(player, glm::vec3(0, 0, -1), glm::vec3(0, 1, 0), glm::vec3(1, 0, 0));
-			registry.assign<InputComponent>(player, false, false, false, false, glm::vec2());
-
-			out.Write((MessageID)ID_CLIENT_NET_ID);
-			out.Write(player);
-			peer->Send(&out, PacketPriority::IMMEDIATE_PRIORITY, PacketReliability::RELIABLE, 0, packet->systemAddress, false);
-			map[packet->guid] = player;
-		}
+			incomming_connection_packet(peer, packet, registry);
 			break;
 		case ID_DISCONNECTION_NOTIFICATION: 
-		{
-			printf("CLIENT DISCONNECTED\n");
-			entt::entity playerID = map[packet->guid];
-			registry.destroy(playerID);
-			map.erase(packet->guid);
-		}
+			disconnection_packet(packet, registry);
 			break;
 		case ID_CLIENT_INPUT:
-		{
-			in.IgnoreBytes(sizeof(MessageID));
-			entt::entity clientEntity;
-			in.Read(clientEntity);
-			auto &pos = registry.get<PositionComponent>(clientEntity);
-			in.Read(pos);
-		}
+			client_input_packet(packet, registry);
 			break;
 		default:
 			printf("SOMETHING REVICEDC\n");
@@ -67,7 +89,7 @@ void System::net_update(EntityAdmin &admin) {
 	}
 }
 
-void System::net_broadcast(EntityAdmin &admin) {
+void System::net_broadcast(EntityAdmin &admin, float delta) {
 	auto &registry = admin.registry;
 	auto *peer = admin.getPeer();
 
