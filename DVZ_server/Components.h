@@ -2,7 +2,6 @@
 #include "glm.hpp"
 #include "gtx/quaternion.hpp"
 
-
 struct PositionComponent : glm::vec3 { };
 
 struct RotationComponent : glm::quat { };
@@ -22,3 +21,4 @@ struct InputComponent {
 	bool right;
 	glm::vec2 mouseDelta;
 };
+

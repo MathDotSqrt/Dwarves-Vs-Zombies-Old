@@ -131,7 +131,7 @@
       <AdditionalIncludeDirectories>$(SolutionDir)ENTT\single_include\entt;$(SolutionDir)RakNet\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
-      <ExceptionHandling>false</ExceptionHandling>
+      <ExceptionHandling>Sync</ExceptionHandling>
       <BasicRuntimeChecks>Default</BasicRuntimeChecks>
     </ClCompile>
     <Link>
@@ -189,11 +189,17 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="EntityAdmin.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="NetReader.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Components.h" />
+    <ClInclude Include="EntityAdmin.h" />
     <ClInclude Include="GamePacketID.h" />
+    <ClInclude Include="NetReader.h" />
+    <ClInclude Include="NetUtil.h" />
+    <ClInclude Include="SingletonComponents.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
