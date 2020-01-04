@@ -10,7 +10,7 @@ EntityAdmin::EntityAdmin() : peer(SLNet::RakPeerInterface::GetInstance()){
 	addSystemUpdateFunction(System::net_update);
 	addSystemUpdateFunction(System::net_broadcast);
 
-	//peer->ApplyNetworkSimulator(.1f, 0, 0);
+	peer->ApplyNetworkSimulator(0, 0, 0);
 
 	SLNet::SocketDescriptor sd(SERVER_PORT, nullptr);
 	peer->Startup(MAX_CONNECTIONS, &sd, 1);

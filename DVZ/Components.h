@@ -33,7 +33,17 @@ struct DirComponent {
 	glm::vec3 right;
 };
 
-struct InputComponent {};
+struct InputComponent {
+	glm::vec2 mousePos[2];		//[0] previous frame position [1] current frame position
+
+	bool up;
+	bool down;
+	bool left;
+	bool right;
+	bool space;
+	bool shift;
+	bool ctrl;
+};
 
 struct BulletComponent {
 	float timeAlive;
