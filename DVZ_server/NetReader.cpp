@@ -45,13 +45,13 @@ void client_input_packet(Packet *packet, entt::registry &registry) {
 	assert(iter != map.end());
 	entt::entity clientEntity = map[packet->guid];
 
-	auto &pos = registry.get<PositionComponent>(clientEntity);
+	//auto &pos = registry.get<PositionComponent>(clientEntity);
 	auto &rot = registry.get<RotationComponent>(clientEntity);
 	auto &input = registry.get<InputComponent>(clientEntity);
 
 	BitStream in(packet->data, packet->length, false);
 	in.IgnoreBytes(sizeof(MessageID));
-	in.Read(pos);
+	//in.Read(pos);
 	in.Read(rot);
 	input.up = in.ReadBit();
 	input.down = in.ReadBit();
