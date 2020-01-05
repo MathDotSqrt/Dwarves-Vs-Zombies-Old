@@ -16,11 +16,6 @@
 #include "ChunkManager.h"
 #include "ChunkRenderDataManager.h"
 
-#include "RakPeerInterface.h"
-#include "MessageIdentifiers.h"
-#include "BitStream.h"
-#include "GamePacketID.h"
-#include <unordered_map>
 
 using namespace GameSystem;
 
@@ -59,16 +54,16 @@ void GameSystem::input_system(Engine &engine, float delta) {
 		glm::vec3 userForward = dir.forward * forward * (input.ctrl ? FAST_SPEED : SPEED);
 		glm::vec3 userRight = dir.right * right * (input.ctrl ? FAST_SPEED : SPEED);
 
-		glm::vec3 newForward = rot.rot * userForward;
-		glm::vec3 newRight = rot.rot * userRight;
+		glm::vec3 newForward = rot * userForward;
+		glm::vec3 newRight = rot * userRight;
 
-		vel.vel = newForward + newRight;
-		vel.vel.y += up * (input.ctrl ? FAST_SPEED : SPEED);
+		vel = newForward + newRight;
+		vel.y += up * (input.ctrl ? FAST_SPEED : SPEED);
 
 		//todo see if i need to put this above newForward and newRight code
 		glm::quat qYaw = glm::angleAxis((float)-mouseDelta.x * TURN_SPEED / 100.0f, (glm::vec3)dir.up);
 		glm::quat qPitch = glm::angleAxis((float)-mouseDelta.y * TURN_SPEED / 100.0f, (glm::vec3)dir.right);
-		rot.rot = (qYaw * (rot.rot)) * qPitch;
+		rot = (qYaw * (rot)) * qPitch;
 
 	});
 
@@ -76,14 +71,14 @@ void GameSystem::input_system(Engine &engine, float delta) {
 	if (Window::isPressed('T')) {
 		//engine->replace<PositionComponent>(player, glm::vec3(0, 4, 0));
 		PositionComponent &comp = engine.get<PositionComponent>(player);
-		comp.pos.x = 0;
-		comp.pos.z = 0;
+		comp.x = 0;
+		comp.z = 0;
 	}
 }
 
 void GameSystem::movement_system(Engine &engine, float delta) {
 	engine.group<PositionComponent, VelocityComponent>().each([delta](auto &pos, auto &vel) {
-		pos.pos += vel.vel * delta;
+		pos += vel * delta;
 	});
 }
 
@@ -91,8 +86,8 @@ void GameSystem::voxel_system(Engine &engine, float delta) {
 	Voxel::ChunkManager &manager = engine.ctx<Voxel::ChunkManager>();
 	PositionComponent p = engine.get<PositionComponent>(engine.getPlayer());
 	RotationComponent r = engine.get<RotationComponent>(engine.getPlayer());
-	glm::vec3 playerPos = p.pos;
-	glm::vec3 playerRot = glm::eulerAngles(r.rot);
+	glm::vec3 playerPos = p;
+	glm::vec3 playerRot = glm::eulerAngles(r);
 
 	manager.update(playerPos.x, playerPos.y, playerPos.z);
 
@@ -104,7 +99,7 @@ void GameSystem::voxel_system(Engine &engine, float delta) {
 		DirComponent dir = engine.get<DirComponent>(engine.getPlayer());
 		RotationComponent rot = engine.get<RotationComponent>(engine.getPlayer());
 
-		glm::vec3 ray = glm::rotate(rot.rot, dir.forward);
+		glm::vec3 ray = glm::rotate(rot, dir.forward);
 		Voxel::BlockRayCast cast = manager.castRay(playerPos, ray, 10);
 
 		if (left && cast.block != Voxel::Block()) {
@@ -134,12 +129,12 @@ void GameSystem::render_system(Engine &engine, float delta) {
 		auto transformationID = scene.instanceCache[instanceComponent.instanceID].transformationID;
 		auto &transformation = scene.transformationCache[transformationID];
 
-		glm::vec3 a = glm::eulerAngles(rotationComponent.rot);
+		glm::vec3 a = glm::eulerAngles(rotationComponent);
 		//LOG_INFO("%f %f %f", a.x, a.y, a.z);
 
-		transformation.position = positionComponent.pos;
-		transformation.rotation = glm::eulerAngles(rotationComponent.rot);
-		transformation.scale = scaleComponent.scale;
+		transformation.position = positionComponent;
+		transformation.rotation = glm::eulerAngles(rotationComponent);
+		transformation.scale = scaleComponent;
 	});
 
 	engine.group<PointLightComponent>(entt::get<PositionComponent>)
@@ -147,7 +142,7 @@ void GameSystem::render_system(Engine &engine, float delta) {
 	{
 		Graphics::Scene::PointLight &pointLight = scene.pointLightCache[pointLightComponent.lightInstanceID];
 
-		pointLight.position = positionComponent.pos;
+		pointLight.position = positionComponent;
 		pointLight.color[0] = pointLightComponent.color.x;
 		pointLight.color[1] = pointLightComponent.color.y;
 		pointLight.color[2] = pointLightComponent.color.z;
@@ -159,8 +154,8 @@ void GameSystem::render_system(Engine &engine, float delta) {
 	{
 		auto &camera = scene.cameraCache[cameraComponent.cameraID];
 
-		glm::quat orientation = rotationComponent.rot;
-		camera.eye = positionComponent.pos;
+		glm::quat orientation = rotationComponent;
+		camera.eye = positionComponent;
 		camera.target = orientation * dirComponent.forward;
 		camera.up = orientation * dirComponent.up;
 	});
@@ -207,111 +202,3 @@ void GameSystem::shader_update_system(Engine &engine, float delta) {
 	}
 }
 
-void update_player(Engine &engine, SLNet::Packet *packet) {
-	SLNet::BitStream read(packet->data, packet->length, false);
-
-	read.IgnoreBytes(sizeof(SLNet::MessageID));
-
-	entt::entity playerID = entt::null;
-	entt::entity netID = entt::null;
-	glm::vec3 pos;
-	read.Read(netID);
-	read.Read(pos);
-
-	auto &map = engine.ctx<std::unordered_map<entt::entity, entt::entity>>();
-
-	auto iter = map.find(netID);
-	if (iter == map.end()) {
-		playerID = engine.create();
-		engine.assign<PositionComponent>(playerID, pos);
-		engine.assign<RotationComponent>(playerID, glm::quat(glm::vec3(0, 0, 0)));
-		engine.assign<ScaleComponent>(playerID, glm::vec3(1, 1, 1));
-
-		map[netID] = playerID;
-		LOG_NET("NEW ENT");
-	}
-	else {
-		playerID = iter->second;
-		auto &position = engine.get<PositionComponent>(playerID);
-		position.pos = pos;
-	}
-}
-
-void recieve_net_id(Engine &engine, SLNet::Packet *packet) {
-	SLNet::BitStream stream(packet->data, packet->length, false);
-
-	auto &map = engine.ctx<std::unordered_map<entt::entity, entt::entity>>();
-
-	stream.IgnoreBytes(sizeof(SLNet::MessageID));
-	entt::entity playerID = engine.getPlayer();
-	entt::entity netID = entt::null;
-	stream.Read(netID);
-	engine.assign_or_replace<NetworkComponent>(playerID, netID);
-	map.erase(netID);
-	map[netID] = playerID;
-	LOG_NET("CLIENT ID RECIEVED: %d", netID);
-}
-
-SLNet::MessageID get_packet_id(SLNet::Packet *packet) {
-	SLNet::MessageID id = (SLNet::MessageID)packet->data[0];
-
-	if (id == ID_TIMESTAMP) {
-		return (SLNet::MessageID)packet->data[sizeof(SLNet::MessageID) + sizeof(SLNet::Time)];
-	}
-	else {
-		return (SLNet::MessageID)packet->data[0];
-	}
-}
-
-void GameSystem::netword_system(Engine &engine, float delta) {
-	auto peer = engine.ctx<SLNet::RakPeerInterface*>();
-
-	entt::entity id = engine.getPlayer();
-
-	SLNet::Packet *packet;
-	for (packet = peer->Receive(); packet; peer->DeallocatePacket(packet), packet = peer->Receive()) {
-		SLNet::MessageID id = get_packet_id(packet);
-
-
-		switch (id) {
-		case ID_CONNECTION_REQUEST_ACCEPTED:
-			LOG_NET("CONNECTION ACCEPTED");
-			break;
-		case ID_PLAYER_MOVE:
-			update_player(engine, packet);
-			break;
-		case ID_CLIENT_NET_ID:
-			recieve_net_id(engine, packet);
-			break;
-		default:
-			LOG_NET("ID CAUGHT: %d", id);
-		}
-	}
-}
-
-void GameSystem::send_packet_system(Engine &engine, float delta) {
-	auto view = engine.view<PlayerComponent, NetworkComponent>();
-	if (view.size()) {
-		entt::entity playerID = *view.begin();
-		auto &pos = engine.get<PositionComponent>(playerID);
-		auto &rot = engine.get<RotationComponent>(playerID);
-		auto &input = engine.get<InputComponent>(playerID);
-		auto &net = engine.get<NetworkComponent>(playerID);
-		SLNet::BitStream out;
-		out.Write((SLNet::MessageID)ID_CLIENT_INPUT);
-		out.Write(rot);
-		out.Write(input.up);
-		out.Write(input.down);
-		out.Write(input.left);
-		out.Write(input.right);
-		out.Write(input.space);
-		out.Write(input.shift);
-		out.Write(input.ctrl);
-		//out.Write(input.mousePos[0]);
-		//out.Write(input.mousePos[1]);
-
-
-		auto peer = engine.ctx<SLNet::RakPeerInterface*>();
-		peer->Send(&out, LOW_PRIORITY, PacketReliability::UNRELIABLE, 0, SLNet::UNASSIGNED_RAKNET_GUID, true);
-	}
-}

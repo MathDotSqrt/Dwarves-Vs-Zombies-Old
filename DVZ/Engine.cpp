@@ -23,10 +23,7 @@
 using namespace std;
 
 Engine::Engine() : linearAlloc(MEM_ALLOC_SIZE, malloc(MEM_ALLOC_SIZE)){	//todo delete
-	//todo linearly alloc all of this
-
-
-	this->set<SLNet::RakPeerInterface*>(SLNet::RakPeerInterface::GetInstance());
+	this->set<SLNet::RakPeerInterface*>(SLNet::RakPeerInterface::GetInstance())->ApplyNetworkSimulator(0, 100, 0);
 	this->set<Graphics::Scene>();
 	this->set<Graphics::OpenGLRenderer>(&this->ctx<Graphics::Scene>());
 	this->set<Voxel::ChunkManager>(linearAlloc);
@@ -40,14 +37,9 @@ Engine::Engine() : linearAlloc(MEM_ALLOC_SIZE, malloc(MEM_ALLOC_SIZE)){	//todo d
 
 
 Engine::~Engine(){
-	
-											//todo refactor this bad ownership model
-
 	auto peer = this->ctx<SLNet::RakPeerInterface*>();
 	peer->Shutdown(100, 0, PacketPriority::HIGH_PRIORITY);
 	SLNet::RakPeerInterface::DestroyInstance(peer);
-
-	//this->deleteAllActiveSystems();
 }
 
 void Engine::update(float delta) {

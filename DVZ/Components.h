@@ -7,24 +7,24 @@ struct PlayerComponent {
 
 };
 
-struct PositionComponent {
-	glm::vec3 pos;
+struct PositionComponent : glm::vec3 {
+	PositionComponent(glm::vec3 vec) : glm::vec3(vec) {}
 };
 
-struct RotationComponent {
-	glm::quat rot;
+struct RotationComponent : glm::quat {
+	RotationComponent(glm::quat quat) : glm::quat(quat) {}
 };
 
-struct ScaleComponent {
-	glm::vec3 scale;
+struct ScaleComponent : glm::vec3 {
+	ScaleComponent(glm::vec3 vec) : glm::vec3(vec) {}
 };
 
-struct VelocityComponent {
-	glm::vec3 vel;
+struct VelocityComponent : glm::vec3 {
+	VelocityComponent(glm::vec3 vec) : glm::vec3(vec) {}
 };
 
-struct RotationalVelocityComponent {
-	glm::vec3 eular;
+struct RotationalVelocityComponent : glm::vec3{
+	RotationalVelocityComponent(glm::vec3 vec) : glm::vec3(vec) {}
 };
 
 struct DirComponent {
