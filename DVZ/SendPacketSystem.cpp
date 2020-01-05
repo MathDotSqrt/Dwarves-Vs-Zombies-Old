@@ -31,8 +31,6 @@ void SendPacketSystem::update(Engine *engine, float delta) {
 		auto &net = engine->get<NetworkComponent>(playerID);
 		SLNet::BitStream out;
 		out.Write((SLNet::MessageID)ID_CLIENT_INPUT);
-		//out.Write(net.netID);
-		//out.Write(pos);
 		out.Write(rot);
 		out.Write(input.up);
 		out.Write(input.down);
