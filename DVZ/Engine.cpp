@@ -35,7 +35,7 @@ Engine::Engine() : linearAlloc(MEM_ALLOC_SIZE, malloc(MEM_ALLOC_SIZE)){	//todo d
 
 	this->main = entt::null;
 
-	this->set<std::unordered_map<entt::entity, entt::entity >>();
+	this->set<std::unordered_map<entt::entity, entt::entity>>();
 }
 
 
@@ -89,7 +89,7 @@ void Engine::addSystem(StatelessSystem system) {
 }
 
 void Engine::updateSystems(float delta) {
-	for (StatelessSystem system : systems) {
+	for (auto &system : systems) {
 		system.update(*this, delta);
 	}
 }

@@ -218,7 +218,7 @@ void update_player(Engine &engine, SLNet::Packet *packet) {
 	read.Read(netID);
 	read.Read(pos);
 
-	auto map = engine.ctx<std::unordered_map<entt::entity, entt::entity>>();
+	auto &map = engine.ctx<std::unordered_map<entt::entity, entt::entity>>();
 
 	auto iter = map.find(netID);
 	if (iter == map.end()) {
@@ -240,7 +240,7 @@ void update_player(Engine &engine, SLNet::Packet *packet) {
 void recieve_net_id(Engine &engine, SLNet::Packet *packet) {
 	SLNet::BitStream stream(packet->data, packet->length, false);
 
-	auto map = engine.ctx<std::unordered_map<entt::entity, entt::entity>>();
+	auto &map = engine.ctx<std::unordered_map<entt::entity, entt::entity>>();
 
 	stream.IgnoreBytes(sizeof(SLNet::MessageID));
 	entt::entity playerID = engine.getPlayer();
