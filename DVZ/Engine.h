@@ -5,7 +5,7 @@
 #include "common.h"
 #include "entt.hpp"
 #include "RakPeerInterface.h"
-#include "System.h"	//todo remove this
+#include "StatelessSystem.h"
 #include "LinearAllocator.h"
 
 #define MEM_ALLOC_SIZE 1024 * 1024 * 1024
@@ -22,34 +22,11 @@ namespace Voxel {
 	class ChunkRenderDataManager;
 }
 
-class StatelessSystem {
-private:
-	typedef void(*function_ptr)(Engine &engine, float delta);
-	typedef std::chrono::duration<float> FrameTime;
 
-	function_ptr ptr;
-	FrameTime intervalTime;
-	FrameTime currentTimeDuration;
-public:
-	StatelessSystem(function_ptr ptr, FrameTime interval = FrameTime(0)) : ptr(ptr), intervalTime(interval), currentTimeDuration(0s){
-	
-	}
-
-	void update(Engine &engine, float delta) {
-		currentTimeDuration += FrameTime(delta);
-
-		if (currentTimeDuration >= intervalTime) {
-			currentTimeDuration = FrameTime(0s);
-
-			ptr(engine, delta);
-		}
-	}
-};
 
 //todo rename this as client
 class Engine : public entt::registry {
 private:
-	typedef void(*function_ptr)(Engine &engine, float delta);
 
 	//MAIN PLAYER
 	entt::entity main;
@@ -65,19 +42,22 @@ private:
 	Voxel::ChunkRenderDataManager *chunkRenderDataManager;
 	Graphics::OpenGLRenderer *renderer;
 	Graphics::Scene *scene;
-	std::set<System*, System::classcomp> systems;
+	//std::set<System*, System::classcomp> systems;
 	//SYSTEMS
 
-	std::vector<std::pair<function_ptr, std::chrono::time_point<std::chrono::milliseconds>>> systems;
+	std::vector<StatelessSystem> systems;
 public:
 	Engine();
 	~Engine();
 
 	void update(float delta);
-	void addSystem(System *system);
-	void removeSystem(System *system);
+	/*void addSystem(System *system);
+	void removeSystem(System *system);*/
+	//void deleteAllActiveSystems();
+
+
+	void addSystem(StatelessSystem system);
 	void updateSystems(float delta);
-	void deleteAllActiveSystems();
 
 	bool attemptConnection(const char *ip, uint16 port);
 	bool isConnected();

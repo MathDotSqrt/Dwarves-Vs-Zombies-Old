@@ -3,13 +3,10 @@
 #include "macrologger.h"
 
 #include "Components.h"
-#include "MovementSystem.h"
-#include "InputSystem.h"
-#include "BasicRenderSystem.h"
-#include "NetWorkSystem.h"
-#include "VoxelSystem.h"
-#include "SendPacketSystem.h"
-#include "ShaderUpdaterSystem.h"
+#include "StatelessSystem.h"
+#include "GameSystems.h"
+
+#include "Scene.h"
 #include "ModelGeometry.h"
 #include "TEX.h"
 
@@ -89,13 +86,21 @@ void PlayState::init() {
 	/*NET*/
 
 	/*SYSTEM*/
-	e.addSystem(new NetWorkSystem(0));
+	/*e.addSystem(new NetWorkSystem(0));
 	e.addSystem(new InputSystem(10));
 	e.addSystem(new ShaderUpdaterSystem(1.0f, 100));
 	e.addSystem(new MovementSystem(200));
 	e.addSystem(new VoxelSystem(300));
 	e.addSystem(new SendPacketSystem(400));
-	e.addSystem(new BasicRenderSystem(500));
+	e.addSystem(new BasicRenderSystem(500));*/
+
+	e.addSystem(StatelessSystem(GameSystem::netword_system));
+	e.addSystem(StatelessSystem(GameSystem::input_system));
+	e.addSystem(StatelessSystem(GameSystem::shader_update_system, std::chrono::seconds(1)));
+	e.addSystem(StatelessSystem(GameSystem::movement_system));
+	e.addSystem(StatelessSystem(GameSystem::voxel_system));
+	e.addSystem(StatelessSystem(GameSystem::send_packet_system));
+	e.addSystem(StatelessSystem(GameSystem::render_system));
 	/*SYSTEM*/
 
 }

@@ -34,6 +34,8 @@ Engine::Engine() : linearAlloc(MEM_ALLOC_SIZE, malloc(MEM_ALLOC_SIZE)){	//todo d
 	this->chunkRenderDataManager = new Voxel::ChunkRenderDataManager(this->linearAlloc);
 
 	this->main = entt::null;
+
+	this->set<std::unordered_map<entt::entity, entt::entity >>();
 }
 
 
@@ -47,7 +49,7 @@ Engine::~Engine(){
 	this->peer->Shutdown(100, 0, PacketPriority::HIGH_PRIORITY);
 	SLNet::RakPeerInterface::DestroyInstance(this->peer);
 
-	this->deleteAllActiveSystems();
+	//this->deleteAllActiveSystems();
 }
 
 void Engine::update(float delta) {
@@ -64,38 +66,42 @@ void Engine::update(float delta) {
 
 }
 
-void Engine::addSystem(System *system) {
-	if (std::find(this->systems.begin(), this->systems.end(), system) == this->systems.end()) {
-		//LOG_ENGINE("System: %d Index: %d", system->getPriority(), std::upper_bound(this->systems.begin(), this->systems.end(), system, system->operator<));
-		this->systems.insert(system);	//TODO fix bug where multiple systems cannot have same priority
-		
-		//this->systems.push_back(system);
-		system->addedToEngine(this);
-	}
-}
+//void Engine::addSystem(System *system) {
+//	if (std::find(this->systems.begin(), this->systems.end(), system) == this->systems.end()) {
+//		//LOG_ENGINE("System: %d Index: %d", system->getPriority(), std::upper_bound(this->systems.begin(), this->systems.end(), system, system->operator<));
+//		this->systems.insert(system);	//TODO fix bug where multiple systems cannot have same priority
+//		
+//		//this->systems.push_back(system);
+//		system->addedToEngine(this);
+//	}
+//}
+//
+//void Engine::removeSystem(System *system) {
+//	if (find(this->systems.begin(), this->systems.end(), system) != this->systems.end()) {
+//		system->removedFromEngine(this);
+//		//this->systems.erase(std::remove(systems.begin(), systems.end(), system));
+//		this->systems.erase(find(this->systems.begin(), this->systems.end(), system));
+//	}
+//}
 
-void Engine::removeSystem(System *system) {
-	if (find(this->systems.begin(), this->systems.end(), system) != this->systems.end()) {
-		system->removedFromEngine(this);
-		//this->systems.erase(std::remove(systems.begin(), systems.end(), system));
-		this->systems.erase(find(this->systems.begin(), this->systems.end(), system));
-	}
+void Engine::addSystem(StatelessSystem system) { 
+	systems.push_back(system);
 }
 
 void Engine::updateSystems(float delta) {
-	for (auto *system : this->systems) {
-		system->update(this, delta);
+	for (StatelessSystem system : systems) {
+		system.update(*this, delta);
 	}
 }
 
-void Engine::deleteAllActiveSystems() {
-	for (System *system : this->systems) {
-		system->removedFromEngine(this);
-		delete system;
-	}
-
-	this->systems.clear();
-}
+//void Engine::deleteAllActiveSystems() {
+//	for (System *system : this->systems) {
+//		system->removedFromEngine(this);
+//		delete system;
+//	}
+//
+//	this->systems.clear();
+//}
 
 bool Engine::attemptConnection(const char *ip, uint16 port) {
 	peer->Startup(1, &SLNet::SocketDescriptor(), 1);

@@ -214,6 +214,7 @@
     <ClCompile Include="FBO.cpp" />
     <ClCompile Include="GameState.cpp" />
     <ClCompile Include="GameStateManager.cpp" />
+    <ClCompile Include="GameSystems.cpp" />
     <ClCompile Include="Geometry.cpp" />
     <ClCompile Include="IEntityListener.cpp" />
     <ClCompile Include="InputSystem.cpp" />
@@ -237,6 +238,7 @@
     <ClCompile Include="SetQueue.cpp" />
     <ClCompile Include="ShaderSet.cpp" />
     <ClCompile Include="ShaderUpdaterSystem.cpp" />
+    <ClCompile Include="StatelessSystem.cpp" />
     <ClCompile Include="System.cpp" />
     <ClCompile Include="SystemManager.cpp" />
     <ClCompile Include="TestSystem.cpp" />
@@ -279,6 +281,7 @@
     <ClInclude Include="GamePacketID.h" />
     <ClInclude Include="GameState.h" />
     <ClInclude Include="GameStateManager.h" />
+    <ClInclude Include="GameSystems.h" />
     <ClInclude Include="Geometry.h" />
     <ClInclude Include="IEntityListener.h" />
     <ClInclude Include="InputSystem.h" />
@@ -310,6 +313,7 @@
     <ClInclude Include="SetQueue.h" />
     <ClInclude Include="ShaderSet.h" />
     <ClInclude Include="ShaderUpdaterSystem.h" />
+    <ClInclude Include="StatelessSystem.h" />
     <ClInclude Include="System.h" />
     <ClInclude Include="SystemManager.h" />
     <ClInclude Include="TestSystem.h" />

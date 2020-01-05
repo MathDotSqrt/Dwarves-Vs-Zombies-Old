@@ -25,7 +25,5 @@ void MovementSystem::removedFromEngine(Engine * engine) {
 }
 
 void MovementSystem::update(Engine * engine, float delta) {
-	engine->group<PositionComponent, VelocityComponent>().each([delta](auto &pos, auto &vel) {
-		pos.pos += vel.vel * delta;
-	});
+	
 }
