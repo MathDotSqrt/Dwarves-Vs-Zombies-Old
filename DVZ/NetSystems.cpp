@@ -24,13 +24,14 @@ void update_player(Engine &engine, SLNet::Packet *packet) {
 
 	auto iter = map.find(netID);
 	if (iter == map.end()) {
+		LOG_NET("NEW ENT");
+
 		playerID = engine.create();
 		engine.assign<PositionComponent>(playerID, pos);
 		engine.assign<RotationComponent>(playerID, glm::quat(glm::vec3(0, 0, 0)));
 		engine.assign<ScaleComponent>(playerID, glm::vec3(1, 1, 1));
 
 		map[netID] = playerID;
-		LOG_NET("NEW ENT");
 	}
 	else {
 		playerID = iter->second;

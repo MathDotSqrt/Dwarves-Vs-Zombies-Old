@@ -10,6 +10,7 @@
 #include "ModelGeometry.h"
 #include "TEX.h"
 
+#include "ResourceManager.h"
 
 
 PlayState::PlayState(GameStateManager *gsm) : GameState(gsm) {
@@ -23,6 +24,7 @@ PlayState::~PlayState() {
 void PlayState::init() {
 	LOG_STATE("init");
 	auto &scene = e.ctx<Graphics::Scene>();
+	auto &model_cache = e.ctx<ResourceManager::GeometryCache>();
 
 	/*PLAYER*/
 	entt::entity playerID = e.addPlayer(0, 0, 0);
@@ -31,9 +33,10 @@ void PlayState::init() {
 	/*PLAYER*/
 	
 	/*TREE*/
-	Graphics::Geometry model = Graphics::CreateModel("tree.obj");
+	auto model = model_cache.load<ResourceManager::GeometryLoader>("tree.obj"_hs, "tree.obj");
+
 	Graphics::NormalMaterial material;
-	unsigned int meshID = scene.createMesh(model, material);
+	unsigned int meshID = scene.createMesh(model.get(), material);
 	unsigned int renderID = scene.createRenderInstance(meshID);
 
 	entt::entity tree = e.create();
@@ -45,9 +48,9 @@ void PlayState::init() {
 	/*TREE*/
 
 	/*WALKER*/
-	Graphics::Geometry walkerModel = Graphics::CreateModel("SpunkWalker.obj");
+	auto walkerModel = model_cache.load<ResourceManager::GeometryLoader>("SpunkWalker.obj"_hs, "SpunkWalker.obj");
 	Graphics::BasicLitMaterial walkerMaterial = { {1, 0, 1}, {1, 1, 1}, 10};
-	uint32 walkerMeshID = scene.createMesh(walkerModel, walkerMaterial);
+	uint32 walkerMeshID = scene.createMesh(walkerModel.get(), walkerMaterial);
 	uint32 walkerRenderID = scene.createRenderInstance(walkerMeshID);
 
 	entt::entity walker = e.create();

@@ -93,7 +93,7 @@ public:
 		return verticies.size();
 	}
 
-	inline size_t getIndexCount() {
+	inline size_t getIndexCount() const {
 		return indices.size();
 	}
 

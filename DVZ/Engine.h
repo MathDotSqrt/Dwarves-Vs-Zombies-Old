@@ -14,7 +14,6 @@
 namespace Graphics {
 	class OpenGLRenderer;
 	class Scene;
-	class ModelGeometry;
 }
 
 namespace Voxel {

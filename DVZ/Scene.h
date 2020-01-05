@@ -110,7 +110,7 @@ public:
 	}
 
 	template<typename VERTEX, typename MATERIAL, typename ...T>
-	unsigned int createMesh(Geometry<VERTEX, T...> &model, MATERIAL &material) {
+	unsigned int createMesh(const Geometry<VERTEX, T...> &model, MATERIAL &material) {
 		unsigned int materialInstanceID = this->createMaterialInstance(material);
 		unsigned int bufferInstanceID = this->createVertexBuffer(model.getVerticies());
 		

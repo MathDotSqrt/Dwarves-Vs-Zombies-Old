@@ -4,19 +4,17 @@
 #include <thread>
 #include <list>
 #include <algorithm>
-
-#include "GamePacketID.h"
-#include "BitStream.h"
+#include <stdlib.h>
 
 #include "Components.h"
 #include "Scene.h"
 #include "OpenGLRenderer.h"
 #include "QuadGeometry.h"
-#include "ModelGeometry.h"
 #include "ChunkManager.h"
 #include "ChunkRenderDataManager.h"
 #include "Timer.h"
-#include <stdlib.h>
+
+#include "ResourceManager.h"
 
 //#define LINEAR_ALLOC_SIZE 100
 
@@ -28,6 +26,9 @@ Engine::Engine() : linearAlloc(MEM_ALLOC_SIZE, malloc(MEM_ALLOC_SIZE)){	//todo d
 	this->set<Graphics::OpenGLRenderer>(&this->ctx<Graphics::Scene>());
 	this->set<Voxel::ChunkManager>(linearAlloc);
 	this->set<Voxel::ChunkRenderDataManager>(linearAlloc);
+
+	this->set<ResourceManager::TexCache>();
+	this->set<ResourceManager::GeometryCache>();
 
 	this->main = entt::null;
 

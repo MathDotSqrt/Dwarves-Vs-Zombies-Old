@@ -11,8 +11,9 @@ namespace Graphics {
 	//	float nx, ny, nz;
 	//	float u, v;
 	//};
+	typedef Geometry<PositionAttrib, NormalAttrib, TexcoordAttrib> ModelGeometry;
 
-	Geometry<PositionAttrib, NormalAttrib, TexcoordAttrib> CreateModel(std::string filename);
+	ModelGeometry CreateModel(std::string filename);
 
 	//class ModelGeometry : public Geometry<
 	//	ModelVertex, 

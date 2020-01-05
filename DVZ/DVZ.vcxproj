@@ -291,6 +291,7 @@
     <ClInclude Include="Recycler.h" />
     <ClInclude Include="RenderStateKey.h" />
     <ClInclude Include="render_functions.h" />
+    <ClInclude Include="ResourceManager.h" />
     <ClInclude Include="Scene.h" />
     <ClInclude Include="SetQueue.h" />
     <ClInclude Include="ShaderSet.h" />

@@ -74,9 +74,10 @@ public:
 		TEX buildTextureAtlasArray(int rows, int cols);
 	};
 
+
 private:
-	GLuint texID;
 	TEX(Builder &builder);
+	GLuint texID;
 };
 
 }

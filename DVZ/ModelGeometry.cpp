@@ -6,7 +6,7 @@
 using namespace Graphics;
 using namespace std;
 
-Geometry<PositionAttrib, NormalAttrib, TexcoordAttrib> Graphics::CreateModel(std::string filename) {
+Graphics::ModelGeometry Graphics::CreateModel(std::string filename) {
 	typedef Geometry<PositionAttrib, NormalAttrib, TexcoordAttrib> ModelGeometry;
 	
 	PositionAttrib p;
