@@ -34,7 +34,6 @@ void PlayState::init() {
 	
 	/*TREE*/
 	auto model = model_cache.load<ResourceManager::GeometryLoader>("tree.obj"_hs, "tree.obj");
-
 	Graphics::NormalMaterial material;
 	unsigned int meshID = scene.createMesh(model.get(), material);
 	unsigned int renderID = scene.createRenderInstance(meshID);
@@ -68,7 +67,7 @@ void PlayState::init() {
 	e.assign<ScaleComponent>(sunID, glm::vec3(1, 1, 1));
 	e.assign<DirComponent>(sunID, glm::vec3(0, 0, -1), glm::vec3(0, 1, 0), glm::vec3(1, 0, 0));
 	e.assign<RotationalVelocityComponent>(sunID, glm::vec3(0, .1, 0));
-	//e.assign<VelocityComponent>(sunID, glm::vec3(.1, .1, 0));
+	e.assign<VelocityComponent>(sunID, glm::vec3(.1, .1, 0));
 	
 	Graphics::Scene::Camera sunCamera = {
 		glm::vec3(100, 10, 0),
@@ -80,7 +79,7 @@ void PlayState::init() {
 	scene.setSunCameraID(cameraID);
 	//scene->setMainCamera(cameraID);
 	e.assign<CameraInstanceComponent>(sunID, cameraID);
-	e.assign<RenderInstanceComponent>(sunID, scene.createRenderInstance(walkerMeshID));
+	//e.assign<RenderInstanceComponent>(sunID, scene.createRenderInstance(walkerMeshID));
 	/*SUN CAMERA*/
 
 	/*NET*/

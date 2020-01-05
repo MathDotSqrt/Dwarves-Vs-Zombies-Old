@@ -6,7 +6,6 @@
 class PlayState : public GameState {
 private:
 	Engine e;
-	entt::registry engine;
 	/*Graphics::Scene scene;
 	Graphics::OpenGLRenderer renderer;*/
 
