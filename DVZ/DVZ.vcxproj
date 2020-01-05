@@ -321,6 +321,8 @@
     <None Include="normal_shader.frag" />
     <None Include="normal_shader.vert" />
     <None Include="preamble.glsl" />
+    <None Include="res\SpunkWalker.xobj" />
+    <None Include="res\tree.xobj" />
     <None Include="test.frag" />
     <None Include="test.vert" />
   </ItemGroup>
@@ -332,31 +334,6 @@
     <Image Include="terrain_debug.png" />
     <Image Include="test.png" />
     <Image Include="WorldTerrain.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Text Include="dragon.obj">
-      <FileType>Document</FileType>
-    </Text>
-  </ItemGroup>
-  <ItemGroup>
-    <Text Include="tree.obj">
-      <FileType>Document</FileType>
-    </Text>
-  </ItemGroup>
-  <ItemGroup>
-    <Text Include="SpunkWalker.obj">
-      <FileType>Document</FileType>
-    </Text>
-  </ItemGroup>
-  <ItemGroup>
-    <Text Include="cube.obj">
-      <FileType>Document</FileType>
-    </Text>
-  </ItemGroup>
-  <ItemGroup>
-    <Text Include="black.obj">
-      <FileType>Document</FileType>
-    </Text>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

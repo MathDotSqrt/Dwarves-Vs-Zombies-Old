@@ -27,8 +27,6 @@ Engine::Engine() : linearAlloc(MEM_ALLOC_SIZE, malloc(MEM_ALLOC_SIZE)){	//todo d
 	this->set<Voxel::ChunkManager>(linearAlloc);
 	this->set<Voxel::ChunkRenderDataManager>(linearAlloc);
 
-	
-
 	this->set<ResourceManager::TexCache>();
 	this->set<ResourceManager::GeometryCache>();
 

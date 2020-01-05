@@ -417,9 +417,9 @@ namespace Loader
 		// or unable to be loaded return false
 		bool LoadFile(std::string Path)
 		{
-			// If the file is not an .obj file return false
-			if (Path.substr(Path.size() - 4, 4) != ".obj")
-				return false;
+			// If the file is not an .obj file return false		//Chris Trenkov edit 1/5/2020
+			//if (Path.substr(Path.size() - 4, 4) != ".obj")	//Chris Trenkov edit
+			//	return false;									//Chris Trenkov edit
 
 
 			std::ifstream file(Path);

@@ -174,12 +174,12 @@ void OpenGLRenderer::bindShadowPort() {
 	ShaderVariables::p = glm::ortho(-20.0f, 20.0f, -20.0f, 20.0f, .1f, 100.0f);
 	ShaderVariables::v = glm::lookAt(camera->eye, camera->eye + camera->target, camera->up);
 	ShaderVariables::vp = ShaderVariables::p * ShaderVariables::v;
-	glCullFace(GL_BACK);
 
 }
 
 void OpenGLRenderer::bindFinalPort() {
 	final.bind();
+	glCullFace(GL_BACK);
 	glEnable(GL_DEPTH_TEST);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	auto camera = &scene->cameraCache[scene->getMainCameraID()];

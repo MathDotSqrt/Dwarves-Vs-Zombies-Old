@@ -445,6 +445,12 @@
     <None Include="chunk_shadow_shader.frag">
       <Filter>Resource Files\Shaders</Filter>
     </None>
+    <None Include="res\tree.xobj">
+      <Filter>Resource Files\Models</Filter>
+    </None>
+    <None Include="res\SpunkWalker.xobj">
+      <Filter>Resource Files\Models</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Image Include="test.png">
@@ -468,22 +474,5 @@
     <Image Include="WorldTerrain.png">
       <Filter>Resource Files\Textures</Filter>
     </Image>
-  </ItemGroup>
-  <ItemGroup>
-    <Text Include="dragon.obj">
-      <Filter>Resource Files\Models</Filter>
-    </Text>
-    <Text Include="black.obj">
-      <Filter>Resource Files\Models</Filter>
-    </Text>
-    <Text Include="cube.obj">
-      <Filter>Resource Files\Models</Filter>
-    </Text>
-    <Text Include="SpunkWalker.obj">
-      <Filter>Resource Files\Models</Filter>
-    </Text>
-    <Text Include="tree.obj">
-      <Filter>Resource Files\Models</Filter>
-    </Text>
   </ItemGroup>
 </Project>

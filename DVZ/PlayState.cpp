@@ -33,7 +33,7 @@ void PlayState::init() {
 	/*PLAYER*/
 	
 	/*TREE*/
-	auto model = model_cache.load<ResourceManager::GeometryLoader>("tree.obj"_hs, "tree.obj");
+	auto model = model_cache.load<ResourceManager::GeometryLoader>("tree"_hs, "res/tree.xobj");
 	Graphics::NormalMaterial material;
 	unsigned int meshID = scene.createMesh(model.get(), material);
 	unsigned int renderID = scene.createRenderInstance(meshID);
@@ -47,7 +47,7 @@ void PlayState::init() {
 	/*TREE*/
 
 	/*WALKER*/
-	auto walkerModel = model_cache.load<ResourceManager::GeometryLoader>("SpunkWalker.obj"_hs, "SpunkWalker.obj");
+	auto walkerModel = model_cache.load<ResourceManager::GeometryLoader>("SpunkWalker"_hs, "res/SpunkWalker.xobj");
 	Graphics::BasicLitMaterial walkerMaterial = { {1, 0, 1}, {1, 1, 1}, 10};
 	uint32 walkerMeshID = scene.createMesh(walkerModel.get(), walkerMaterial);
 	uint32 walkerRenderID = scene.createRenderInstance(walkerMeshID);
@@ -79,7 +79,7 @@ void PlayState::init() {
 	scene.setSunCameraID(cameraID);
 	//scene->setMainCamera(cameraID);
 	e.assign<CameraInstanceComponent>(sunID, cameraID);
-	//e.assign<RenderInstanceComponent>(sunID, scene.createRenderInstance(walkerMeshID));
+	e.assign<RenderInstanceComponent>(sunID, scene.createRenderInstance(walkerMeshID));
 	/*SUN CAMERA*/
 
 	/*NET*/
