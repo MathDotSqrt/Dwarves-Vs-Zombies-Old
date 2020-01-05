@@ -22,19 +22,19 @@ PlayState::~PlayState() {
 
 void PlayState::init() {
 	LOG_STATE("init");
-	Graphics::Scene *scene = e.getScene();
+	auto &scene = e.ctx<Graphics::Scene>();
 
 	/*PLAYER*/
 	entt::entity playerID = e.addPlayer(0, 0, 0);
-	unsigned int pointLightInstanceID = e.getScene()->createPointLightInstance();
+	unsigned int pointLightInstanceID = scene.createPointLightInstance();
 	e.assign<PointLightComponent>(playerID, pointLightInstanceID, glm::vec3(1, 1, 1), 60.0f);
 	/*PLAYER*/
 	
 	/*TREE*/
 	Graphics::Geometry model = Graphics::CreateModel("tree.obj");
 	Graphics::NormalMaterial material;
-	unsigned int meshID = scene->createMesh(model, material);
-	unsigned int renderID = scene->createRenderInstance(meshID);
+	unsigned int meshID = scene.createMesh(model, material);
+	unsigned int renderID = scene.createRenderInstance(meshID);
 
 	entt::entity tree = e.create();
 	e.assign<PositionComponent>(tree, glm::vec3(0, 0, 0));
@@ -47,8 +47,8 @@ void PlayState::init() {
 	/*WALKER*/
 	Graphics::Geometry walkerModel = Graphics::CreateModel("SpunkWalker.obj");
 	Graphics::BasicLitMaterial walkerMaterial = { {1, 0, 1}, {1, 1, 1}, 10};
-	uint32 walkerMeshID = scene->createMesh(walkerModel, walkerMaterial);
-	uint32 walkerRenderID = scene->createRenderInstance(walkerMeshID);
+	uint32 walkerMeshID = scene.createMesh(walkerModel, walkerMaterial);
+	uint32 walkerRenderID = scene.createRenderInstance(walkerMeshID);
 
 	entt::entity walker = e.create();
 	e.assign<PositionComponent>(walker, glm::vec3(10, 10, 10));
@@ -73,11 +73,11 @@ void PlayState::init() {
 		glm::vec3(0, 1, 0),
 		70, 1, .1f, 1000
 	};
-	auto cameraID = scene->createCameraInstance(sunCamera);
-	scene->setSunCameraID(cameraID);
+	auto cameraID = scene.createCameraInstance(sunCamera);
+	scene.setSunCameraID(cameraID);
 	//scene->setMainCamera(cameraID);
 	e.assign<CameraInstanceComponent>(sunID, cameraID);
-	e.assign<RenderInstanceComponent>(sunID, scene->createRenderInstance(walkerMeshID));
+	e.assign<RenderInstanceComponent>(sunID, scene.createRenderInstance(walkerMeshID));
 	/*SUN CAMERA*/
 
 	/*NET*/

@@ -88,13 +88,13 @@ void GameSystem::movement_system(Engine &engine, float delta) {
 }
 
 void GameSystem::voxel_system(Engine &engine, float delta) {
-	Voxel::ChunkManager *manager = engine.getChunkManager();
+	Voxel::ChunkManager &manager = engine.ctx<Voxel::ChunkManager>();
 	PositionComponent p = engine.get<PositionComponent>(engine.getPlayer());
 	RotationComponent r = engine.get<RotationComponent>(engine.getPlayer());
 	glm::vec3 playerPos = p.pos;
 	glm::vec3 playerRot = glm::eulerAngles(r.rot);
 
-	manager->update(playerPos.x, playerPos.y, playerPos.z);
+	manager.update(playerPos.x, playerPos.y, playerPos.z);
 
 	static bool badCode = true;
 
@@ -105,14 +105,14 @@ void GameSystem::voxel_system(Engine &engine, float delta) {
 		RotationComponent rot = engine.get<RotationComponent>(engine.getPlayer());
 
 		glm::vec3 ray = glm::rotate(rot.rot, dir.forward);
-		Voxel::BlockRayCast cast = manager->castRay(playerPos, ray, 10);
+		Voxel::BlockRayCast cast = manager.castRay(playerPos, ray, 10);
 
 		if (left && cast.block != Voxel::Block()) {
-			manager->setBlock(cast.nx, cast.ny, cast.nz, Voxel::Block(Voxel::BlockType::BLOCK_TYPE_PURPLE));
+			manager.setBlock(cast.nx, cast.ny, cast.nz, Voxel::Block(Voxel::BlockType::BLOCK_TYPE_PURPLE));
 
 		}
 		else if (right) {
-			manager->setBlock(cast.x, cast.y, cast.z, Voxel::Block());
+			manager.setBlock(cast.x, cast.y, cast.z, Voxel::Block());
 		}
 
 		badCode = false;
@@ -121,30 +121,31 @@ void GameSystem::voxel_system(Engine &engine, float delta) {
 		badCode = !(left || right);
 	}
 
-	engine.getChunkRenderDataManager()->update(playerPos, playerRot, *manager);
+	auto &renderDataManager = engine.ctx<Voxel::ChunkRenderDataManager>();
+	renderDataManager.update(playerPos, playerRot, manager);
 }
 
 void GameSystem::render_system(Engine &engine, float delta) {
-	Graphics::Scene *scene = engine.getScene();
+	auto &scene = engine.ctx<Graphics::Scene>();
 
 	engine.group<RenderInstanceComponent>(entt::get<PositionComponent, RotationComponent, ScaleComponent>)
-		.each([scene](auto &instanceComponent, auto &positionComponent, auto &rotationComponent, auto &scaleComponent)
+		.each([&scene](auto &instanceComponent, auto &positionComponent, auto &rotationComponent, auto &scaleComponent)
 	{
-		auto transformationID = scene->instanceCache[instanceComponent.instanceID].transformationID;
-		auto *transformation = &scene->transformationCache[transformationID];
+		auto transformationID = scene.instanceCache[instanceComponent.instanceID].transformationID;
+		auto &transformation = scene.transformationCache[transformationID];
 
 		glm::vec3 a = glm::eulerAngles(rotationComponent.rot);
 		//LOG_INFO("%f %f %f", a.x, a.y, a.z);
 
-		transformation->position = positionComponent.pos;
-		transformation->rotation = glm::eulerAngles(rotationComponent.rot);
-		transformation->scale = scaleComponent.scale;
+		transformation.position = positionComponent.pos;
+		transformation.rotation = glm::eulerAngles(rotationComponent.rot);
+		transformation.scale = scaleComponent.scale;
 	});
 
 	engine.group<PointLightComponent>(entt::get<PositionComponent>)
-		.each([scene](auto &pointLightComponent, auto &positionComponent)
+		.each([&scene](auto &pointLightComponent, auto &positionComponent)
 	{
-		Graphics::Scene::PointLight &pointLight = scene->pointLightCache[pointLightComponent.lightInstanceID];
+		Graphics::Scene::PointLight &pointLight = scene.pointLightCache[pointLightComponent.lightInstanceID];
 
 		pointLight.position = positionComponent.pos;
 		pointLight.color[0] = pointLightComponent.color.x;
@@ -154,15 +155,14 @@ void GameSystem::render_system(Engine &engine, float delta) {
 	});
 
 	engine.group<CameraInstanceComponent>(entt::get<PositionComponent, RotationComponent, DirComponent>)
-		.each([scene](auto &cameraComponent, auto &positionComponent, auto &rotationComponent, auto &dirComponent)
+		.each([&scene](auto &cameraComponent, auto &positionComponent, auto &rotationComponent, auto &dirComponent)
 	{
-		auto *camera = &scene->cameraCache[cameraComponent.cameraID];
+		auto &camera = scene.cameraCache[cameraComponent.cameraID];
 
 		glm::quat orientation = rotationComponent.rot;
-
-		camera->eye = positionComponent.pos;
-		camera->target = orientation * dirComponent.forward;
-		camera->up = orientation * dirComponent.up;
+		camera.eye = positionComponent.pos;
+		camera.target = orientation * dirComponent.forward;
+		camera.up = orientation * dirComponent.up;
 	});
 }
 
@@ -264,7 +264,7 @@ SLNet::MessageID get_packet_id(SLNet::Packet *packet) {
 }
 
 void GameSystem::netword_system(Engine &engine, float delta) {
-	SLNet::RakPeerInterface *peer = engine.getPeer();
+	auto peer = engine.ctx<SLNet::RakPeerInterface*>();
 
 	entt::entity id = engine.getPlayer();
 
@@ -311,7 +311,7 @@ void GameSystem::send_packet_system(Engine &engine, float delta) {
 		//out.Write(input.mousePos[1]);
 
 
-		auto peer = engine.getPeer();
+		auto peer = engine.ctx<SLNet::RakPeerInterface*>();
 		peer->Send(&out, LOW_PRIORITY, PacketReliability::UNRELIABLE, 0, SLNet::UNASSIGNED_RAKNET_GUID, true);
 	}
 }

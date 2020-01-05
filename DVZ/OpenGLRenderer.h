@@ -36,7 +36,7 @@ private:
 	float getShaderTime();
 
 public:
-	OpenGLRenderer();
+	OpenGLRenderer(Scene *scene);
 	~OpenGLRenderer();
 
 	void init(Scene *scene) override;

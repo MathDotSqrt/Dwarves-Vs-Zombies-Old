@@ -195,7 +195,6 @@
     <ClCompile Include="Allocator.cpp" />
     <ClCompile Include="AllocatorHandle.cpp" />
     <ClCompile Include="Attrib.cpp" />
-    <ClCompile Include="BasicRenderSystem.cpp" />
     <ClCompile Include="Block.cpp" />
     <ClCompile Include="Chunk.cpp" />
     <ClCompile Include="ChunkGeometry.cpp" />
@@ -217,15 +216,10 @@
     <ClCompile Include="GameSystems.cpp" />
     <ClCompile Include="Geometry.cpp" />
     <ClCompile Include="IEntityListener.cpp" />
-    <ClCompile Include="InputSystem.cpp" />
-    <ClCompile Include="IntervalSystem.cpp" />
     <ClCompile Include="LinearAllocator.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MainState.cpp" />
     <ClCompile Include="ModelGeometry.cpp" />
-    <ClCompile Include="MovementSystem.cpp" />
-    <ClCompile Include="NetPlayerSystem.cpp" />
-    <ClCompile Include="NetWorkSystem.cpp" />
     <ClCompile Include="OpenGLRenderer.cpp" />
     <ClCompile Include="PlayState.cpp" />
     <ClCompile Include="PoolAllocator.cpp" />
@@ -234,20 +228,14 @@
     <ClCompile Include="RenderStateKey.cpp" />
     <ClCompile Include="render_functions.cpp" />
     <ClCompile Include="Scene.cpp" />
-    <ClCompile Include="SendPacketSystem.cpp" />
     <ClCompile Include="SetQueue.cpp" />
     <ClCompile Include="ShaderSet.cpp" />
-    <ClCompile Include="ShaderUpdaterSystem.cpp" />
     <ClCompile Include="StatelessSystem.cpp" />
-    <ClCompile Include="System.cpp" />
-    <ClCompile Include="SystemManager.cpp" />
-    <ClCompile Include="TestSystem.cpp" />
     <ClCompile Include="TEX.cpp" />
     <ClCompile Include="ThreadPool.cpp" />
     <ClCompile Include="Timer.cpp" />
     <ClCompile Include="VAO.cpp" />
     <ClCompile Include="VBO.cpp" />
-    <ClCompile Include="VoxelSystem.cpp" />
     <ClCompile Include="Window.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -256,7 +244,6 @@
     <ClInclude Include="Allocator.h" />
     <ClInclude Include="AllocatorHandle.h" />
     <ClInclude Include="Attrib.h" />
-    <ClInclude Include="BasicRenderSystem.h" />
     <ClInclude Include="Block.h" />
     <ClInclude Include="blockingconcurrentqueue.h" />
     <ClInclude Include="Chunk.h" />
@@ -284,8 +271,6 @@
     <ClInclude Include="GameSystems.h" />
     <ClInclude Include="Geometry.h" />
     <ClInclude Include="IEntityListener.h" />
-    <ClInclude Include="InputSystem.h" />
-    <ClInclude Include="IntervalSystem.h" />
     <ClInclude Include="IRenderer.h" />
     <ClInclude Include="IResizable.h" />
     <ClInclude Include="LinearAllocator.h" />
@@ -293,10 +278,7 @@
     <ClInclude Include="MainState.h" />
     <ClInclude Include="Material.h" />
     <ClInclude Include="ModelGeometry.h" />
-    <ClInclude Include="MovementSystem.h" />
     <ClInclude Include="NetInstanceType.h" />
-    <ClInclude Include="NetPlayerSystem.h" />
-    <ClInclude Include="NetWorkSystem.h" />
     <ClInclude Include="OBJLoader.h" />
     <ClInclude Include="OpenGLRenderer.h" />
     <ClInclude Include="PackedFreeList.h" />
@@ -309,21 +291,15 @@
     <ClInclude Include="RenderStateKey.h" />
     <ClInclude Include="render_functions.h" />
     <ClInclude Include="Scene.h" />
-    <ClInclude Include="SendPacketSystem.h" />
     <ClInclude Include="SetQueue.h" />
     <ClInclude Include="ShaderSet.h" />
-    <ClInclude Include="ShaderUpdaterSystem.h" />
     <ClInclude Include="StatelessSystem.h" />
-    <ClInclude Include="System.h" />
-    <ClInclude Include="SystemManager.h" />
-    <ClInclude Include="TestSystem.h" />
     <ClInclude Include="TEX.h" />
     <ClInclude Include="ThreadPool.h" />
     <ClInclude Include="Timer.h" />
     <ClInclude Include="tinyobj.h" />
     <ClInclude Include="VAO.h" />
     <ClInclude Include="VBO.h" />
-    <ClInclude Include="VoxelSystem.h" />
     <ClInclude Include="Window.h" />
   </ItemGroup>
   <ItemGroup>

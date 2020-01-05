@@ -90,15 +90,6 @@
     <ClInclude Include="Components.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="System.h">
-      <Filter>Header Files\Systems</Filter>
-    </ClInclude>
-    <ClInclude Include="SystemManager.h">
-      <Filter>Header Files\Systems</Filter>
-    </ClInclude>
-    <ClInclude Include="TestSystem.h">
-      <Filter>Header Files\Systems</Filter>
-    </ClInclude>
     <ClInclude Include="Engine.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -107,9 +98,6 @@
     </ClInclude>
     <ClInclude Include="PlayState.h">
       <Filter>Header Files\States</Filter>
-    </ClInclude>
-    <ClInclude Include="BasicRenderSystem.h">
-      <Filter>Header Files\Systems</Filter>
     </ClInclude>
     <ClInclude Include="Scene.h">
       <Filter>Header Files\Graphics</Filter>
@@ -123,9 +111,6 @@
     <ClInclude Include="QuadGeometry.h">
       <Filter>Header Files\Graphics</Filter>
     </ClInclude>
-    <ClInclude Include="MovementSystem.h">
-      <Filter>Header Files\Systems</Filter>
-    </ClInclude>
     <ClInclude Include="Window.h">
       <Filter>Header Files\Util</Filter>
     </ClInclude>
@@ -138,17 +123,11 @@
     <ClInclude Include="OpenGLRenderer.h">
       <Filter>Header Files\Graphics</Filter>
     </ClInclude>
-    <ClInclude Include="InputSystem.h">
-      <Filter>Header Files\Systems</Filter>
-    </ClInclude>
     <ClInclude Include="Client.h">
       <Filter>Header Files\Network</Filter>
     </ClInclude>
     <ClInclude Include="GamePacketID.h">
       <Filter>Header Files\Network</Filter>
-    </ClInclude>
-    <ClInclude Include="NetWorkSystem.h">
-      <Filter>Header Files\Systems</Filter>
     </ClInclude>
     <ClInclude Include="IEntityListener.h">
       <Filter>Header Files</Filter>
@@ -156,17 +135,11 @@
     <ClInclude Include="NetInstanceType.h">
       <Filter>Header Files\Network</Filter>
     </ClInclude>
-    <ClInclude Include="IntervalSystem.h">
-      <Filter>Header Files\Systems</Filter>
-    </ClInclude>
     <ClInclude Include="OBJLoader.h">
       <Filter>Header Files\Util</Filter>
     </ClInclude>
     <ClInclude Include="ModelGeometry.h">
       <Filter>Header Files\Graphics</Filter>
-    </ClInclude>
-    <ClInclude Include="NetPlayerSystem.h">
-      <Filter>Header Files\Systems</Filter>
     </ClInclude>
     <ClInclude Include="CubeGeometry.h">
       <Filter>Header Files\Graphics</Filter>
@@ -186,17 +159,11 @@
     <ClInclude Include="ChunkManager.h">
       <Filter>Header Files\Voxel</Filter>
     </ClInclude>
-    <ClInclude Include="VoxelSystem.h">
-      <Filter>Header Files\Systems</Filter>
-    </ClInclude>
     <ClInclude Include="Attrib.h">
       <Filter>Header Files\Graphics</Filter>
     </ClInclude>
     <ClInclude Include="Material.h">
       <Filter>Header Files\Graphics</Filter>
-    </ClInclude>
-    <ClInclude Include="ShaderUpdaterSystem.h">
-      <Filter>Header Files\Systems</Filter>
     </ClInclude>
     <ClInclude Include="Timer.h">
       <Filter>Header Files\Util</Filter>
@@ -273,9 +240,6 @@
     <ClInclude Include="PrototypeID.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="SendPacketSystem.h">
-      <Filter>Header Files\Systems</Filter>
-    </ClInclude>
     <ClInclude Include="StatelessSystem.h">
       <Filter>Header Files\Systems</Filter>
     </ClInclude>
@@ -305,15 +269,6 @@
     <ClCompile Include="DemoState.cpp">
       <Filter>Source Files\States</Filter>
     </ClCompile>
-    <ClCompile Include="System.cpp">
-      <Filter>Source Files\Systems</Filter>
-    </ClCompile>
-    <ClCompile Include="SystemManager.cpp">
-      <Filter>Source Files\Systems</Filter>
-    </ClCompile>
-    <ClCompile Include="TestSystem.cpp">
-      <Filter>Source Files\Systems</Filter>
-    </ClCompile>
     <ClCompile Include="Engine.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -322,9 +277,6 @@
     </ClCompile>
     <ClCompile Include="PlayState.cpp">
       <Filter>Source Files\States</Filter>
-    </ClCompile>
-    <ClCompile Include="BasicRenderSystem.cpp">
-      <Filter>Source Files\Systems</Filter>
     </ClCompile>
     <ClCompile Include="Scene.cpp">
       <Filter>Source Files\Graphics</Filter>
@@ -335,32 +287,17 @@
     <ClCompile Include="QuadGeometry.cpp">
       <Filter>Source Files\Graphics</Filter>
     </ClCompile>
-    <ClCompile Include="MovementSystem.cpp">
-      <Filter>Source Files\Systems</Filter>
-    </ClCompile>
     <ClCompile Include="Window.cpp">
       <Filter>Source Files\Util</Filter>
     </ClCompile>
     <ClCompile Include="OpenGLRenderer.cpp">
       <Filter>Source Files\Graphics</Filter>
     </ClCompile>
-    <ClCompile Include="InputSystem.cpp">
-      <Filter>Source Files\Systems</Filter>
-    </ClCompile>
     <ClCompile Include="Client.cpp">
       <Filter>Source Files\Network</Filter>
     </ClCompile>
-    <ClCompile Include="NetWorkSystem.cpp">
-      <Filter>Source Files\Systems</Filter>
-    </ClCompile>
     <ClCompile Include="IEntityListener.cpp">
       <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="IntervalSystem.cpp">
-      <Filter>Source Files\Systems</Filter>
-    </ClCompile>
-    <ClCompile Include="NetPlayerSystem.cpp">
-      <Filter>Source Files\Systems</Filter>
     </ClCompile>
     <ClCompile Include="ModelGeometry.cpp">
       <Filter>Source Files\Graphics</Filter>
@@ -377,14 +314,8 @@
     <ClCompile Include="ChunkManager.cpp">
       <Filter>Source Files\Voxel</Filter>
     </ClCompile>
-    <ClCompile Include="VoxelSystem.cpp">
-      <Filter>Source Files\Systems</Filter>
-    </ClCompile>
     <ClCompile Include="Attrib.cpp">
       <Filter>Source Files\Graphics</Filter>
-    </ClCompile>
-    <ClCompile Include="ShaderUpdaterSystem.cpp">
-      <Filter>Source Files\Systems</Filter>
     </ClCompile>
     <ClCompile Include="Timer.cpp">
       <Filter>Source Files\Util</Filter>
@@ -445,9 +376,6 @@
     </ClCompile>
     <ClCompile Include="DepthFBO.cpp">
       <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="SendPacketSystem.cpp">
-      <Filter>Source Files\Systems</Filter>
     </ClCompile>
     <ClCompile Include="StatelessSystem.cpp">
       <Filter>Source Files\Systems</Filter>

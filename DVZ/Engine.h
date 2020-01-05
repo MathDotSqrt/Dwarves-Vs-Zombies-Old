@@ -23,7 +23,6 @@ namespace Voxel {
 }
 
 
-
 //todo rename this as client
 class Engine : public entt::registry {
 private:
@@ -33,16 +32,15 @@ private:
 	//MAIN PLAYER
 
 	//NET
-	SLNet::RakPeerInterface *peer;
+	//SLNet::RakPeerInterface *peer;
 	//NET
 
 	//SYSTEMS
 	Util::Allocator::LinearAllocator linearAlloc;
-	Voxel::ChunkManager *chunkManager;
+	/*Voxel::ChunkManager *chunkManager;
 	Voxel::ChunkRenderDataManager *chunkRenderDataManager;
 	Graphics::OpenGLRenderer *renderer;
-	Graphics::Scene *scene;
-	//std::set<System*, System::classcomp> systems;
+	Graphics::Scene *scene;*/
 	//SYSTEMS
 
 	std::vector<StatelessSystem> systems;
@@ -51,10 +49,6 @@ public:
 	~Engine();
 
 	void update(float delta);
-	/*void addSystem(System *system);
-	void removeSystem(System *system);*/
-	//void deleteAllActiveSystems();
-
 
 	void addSystem(StatelessSystem system);
 	void updateSystems(float delta);
@@ -64,11 +58,6 @@ public:
 
 	entt::entity addPlayer(float x, float y, float z);
 	entt::entity getPlayer();
-	Util::Allocator::LinearAllocator& getAllocator();
-	Voxel::ChunkManager* getChunkManager();
-	Voxel::ChunkRenderDataManager* getChunkRenderDataManager();
-	Graphics::OpenGLRenderer* getRenderer();
-	Graphics::Scene* getScene();
-	SLNet::RakPeerInterface* getPeer();
+	
 };
 

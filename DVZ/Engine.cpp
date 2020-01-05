@@ -9,7 +9,6 @@
 #include "BitStream.h"
 
 #include "Components.h"
-#include "System.h"
 #include "Scene.h"
 #include "OpenGLRenderer.h"
 #include "QuadGeometry.h"
@@ -25,29 +24,28 @@ using namespace std;
 
 Engine::Engine() : linearAlloc(MEM_ALLOC_SIZE, malloc(MEM_ALLOC_SIZE)){	//todo delete
 	//todo linearly alloc all of this
-	this->peer = SLNet::RakPeerInterface::GetInstance();
 
-	this->scene = new Graphics::Scene();
-	this->renderer = new Graphics::OpenGLRenderer();
-	this->renderer->init(scene);
-	this->chunkManager = new Voxel::ChunkManager(this->linearAlloc);
-	this->chunkRenderDataManager = new Voxel::ChunkRenderDataManager(this->linearAlloc);
+
+	this->set<SLNet::RakPeerInterface*>(SLNet::RakPeerInterface::GetInstance());
+	this->set<Graphics::Scene>();
+	this->set<Graphics::OpenGLRenderer>(&this->ctx<Graphics::Scene>());
+	this->set<Voxel::ChunkManager>(linearAlloc);
+	this->set<Voxel::ChunkRenderDataManager>(linearAlloc);
 
 	this->main = entt::null;
 
+	this->set<int>();
 	this->set<std::unordered_map<entt::entity, entt::entity>>();
 }
 
 
 Engine::~Engine(){
-	delete this->scene;
-	delete this->renderer;
-	delete this->chunkRenderDataManager;
-	delete this->chunkManager;				//chunkmanager has to deallocate last because chunkRenderDataManager has atomic pointers to chunkManager. 
+	
 											//todo refactor this bad ownership model
 
-	this->peer->Shutdown(100, 0, PacketPriority::HIGH_PRIORITY);
-	SLNet::RakPeerInterface::DestroyInstance(this->peer);
+	auto peer = this->ctx<SLNet::RakPeerInterface*>();
+	peer->Shutdown(100, 0, PacketPriority::HIGH_PRIORITY);
+	SLNet::RakPeerInterface::DestroyInstance(peer);
 
 	//this->deleteAllActiveSystems();
 }
@@ -59,30 +57,15 @@ void Engine::update(float delta) {
 	}
 
 	{
+		auto &renderer = this->ctx<Graphics::OpenGLRenderer>();
+		auto &chunkRenderDataManager = this->ctx<Voxel::ChunkRenderDataManager>();
 		Util::Performance::Timer render("Render");
-		this->renderer->prerender();
-		this->renderer->render(this->chunkRenderDataManager);
+		renderer.prerender();
+		renderer.render(&chunkRenderDataManager);
 	}
 
 }
 
-//void Engine::addSystem(System *system) {
-//	if (std::find(this->systems.begin(), this->systems.end(), system) == this->systems.end()) {
-//		//LOG_ENGINE("System: %d Index: %d", system->getPriority(), std::upper_bound(this->systems.begin(), this->systems.end(), system, system->operator<));
-//		this->systems.insert(system);	//TODO fix bug where multiple systems cannot have same priority
-//		
-//		//this->systems.push_back(system);
-//		system->addedToEngine(this);
-//	}
-//}
-//
-//void Engine::removeSystem(System *system) {
-//	if (find(this->systems.begin(), this->systems.end(), system) != this->systems.end()) {
-//		system->removedFromEngine(this);
-//		//this->systems.erase(std::remove(systems.begin(), systems.end(), system));
-//		this->systems.erase(find(this->systems.begin(), this->systems.end(), system));
-//	}
-//}
 
 void Engine::addSystem(StatelessSystem system) { 
 	systems.push_back(system);
@@ -94,22 +77,16 @@ void Engine::updateSystems(float delta) {
 	}
 }
 
-//void Engine::deleteAllActiveSystems() {
-//	for (System *system : this->systems) {
-//		system->removedFromEngine(this);
-//		delete system;
-//	}
-//
-//	this->systems.clear();
-//}
 
 bool Engine::attemptConnection(const char *ip, uint16 port) {
+	auto peer = this->ctx<SLNet::RakPeerInterface*>();
 	peer->Startup(1, &SLNet::SocketDescriptor(), 1);
 	auto result = peer->Connect(ip, port, nullptr, 0);
 	return result = SLNet::ConnectionAttemptResult::CONNECTION_ATTEMPT_STARTED;
 }
 
 bool Engine::isConnected() {
+	auto peer = this->ctx<SLNet::RakPeerInterface*>();
 	return peer->NumberOfConnections() > 0;
 }
 
@@ -127,7 +104,7 @@ entt::entity Engine::addPlayer(float x, float y, float z) {
 	this->assign<RotationalVelocityComponent>(id, glm::vec3(0, 0, 0));
 	this->assign<DirComponent>(id, glm::vec3(0, 0, -1), glm::vec3(0, 1, 0), glm::vec3(1, 0, 0));
 	this->assign<InputComponent>(id);
-	this->assign<CameraInstanceComponent>(id, this->scene->getMainCameraID());
+	this->assign<CameraInstanceComponent>(id, this->ctx<Graphics::Scene>().getMainCameraID());
 
 	this->main = id;
 
@@ -138,26 +115,3 @@ entt::entity Engine::getPlayer() {
 	return this->main;
 }
 
-Util::Allocator::LinearAllocator& Engine::getAllocator() {
-	return this->linearAlloc;
-}
-
-Voxel::ChunkManager* Engine::getChunkManager() {
-	return this->chunkManager;
-}
-
-Voxel::ChunkRenderDataManager* Engine::getChunkRenderDataManager() {
-	return chunkRenderDataManager;
-}
-
-Graphics::OpenGLRenderer* Engine::getRenderer() {
-	return this->renderer;
-}
-
-Graphics::Scene* Engine::getScene() {
-	return this->scene;
-}
-
-SLNet::RakPeerInterface* Engine::getPeer() {
-	return this->peer;
-}
