@@ -36,25 +36,6 @@ unsigned int Scene::createMaterialInstance(BlockMaterial &material) {
 	return this->blockMaterialCache.insert(material);
 }
 
-//unsigned int Scene::createRenderInstance(unsigned int meshID, Transformation t) {
-//	unsigned int transformationID = this->transformationCache.insert(t);
-//	Instance newInstance = {meshID, transformationID };
-//	unsigned int instanceID = this->instanceCache.insert(newInstance);
-//	return instanceID;
-//}
-//
-//unsigned int Scene::createRenderInstance(unsigned int meshID, glm::vec3 position, glm::vec3 rotation, glm::vec3 scale) {
-//	Transformation newTransformation = { position, rotation, scale };
-//	return this->createRenderInstance(meshID, newTransformation);
-//}
-//
-//unsigned int Scene::createRenderInstance(unsigned int meshID) {
-//	glm::vec3 pos(0, 0, 0);
-//	glm::vec3 rot(0, 0, 0);
-//	glm::vec3 scale(1, 1, 1);
-//	return this->createRenderInstance(meshID, pos, rot, scale);
-//}
-
 unsigned int Scene::createCameraInstance(Camera camera) {
 	return this->cameraCache.insert(camera);
 }

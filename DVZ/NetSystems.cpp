@@ -9,6 +9,8 @@
 #include "GamePacketID.h"
 #include <unordered_map>
 
+#include "Mesh.h"
+#include "Scene.h"
 void update_player(Engine &engine, SLNet::Packet *packet) {
 	SLNet::BitStream read(packet->data, packet->length, false);
 
@@ -26,10 +28,16 @@ void update_player(Engine &engine, SLNet::Packet *packet) {
 	if (iter == map.end()) {
 		LOG_NET("NEW ENT");
 
+		auto &scene = engine.ctx<Graphics::Scene>();
+		auto &mesh_cache = engine.ctx<ResourceManager::MeshCache>();
+
 		playerID = engine.create();
 		engine.assign<PositionComponent>(playerID, pos);
 		engine.assign<RotationComponent>(playerID, glm::quat(glm::vec3(0, 0, 0)));
 		engine.assign<ScaleComponent>(playerID, glm::vec3(1, 1, 1));
+		
+		auto instanceID = scene.createRenderInstance(mesh_cache.handle("SpunkWalker"_hs), Graphics::NormalMaterial());
+		engine.assign<RenderInstanceComponent>(playerID, instanceID);
 
 		map[netID] = playerID;
 	}

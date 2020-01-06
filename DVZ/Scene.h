@@ -104,10 +104,6 @@ public:
 	unsigned int createMaterialInstance(TextureMaterial &material);
 	unsigned int createMaterialInstance(BlockMaterial &material);
 
-	//unsigned int createRenderInstance(unsigned int meshID, Transformation t);
-	//unsigned int createRenderInstance(unsigned int meshID, glm::vec3 position, glm::vec3 rotation, glm::vec3 scale);
-	//unsigned int createRenderInstance(unsigned int meshID);
-	
 	unsigned int createCameraInstance(Camera camera);
 
 	unsigned int createPointLightInstance(PointLight &p);
