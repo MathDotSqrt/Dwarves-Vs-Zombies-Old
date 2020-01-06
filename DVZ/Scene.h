@@ -116,6 +116,8 @@ public:
 		
 		VertexBuffer &vb = this->vertexBufferCache[bufferInstanceID];
 
+
+		//material instance id isnt being set
 		Mesh newMesh;
 		newMesh.typeID = MATERIAL::type;
 
@@ -126,6 +128,7 @@ public:
 		newMesh.vao.unbind();
 		newMesh.ebo.unbind();
 		newMesh.indexCount = (GLsizei)model.getIndexCount();
+		newMesh.materialInstanceID = materialInstanceID;
 
 		return this->meshCache.insert(std::move(newMesh));
 	}

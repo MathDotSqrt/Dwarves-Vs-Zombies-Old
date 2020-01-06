@@ -25,7 +25,6 @@ void PlayState::init() {
 	LOG_STATE("init");
 	auto &scene = e.ctx<Graphics::Scene>();
 	auto &model_cache = e.ctx<ResourceManager::GeometryCache>();
-
 	/*PLAYER*/
 	entt::entity playerID = e.addPlayer(0, 0, 0);
 	unsigned int pointLightInstanceID = scene.createPointLightInstance();
