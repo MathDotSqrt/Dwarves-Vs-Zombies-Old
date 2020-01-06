@@ -23,13 +23,14 @@ namespace Window {
 	const unsigned int RIGHT_CLICK = GLFW_MOUSE_BUTTON_RIGHT;
 	const unsigned int LEFT_CLICK = GLFW_MOUSE_BUTTON_LEFT;
 
-	
+
 	void createWindow(int width, int height, const char *title);
 	void destroyWindow();
 	void update();
 
 	void addResizeCallback(IResizable *resizable);
 
+	bool isFocused();
 	bool isPressed(char c);
 	bool isPressed(const unsigned int c);
 	bool isMousePressed(const unsigned int b);

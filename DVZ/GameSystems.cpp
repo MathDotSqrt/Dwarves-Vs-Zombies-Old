@@ -24,18 +24,19 @@ void GameSystem::input_system(Engine &engine, float delta) {
 	engine.view<InputComponent>().each([](auto &input) {
 		input.mousePos[0] = input.mousePos[1];
 
-		double mx = 0;
-		double my = 0;
-		Window::getMousePos(mx, my);
-		input.mousePos[1] = glm::vec2(mx, my);
-
-		input.up = Window::isPressed('W');
-		input.down = Window::isPressed('S');
-		input.left = Window::isPressed('A');
-		input.right = Window::isPressed('D');
-		input.space = Window::isPressed(Window::SPACE);
-		input.shift = Window::isPressed(Window::LSHIFT);
-		input.ctrl = Window::isPressed(Window::LCTRL);
+		if (Window::isFocused()) {
+			double mx = 0;
+			double my = 0;
+			Window::getMousePos(mx, my);
+			input.mousePos[1] = glm::vec2(mx, my);
+			input.up = Window::isPressed('W');
+			input.down = Window::isPressed('S');
+			input.left = Window::isPressed('A');
+			input.right = Window::isPressed('D');
+			input.space = Window::isPressed(Window::SPACE);
+			input.shift = Window::isPressed(Window::LSHIFT);
+			input.ctrl = Window::isPressed(Window::LCTRL);
+		}
 
 	});
 

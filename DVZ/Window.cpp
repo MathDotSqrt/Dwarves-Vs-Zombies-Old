@@ -12,6 +12,7 @@ namespace {
 	int width, height;
 	const char *title;
 
+	bool has_focus = true;
 	bool isMouseDisabled = false;
 
 	std::vector<IResizable*> callbacks;
@@ -24,11 +25,14 @@ namespace {
 
 	void internalFocusCallBack(GLFWwindow *window, int focused) {
 		if (focused) {
+			has_focus = true;
 			isMouseDisabled = true;
 			glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
+
 		}
 		else {
+			has_focus = false;
 			isMouseDisabled = false;
 			glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 		}
@@ -92,6 +96,10 @@ void Window::update() {
 
 void Window::addResizeCallback(IResizable *resizable) {
 	callbacks.push_back(resizable);
+}
+
+bool Window::isFocused() {
+	return isMouseDisabled;
 }
 
 bool Window::isPressed(char c) {
