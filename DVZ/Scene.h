@@ -122,7 +122,9 @@ public:
 		newMesh.typeID = MATERIAL::type;
 
 		newMesh.vao.bind();
-		newMesh.vao.bufferInterleavedData(vb.vbo, model.attribs);
+		vb.vbo.bind();
+		newMesh.vao.bufferInterleavedData(model.attribs);
+		vb.vbo.unbind();
 		newMesh.ebo.bind();
 		newMesh.ebo.bufferData(model.getIndices(), GL_STATIC_DRAW);
 		newMesh.vao.unbind();

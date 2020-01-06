@@ -48,7 +48,7 @@ void OpenGLRenderer::init(Scene *scene) {
 	quad.bind();
 	vbo.bind();
 	vbo.bufferData(sizeof(quad_array), quad_array, GL_STATIC_DRAW);
-	quad.bufferInterleavedData(vbo, Attrib<POSITION_ATTRIB_LOCATION, glm::i8vec2>());
+	quad.bufferInterleavedData(Attrib<POSITION_ATTRIB_LOCATION, glm::i8vec2>());
 	vbo.unbind();
 	quad.unbind();
 

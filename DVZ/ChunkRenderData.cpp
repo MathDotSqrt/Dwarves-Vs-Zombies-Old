@@ -10,7 +10,9 @@ ChunkRenderData::ChunkRenderData() :
 	}
 
 	this->vao.bind();
-	this->vao.bufferInterleavedData(this->vbo, ChunkGeometry::ATTRIBS);
+	this->vbo.bind();
+	this->vao.bufferInterleavedData(ChunkGeometry::ATTRIBS);
+	this->vbo.unbind();
 	ChunkRenderData::CHUNK_EBO->bind();
 	this->vao.unbind();
 	ChunkRenderData::CHUNK_EBO->unbind();
