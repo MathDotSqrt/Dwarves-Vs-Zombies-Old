@@ -31,28 +31,29 @@ iterator Graphics::render_basic(Scene *scene, iterator start, iterator end) {
 	shader->use();
 	do {
 		RenderStateKey key = *start;
-		Scene::Instance *instance = &scene->instanceCache[key.getValue()];
-		Scene::Mesh *mesh = &scene->meshCache[instance->meshID];
-		Scene::Transformation *transformation = &scene->transformationCache[instance->transformationID];
+		Scene::Instance &instance = scene->instanceCache[key.getValue()];
 
-		glm::quat rot(transformation->rotation);
+		Scene::Transformation &transformation = scene->transformationCache[instance.transformationID];
+		ColorMaterial &material = scene->colorMaterialCache[instance.materialID];
+		const auto &mesh = instance.meshHandle;
+
+
+		glm::quat rot(transformation.rotation);
 		glm::vec3 axis = glm::axis(rot);
 
 		float angle = glm::angle(rot);
 
 		glm::mat4 model;
-		model = glm::translate(identity, transformation->position);
+		model = glm::translate(identity, transformation.position);
 		model = glm::rotate(model, angle, axis);
-		model = glm::scale(model, transformation->scale);
+		model = glm::scale(model, transformation.scale);
 
 		shader->setUniformMat4("MVP", vp * model);
-
-		ColorMaterial *material = &scene->colorMaterialCache[mesh->materialInstanceID];
-		shader->setUniform3f("color", material->color);
+		shader->setUniform3f("color", material.color);
 
 		mesh->vao.bind();
 		glEnableVertexAttribArray(POSITION_ATTRIB_LOCATION);
-		glDrawElements(GL_TRIANGLES, mesh->indexCount, GL_UNSIGNED_INT, 0);
+		glDrawElements(GL_TRIANGLES, mesh->index_count, GL_UNSIGNED_INT, 0);
 
 		start++;
 	} while (is_valid(start, end, MaterialID::COLOR_MATERIAL_ID));
@@ -72,19 +73,19 @@ iterator Graphics::render_normal(Scene *scene, iterator start, iterator end) {
 	do {
 		RenderStateKey state = *start;
 
-		Scene::Instance *instance = &scene->instanceCache[state.getValue()];
-		Scene::Mesh *mesh = &scene->meshCache[instance->meshID];
-		Scene::Transformation *transformation = &scene->transformationCache[instance->transformationID];
+		Scene::Instance &instance = scene->instanceCache[state.getValue()];
+		Scene::Transformation &transformation = scene->transformationCache[instance.transformationID];
+		const auto &mesh = instance.meshHandle;
 
-		glm::quat rot(transformation->rotation);
+		glm::quat rot(transformation.rotation);
 		glm::vec3 axis = glm::axis(rot);
 
 		float angle = glm::angle(rot);
 
 		glm::mat4 model;
-		model = glm::translate(ident, transformation->position);
+		model = glm::translate(ident, transformation.position);
 		model = glm::rotate(model, angle, axis);
-		model = glm::scale(model, transformation->scale);
+		model = glm::scale(model, transformation.scale);
 
 		glm::mat3 mat(model);
 		shader->setUniformMat3("inverseTransposeMatrix", glm::inverse(mat), true);
@@ -93,7 +94,7 @@ iterator Graphics::render_normal(Scene *scene, iterator start, iterator end) {
 		mesh->vao.bind();
 		glEnableVertexAttribArray(POSITION_ATTRIB_LOCATION);
 		glEnableVertexAttribArray(NORMAL_ATTRIB_LOCATION);
-		glDrawElements(GL_TRIANGLES, mesh->indexCount, GL_UNSIGNED_INT, 0);
+		glDrawElements(GL_TRIANGLES, mesh->index_count, GL_UNSIGNED_INT, 0);
 
 		start++;
 	} while (is_valid(start, end, MaterialID::NORMAL_MAERIAL_ID));
@@ -120,8 +121,9 @@ iterator Graphics::render_basic_lit(Scene *scene, iterator start, iterator end) 
 		RenderStateKey state = *start;
 
 		Scene::Instance &instance = scene->instanceCache[state.getValue()];
-		Scene::Mesh &mesh = scene->meshCache[instance.meshID];
 		Scene::Transformation &transformation = scene->transformationCache[instance.transformationID];
+		BasicLitMaterial &material = scene->basicLitMaterialCache[instance.materialID];
+		const auto &mesh = instance.meshHandle;
 
 		glm::quat rot(transformation.rotation);
 		glm::vec3 axis = glm::axis(rot);
@@ -137,16 +139,14 @@ iterator Graphics::render_basic_lit(Scene *scene, iterator start, iterator end) 
 		shader->setUniformMat3("inverseTransposeMatrix", glm::inverse(mat), true);
 		shader->setUniformMat4("M", model);
 
-		BasicLitMaterial &material = scene->basicLitMaterialCache[mesh.materialInstanceID];
 		shader->setUniform3f("diffuse_color", material.diffuseColor);
 		shader->setUniform3f("specular_color", material.specularColor);
 		shader->setUniform1f("shinyness", material.shinyness);
 
-
-		mesh.vao.bind();
+		mesh->vao.bind();
 		glEnableVertexAttribArray(POSITION_ATTRIB_LOCATION);
 		glEnableVertexAttribArray(NORMAL_ATTRIB_LOCATION);
-		glDrawElements(GL_TRIANGLES, mesh.indexCount, GL_UNSIGNED_INT, 0);
+		glDrawElements(GL_TRIANGLES, mesh->index_count, GL_UNSIGNED_INT, 0);
 
 		start++;
 	} while (is_valid(start, end, MaterialID::BASIC_LIT_MATERIAL_ID));

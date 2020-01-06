@@ -5,6 +5,7 @@
 #include "Material.h"
 #include "VAO.h"
 #include "VBO.h"
+#include "Mesh.h"
 
 namespace Voxel {
 	class Chunk;
@@ -21,18 +22,10 @@ layer, transparancy type, cmd, material id, texture id
 
 class Scene {
 private:
+
 	unsigned int mainCameraID;
 	unsigned int sunCameraID;
 
-	//todo add reference count to mesh to delete it when no transformations are applied to it
-	struct VertexBuffer {
-		VBO vbo;
-		unsigned int reference_count;
-
-		VertexBuffer() : vbo(GL_ARRAY_BUFFER) {
-			this->reference_count = 0;
-		}
-	};
 public:
 
 //annoying bug where RakPeerInterface is redefining these vaiable names
@@ -55,40 +48,30 @@ public:
 		float intensity;
 	};
 
-	struct Mesh {
-		VAO vao;
-		VBO ebo;
-		GLsizei indexCount;
-
-		unsigned int vboID;
-
-		MaterialID typeID;
-		unsigned int materialInstanceID;
-
-		Mesh() : ebo(GL_ELEMENT_ARRAY_BUFFER) {
-			this->indexCount = 0;
-			this->vboID = 0;
-			this->typeID = MaterialID::NONE_MATERIAL_ID;
-			this->materialInstanceID = 0;
-		}
-	};
-
 	struct Transformation {
 		glm::vec3 position;
 		glm::vec3 rotation;
 		glm::vec3 scale;
+
+		Transformation() : position(0), rotation(0), scale(1) {}
+
+		Transformation(glm::vec3 p, glm::vec3 r, glm::vec3 s) :
+			position(p),
+			rotation(r),
+			scale(s) {}
+
 	};
 
 	struct Instance {
-		unsigned int meshID;
+		MaterialID materialType;
+		unsigned int materialID;
 		unsigned int transformationID;
+		entt::resource_handle<Mesh> meshHandle;
 	};
 
 	Util::PackedFreeList<Camera> cameraCache;
 	Util::PackedFreeList<Instance> instanceCache;
 	Util::PackedFreeList<Transformation> transformationCache;
-	Util::PackedFreeList<Mesh> meshCache;
-	Util::PackedFreeList<VertexBuffer> vertexBufferCache;
 
 	Util::PackedFreeList<ColorMaterial> colorMaterialCache;
 	Util::PackedFreeList<BasicLitMaterial> basicLitMaterialCache;
@@ -100,41 +83,16 @@ public:
 	Scene();
 	~Scene();
 
-	template<typename VERTEX>
-	unsigned int createVertexBuffer(const std::vector<VERTEX> &verticies) {
-		VertexBuffer vb;
-		vb.vbo.bind();
-		vb.vbo.bufferData(verticies, GL_STATIC_DRAW);
-		vb.vbo.unbind();
-		return this->vertexBufferCache.insert(std::move(vb));
-	}
-
-	template<typename VERTEX, typename MATERIAL, typename ...T>
-	unsigned int createMesh(const Geometry<VERTEX, T...> &model, MATERIAL &material) {
-		unsigned int materialInstanceID = this->createMaterialInstance(material);
-		unsigned int bufferInstanceID = this->createVertexBuffer(model.getVerticies());
+	template<typename MATERIAL>
+	unsigned int createRenderInstance(const entt::resource_handle<Mesh> handle, MATERIAL material, Transformation t = Transformation()) {
+		assert(handle);
 		
-		VertexBuffer &vb = this->vertexBufferCache[bufferInstanceID];
+		auto transformationID = transformationCache.insert(t);
+		auto materialID = createMaterialInstance(material);
 
-
-		//material instance id isnt being set
-		Mesh newMesh;
-		newMesh.typeID = MATERIAL::type;
-
-		newMesh.vao.bind();
-		vb.vbo.bind();
-		newMesh.vao.bufferInterleavedData(model.attribs);
-		vb.vbo.unbind();
-		newMesh.ebo.bind();
-		newMesh.ebo.bufferData(model.getIndices(), GL_STATIC_DRAW);
-		newMesh.vao.unbind();
-		newMesh.ebo.unbind();
-		newMesh.indexCount = (GLsizei)model.getIndexCount();
-		newMesh.materialInstanceID = materialInstanceID;
-
-		return this->meshCache.insert(std::move(newMesh));
+		Instance newInstance = { MATERIAL::type, materialID, transformationID, handle };
+		return instanceCache.insert(newInstance);
 	}
-
 
 	template<typename MATERIAL>
 	unsigned int createMaterialInstance(MATERIAL &material) {
@@ -146,9 +104,9 @@ public:
 	unsigned int createMaterialInstance(TextureMaterial &material);
 	unsigned int createMaterialInstance(BlockMaterial &material);
 
-	unsigned int createRenderInstance(unsigned int meshID, Transformation t);
-	unsigned int createRenderInstance(unsigned int meshID, glm::vec3 position, glm::vec3 rotation, glm::vec3 scale);
-	unsigned int createRenderInstance(unsigned int meshID);
+	//unsigned int createRenderInstance(unsigned int meshID, Transformation t);
+	//unsigned int createRenderInstance(unsigned int meshID, glm::vec3 position, glm::vec3 rotation, glm::vec3 scale);
+	//unsigned int createRenderInstance(unsigned int meshID);
 	
 	unsigned int createCameraInstance(Camera camera);
 
@@ -156,7 +114,6 @@ public:
 	unsigned int createPointLightInstance();
 
 	void removeMaterialInstance(MaterialID materialType, unsigned int materialID);
-	void removeMesh(unsigned int meshID);
 	void removeTransformation(unsigned int transformationID);
 	void removeRenderInstance(unsigned int instanceID);
 

@@ -15,6 +15,7 @@
 #include "Timer.h"
 
 #include "ResourceManager.h"
+#include "Mesh.h"
 
 //#define LINEAR_ALLOC_SIZE 100
 
@@ -29,6 +30,7 @@ Engine::Engine() : linearAlloc(MEM_ALLOC_SIZE, malloc(MEM_ALLOC_SIZE)){	//todo d
 
 	this->set<ResourceManager::TexCache>();
 	this->set<ResourceManager::GeometryCache>();
+	this->set<ResourceManager::MeshCache>();
 
 	this->main = entt::null;
 

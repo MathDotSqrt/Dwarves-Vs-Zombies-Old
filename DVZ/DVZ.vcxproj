@@ -278,6 +278,7 @@
     <ClInclude Include="macrologger.h" />
     <ClInclude Include="MainState.h" />
     <ClInclude Include="Material.h" />
+    <ClInclude Include="Mesh.h" />
     <ClInclude Include="ModelGeometry.h" />
     <ClInclude Include="NetInstanceType.h" />
     <ClInclude Include="OBJLoader.h" />

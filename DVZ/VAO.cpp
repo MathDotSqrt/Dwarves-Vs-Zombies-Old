@@ -28,11 +28,11 @@ VAO& VAO::operator=(VAO &&other) {
 	return *this;
 }
 
-void VAO::bind() {
+void VAO::bind() const {
 	glBindVertexArray(this->vaoID);
 }
 
-void VAO::unbind() {
+void VAO::unbind() const {
 	glBindVertexArray(0);
 }
 

@@ -24,7 +24,8 @@ PlayState::~PlayState() {
 void PlayState::init() {
 	LOG_STATE("init");
 	auto &scene = e.ctx<Graphics::Scene>();
-	auto &model_cache = e.ctx<ResourceManager::GeometryCache>();
+	auto &mesh_cache = e.ctx<ResourceManager::MeshCache>();
+
 	/*PLAYER*/
 	entt::entity playerID = e.addPlayer(0, 0, 0);
 	unsigned int pointLightInstanceID = scene.createPointLightInstance();
@@ -32,10 +33,9 @@ void PlayState::init() {
 	/*PLAYER*/
 	
 	/*TREE*/
-	auto model = model_cache.load<ResourceManager::GeometryLoader>("tree"_hs, "res/tree.xobj");
+	auto model = mesh_cache.load<ResourceManager::MeshLoader>("tree"_hs, "res/tree.xobj");
 	Graphics::NormalMaterial material;
-	unsigned int meshID = scene.createMesh(model.get(), material);
-	unsigned int renderID = scene.createRenderInstance(meshID);
+	unsigned int renderID = scene.createRenderInstance(model, material);
 
 	entt::entity tree = e.create();
 	e.assign<PositionComponent>(tree, glm::vec3(0, 0, 0));
@@ -46,10 +46,9 @@ void PlayState::init() {
 	/*TREE*/
 
 	/*WALKER*/
-	auto walkerModel = model_cache.load<ResourceManager::GeometryLoader>("SpunkWalker"_hs, "res/SpunkWalker.xobj");
+	auto walkerModel = mesh_cache.load<ResourceManager::MeshLoader>("SpunkWalker"_hs, "res/SpunkWalker.xobj");
 	Graphics::BasicLitMaterial walkerMaterial = { {1, 0, 1}, {1, 1, 1}, 10};
-	uint32 walkerMeshID = scene.createMesh(walkerModel.get(), walkerMaterial);
-	uint32 walkerRenderID = scene.createRenderInstance(walkerMeshID);
+	uint32 walkerRenderID = scene.createRenderInstance(walkerModel, walkerMaterial);
 
 	entt::entity walker = e.create();
 	e.assign<PositionComponent>(walker, glm::vec3(10, 10, 10));
@@ -78,7 +77,7 @@ void PlayState::init() {
 	scene.setSunCameraID(cameraID);
 	//scene->setMainCamera(cameraID);
 	e.assign<CameraInstanceComponent>(sunID, cameraID);
-	e.assign<RenderInstanceComponent>(sunID, scene.createRenderInstance(walkerMeshID));
+	e.assign<RenderInstanceComponent>(sunID, scene.createRenderInstance(walkerModel, walkerMaterial));
 	/*SUN CAMERA*/
 
 	/*NET*/

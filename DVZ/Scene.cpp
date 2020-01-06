@@ -6,8 +6,6 @@ Scene::Scene() :
 	cameraCache(10),
 	instanceCache(5000),
 	transformationCache(5000),
-	meshCache(5000),
-	vertexBufferCache(5000),
 	colorMaterialCache(5000),
 	basicLitMaterialCache(5000),
 	blockMaterialCache(5000),
@@ -38,24 +36,24 @@ unsigned int Scene::createMaterialInstance(BlockMaterial &material) {
 	return this->blockMaterialCache.insert(material);
 }
 
-unsigned int Scene::createRenderInstance(unsigned int meshID, Transformation t) {
-	unsigned int transformationID = this->transformationCache.insert(t);
-	Instance newInstance = {meshID, transformationID };
-	unsigned int instanceID = this->instanceCache.insert(newInstance);
-	return instanceID;
-}
-
-unsigned int Scene::createRenderInstance(unsigned int meshID, glm::vec3 position, glm::vec3 rotation, glm::vec3 scale) {
-	Transformation newTransformation = { position, rotation, scale };
-	return this->createRenderInstance(meshID, newTransformation);
-}
-
-unsigned int Scene::createRenderInstance(unsigned int meshID) {
-	glm::vec3 pos(0, 0, 0);
-	glm::vec3 rot(0, 0, 0);
-	glm::vec3 scale(1, 1, 1);
-	return this->createRenderInstance(meshID, pos, rot, scale);
-}
+//unsigned int Scene::createRenderInstance(unsigned int meshID, Transformation t) {
+//	unsigned int transformationID = this->transformationCache.insert(t);
+//	Instance newInstance = {meshID, transformationID };
+//	unsigned int instanceID = this->instanceCache.insert(newInstance);
+//	return instanceID;
+//}
+//
+//unsigned int Scene::createRenderInstance(unsigned int meshID, glm::vec3 position, glm::vec3 rotation, glm::vec3 scale) {
+//	Transformation newTransformation = { position, rotation, scale };
+//	return this->createRenderInstance(meshID, newTransformation);
+//}
+//
+//unsigned int Scene::createRenderInstance(unsigned int meshID) {
+//	glm::vec3 pos(0, 0, 0);
+//	glm::vec3 rot(0, 0, 0);
+//	glm::vec3 scale(1, 1, 1);
+//	return this->createRenderInstance(meshID, pos, rot, scale);
+//}
 
 unsigned int Scene::createCameraInstance(Camera camera) {
 	return this->cameraCache.insert(camera);
@@ -89,24 +87,17 @@ void Scene::removeMaterialInstance(MaterialID typeID, unsigned int materialInsta
 	}
 }
 
-void Scene::removeMesh(unsigned int meshID) {
-	Mesh *m = &this->meshCache[meshID];
-
-	this->removeMaterialInstance(m->typeID, m->materialInstanceID);
-	this->meshCache.erase(meshID);
-}
 
 void Scene::removeTransformation(unsigned int transformationID) {
 	this->transformationCache.erase(transformationID);
 }
 
 void Scene::removeRenderInstance(unsigned int instanceID) {
-	Instance i = this->instanceCache[instanceID];
+	Instance &i = this->instanceCache[instanceID];
 	
-	//todo make a reference counter. Other transformations could be pointing to this mesh
-	this->removeMesh(i.meshID);
-	this->removeTransformation(i.transformationID);
-	this->instanceCache.erase(instanceID);
+	removeTransformation(i.transformationID);
+	removeMaterialInstance(i.materialType, i.materialID);
+	instanceCache.erase(instanceID);
 }
 
 void Scene::setMainCamera(unsigned int cameraID) {

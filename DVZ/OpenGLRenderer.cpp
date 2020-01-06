@@ -91,9 +91,8 @@ void OpenGLRenderer::prerender() {
 	sortedRenderStateKeys.push_back(chunk_render);
 
 	for (unsigned int instanceID : scene->instanceCache) {
-		Scene::Instance instance = scene->instanceCache[instanceID];
-		Scene::Mesh &mesh = scene->meshCache[instance.meshID];
-		MaterialID matID = mesh.typeID;
+		Scene::Instance &instance = scene->instanceCache[instanceID];
+		MaterialID matID = instance.materialType;
 
 		RenderStateKey key(ViewPort::FINAL, ViewPortLayer::DEFAULT, BlendType::OPAQUE, matID, instanceID);
 		sortedRenderStateKeys.push_back(key);

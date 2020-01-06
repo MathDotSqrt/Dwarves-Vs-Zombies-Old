@@ -24,8 +24,8 @@ public:
 
 	VAO& operator=(VAO &&other);
 
-	void bind();
-	void unbind();
+	void bind() const;
+	void unbind() const;
 
 
 	template<typename ...T>
