@@ -53,7 +53,7 @@ namespace Voxel {
 		int currentCZ = -1000;
 	public:
 
-		Graphics::TEX debugTEX = Graphics::TEX::Builder("WorldTerrain2.png")
+		Graphics::TEX debugTEX = Graphics::TEX::Builder("res/WorldTerrain2.png")
 			.rgb()
 			.linear()
 			.mipmapLinear()

@@ -306,26 +306,23 @@
     <ClInclude Include="Window.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="basic_lit_shader.frag" />
-    <None Include="basic_lit_shader.vert" />
-    <None Include="basic_shader.frag" />
-    <None Include="basic_shader.vert" />
-    <None Include="chunk_shader.frag" />
-    <None Include="chunk_shader.vert" />
-    <None Include="chunk_shadow_shader.vert" />
-    <None Include="chunk_shadow_shader.frag" />
-    <None Include="frame_buffer_shader.frag" />
-    <None Include="frame_buffer_shader.vert" />
-    <None Include="math.glsl" />
-    <None Include="new_chunk_shader.frag" />
-    <None Include="new_chunk_shader.vert" />
-    <None Include="normal_shader.frag" />
-    <None Include="normal_shader.vert" />
     <None Include="preamble.glsl" />
+    <None Include="res\basic_lit_shader.frag" />
+    <None Include="res\basic_lit_shader.vert" />
+    <None Include="res\basic_shader.frag" />
+    <None Include="res\basic_shader.vert" />
+    <None Include="res\chunk_shader.frag" />
+    <None Include="res\chunk_shader.vert" />
+    <None Include="res\chunk_shadow_shader.frag" />
+    <None Include="res\chunk_shadow_shader.vert" />
+    <None Include="res\frame_buffer_shader.frag" />
+    <None Include="res\frame_buffer_shader.vert" />
+    <None Include="res\new_chunk_shader.frag" />
+    <None Include="res\new_chunk_shader.vert" />
+    <None Include="res\normal_shader.frag" />
+    <None Include="res\normal_shader.vert" />
     <None Include="res\SpunkWalker.xobj" />
     <None Include="res\tree.xobj" />
-    <None Include="test.frag" />
-    <None Include="test.vert" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="checker.jpg" />

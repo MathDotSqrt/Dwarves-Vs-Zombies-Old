@@ -394,65 +394,56 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="test.vert">
-      <Filter>Resource Files\Shaders</Filter>
-    </None>
-    <None Include="test.frag">
-      <Filter>Resource Files\Shaders</Filter>
-    </None>
-    <None Include="basic_shader.vert">
-      <Filter>Resource Files\Shaders</Filter>
-    </None>
-    <None Include="basic_shader.frag">
-      <Filter>Resource Files\Shaders</Filter>
-    </None>
     <None Include="preamble.glsl">
       <Filter>Header Files\Graphics</Filter>
-    </None>
-    <None Include="normal_shader.vert">
-      <Filter>Resource Files\Shaders</Filter>
-    </None>
-    <None Include="normal_shader.frag">
-      <Filter>Resource Files\Shaders</Filter>
-    </None>
-    <None Include="basic_lit_shader.vert">
-      <Filter>Resource Files\Shaders</Filter>
-    </None>
-    <None Include="basic_lit_shader.frag">
-      <Filter>Resource Files\Shaders</Filter>
-    </None>
-    <None Include="chunk_shader.frag">
-      <Filter>Resource Files\Shaders</Filter>
-    </None>
-    <None Include="chunk_shader.vert">
-      <Filter>Resource Files\Shaders</Filter>
-    </None>
-    <None Include="math.glsl">
-      <Filter>Resource Files\Shaders</Filter>
-    </None>
-    <None Include="new_chunk_shader.vert">
-      <Filter>Resource Files\Shaders</Filter>
-    </None>
-    <None Include="new_chunk_shader.frag">
-      <Filter>Resource Files\Shaders</Filter>
-    </None>
-    <None Include="frame_buffer_shader.vert">
-      <Filter>Resource Files\Shaders</Filter>
-    </None>
-    <None Include="frame_buffer_shader.frag">
-      <Filter>Resource Files\Shaders</Filter>
-    </None>
-    <None Include="chunk_shadow_shader.vert">
-      <Filter>Resource Files\Shaders</Filter>
-    </None>
-    <None Include="chunk_shadow_shader.frag">
-      <Filter>Resource Files\Shaders</Filter>
     </None>
     <None Include="res\tree.xobj">
       <Filter>Resource Files\Models</Filter>
     </None>
     <None Include="res\SpunkWalker.xobj">
       <Filter>Resource Files\Models</Filter>
+    </None>
+    <None Include="res\basic_lit_shader.frag">
+      <Filter>Resource Files\Shaders</Filter>
+    </None>
+    <None Include="res\basic_lit_shader.vert">
+      <Filter>Resource Files\Shaders</Filter>
+    </None>
+    <None Include="res\basic_shader.frag">
+      <Filter>Resource Files\Shaders</Filter>
+    </None>
+    <None Include="res\basic_shader.vert">
+      <Filter>Resource Files\Shaders</Filter>
+    </None>
+    <None Include="res\chunk_shader.frag">
+      <Filter>Resource Files\Shaders</Filter>
+    </None>
+    <None Include="res\chunk_shader.vert">
+      <Filter>Resource Files\Shaders</Filter>
+    </None>
+    <None Include="res\chunk_shadow_shader.frag">
+      <Filter>Resource Files\Shaders</Filter>
+    </None>
+    <None Include="res\chunk_shadow_shader.vert">
+      <Filter>Resource Files\Shaders</Filter>
+    </None>
+    <None Include="res\frame_buffer_shader.frag">
+      <Filter>Resource Files\Shaders</Filter>
+    </None>
+    <None Include="res\frame_buffer_shader.vert">
+      <Filter>Resource Files\Shaders</Filter>
+    </None>
+    <None Include="res\new_chunk_shader.frag">
+      <Filter>Resource Files\Shaders</Filter>
+    </None>
+    <None Include="res\new_chunk_shader.vert">
+      <Filter>Resource Files\Shaders</Filter>
+    </None>
+    <None Include="res\normal_shader.frag">
+      <Filter>Resource Files\Shaders</Filter>
+    </None>
+    <None Include="res\normal_shader.vert">
+      <Filter>Resource Files\Shaders</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>
