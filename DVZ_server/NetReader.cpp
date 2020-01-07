@@ -93,13 +93,17 @@ void System::net_broadcast(EntityAdmin &admin, float delta) {
 	auto &registry = admin.registry;
 	auto *peer = admin.getPeer();
 
-	auto view = registry.view<PositionComponent>();
+	auto view = registry.view<PositionComponent, RotationComponent>();
 
 	for (entt::entity e : view) {
+		PositionComponent pos = view.get<PositionComponent>(e);
+		RotationComponent rot = view.get<RotationComponent>(e);
+
 		BitStream stream;
 		stream.Write((MessageID)ID_PLAYER_MOVE);
 		stream.Write(e);
-		stream.Write(view.get(e));
+		stream.Write(pos);
+		stream.Write(rot);
 		peer->Send(&stream, PacketPriority::MEDIUM_PRIORITY, PacketReliability::UNRELIABLE, 0, UNASSIGNED_RAKNET_GUID, true);
 	}
 }

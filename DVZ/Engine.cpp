@@ -22,7 +22,7 @@
 using namespace std;
 
 Engine::Engine() : linearAlloc(MEM_ALLOC_SIZE, malloc(MEM_ALLOC_SIZE)){	//todo delete
-	this->set<SLNet::RakPeerInterface*>(SLNet::RakPeerInterface::GetInstance())->ApplyNetworkSimulator(0, 100, 0);
+	this->set<SLNet::RakPeerInterface*>(SLNet::RakPeerInterface::GetInstance())->ApplyNetworkSimulator(0, 0, 0);
 	this->set<Graphics::Scene>();
 	this->set<Graphics::OpenGLRenderer>(&this->ctx<Graphics::Scene>());
 	this->set<Voxel::ChunkManager>(linearAlloc);
