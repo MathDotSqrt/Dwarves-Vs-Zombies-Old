@@ -1,6 +1,7 @@
 #include "GameLogic.h"
 #include "Components.h"
-
+#include "SingletonComponents.h"
+#include "NetUtil.h"
 using namespace GameLogic;
 
 void GameLogic::input_system(EntityAdmin &admin, float delta) {
@@ -44,24 +45,27 @@ void GameLogic::movement_system(EntityAdmin &admin, float delta) {
 }
 
 void GameLogic::afk_system(EntityAdmin &admin, float delta) {
-	constexpr float AFK_TIMEOUT = 10;
+	constexpr float AFK_TIMEOUT = 15;
 	
 	entt::registry &registry = admin.registry;
-	auto view = registry.view<InputComponent, AFKComponent>();
+	auto view = registry.view<InputComponent, AFKComponent, NetClientComponent>();
 
 	for (entt::entity e : view) {
 		auto &input = view.get<InputComponent>(e);
 		auto &afk = view.get<AFKComponent>(e);
+		auto &client = view.get<NetClientComponent>(e);
 
 		if (afk.lastInput == input) {
 			afk.timer += delta;
 			if (afk.timer >= AFK_TIMEOUT) {
-				printf("ENTITY AFK TOO LONG");
+				printf("ENTITY AFK TOO LONG\n");
 				registry.destroy(e);
+				closeClientConnection(admin, client.guid);
 			}
 		}
 		else {
 			afk.timer = 0;
+			afk.lastInput = input;
 		}
 
 	}

@@ -4,6 +4,7 @@
 
 #include "glm.hpp"
 #include "gtx/quaternion.hpp"
+#include "RakNetTypes.h"
 
 struct PositionComponent : glm::vec3 { 
 	PositionComponent(glm::vec3 vec) : glm::vec3(vec) {}
@@ -16,8 +17,6 @@ struct RotationComponent : glm::quat {
 struct VelocityComponent : glm::vec3 { 
 	VelocityComponent(glm::vec3 vec) : glm::vec3(vec) {}
 };
-
-
 
 struct DirComponent {
 	glm::vec3 forward;
@@ -57,6 +56,10 @@ struct InputComponent {
 	bool operator!=(const InputComponent &other) {
 		return !operator==(other);
 	}
+};
+
+struct NetClientComponent {
+	SLNet::RakNetGUID guid;
 };
 
 struct AFKComponent {

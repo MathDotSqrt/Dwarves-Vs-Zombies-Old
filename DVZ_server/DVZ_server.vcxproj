@@ -190,13 +190,16 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="EntityAdmin.cpp" />
+    <ClCompile Include="Events.cpp" />
     <ClCompile Include="GameLogic.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="NetReader.cpp" />
+    <ClCompile Include="NetUtil.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Components.h" />
     <ClInclude Include="EntityAdmin.h" />
+    <ClInclude Include="Events.h" />
     <ClInclude Include="GameLogic.h" />
     <ClInclude Include="GamePacketID.h" />
     <ClInclude Include="NetReader.h" />

@@ -6,3 +6,7 @@
 
 struct ConnectedClientMap : std::map<SLNet::RakNetGUID, entt::entity> {
 };
+
+struct CloseConnectionBuffer : std::vector<SLNet::RakNetGUID> {
+
+};

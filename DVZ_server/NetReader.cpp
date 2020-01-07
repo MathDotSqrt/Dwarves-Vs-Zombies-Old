@@ -23,26 +23,33 @@ void incomming_connection_packet(RakPeerInterface *peer, Packet *packet, entt::r
 	registry.assign<VelocityComponent>(player, glm::vec3(0, 0, 0));
 	registry.assign<DirComponent>(player, glm::vec3(0, 0, -1), glm::vec3(0, 1, 0), glm::vec3(1, 0, 0));
 	registry.assign<InputComponent>(player);
+	registry.assign<AFKComponent>(player);
+	registry.assign<NetClientComponent>(player, packet->guid);
+	
 	BitStream out;
 	out.Write((MessageID)ID_CLIENT_NET_ID);
 	out.Write(player);
 	peer->Send(&out, PacketPriority::IMMEDIATE_PRIORITY, PacketReliability::RELIABLE, 0, packet->systemAddress, false);
-	registry.ctx<ConnectedClientMap>()[packet->guid] = player;
 }
 
 void disconnection_packet(Packet *packet, entt::registry &registry) {
 	printf("CLIENT DISCONNECTED\n");
 	auto &map = registry.ctx<ConnectedClientMap>();
 	
-	entt::entity playerID = map[packet->guid];
-	registry.destroy(playerID);
-	map.erase(packet->guid);
+	if (auto iter = map.find(packet->guid); iter != map.end()) {
+		entt::entity playerID = iter->second;
+		registry.destroy(playerID);		//destroy should call a signal handler to manager ConnectedClientMap
+	}
 }
 
 void client_input_packet(Packet *packet, entt::registry &registry) {
 	auto &map = registry.ctx<ConnectedClientMap>();
 	auto iter = map.find(packet->guid);
-	assert(iter != map.end());
+
+	if (iter == map.end()) {
+		return;
+	}
+
 	entt::entity clientEntity = map[packet->guid];
 
 	//auto &pos = registry.get<PositionComponent>(clientEntity);
@@ -89,9 +96,22 @@ void System::net_update(EntityAdmin &admin, float delta) {
 	}
 }
 
+void System::net_disconnect(EntityAdmin &admin, float delta){
+	auto &registry = admin.registry;
+	auto peer = admin.getPeer();
+	auto &buffer = registry.ctx<CloseConnectionBuffer>();
+
+	if (buffer.size()) {
+		auto guid = buffer.back();
+		peer->CloseConnection(guid, true);
+		buffer.pop_back();
+	}
+}
+
 void System::net_broadcast(EntityAdmin &admin, float delta) {
 	auto &registry = admin.registry;
 	auto *peer = admin.getPeer();
+	auto &map = registry.ctx<ConnectedClientMap>();
 
 	auto view = registry.view<PositionComponent, RotationComponent>();
 

@@ -3,6 +3,8 @@
 #include "NetReader.h"
 #include "GameLogic.h"
 #include "SingletonComponents.h"
+#include "Components.h"
+#include "Events.h"
 
 #define MAX_CONNECTIONS 10
 #define SERVER_PORT 60000
@@ -12,15 +14,19 @@ EntityAdmin::EntityAdmin() : peer(SLNet::RakPeerInterface::GetInstance()){
 	addSystemUpdateFunction(GameLogic::input_system);
 	addSystemUpdateFunction(GameLogic::afk_system);
 	addSystemUpdateFunction(GameLogic::movement_system);
+	addSystemUpdateFunction(System::net_disconnect);
 	addSystemUpdateFunction(System::net_broadcast);
 
-	//peer->ApplyNetworkSimulator(0, 100, 0);
+	registry.set<ConnectedClientMap>();
+	registry.set<CloseConnectionBuffer>();
+
+	registry.on_construct<NetClientComponent>().connect<&Event::net_client_connect>();
+	registry.on_destroy<NetClientComponent>().connect<&Event::net_client_disconnect>();
 
 	SLNet::SocketDescriptor sd(SERVER_PORT, nullptr);
 	peer->Startup(MAX_CONNECTIONS, &sd, 1);
 	peer->SetMaximumIncomingConnections(MAX_CONNECTIONS - 1);
-
-	registry.set<ConnectedClientMap>();
+	//peer->ApplyNetworkSimulator(0, 100, 0);
 }
 
 
