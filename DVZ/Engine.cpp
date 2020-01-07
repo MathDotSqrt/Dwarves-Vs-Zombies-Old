@@ -43,6 +43,9 @@ Engine::~Engine(){
 	auto peer = this->ctx<SLNet::RakPeerInterface*>();
 	peer->Shutdown(100, 0, PacketPriority::HIGH_PRIORITY);
 	SLNet::RakPeerInterface::DestroyInstance(peer);
+
+	this->unset<Voxel::ChunkRenderDataManager>();		//todo fix bad dependency bug
+	this->unset<Voxel::ChunkManager>();
 }
 
 void Engine::update(float delta) {
