@@ -194,7 +194,7 @@ void OpenGLRenderer::renderPostProcess() {
 	glClear(GL_COLOR_BUFFER_BIT);
 	glViewport(0, 0, window_width, window_height);
 
-	Shader::GLSLProgram *program = Shader::getShaderSet({"frame_buffer_shader.vert", "frame_buffer_shader.frag"});
+	Shader::GLSLProgram *program = Shader::getShaderSet({"res/frame_buffer_shader.vert", "res/frame_buffer_shader.frag"});
 	program->use();
 
 	//shadow.getDepthAttachment().bindActiveTexture(0);

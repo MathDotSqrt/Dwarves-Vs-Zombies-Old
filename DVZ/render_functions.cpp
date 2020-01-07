@@ -27,7 +27,7 @@ inline bool is_valid(iterator start, iterator end, MaterialID id) {
 iterator Graphics::render_basic(Scene *scene, iterator start, iterator end) {
 	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
-	Shader::GLSLProgram *shader = Shader::getShaderSet({ "basic_shader.vert", "basic_shader.frag" });
+	Shader::GLSLProgram *shader = Shader::getShaderSet({ "res/basic_shader.vert", "res/basic_shader.frag" });
 	shader->use();
 	do {
 		RenderStateKey key = *start;
@@ -67,7 +67,7 @@ iterator Graphics::render_basic(Scene *scene, iterator start, iterator end) {
 
 iterator Graphics::render_normal(Scene *scene, iterator start, iterator end) { 
 	glm::mat4 ident = glm::identity<glm::mat4>();
-	Shader::GLSLProgram *shader = Shader::getShaderSet({ "normal_shader.vert", "normal_shader.frag" });
+	Shader::GLSLProgram *shader = Shader::getShaderSet({ "res/normal_shader.vert", "res/normal_shader.frag" });
 	shader->use();
 
 	do {
@@ -106,7 +106,7 @@ iterator Graphics::render_normal(Scene *scene, iterator start, iterator end) {
 }
 
 iterator Graphics::render_basic_lit(Scene *scene, iterator start, iterator end) {
-	Shader::GLSLProgram *shader = Shader::getShaderSet({ "basic_lit_shader.vert", "basic_lit_shader.frag" });
+	Shader::GLSLProgram *shader = Shader::getShaderSet({ "res/basic_lit_shader.vert", "res/basic_lit_shader.frag" });
 	shader->use();
 
 	shader->setUniform3f("camera_pos", camera_pos);
@@ -162,7 +162,7 @@ iterator Graphics::render_chunks(Voxel::ChunkRenderDataManager *manager, Scene *
 
 	constexpr glm::vec3 CHUNK_SCALE(Voxel::CHUNK_RENDER_WIDTH_X, Voxel::CHUNK_RENDER_WIDTH_Y, Voxel::CHUNK_RENDER_WIDTH_Z);
 
-	Shader::GLSLProgram *shader = Shader::getShaderSet({ "new_chunk_shader.vert", "new_chunk_shader.frag" });
+	Shader::GLSLProgram *shader = Shader::getShaderSet({ "res/new_chunk_shader.vert", "res/new_chunk_shader.frag" });
 	shader->use();
 
 	shader->setUniform3f("fog.color", glm::vec3(.13, .13, .13));
@@ -212,7 +212,7 @@ iterator Graphics::render_chunks(Voxel::ChunkRenderDataManager *manager, Scene *
 
 iterator Graphics::render_chunks_shadow(Voxel::ChunkRenderDataManager *manager, Scene *scene, iterator start, iterator end) {
 	const glm::vec3 CHUNK_SCALE(Voxel::CHUNK_RENDER_WIDTH_X, Voxel::CHUNK_RENDER_WIDTH_Y, Voxel::CHUNK_RENDER_WIDTH_Z);
-	Shader::GLSLProgram *shader = Shader::getShaderSet({ "chunk_shadow_shader.vert", "chunk_shadow_shader.frag" });
+	Shader::GLSLProgram *shader = Shader::getShaderSet({ "res/chunk_shadow_shader.vert", "res/chunk_shadow_shader.frag" });
 	shader->use();
 
 	shader->setUniformMat4("VP", vp);
