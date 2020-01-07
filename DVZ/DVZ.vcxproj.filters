@@ -447,25 +447,28 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <Image Include="test.png">
+    <Image Include="res\checker.jpg">
       <Filter>Resource Files\Textures</Filter>
     </Image>
-    <Image Include="checker.jpg">
+    <Image Include="res\GRAS.jpg">
       <Filter>Resource Files\Textures</Filter>
     </Image>
-    <Image Include="terrain.png">
+    <Image Include="res\purp.jpg">
       <Filter>Resource Files\Textures</Filter>
     </Image>
-    <Image Include="terrain_debug.png">
+    <Image Include="res\terrain.png">
       <Filter>Resource Files\Textures</Filter>
     </Image>
-    <Image Include="purp.jpg">
+    <Image Include="res\terrain_debug.png">
       <Filter>Resource Files\Textures</Filter>
     </Image>
-    <Image Include="GRAS.jpg">
+    <Image Include="res\test.png">
       <Filter>Resource Files\Textures</Filter>
     </Image>
-    <Image Include="WorldTerrain.png">
+    <Image Include="res\WorldTerrain.png">
+      <Filter>Resource Files\Textures</Filter>
+    </Image>
+    <Image Include="res\WorldTerrain2.png">
       <Filter>Resource Files\Textures</Filter>
     </Image>
   </ItemGroup>

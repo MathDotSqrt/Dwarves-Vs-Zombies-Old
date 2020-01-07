@@ -325,13 +325,14 @@
     <None Include="res\tree.xobj" />
   </ItemGroup>
   <ItemGroup>
-    <Image Include="checker.jpg" />
-    <Image Include="GRAS.jpg" />
-    <Image Include="purp.jpg" />
-    <Image Include="terrain.png" />
-    <Image Include="terrain_debug.png" />
-    <Image Include="test.png" />
-    <Image Include="WorldTerrain.png" />
+    <Image Include="res\checker.jpg" />
+    <Image Include="res\GRAS.jpg" />
+    <Image Include="res\purp.jpg" />
+    <Image Include="res\terrain.png" />
+    <Image Include="res\terrain_debug.png" />
+    <Image Include="res\test.png" />
+    <Image Include="res\WorldTerrain.png" />
+    <Image Include="res\WorldTerrain2.png" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
