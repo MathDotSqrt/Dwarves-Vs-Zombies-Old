@@ -1,4 +1,7 @@
 #pragma once
+
+/*SERVER COMPONENTS*/
+
 #include "glm.hpp"
 #include "gtx/quaternion.hpp"
 
@@ -23,8 +26,7 @@ struct DirComponent {
 };
 
 struct InputComponent {
-	glm::vec2 mousePos[2];		//[0] previous frame position [1] current frame position
-
+//	glm::vec2 mousePos[2];		//[0] previous frame position [1] current frame position
 	bool up;
 	bool down;
 	bool left;
@@ -41,4 +43,24 @@ struct InputComponent {
 		space(false),
 		shift(false),
 		ctrl(false) {}
+
+	bool operator==(const InputComponent &other) {
+		return up == other.up
+			&& down == other.down
+			&& left == other.left
+			&& right == other.right
+			&& space == other.space
+			&& shift == other.shift
+			&& ctrl == other.ctrl;
+	}
+
+	bool operator!=(const InputComponent &other) {
+		return !operator==(other);
+	}
 };
+
+struct AFKComponent {
+	float timer;
+	InputComponent lastInput;
+};
+/*SERVER COMPONENTS*/

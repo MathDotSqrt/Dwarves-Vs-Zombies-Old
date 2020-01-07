@@ -10,6 +10,7 @@
 EntityAdmin::EntityAdmin() : peer(SLNet::RakPeerInterface::GetInstance()){
 	addSystemUpdateFunction(System::net_update);
 	addSystemUpdateFunction(GameLogic::input_system);
+	addSystemUpdateFunction(GameLogic::afk_system);
 	addSystemUpdateFunction(GameLogic::movement_system);
 	addSystemUpdateFunction(System::net_broadcast);
 
