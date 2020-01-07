@@ -5,7 +5,7 @@
 #include "Timer.h"
 #include "TEX.h"
 #include "DepthFBO.h"
-#include "preamble.glsl"
+#include "preamble.h"
 
 
 using namespace Graphics;

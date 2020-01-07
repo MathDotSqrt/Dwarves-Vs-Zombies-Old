@@ -1,5 +1,5 @@
 #pragma once
-#include "preamble.glsl"
+#include "preamble.h"
 #include "gl/glew.h"
 #include "glm.hpp"
 #include <typeinfo>

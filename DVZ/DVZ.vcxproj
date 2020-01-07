@@ -287,6 +287,7 @@
     <ClInclude Include="PerlinNoise.h" />
     <ClInclude Include="PlayState.h" />
     <ClInclude Include="PoolAllocator.h" />
+    <ClInclude Include="preamble.h" />
     <ClInclude Include="PrototypeID.h" />
     <ClInclude Include="QuadGeometry.h" />
     <ClInclude Include="Recycler.h" />
@@ -306,7 +307,6 @@
     <ClInclude Include="Window.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="preamble.glsl" />
     <None Include="res\basic_lit_shader.frag" />
     <None Include="res\basic_lit_shader.vert" />
     <None Include="res\basic_shader.frag" />
@@ -317,10 +317,12 @@
     <None Include="res\chunk_shadow_shader.vert" />
     <None Include="res\frame_buffer_shader.frag" />
     <None Include="res\frame_buffer_shader.vert" />
+    <None Include="res\math.glsl" />
     <None Include="res\new_chunk_shader.frag" />
     <None Include="res\new_chunk_shader.vert" />
     <None Include="res\normal_shader.frag" />
     <None Include="res\normal_shader.vert" />
+    <None Include="res\preamble.glsl" />
     <None Include="res\SpunkWalker.xobj" />
     <None Include="res\tree.xobj" />
   </ItemGroup>

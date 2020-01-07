@@ -340,7 +340,7 @@ std::string Shader::Internal::preProcessor(std::string& source) {
 	include_file.erase(0, 1);						//erase first "
 	include_file.erase(include_file.size() - 1);	//erase last  "
 
-	std::string replace_string = readFile(include_file);
+	std::string replace_string = readFile("res/" + include_file);
 	replace_string.erase(std::find(replace_string.begin(), replace_string.end(), '\0'), replace_string.end());
 	replace_string.append("\n");
 	source.replace(found, replace_length, replace_string);

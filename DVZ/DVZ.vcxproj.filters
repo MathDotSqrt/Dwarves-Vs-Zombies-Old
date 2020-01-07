@@ -252,6 +252,9 @@
     <ClInclude Include="Mesh.h">
       <Filter>Header Files\Graphics</Filter>
     </ClInclude>
+    <ClInclude Include="preamble.h">
+      <Filter>Header Files\Graphics</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -394,9 +397,6 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="preamble.glsl">
-      <Filter>Header Files\Graphics</Filter>
-    </None>
     <None Include="res\tree.xobj">
       <Filter>Resource Files\Models</Filter>
     </None>
@@ -443,6 +443,12 @@
       <Filter>Resource Files\Shaders</Filter>
     </None>
     <None Include="res\normal_shader.vert">
+      <Filter>Resource Files\Shaders</Filter>
+    </None>
+    <None Include="res\preamble.glsl">
+      <Filter>Resource Files\Shaders</Filter>
+    </None>
+    <None Include="res\math.glsl">
       <Filter>Resource Files\Shaders</Filter>
     </None>
   </ItemGroup>
