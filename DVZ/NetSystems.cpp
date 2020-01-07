@@ -19,8 +19,11 @@ void update_player(Engine &engine, SLNet::Packet *packet) {
 	entt::entity playerID = entt::null;
 	entt::entity netID = entt::null;
 	glm::vec3 pos;
+	glm::quat rot;
+
 	read.Read(netID);
 	read.Read(pos);
+	read.Read(rot);
 
 	auto &map = engine.ctx<std::unordered_map<entt::entity, entt::entity>>();
 
@@ -41,10 +44,11 @@ void update_player(Engine &engine, SLNet::Packet *packet) {
 
 		map[netID] = playerID;
 	}
-	else {
-		playerID = iter->second;
+	else if(playerID = iter->second; playerID != engine.getPlayer()){
 		auto &position = engine.get<PositionComponent>(playerID);
+		auto &rotation = engine.get<RotationComponent>(playerID);
 		position = pos;
+		rotation = rot;
 	}
 }
 
