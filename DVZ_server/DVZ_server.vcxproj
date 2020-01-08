@@ -193,7 +193,7 @@
     <ClCompile Include="Events.cpp" />
     <ClCompile Include="GameLogic.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="NetReader.cpp" />
+    <ClCompile Include="NetSystem.cpp" />
     <ClCompile Include="NetUtil.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -202,7 +202,7 @@
     <ClInclude Include="Events.h" />
     <ClInclude Include="GameLogic.h" />
     <ClInclude Include="GamePacketID.h" />
-    <ClInclude Include="NetReader.h" />
+    <ClInclude Include="NetSystem.h" />
     <ClInclude Include="NetUtil.h" />
     <ClInclude Include="SingletonComponents.h" />
   </ItemGroup>

@@ -1,6 +1,6 @@
 #include "EntityAdmin.h"
 #include "RakPeerInterface.h"
-#include "NetReader.h"
+#include "NetSystem.h"
 #include "GameLogic.h"
 #include "SingletonComponents.h"
 #include "Components.h"

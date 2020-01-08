@@ -3,7 +3,7 @@
 #include "SingletonComponents.h"
 
 
-#include "NetReader.h"
+#include "NetSystem.h"
 #include "MessageIdentifiers.h"
 #include "RakNetTypes.h"
 #include "GamePacketID.h"

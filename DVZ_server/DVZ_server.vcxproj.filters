@@ -21,9 +21,6 @@
     <ClCompile Include="EntityAdmin.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="NetReader.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="GameLogic.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -31,6 +28,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="NetUtil.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="NetSystem.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -44,9 +44,6 @@
     <ClInclude Include="EntityAdmin.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="NetReader.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="NetUtil.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -57,6 +54,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Events.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="NetSystem.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
