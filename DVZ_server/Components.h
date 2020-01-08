@@ -58,6 +58,10 @@ struct InputComponent {
 	}
 };
 
+struct ChunkBoundryComponent : glm::i32vec3 {
+	ChunkBoundryComponent(glm::i32vec3 vec) : glm::i32vec3(vec) {}
+};
+
 struct NetClientComponent {
 	SLNet::RakNetGUID guid;
 };

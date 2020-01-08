@@ -189,21 +189,31 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Allocator.cpp" />
+    <ClCompile Include="ChunkManager.cpp" />
     <ClCompile Include="EntityAdmin.cpp" />
     <ClCompile Include="Events.cpp" />
     <ClCompile Include="GameLogic.cpp" />
+    <ClCompile Include="LinearAllocator.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="NetSystem.cpp" />
     <ClCompile Include="NetUtil.cpp" />
+    <ClCompile Include="PoolAllocator.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Allocator.h" />
+    <ClInclude Include="ChunkManager.h" />
+    <ClInclude Include="Common.h" />
     <ClInclude Include="Components.h" />
     <ClInclude Include="EntityAdmin.h" />
     <ClInclude Include="Events.h" />
     <ClInclude Include="GameLogic.h" />
     <ClInclude Include="GamePacketID.h" />
+    <ClInclude Include="LinearAllocator.h" />
+    <ClInclude Include="macrologger.h" />
     <ClInclude Include="NetSystem.h" />
     <ClInclude Include="NetUtil.h" />
+    <ClInclude Include="PoolAllocator.h" />
     <ClInclude Include="SingletonComponents.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
