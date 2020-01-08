@@ -200,9 +200,11 @@
     <ClCompile Include="NetSystem.cpp" />
     <ClCompile Include="NetUtil.cpp" />
     <ClCompile Include="PoolAllocator.cpp" />
+    <ClCompile Include="VoxelContainer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Allocator.h" />
+    <ClInclude Include="Block.h" />
     <ClInclude Include="Chunk.h" />
     <ClInclude Include="ChunkManager.h" />
     <ClInclude Include="Common.h" />
@@ -213,10 +215,12 @@
     <ClInclude Include="GamePacketID.h" />
     <ClInclude Include="LinearAllocator.h" />
     <ClInclude Include="macrologger.h" />
+    <ClInclude Include="MathUtil.h" />
     <ClInclude Include="NetSystem.h" />
     <ClInclude Include="NetUtil.h" />
     <ClInclude Include="PoolAllocator.h" />
     <ClInclude Include="SingletonComponents.h" />
+    <ClInclude Include="VoxelContainer.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

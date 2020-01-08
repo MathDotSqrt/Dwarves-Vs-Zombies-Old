@@ -58,7 +58,10 @@
       <Filter>Source Files\Util</Filter>
     </ClCompile>
     <ClCompile Include="Chunk.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\Voxel</Filter>
+    </ClCompile>
+    <ClCompile Include="VoxelContainer.cpp">
+      <Filter>Source Files\Voxel</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -105,7 +108,16 @@
       <Filter>Header Files\Util</Filter>
     </ClInclude>
     <ClInclude Include="Chunk.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\Voxel</Filter>
+    </ClInclude>
+    <ClInclude Include="MathUtil.h">
+      <Filter>Header Files\Util</Filter>
+    </ClInclude>
+    <ClInclude Include="VoxelContainer.h">
+      <Filter>Header Files\Util</Filter>
+    </ClInclude>
+    <ClInclude Include="Block.h">
+      <Filter>Header Files\Voxel</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

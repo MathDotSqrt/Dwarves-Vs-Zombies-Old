@@ -1,0 +1,19 @@
+#pragma once
+#include "Common.h"
+
+namespace Voxel {
+	typedef enum _BlockType : uint8 {
+		BLOCK_TYPE_DEFAULT = 0,
+		BLOCK_TYPE_STONE,
+		BLOCK_TYPE_DIRT,
+		BLOCK_TYPE_GRASS,
+		BLOCK_TYPE_SAND,
+		BLOCK_TYPE_GLASS,
+		BLOCK_TYPE_GRASS_PLANT,
+		BLOCK_TYPE_ROSE,
+		BLOCK_TYPE_GOLDENROD,
+		BLOCK_TYPE_PURPLE,
+		BLOCK_TYPE_INVALID,
+		BLOCK_TYPE_NUM_TYPES
+	} BlockType;
+}
