@@ -1,5 +1,6 @@
 #pragma once
 #include "entt.hpp"
+#include "LinearAllocator.h"
 #include <vector>
 
 namespace SLNet {
@@ -23,6 +24,7 @@ public:
 private:
 	SLNet::RakPeerInterface *peer;
 	std::vector<function_ptr> updateFunctions;
+	Util::Allocator::LinearAllocator allocator;
 
 };
 

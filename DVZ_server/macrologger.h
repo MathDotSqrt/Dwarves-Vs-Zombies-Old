@@ -51,17 +51,9 @@
 #define LOG_INFO(message, ...)		PRINT(LOG_FMT message NEW_LINE, LOG_ARGS("INFO"), __VA_ARGS__)
 #define LOG_DEBUG(message, ...)		//PRINT(LOG_FMT message NEW_LINE, LOG_ARGS("DEBUG"), __VA_ARGS__)
 
-#define LOG_SHADE(message, ...)		//PRINT(LOG_FMT message NEW_LINE, LOG_ARGS("SHADE"), __VA_ARGS__)
-#define LOG_RENDER(message, ...)	PRINT(LOG_FMT message NEW_LINE, LOG_ARGS("RENDER"), __VA_ARGS__)
-#define LOG_SCENE(message, ...)		//PRINT(LOG_FMT message NEW_LINE, LOG_ARGS("SCENE"), __VA_ARGS__)
 #define LOG_VOXEL(message, ...)		PRINT(LOG_FMT message NEW_LINE, LOG_ARGS("VOXEL"), __VA_ARGS__)
-#define LOG_LOADER(message, ...)	//PRINT(LOG_FMT message NEW_LINE, LOG_ARGS("LOADER"), __VA_ARGS__)
 
-#define LOG_STATE(message, ...)		PRINT(LOG_FMT message NEW_LINE, LOG_ARGS("STATE"), __VA_ARGS__)
 #define LOG_SYSTEM(message, ...)	PRINT(LOG_FMT message NEW_LINE, LOG_ARGS("SYSTEM"), __VA_ARGS__)
 #define LOG_NET(message, ...)		PRINT(LOG_FMT message NEW_LINE, LOG_ARGS("NET"), __VA_ARGS__)
-#define LOG_ENGINE(message, ...)	PRINT(LOG_FMT message NEW_LINE, LOG_ARGS("ENGINE"), __VA_ARGS__)
-#define LOG_THREAD(message, ...)	PRINT(LOG_FMT message NEW_LINE, LOG_ARGS("THREAD"), __VA_ARGS__)
-#define LOG_TIMER(message, ...)		PRINT(LOG_FMT message NEW_LINE, LOG_ARGS("TIMER"), __VA_ARGS__)
 #define LOG_ALLOC(message, ...)		PRINT(LOG_FMT message NEW_LINE, LOG_ARGS("ALLOC"), __VA_ARGS__)
 

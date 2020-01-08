@@ -8,8 +8,9 @@
 
 #define MAX_CONNECTIONS 10
 #define SERVER_PORT 60000
+#define ALLOC_SIZE 10 * 1024 * 1024
 
-EntityAdmin::EntityAdmin() : peer(SLNet::RakPeerInterface::GetInstance()){
+EntityAdmin::EntityAdmin() : peer(SLNet::RakPeerInterface::GetInstance()), allocator(ALLOC_SIZE, malloc(ALLOC_SIZE)){
 	addSystemUpdateFunction(System::net_update);
 	addSystemUpdateFunction(GameLogic::input_system);
 	addSystemUpdateFunction(GameLogic::afk_system);
