@@ -12,9 +12,7 @@ namespace Voxel {
 		VoxelContainer();
 		~VoxelContainer();
 
-		static constexpr int32 toIndex(const int x, const int y, const int z) {
-			return x + CHUNK_WIDTH_X * (y + CHUNK_WIDTH_Y * z);
-		}
+		
 
 		Block getBlock(int x, int y, int z) const;
 		Block getBlock(int i) const;

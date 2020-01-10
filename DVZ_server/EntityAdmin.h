@@ -7,6 +7,10 @@ namespace SLNet {
 	class RakPeerInterface;
 }
 
+namespace Voxel {
+	class ChunkManager;
+}
+
 class EntityAdmin {
 public:
 	typedef void(*function_ptr)(EntityAdmin &admin, float delta);
@@ -20,6 +24,7 @@ public:
 	void addSystemUpdateFunction(function_ptr func);
 
 	SLNet::RakPeerInterface* getPeer();
+	Voxel::ChunkManager& getChunkManager();
 
 private:
 	SLNet::RakPeerInterface *peer;

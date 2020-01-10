@@ -62,6 +62,10 @@ struct ChunkBoundryComponent : glm::i32vec3 {
 	ChunkBoundryComponent(glm::i32vec3 vec) : glm::i32vec3(vec) {}
 };
 
+struct ClientChunkSnapshotComponent {
+	bool has_origin;	//right now simple bool
+};
+
 struct NetClientComponent {
 	SLNet::RakNetGUID guid;
 };

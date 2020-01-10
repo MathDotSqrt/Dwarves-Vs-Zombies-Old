@@ -1,22 +1,47 @@
 #pragma once
 #include "MathUtil.h"
 #include "../DVZ_common/ChunkConstants.h"
-#include "VoxelContainer.h"
+#include "Allocator.h"
+#include "Block.h"
+
 
 
 namespace Voxel {
+	class ChunkManager;
+	
+	struct FlatVoxelContainer {
+		Block blocks[CHUNK_VOLUME];
+	};
+
+
 	class Chunk {
 	public:
+		constexpr static size_t MAX_INDEX = CHUNK_VOLUME;
+		
 		const int cx;
 		const int cy;
 		const int cz;
 
-		Chunk(int cx, int cy, int cz, VoxelContainer *container);
+		ChunkManager &manager;
+		FlatVoxelContainer *flat;
+
+		Chunk(int cx, int cy, int cz, ChunkManager &manager);	//todo disable move
 		~Chunk();
 
-		constexpr int32 getHashCode() {
+		constexpr int32 getHashCode() const {
 			return Util::zorder_hash(cx, cy, cz);
 		}
+
+		constexpr int32 toIndex(const int x, const int y, const int z) const {
+			return x + CHUNK_WIDTH_X * (y + CHUNK_WIDTH_Y * z);
+		}
+
+		Block getBlock(const int x, const int y, const int z) const;
+		Block getBlock(const int i) const;
+
+		void setBlock(const int x, const int y, const int z, Block block);
+		void setBlock(const int i, Block block);
+
 	};
 }
 	

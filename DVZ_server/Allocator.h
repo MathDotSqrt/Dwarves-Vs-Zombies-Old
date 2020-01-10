@@ -44,6 +44,11 @@ namespace Util::Allocator {
 	};
 
 	template<typename T>
+	T* allocateRaw(IAllocator &allocator) {
+		return static_cast<T*>(allocator.allocate(sizeof(T), __alignof(T)));
+	}
+
+	template<typename T>
 	T* allocateNew(IAllocator& allocator) {
 		return new (allocator.allocate(sizeof(T), __alignof(T))) T;
 	}
@@ -65,6 +70,20 @@ namespace Util::Allocator {
 		}
 
 		t->~T();
+		allocator.free((voidptr)t);
+
+		//sets t equal to null when user uses free. 
+		//This is done to prevent user from attempting to use 
+		//T after it has been deallocated
+		t = nullptr;
+	}
+
+	template<typename T>
+	void freeRaw(IAllocator &allocator, T* &t) {
+		if (t == nullptr) {
+			return;
+		}
+
 		allocator.free((voidptr)t);
 
 		//sets t equal to null when user uses free. 

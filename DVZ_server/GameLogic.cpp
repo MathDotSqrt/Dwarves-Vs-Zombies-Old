@@ -2,6 +2,9 @@
 #include "Components.h"
 #include "SingletonComponents.h"
 #include "NetUtil.h"
+#include "ChunkManager.h"
+#include "RLEncoder.h"
+
 using namespace GameLogic;
 
 void GameLogic::input_system(EntityAdmin &admin, float delta) {
@@ -69,4 +72,16 @@ void GameLogic::afk_system(EntityAdmin &admin, float delta) {
 		}
 
 	}
+}
+
+void GameLogic::voxel_system(EntityAdmin &admin, float delta) {
+	auto &manager = admin.getChunkManager();
+	manager.update(admin, delta);
+
+	admin.registry.view<PositionComponent, ChunkBoundryComponent>().each([](auto &pos, auto &bound) {
+		bound.x = (int)(pos.x / Voxel::CHUNK_RENDER_WIDTH_X);
+		bound.y = (int)(pos.y / Voxel::CHUNK_RENDER_WIDTH_Y);
+		bound.z = (int)(pos.z / Voxel::CHUNK_RENDER_WIDTH_Z);
+	});
+
 }

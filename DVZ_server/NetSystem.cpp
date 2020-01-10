@@ -10,6 +10,8 @@
 #include "BitStream.h"
 #include "NetUtil.h"
 
+#include "ChunkManager.h"
+#include "RLEncoder.h"
 
 using namespace System;
 using namespace SLNet;
@@ -18,13 +20,15 @@ void incomming_connection_packet(RakPeerInterface *peer, Packet *packet, entt::r
 	printf("New connection from [%s]\n", packet->systemAddress.ToString());
 
 	entt::entity player = registry.create();
+	registry.assign<NetClientComponent>(player, packet->guid);
 	registry.assign<PositionComponent>(player, glm::vec3(0, 0, 0));
 	registry.assign<RotationComponent>(player, glm::vec3(0, 0, 0));
 	registry.assign<VelocityComponent>(player, glm::vec3(0, 0, 0));
 	registry.assign<DirComponent>(player, glm::vec3(0, 0, -1), glm::vec3(0, 1, 0), glm::vec3(1, 0, 0));
 	registry.assign<InputComponent>(player);
 	registry.assign<AFKComponent>(player);
-	registry.assign<NetClientComponent>(player, packet->guid);
+	registry.assign<ChunkBoundryComponent>(player);
+	registry.assign<ClientChunkSnapshotComponent>(player);
 	
 	BitStream out;
 	out.Write((MessageID)ID_CLIENT_NET_ID);
@@ -126,4 +130,18 @@ void System::net_broadcast(EntityAdmin &admin, float delta) {
 		stream.Write(rot);
 		peer->Send(&stream, PacketPriority::MEDIUM_PRIORITY, PacketReliability::UNRELIABLE, 0, UNASSIGNED_RAKNET_GUID, true);
 	}
+}
+
+
+void System::net_voxel(EntityAdmin &admin, float delta) {
+	auto &registry = admin.registry;
+	auto &manager = admin.getChunkManager();
+
+
+	auto view = registry.view<NetClientComponent, ChunkBoundryComponent, ClientChunkSnapshotComponent>();
+	view.each([&manager](auto &net, auto &bound, auto &snapshot) {
+		const auto rl_chunk = Voxel::encode_chunk(manager.getChunk(0, 0));
+		
+		SLNet::RakNetGUID guid = net.guid;
+	});
 }

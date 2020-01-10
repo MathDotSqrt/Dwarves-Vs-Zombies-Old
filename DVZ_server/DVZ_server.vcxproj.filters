@@ -63,6 +63,9 @@
     <ClCompile Include="VoxelContainer.cpp">
       <Filter>Source Files\Voxel</Filter>
     </ClCompile>
+    <ClCompile Include="RLEncoder.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GamePacketID.h">
@@ -113,10 +116,13 @@
     <ClInclude Include="MathUtil.h">
       <Filter>Header Files\Util</Filter>
     </ClInclude>
-    <ClInclude Include="VoxelContainer.h">
-      <Filter>Header Files\Util</Filter>
-    </ClInclude>
     <ClInclude Include="Block.h">
+      <Filter>Header Files\Voxel</Filter>
+    </ClInclude>
+    <ClInclude Include="VoxelContainer.h">
+      <Filter>Header Files\Voxel</Filter>
+    </ClInclude>
+    <ClInclude Include="RLEncoder.h">
       <Filter>Header Files\Voxel</Filter>
     </ClInclude>
   </ItemGroup>
