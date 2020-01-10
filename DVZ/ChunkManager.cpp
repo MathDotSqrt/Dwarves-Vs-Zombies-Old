@@ -131,6 +131,14 @@ ChunkRefHandle ChunkManager::copyChunkRefHandle(const ChunkRefHandle& handle) {
 	return getChunk(handle->chunk_x, handle->chunk_y, handle->chunk_z);
 }
 
+bool ChunkManager::isBlockMapped(int x, int y, int z) const {
+	int cx = x >> CHUNK_SHIFT_X;
+	int cy = y >> CHUNK_SHIFT_Y;
+	int cz = z >> CHUNK_SHIFT_Z;
+
+	return this->isChunkMapped(cx, cy, cz);
+}
+
 bool ChunkManager::isChunkMapped(int cx, int cy, int cz) const{
 	//check to see if chunkset actually inserts a nullptr when checking for an invalid chunk
 	//Might cause lots of rehashing
@@ -141,12 +149,21 @@ bool ChunkManager::isChunkMapped(int cx, int cy, int cz) const{
 	return iter != this->chunkSet.end();
 }
 
-bool ChunkManager::isBlockMapped(int x, int y, int z) {
-	int cx = x >> CHUNK_SHIFT_X;
-	int cy = y >> CHUNK_SHIFT_Y;
-	int cz = z >> CHUNK_SHIFT_Z;
+bool ChunkManager::isChunkNeighborhoodLoaded(int cx, int cy, int cz) const {
+	std::shared_lock<std::shared_mutex> readLock(chunkSetMutex);
+	for (int i = -1; i <= 1; i++) {
+		for (int j = -1; j <= 1; j++) {
+			if (!isChunkLoaded(cx + i, cy, cz + j)) {
+				return false;
+			}
+		}
+	}
 
-	return this->isChunkMapped(cx, cy, cz);
+	return true;
+}
+
+bool ChunkManager::isChunkNeighborhoodLoaded(const ChunkRefHandle &handle) const {
+	return isChunkNeighborhoodLoaded(handle->chunk_x, handle->chunk_y, handle->chunk_z);
 }
 
 Block ChunkManager::getBlock(int x, int y, int z) {

@@ -160,9 +160,8 @@ void ChunkRenderDataManager::newChunk(int playerCX, int playerCY, int playerCZ, 
 			auto &chunk_handle = getRenderableChunk(cx, cz);
 			bool isRenderable = isChunkRenderable(cx, cz, chunk_handle);
 			bool isChunkQueued = std::find(queuedChunks.begin(), queuedChunks.end(), Chunk::calcHashCode(cx, 0, cz)) != queuedChunks.end();
-			auto chunk = manager.getChunkIfMapped(cx, 0, cz);
-			if (!isRenderable && !isChunkQueued && chunk) {
-				needsMeshCache.emplace_back(std::move(chunk));
+			if (!isRenderable && !isChunkQueued) {
+				needsMeshCache.emplace_back(manager.getChunk(cx, 0, cz));
 			}
 		}
 	}
@@ -203,16 +202,15 @@ void ChunkRenderDataManager::updateDirtyChunks(ChunkManager &manager) {
 void ChunkRenderDataManager::enqueueChunks(ChunkManager &manager) {
 	for (int i = 0; i < 4 && needsMeshCache.size() > 0; i++) {
 		size_t chunkIndex = needsMeshCache.size() - 1;
-		BlockState chunkState = needsMeshCache[chunkIndex]->tryGetBlockState();
-		while (chunkState == BlockState::NONE || chunkState == BlockState::LOCKED) {
+		const auto &chunk = needsMeshCache[chunkIndex];
+		while (chunk->tryGetBlockState() == BlockState::NONE || chunk->tryGetBlockState() == BlockState::LOCKED || !manager.isChunkNeighborhoodLoaded(chunk)) {
 			if (chunkIndex == 0) {
 				return;	//we are done
 			}
 			chunkIndex--;
-			chunkState = needsMeshCache[chunkIndex]->tryGetBlockState();
 		}
 
-		ChunkNeighbors chunkNeighbors = manager.getChunkNeighborsIfMapped(needsMeshCache[chunkIndex]);
+		ChunkNeighbors chunkNeighbors = manager.getChunkNeighborsIfMapped(chunk);
 
 		int hashCode = chunkNeighbors.middle->getHashCode();
 		queuedChunks.push_back(hashCode);

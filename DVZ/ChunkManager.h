@@ -88,8 +88,10 @@ public:
 
 	ChunkRefHandle copyChunkRefHandle(const ChunkRefHandle& handle);
 
+	bool isBlockMapped(int x, int y, int z) const;
 	bool isChunkMapped(int cx, int cy, int cz) const;
-	bool isBlockMapped(int x, int y, int z);
+	bool isChunkNeighborhoodLoaded(int cx, int cy, int cz) const;
+	bool isChunkNeighborhoodLoaded(const ChunkRefHandle &handle) const;
 
 	Block getBlock(int x, int y, int z);
 	void setBlock(int x, int y, int z, Block block);
