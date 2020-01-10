@@ -9,6 +9,8 @@
 #include "GamePacketID.h"
 #include <unordered_map>
 
+#include "ChunkManager.h"
+
 #include "Mesh.h"
 #include "Scene.h"
 void update_player(Engine &engine, SLNet::Packet *packet) {
@@ -68,7 +70,23 @@ void recieve_net_id(Engine &engine, SLNet::Packet *packet) {
 }
 
 void chunk_packet(Engine &engine, SLNet::Packet *packet) {
-	
+	auto &manager = engine.ctx<Voxel::ChunkManager>();
+
+	uint8 cx = 0;
+	uint8 cz = 0;
+	uint32 num_bytes = 0;
+
+	SLNet::BitStream read(packet->data, packet->length, false);
+	read.IgnoreBytes(sizeof(SLNet::MessageID));
+	read.Read(cx);
+	read.Read(cz);
+	read.Read(num_bytes);
+
+	Voxel::RLEncoding encoding(num_bytes / sizeof(Voxel::RLElement));
+	read.ReadAlignedBytes((unsigned char *)encoding.data(), num_bytes);
+
+	//todo buffer this at a later time...
+	manager.loadChunkData(cx, 0, cz, encoding);
 }
 
 SLNet::MessageID get_packet_id(SLNet::Packet *packet) {
@@ -103,6 +121,7 @@ void System::netword_system(Engine &engine, float delta) {
 			recieve_net_id(engine, packet);
 			break;
 		case ID_RL_CHUNK_DATA:
+			chunk_packet(engine, packet);
 			break;
 		default:
 			LOG_NET("ID CAUGHT: %d", id);

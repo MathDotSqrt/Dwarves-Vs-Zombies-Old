@@ -3,6 +3,8 @@
 #include <queue>
 #include <shared_mutex>
 #include "../DVZ_common/ChunkConstants.h"
+#include "RLDecoder.h"
+
 
 namespace Voxel{
 
@@ -109,6 +111,7 @@ public:
 	~Chunk();
 
 	void generateTerrain();
+	void decodeRLEncoding(const RLEncoding &encoding);
 
 	void flagMeshValid();
 	void flagMeshRemoved();

@@ -5,6 +5,7 @@
 #include "ChunkRefHandle.h"
 #include "ChunkMesher.h"
 #include "ChunkLightEngine.h"
+#include "RLDecoder.h"
 
 #include "LinearAllocator.h"
 #include "PoolAllocator.h"
@@ -85,6 +86,8 @@ public:
 	ChunkRefHandle getNullChunk();
 	ChunkNeighbors getChunkNeighborsIfMapped(int cx, int cy, int cz);
 	ChunkNeighbors getChunkNeighborsIfMapped(const ChunkRefHandle &chunk);
+
+	void loadChunkData(int cx, int cy, int cz, const RLEncoding &encoding);
 
 	ChunkRefHandle copyChunkRefHandle(const ChunkRefHandle& handle);
 

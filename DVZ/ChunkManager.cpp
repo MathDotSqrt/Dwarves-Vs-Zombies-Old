@@ -127,6 +127,13 @@ ChunkNeighbors ChunkManager::getChunkNeighborsIfMapped(const ChunkRefHandle &chu
 	return getChunkNeighborsIfMapped(cx, cy, cz);
 }
 
+void ChunkManager::loadChunkData(int cx, int cy, int cz, const RLEncoding &encoding) {
+	std::lock_guard write_lock(chunkSetMutex);					//potentially writing to chunkSet
+	auto chunk = getChunkInternal(cx, cy, cz);					
+	chunk->decodeRLEncoding(encoding);							//decode encoding into chunk
+	loadedChunkSet[hashcode(cx, cy, cz)] = std::move(chunk);	//chunk is now loaded
+}
+
 ChunkRefHandle ChunkManager::copyChunkRefHandle(const ChunkRefHandle& handle) {
 	return getChunk(handle->chunk_x, handle->chunk_y, handle->chunk_z);
 }

@@ -143,12 +143,16 @@ void System::net_voxel(EntityAdmin &admin, float delta) {
 		if (snapshot.has_origin == false) {
 			const auto rl_chunk = Voxel::encode_chunk(manager.getChunk(0, 0));
 
+			const uint8 cx = 0;
+			const uint8 cz = 0;
 			const unsigned char * ptr = (unsigned char*)rl_chunk.data();
 			const unsigned int num_bytes = (unsigned int)(sizeof(rl_chunk[0]) * rl_chunk.size());
 
 			SLNet::RakNetGUID guid = net.guid;
 			BitStream stream;
 			stream.Write((MessageID)ID_RL_CHUNK_DATA);
+			stream.Write(cx);
+			stream.Write(cz);
 			stream.Write(num_bytes);
 			stream.WriteAlignedBytes(ptr, num_bytes);
 			peer->Send(&stream, PacketPriority::LOW_PRIORITY, PacketReliability::RELIABLE_WITH_ACK_RECEIPT, 0, guid, false);

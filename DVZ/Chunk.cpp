@@ -84,6 +84,25 @@ void Chunk::generateTerrain() {
 	}
 }
 
+void Chunk::decodeRLEncoding(const RLEncoding &encoding) {
+	std::lock_guard<std::shared_mutex> write_lock(chunkMutex);
+	
+	int index = 0;
+	for (auto pair : encoding) {
+		auto count = pair.first;
+		Block block = pair.second;
+		while (count) {
+			assert(index < CHUNK_VOLUME);
+			blockData[index] = block;
+			index++;
+			count--;
+		}
+	}
+
+	blockState = BlockState::LOADED;
+	meshState = MeshState::DIRTY;
+}
+
 void Chunk::flagMeshValid() {
 	std::lock_guard<std::shared_mutex> lock(chunkMutex);
 	meshState = MeshState::VALID;
@@ -185,7 +204,7 @@ void Chunk::setBlock(int x, int y, int z, Block block) {
 		flagDirtyMeshInternal();
 		lock.unlock();
 
-		if (x == 0) {
+		if (x == 0) {					//todo update adjacent meshes even if current mesh is dirty
 			ChunkRefHandle left = manager->getChunkIfMapped(chunk_x - 1, chunk_y, chunk_z);
 			left->flagDirtyMesh();
 		}

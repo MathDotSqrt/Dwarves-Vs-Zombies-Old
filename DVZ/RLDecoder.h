@@ -5,7 +5,8 @@
 
 
 namespace Voxel {
-	typedef std::vector<std::pair<uint16, Block>> RLEncoding;
+	typedef std::pair<uint16, Block> RLElement;
+	typedef std::vector<RLElement> RLEncoding;
 
 	
 }
