@@ -184,7 +184,7 @@ void ChunkRenderDataManager::updateDirtyChunks(ChunkManager &manager) {
 		ChunkRefHandle &handle = dirtyChunks.front();
 		//todo test if queued chunk is actually visible within range
 		if (handle->getMeshState() == MeshState::DIRTY) {
-			ChunkNeighbors n = manager.getChunkNeighbors(handle);
+			ChunkNeighbors n = manager.getChunkNeighborsIfMapped(handle);
 			mainMesher->loadChunkData(n);
 
 			ChunkGeometry *geometry = geometryRecycler.getNew();
@@ -212,7 +212,7 @@ void ChunkRenderDataManager::enqueueChunks(ChunkManager &manager) {
 			chunkState = needsMeshCache[chunkIndex]->tryGetBlockState();
 		}
 
-		ChunkNeighbors chunkNeighbors = manager.getChunkNeighbors(needsMeshCache[chunkIndex]);
+		ChunkNeighbors chunkNeighbors = manager.getChunkNeighborsIfMapped(needsMeshCache[chunkIndex]);
 
 		int hashCode = chunkNeighbors.middle->getHashCode();
 		queuedChunks.push_back(hashCode);

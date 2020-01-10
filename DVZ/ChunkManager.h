@@ -83,8 +83,8 @@ public:
 	ChunkRefHandle getChunk(int cx, int cy, int cz);
 	ChunkRefHandle getChunkIfMapped(int cx, int cy, int cz);
 	ChunkRefHandle getNullChunk();
-	ChunkNeighbors getChunkNeighbors(int cx, int cy, int cz);
-	ChunkNeighbors getChunkNeighbors(const ChunkRefHandle &chunk);
+	ChunkNeighbors getChunkNeighborsIfMapped(int cx, int cy, int cz);
+	ChunkNeighbors getChunkNeighborsIfMapped(const ChunkRefHandle &chunk);
 
 	ChunkRefHandle copyChunkRefHandle(const ChunkRefHandle& handle);
 

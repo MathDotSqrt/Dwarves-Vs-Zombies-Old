@@ -101,7 +101,7 @@ ChunkRefHandle ChunkManager::getNullChunk() {
 	return ChunkRefHandle();
 }
 
-ChunkNeighbors ChunkManager::getChunkNeighbors(int cx, int cy, int cz) {
+ChunkNeighbors ChunkManager::getChunkNeighborsIfMapped(int cx, int cy, int cz) {
 
 	return {
 		getChunkIfMapped(cx - 1, cy, cz - 1),
@@ -118,13 +118,13 @@ ChunkNeighbors ChunkManager::getChunkNeighbors(int cx, int cy, int cz) {
 	};
 }
 
-ChunkNeighbors ChunkManager::getChunkNeighbors(const ChunkRefHandle &chunk) {
+ChunkNeighbors ChunkManager::getChunkNeighborsIfMapped(const ChunkRefHandle &chunk) {
 	if (!chunk) {
 		return ChunkNeighbors();
 	}
 	
 	int cx = chunk->getChunkX(), cy = chunk->getChunkY(), cz = chunk->getChunkZ();
-	return getChunkNeighbors(cx, cy, cz);
+	return getChunkNeighborsIfMapped(cx, cy, cz);
 }
 
 ChunkRefHandle ChunkManager::copyChunkRefHandle(const ChunkRefHandle& handle) {
