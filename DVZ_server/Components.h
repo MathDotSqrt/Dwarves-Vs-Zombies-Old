@@ -63,7 +63,7 @@ struct ChunkBoundryComponent : glm::i32vec3 {
 };
 
 struct ClientChunkSnapshotComponent {
-	bool has_origin;	//right now simple bool
+	bool has_origin = false;	//right now simple bool
 };
 
 struct NetClientComponent {

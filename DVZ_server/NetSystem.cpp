@@ -27,7 +27,7 @@ void incomming_connection_packet(RakPeerInterface *peer, Packet *packet, entt::r
 	registry.assign<DirComponent>(player, glm::vec3(0, 0, -1), glm::vec3(0, 1, 0), glm::vec3(1, 0, 0));
 	registry.assign<InputComponent>(player);
 	registry.assign<AFKComponent>(player);
-	registry.assign<ChunkBoundryComponent>(player);
+	registry.assign<ChunkBoundryComponent>(player, glm::vec3(0, 0, 0));
 	registry.assign<ClientChunkSnapshotComponent>(player);
 	
 	BitStream out;
@@ -136,12 +136,25 @@ void System::net_broadcast(EntityAdmin &admin, float delta) {
 void System::net_voxel(EntityAdmin &admin, float delta) {
 	auto &registry = admin.registry;
 	auto &manager = admin.getChunkManager();
-
+	auto *peer = admin.getPeer();
 
 	auto view = registry.view<NetClientComponent, ChunkBoundryComponent, ClientChunkSnapshotComponent>();
-	view.each([&manager](auto &net, auto &bound, auto &snapshot) {
-		const auto rl_chunk = Voxel::encode_chunk(manager.getChunk(0, 0));
+	view.each([&manager, peer](auto &net, auto &bound, auto &snapshot) {
+		if (snapshot.has_origin == false) {
+			const auto rl_chunk = Voxel::encode_chunk(manager.getChunk(0, 0));
+
+			const unsigned char * ptr = (unsigned char*)rl_chunk.data();
+			const unsigned int num_bytes = (unsigned int)(sizeof(rl_chunk[0]) * rl_chunk.size());
+
+			SLNet::RakNetGUID guid = net.guid;
+			BitStream stream;
+			stream.Write((MessageID)ID_RL_CHUNK_DATA);
+			stream.Write(num_bytes);
+			stream.WriteAlignedBytes(ptr, num_bytes);
+			peer->Send(&stream, PacketPriority::LOW_PRIORITY, PacketReliability::RELIABLE_WITH_ACK_RECEIPT, 0, guid, false);
+			
+			snapshot.has_origin = true;
+		}
 		
-		SLNet::RakNetGUID guid = net.guid;
 	});
 }
