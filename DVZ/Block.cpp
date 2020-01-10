@@ -86,6 +86,16 @@ BlockManager::BlockManager(){
 		glm::u8vec4(179, 0, 255, 255)
 	);
 	addBlock(PURPLE);
+
+	BlockAttribs INVALID(
+		BlockType::BLOCK_TYPE_INVALID,
+		MeshType::MESH_TYPE_BLOCK,
+		OccludeType::OCCLUDE_TYPE_ALL,
+		LightType::LIGHT_TYPE_SOURCE,
+		BlockTexCoords(1, 12, 16, 16),
+		glm::u8vec4(179, 0, 255, 255)
+	);
+	addBlock(INVALID);
 }
 
 void BlockManager::addBlock(BlockAttribs block) {
