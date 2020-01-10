@@ -160,8 +160,9 @@ void ChunkRenderDataManager::newChunk(int playerCX, int playerCY, int playerCZ, 
 			auto &chunk_handle = getRenderableChunk(cx, cz);
 			bool isRenderable = isChunkRenderable(cx, cz, chunk_handle);
 			bool isChunkQueued = std::find(queuedChunks.begin(), queuedChunks.end(), Chunk::calcHashCode(cx, 0, cz)) != queuedChunks.end();
-			if (!isRenderable && !isChunkQueued) {
-				needsMeshCache.emplace_back(manager.getChunk(cx, 0, cz));
+			auto chunk = manager.getChunkIfMapped(cx, 0, cz);
+			if (!isRenderable && !isChunkQueued && chunk) {
+				needsMeshCache.emplace_back(std::move(chunk));
 			}
 		}
 	}

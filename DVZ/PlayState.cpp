@@ -86,13 +86,13 @@ void PlayState::init() {
 	/*NET*/
 
 	/*SYSTEM*/
-	e.addSystem(StatelessSystem(GameSystem::netword_system));
-	e.addSystem(StatelessSystem(GameSystem::input_system));
-	e.addSystem(StatelessSystem(GameSystem::shader_update_system, std::chrono::seconds(1)));
-	e.addSystem(StatelessSystem(GameSystem::movement_system));
-	e.addSystem(StatelessSystem(GameSystem::voxel_system));
-	e.addSystem(StatelessSystem(GameSystem::send_packet_system));
-	e.addSystem(StatelessSystem(GameSystem::render_system));
+	e.addSystem(StatelessSystem(System::netword_system));
+	e.addSystem(StatelessSystem(System::input_system));
+	e.addSystem(StatelessSystem(System::shader_update_system, std::chrono::seconds(1)));
+	e.addSystem(StatelessSystem(System::movement_system));
+	e.addSystem(StatelessSystem(System::voxel_system));
+	e.addSystem(StatelessSystem(System::send_packet_system));
+	e.addSystem(StatelessSystem(System::render_system));
 	/*SYSTEM*/
 
 }

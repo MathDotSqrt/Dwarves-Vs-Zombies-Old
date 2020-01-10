@@ -255,6 +255,9 @@
     <ClInclude Include="preamble.h">
       <Filter>Header Files\Graphics</Filter>
     </ClInclude>
+    <ClInclude Include="RLDecoder.h">
+      <Filter>Header Files\Voxel</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">

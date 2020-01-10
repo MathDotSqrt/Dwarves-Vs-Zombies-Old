@@ -67,6 +67,10 @@ void recieve_net_id(Engine &engine, SLNet::Packet *packet) {
 	LOG_NET("CLIENT ID RECIEVED: %d", netID);
 }
 
+void chunk_packet(Engine &engine, SLNet::Packet *packet) {
+	
+}
+
 SLNet::MessageID get_packet_id(SLNet::Packet *packet) {
 	SLNet::MessageID id = (SLNet::MessageID)packet->data[0];
 
@@ -78,7 +82,7 @@ SLNet::MessageID get_packet_id(SLNet::Packet *packet) {
 	}
 }
 
-void GameSystem::netword_system(Engine &engine, float delta) {
+void System::netword_system(Engine &engine, float delta) {
 	auto peer = engine.ctx<SLNet::RakPeerInterface*>();
 
 	entt::entity id = engine.getPlayer();
@@ -98,13 +102,15 @@ void GameSystem::netword_system(Engine &engine, float delta) {
 		case ID_CLIENT_NET_ID:
 			recieve_net_id(engine, packet);
 			break;
+		case ID_RL_CHUNK_DATA:
+			break;
 		default:
 			LOG_NET("ID CAUGHT: %d", id);
 		}
 	}
 }
 
-void GameSystem::send_packet_system(Engine &engine, float delta) {
+void System::send_packet_system(Engine &engine, float delta) {
 	auto view = engine.view<PlayerComponent, NetworkComponent>();
 	if (view.size()) {
 		entt::entity playerID = *view.begin();

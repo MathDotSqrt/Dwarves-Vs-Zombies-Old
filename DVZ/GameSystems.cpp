@@ -17,10 +17,10 @@
 #include "ChunkRenderDataManager.h"
 
 
-using namespace GameSystem;
+using namespace System;
 
 
-void GameSystem::input_system(Engine &engine, float delta) {
+void System::input_system(Engine &engine, float delta) {
 	engine.view<InputComponent>().each([](auto &input) {
 		input.mousePos[0] = input.mousePos[1];
 
@@ -77,13 +77,13 @@ void GameSystem::input_system(Engine &engine, float delta) {
 	}
 }
 
-void GameSystem::movement_system(Engine &engine, float delta) {
+void System::movement_system(Engine &engine, float delta) {
 	engine.group<PositionComponent, VelocityComponent>().each([delta](auto &pos, auto &vel) {
 		pos += vel * delta;
 	});
 }
 
-void GameSystem::voxel_system(Engine &engine, float delta) {
+void System::voxel_system(Engine &engine, float delta) {
 	Voxel::ChunkManager &manager = engine.ctx<Voxel::ChunkManager>();
 	PositionComponent p = engine.get<PositionComponent>(engine.getPlayer());
 	RotationComponent r = engine.get<RotationComponent>(engine.getPlayer());
@@ -121,7 +121,7 @@ void GameSystem::voxel_system(Engine &engine, float delta) {
 	renderDataManager.update(playerPos, playerRot, manager);
 }
 
-void GameSystem::render_system(Engine &engine, float delta) {
+void System::render_system(Engine &engine, float delta) {
 	auto &scene = engine.ctx<Graphics::Scene>();
 
 	engine.group<RenderInstanceComponent>(entt::get<PositionComponent, RotationComponent, ScaleComponent>)
@@ -162,7 +162,7 @@ void GameSystem::render_system(Engine &engine, float delta) {
 	});
 }
 
-void GameSystem::shader_update_system(Engine &engine, float delta) {
+void System::shader_update_system(Engine &engine, float delta) {
 	Graphics::Shader::ShaderIterator iterator = Graphics::Shader::begin();
 
 	while (iterator != Graphics::Shader::end()) {

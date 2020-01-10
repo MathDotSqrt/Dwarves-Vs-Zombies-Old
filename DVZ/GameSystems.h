@@ -1,7 +1,7 @@
 
 class Engine;
 
-namespace GameSystem {
+namespace System {
 	void movement_system(Engine &engine, float delta);
 	void input_system(Engine &engine, float delta);
 	void render_system(Engine &engine, float delta);

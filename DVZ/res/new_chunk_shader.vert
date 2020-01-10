@@ -27,7 +27,7 @@ void main(){
 	/*CHUNK POS LIGHT DECODE*/
 
 	/*CHUNK LOAD ANIMATION*/
-	float x_d = min(time - SPAWN_TIME, 0);
+	float x_d = min(2 * time - SPAWN_TIME, 0);
 	float y = min(-100*(x_d*x_d), 0); //XD
 	/*CHUNK LOAD ANIMATION*/
 
