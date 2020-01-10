@@ -31,7 +31,7 @@ EntityAdmin::EntityAdmin() : peer(SLNet::RakPeerInterface::GetInstance()), alloc
 	SLNet::SocketDescriptor sd(SERVER_PORT, nullptr);
 	peer->Startup(MAX_CONNECTIONS, &sd, 1);
 	peer->SetMaximumIncomingConnections(MAX_CONNECTIONS - 1);
-	//peer->ApplyNetworkSimulator(0, 100, 0);
+	//peer->ApplyNetworkSimulator(0, 5000, 0);
 }
 
 

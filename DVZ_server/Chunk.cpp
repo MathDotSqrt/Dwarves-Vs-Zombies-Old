@@ -10,7 +10,20 @@ Chunk::Chunk(int cx, int cy, int cz, ChunkManager &manager) :
 	manager(manager), 
 	flat(Util::Allocator::allocateNew<FlatVoxelContainer>(manager.voxel_allocator)){
 
-
+	for (int bz = 0; bz < CHUNK_WIDTH_Z; bz++) {
+		for (int by = 0; by < CHUNK_WIDTH_Y; by++) {
+			for (int bx = 0; bx < CHUNK_WIDTH_X; bx++) {
+				int i = toIndex(bx, by, bz);
+				
+				if (by < CHUNK_WIDTH_Y / 3) {
+					setBlock(i, Block(BlockType::BLOCK_TYPE_DIRT));
+				}
+				else {
+					setBlock(i, Block(BlockType::BLOCK_TYPE_DEFAULT));
+				}
+			}
+		}
+	}
 }
 
 
