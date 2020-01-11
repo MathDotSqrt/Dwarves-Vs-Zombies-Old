@@ -87,6 +87,11 @@ void block_place_packet(Packet *packet, EntityAdmin &admin) {
 	in.Read(block);
 
 	auto &manager = admin.getChunkManager();
+	manager.setBlock(blockPos.x, blockPos.y, blockPos.z, block);
+
+	admin.registry.view<ClientChunkSnapshotComponent>().each([](auto &snap) {
+		snap.has_origin = false;
+	});
 
 }
 
@@ -112,7 +117,7 @@ void System::net_update(EntityAdmin &admin, float delta) {
 			block_place_packet(packet, admin);
 			break;
 		default:
-			printf("SOMETHING REVICEDC\n");
+			printf("Uncaught packet [%d]\n", id);
 			break;
 		}
 	}
@@ -173,7 +178,8 @@ void System::net_voxel(EntityAdmin &admin, float delta) {
 			stream.Write(cz);
 			stream.Write(num_bytes);
 			stream.WriteAlignedBytes(ptr, num_bytes);
-			peer->Send(&stream, PacketPriority::LOW_PRIORITY, PacketReliability::RELIABLE_WITH_ACK_RECEIPT, 0, guid, false);
+			//peer->Send(&stream, PacketPriority::LOW_PRIORITY, PacketReliability::RELIABLE_WITH_ACK_RECEIPT, 0, guid, false);
+			peer->Send(&stream, PacketPriority::LOW_PRIORITY, PacketReliability::RELIABLE, 0, guid, false);
 			
 			snapshot.has_origin = true;
 		}

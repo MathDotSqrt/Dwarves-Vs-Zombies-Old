@@ -152,7 +152,7 @@ void System::send_packet_system(Engine &engine, float delta) {
 
 
 		auto peer = engine.ctx<SLNet::RakPeerInterface*>();
-		peer->Send(&out, LOW_PRIORITY, PacketReliability::UNRELIABLE, 0, SLNet::UNASSIGNED_RAKNET_GUID, true);
+		peer->Send(&out, PacketPriority::LOW_PRIORITY, PacketReliability::UNRELIABLE, 0, SLNet::UNASSIGNED_RAKNET_GUID, true);
 
 		auto &buffer = engine.getBlockPlaceBuffer();
 		if(buffer.size()){
@@ -167,7 +167,7 @@ void System::send_packet_system(Engine &engine, float delta) {
 				break;											//todo allow for more blocks per packet
 			}
 
-			peer->Send(&blockPlace, PacketPriority::HIGH_PRIORITY, PacketReliability::RELIABLE, 0, SLNet::UNASSIGNED_RAKNET_GUID, true);
+			peer->Send(&blockPlace, PacketPriority::HIGH_PRIORITY, PacketReliability::UNRELIABLE, 0, SLNet::UNASSIGNED_RAKNET_GUID, true);
 		}
 		
 	}
