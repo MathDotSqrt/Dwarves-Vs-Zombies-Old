@@ -153,5 +153,22 @@ void System::send_packet_system(Engine &engine, float delta) {
 
 		auto peer = engine.ctx<SLNet::RakPeerInterface*>();
 		peer->Send(&out, LOW_PRIORITY, PacketReliability::UNRELIABLE, 0, SLNet::UNASSIGNED_RAKNET_GUID, true);
+
+		auto &buffer = engine.getBlockPlaceBuffer();
+		if(buffer.size()){
+			SLNet::BitStream blockPlace;
+			blockPlace.Write((SLNet::MessageID)ID_BLOCK_PLACE);
+
+			while (buffer.size()) {
+				auto element = buffer.back();
+				blockPlace.Write(element.first);
+				blockPlace.Write(element.second);				//saves three bytes due to alignment
+				buffer.pop_back();
+				break;											//todo allow for more blocks per packet
+			}
+
+			peer->Send(&blockPlace, PacketPriority::HIGH_PRIORITY, PacketReliability::RELIABLE, 0, SLNet::UNASSIGNED_RAKNET_GUID, true);
+		}
+		
 	}
 }

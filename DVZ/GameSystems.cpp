@@ -105,10 +105,11 @@ void System::voxel_system(Engine &engine, float delta) {
 
 		if (left && cast.block != Voxel::Block()) {
 			manager.setBlock(cast.nx, cast.ny, cast.nz, Voxel::Block(Voxel::BlockType::BLOCK_TYPE_PURPLE));
-
+			engine.getBlockPlaceBuffer().push_back(std::pair(glm::i32vec3(cast.nx, cast.ny, cast.nz), Voxel::Block(Voxel::BlockType::BLOCK_TYPE_PURPLE)));
 		}
 		else if (right) {
 			manager.setBlock(cast.x, cast.y, cast.z, Voxel::Block());
+			engine.getBlockPlaceBuffer().push_back(std::pair(glm::i32vec3(cast.x, cast.y, cast.z), Voxel::Block(Voxel::BlockType::BLOCK_TYPE_DEFAULT)));
 		}
 
 		badCode = false;

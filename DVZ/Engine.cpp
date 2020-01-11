@@ -31,6 +31,7 @@ Engine::Engine() : linearAlloc(MEM_ALLOC_SIZE, malloc(MEM_ALLOC_SIZE)){	//todo d
 	this->set<ResourceManager::TexCache>();
 	this->set<ResourceManager::GeometryCache>();
 	this->set<ResourceManager::MeshCache>();
+	this->set<std::vector<std::pair<glm::i32vec3, Voxel::Block>>>();
 
 	this->main = entt::null;
 
@@ -113,3 +114,6 @@ entt::entity Engine::getPlayer() {
 	return this->main;
 }
 
+std::vector<std::pair<glm::i32vec3, Voxel::Block>>& Engine::getBlockPlaceBuffer() {
+	return this->ctx<std::vector<std::pair<glm::i32vec3, Voxel::Block>>>();
+}

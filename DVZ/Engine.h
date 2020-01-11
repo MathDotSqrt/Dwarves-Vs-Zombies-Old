@@ -7,6 +7,7 @@
 #include "RakPeerInterface.h"
 #include "StatelessSystem.h"
 #include "LinearAllocator.h"
+#include "glm.hpp"
 
 #define MEM_ALLOC_SIZE 1024 * 1024 * 1024
 #define SERVER_PORT = 60000;
@@ -19,8 +20,8 @@ namespace Graphics {
 namespace Voxel {
 	class ChunkManager;
 	class ChunkRenderDataManager;
+	struct Block;
 }
-
 
 //todo rename this as client
 class Engine : public entt::registry {
@@ -57,6 +58,8 @@ public:
 
 	entt::entity addPlayer(float x, float y, float z);
 	entt::entity getPlayer();
+
+	std::vector<std::pair<glm::i32vec3, Voxel::Block>>& getBlockPlaceBuffer();
 	
 };
 

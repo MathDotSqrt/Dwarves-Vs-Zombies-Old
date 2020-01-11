@@ -30,6 +30,10 @@ namespace Voxel {
 		void update(EntityAdmin &admin, float delta);
 
 		Chunk& getChunk(int cx, int cz);
+		const Chunk& getChunk(int cx, int cz) const;
+
+		void setBlock(int x, int y, int z, Block block);
+		Block getBlock(int x, int y, int z) const;
 
 	};
 }

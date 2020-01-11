@@ -2,6 +2,7 @@
 #include <glm.hpp>
 #include <gtx/quaternion.hpp>
 #include "PrototypeID.h"
+#include "Block.h"
 
 struct PlayerComponent {
 

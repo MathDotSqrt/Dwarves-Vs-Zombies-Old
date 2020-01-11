@@ -73,7 +73,22 @@ void client_input_packet(Packet *packet, entt::registry &registry) {
 	input.ctrl = in.ReadBit();
 }
 
+void block_place_packet(Packet *packet, EntityAdmin &admin) {
+	
+	auto peer = admin.getPeer();
 
+	BitStream in(packet->data, packet->length, false);
+	in.IgnoreBytes(sizeof(MessageID));
+	
+	
+	glm::i32vec3 blockPos;
+	Voxel::Block block;
+	in.Read(blockPos);
+	in.Read(block);
+
+	auto &manager = admin.getChunkManager();
+
+}
 
 void System::net_update(EntityAdmin &admin, float delta) {
 	entt::registry &registry = admin.registry;
@@ -92,6 +107,9 @@ void System::net_update(EntityAdmin &admin, float delta) {
 			break;
 		case ID_CLIENT_INPUT:
 			client_input_packet(packet, registry);
+			break;
+		case ID_BLOCK_PLACE:
+			block_place_packet(packet, admin);
 			break;
 		default:
 			printf("SOMETHING REVICEDC\n");

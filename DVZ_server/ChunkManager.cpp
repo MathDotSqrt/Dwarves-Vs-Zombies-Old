@@ -32,3 +32,38 @@ Chunk& ChunkManager::getChunk(int cx, int cz) {
 	int index = col + row * WORLD_X_LENGTH;
 	return world[index];
 }
+
+const Chunk& ChunkManager::getChunk(int cx, int cz) const {
+	int col = cx + abs(MIN_CHUNK_X);
+	int row = cz + abs(MIN_CHUNK_Z);
+	int index = col + row * WORLD_X_LENGTH;
+	return world[index];
+}
+
+
+void ChunkManager::setBlock(int x, int y, int z, Block block) {
+	int cx = x >> CHUNK_SHIFT_X;
+	int cy = y >> CHUNK_SHIFT_Y;
+	int cz = z >> CHUNK_SHIFT_Z;
+
+	auto &chunk = getChunk(cx, cz);
+
+	int bx = x & CHUNK_BLOCK_POS_MASK_X;
+	int by = y & CHUNK_BLOCK_POS_MASK_Y;
+	int bz = z & CHUNK_BLOCK_POS_MASK_Z;
+	chunk.setBlock(bx, by, bz, block);
+}
+
+Block ChunkManager::getBlock(int x, int y, int z) const {
+	int cx = x >> CHUNK_SHIFT_X;
+	int cy = y >> CHUNK_SHIFT_Y;
+	int cz = z >> CHUNK_SHIFT_Z;
+
+	const auto &chunk = getChunk(cx, cz);
+
+	int bx = x & CHUNK_BLOCK_POS_MASK_X;
+	int by = y & CHUNK_BLOCK_POS_MASK_Y;
+	int bz = z & CHUNK_BLOCK_POS_MASK_Z;
+
+	return chunk.getBlock(bx, by, bz);
+}
