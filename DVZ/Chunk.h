@@ -181,7 +181,7 @@ private:
 	void reinitializeChunk(int cx, int cy, int cz);					//todo find a code patter to get rid of this
 
 	inline static constexpr int toIndex(int x, int y, int z) {
-		return x + CHUNK_WIDTH_X * (y + CHUNK_WIDTH_Y * z);
+		return x + CHUNK_WIDTH_X * (z + CHUNK_WIDTH_Z * y);
 	}
 
 	void assertBlockIndex(int x, int y, int z) const;

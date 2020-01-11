@@ -160,7 +160,6 @@ void System::net_voxel(EntityAdmin &admin, float delta) {
 	auto &registry = admin.registry;
 	auto &manager = admin.getChunkManager();
 	auto *peer = admin.getPeer();
-
 	auto view = registry.view<NetClientComponent, ChunkBoundryComponent, ClientChunkSnapshotComponent>();
 	view.each([&manager, peer](auto &net, auto &bound, auto &snapshot) {
 		if (snapshot.has_origin == false) {
@@ -180,8 +179,9 @@ void System::net_voxel(EntityAdmin &admin, float delta) {
 			stream.WriteAlignedBytes(ptr, num_bytes);
 			//peer->Send(&stream, PacketPriority::LOW_PRIORITY, PacketReliability::RELIABLE_WITH_ACK_RECEIPT, 0, guid, false);
 			peer->Send(&stream, PacketPriority::LOW_PRIORITY, PacketReliability::RELIABLE, 0, guid, false);
-			
-			snapshot.has_origin = true;
+    		snapshot.has_origin = true;
+			printf("MTU SIZE: [%d]\n", peer->GetMTUSize(peer->GetSystemAddressFromGuid(guid)));
+
 		}
 		
 	});

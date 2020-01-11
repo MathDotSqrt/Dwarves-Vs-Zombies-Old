@@ -33,7 +33,8 @@ namespace Voxel {
 		}
 
 		constexpr int32 toIndex(const int x, const int y, const int z) const {
-			return x + CHUNK_WIDTH_X * (y + CHUNK_WIDTH_Y * z);
+			//return x + CHUNK_WIDTH_X * (y + CHUNK_WIDTH_Y * z);
+			return x + CHUNK_WIDTH_X * (z + CHUNK_WIDTH_Z * y);
 		}
 
 		Block getBlock(const int x, const int y, const int z) const;
