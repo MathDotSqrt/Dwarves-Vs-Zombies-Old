@@ -201,6 +201,7 @@
     <ClCompile Include="NetUtil.cpp" />
     <ClCompile Include="PoolAllocator.cpp" />
     <ClCompile Include="RLEncoder.cpp" />
+    <ClCompile Include="StatelessSystem.cpp" />
     <ClCompile Include="VoxelContainer.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -222,6 +223,7 @@
     <ClInclude Include="PoolAllocator.h" />
     <ClInclude Include="RLEncoder.h" />
     <ClInclude Include="SingletonComponents.h" />
+    <ClInclude Include="StatelessSystem.h" />
     <ClInclude Include="VoxelContainer.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

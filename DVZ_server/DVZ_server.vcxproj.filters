@@ -66,6 +66,9 @@
     <ClCompile Include="RLEncoder.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="StatelessSystem.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GamePacketID.h">
@@ -124,6 +127,9 @@
     </ClInclude>
     <ClInclude Include="RLEncoder.h">
       <Filter>Header Files\Voxel</Filter>
+    </ClInclude>
+    <ClInclude Include="StatelessSystem.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

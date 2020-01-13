@@ -22,7 +22,7 @@ Chunk::Chunk(int x, int y, int z, ChunkManager *manager) :
 Chunk::~Chunk() {}
 
 void Chunk::generateTerrain() {
-	static Util::PerlinNoise noise;
+	static Util::PerlinNoise noise(3);
 	std::lock_guard<std::shared_mutex> writeLock(this->chunkMutex);
 
 	memset(&this->blockData, (uint8)BlockType::BLOCK_TYPE_DEFAULT, sizeof(this->blockData));

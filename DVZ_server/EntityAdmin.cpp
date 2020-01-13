@@ -12,14 +12,14 @@
 #define ALLOC_SIZE 200 * 1024 * 1024
 
 EntityAdmin::EntityAdmin() : peer(SLNet::RakPeerInterface::GetInstance()), allocator(ALLOC_SIZE, malloc(ALLOC_SIZE)){
-	addSystemUpdateFunction(System::net_update);
-	addSystemUpdateFunction(GameLogic::input_system);
-	addSystemUpdateFunction(GameLogic::afk_system);
-	addSystemUpdateFunction(GameLogic::movement_system);
-	addSystemUpdateFunction(GameLogic::voxel_system);
-	addSystemUpdateFunction(System::net_disconnect);
-	addSystemUpdateFunction(System::net_broadcast);
-	addSystemUpdateFunction(System::net_voxel);
+	addSystemUpdateFunction(StatelessSystem(System::net_update));
+	addSystemUpdateFunction(StatelessSystem(GameLogic::input_system));
+	addSystemUpdateFunction(StatelessSystem(GameLogic::afk_system));
+	addSystemUpdateFunction(StatelessSystem(GameLogic::movement_system));
+	addSystemUpdateFunction(StatelessSystem(GameLogic::voxel_system));
+	addSystemUpdateFunction(StatelessSystem(System::net_disconnect));
+	addSystemUpdateFunction(StatelessSystem(System::net_broadcast));
+	addSystemUpdateFunction(StatelessSystem(System::net_voxel, StatelessSystem::FrameTime(1)));
 
 	registry.set<ConnectedClientMap>();
 	registry.set<CloseConnectionBuffer>();
@@ -40,13 +40,13 @@ EntityAdmin::~EntityAdmin() {
 }
 
 void EntityAdmin::update(float delta) {
-	for (auto f : updateFunctions) {
-		f(*this, delta);
+	for (auto &system : updateFunctions) {
+		system.update(*this, delta);
 	}
 }
 
-void EntityAdmin::addSystemUpdateFunction(EntityAdmin::function_ptr function) {
-	updateFunctions.push_back(function);
+void EntityAdmin::addSystemUpdateFunction(StatelessSystem system) {
+	updateFunctions.push_back(system);
 }
 
 SLNet::RakPeerInterface* EntityAdmin::getPeer() {

@@ -157,6 +157,8 @@ void System::net_broadcast(EntityAdmin &admin, float delta) {
 
 
 void System::net_voxel(EntityAdmin &admin, float delta) {
+	printf("TEST\n");
+	
 	auto &registry = admin.registry;
 	auto &manager = admin.getChunkManager();
 	auto *peer = admin.getPeer();
@@ -180,7 +182,7 @@ void System::net_voxel(EntityAdmin &admin, float delta) {
 			//peer->Send(&stream, PacketPriority::LOW_PRIORITY, PacketReliability::RELIABLE_WITH_ACK_RECEIPT, 0, guid, false);
 			peer->Send(&stream, PacketPriority::LOW_PRIORITY, PacketReliability::RELIABLE, 0, guid, false);
     		snapshot.has_origin = true;
-			printf("MTU SIZE: [%d]\n", peer->GetMTUSize(peer->GetSystemAddressFromGuid(guid)));
+			printf("Chunk packet size: [%d]\n", num_bytes);
 
 		}
 		
