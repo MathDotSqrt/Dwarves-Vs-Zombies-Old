@@ -19,7 +19,7 @@ EntityAdmin::EntityAdmin() : peer(SLNet::RakPeerInterface::GetInstance()), alloc
 	addSystemUpdateFunction(StatelessSystem(GameLogic::voxel_system));
 	addSystemUpdateFunction(StatelessSystem(System::net_disconnect));
 	addSystemUpdateFunction(StatelessSystem(System::net_broadcast));
-	addSystemUpdateFunction(StatelessSystem(System::net_voxel, StatelessSystem::FrameTime(1)));
+	addSystemUpdateFunction(StatelessSystem(System::net_voxel, StatelessSystem::FrameTime(.2)));
 
 	registry.set<ConnectedClientMap>();
 	registry.set<CloseConnectionBuffer>();

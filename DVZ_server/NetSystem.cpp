@@ -10,6 +10,7 @@
 #include "BitStream.h"
 #include "NetUtil.h"
 
+#include "VoxelUtil.h"
 #include "ChunkManager.h"
 #include "RLEncoder.h"
 
@@ -155,35 +156,44 @@ void System::net_broadcast(EntityAdmin &admin, float delta) {
 	}
 }
 
-
 void System::net_voxel(EntityAdmin &admin, float delta) {
-	printf("TEST\n");
-	
 	auto &registry = admin.registry;
 	auto &manager = admin.getChunkManager();
 	auto *peer = admin.getPeer();
 	auto view = registry.view<NetClientComponent, ChunkBoundryComponent, ClientChunkSnapshotComponent>();
 	view.each([&manager, peer](auto &net, auto &bound, auto &snapshot) {
-		if (snapshot.has_origin == false) {
-			const auto rl_chunk = Voxel::encode_chunk(manager.getChunk(0, 0));
+		
+		//todo only call this when player moves boundries
+		Voxel::setSnapshotCenter(bound, snapshot);
 
-			const uint8 cx = 0;
-			const uint8 cz = 0;
-			const unsigned char * ptr = (unsigned char*)rl_chunk.data();
-			const unsigned int num_bytes = (unsigned int)(sizeof(rl_chunk[0]) * rl_chunk.size());
+		auto RADIUS = ClientChunkSnapshotComponent::VIEW_RADIUS;
+		for (int z = -RADIUS; z <= RADIUS; z++) {
+			for (int x = -RADIUS; x <= RADIUS; x++) {
+				const auto chunk_pos = bound + glm::i32vec3(x, 0, z);
+				auto &stamp = Voxel::getChunkModCounter(chunk_pos, snapshot);
 
-			SLNet::RakNetGUID guid = net.guid;
-			BitStream stream;
-			stream.Write((MessageID)ID_RL_CHUNK_DATA);
-			stream.Write(cx);
-			stream.Write(cz);
-			stream.Write(num_bytes);
-			stream.WriteAlignedBytes(ptr, num_bytes);
-			//peer->Send(&stream, PacketPriority::LOW_PRIORITY, PacketReliability::RELIABLE_WITH_ACK_RECEIPT, 0, guid, false);
-			peer->Send(&stream, PacketPriority::LOW_PRIORITY, PacketReliability::RELIABLE, 0, guid, false);
-    		snapshot.has_origin = true;
-			printf("Chunk packet size: [%d]\n", num_bytes);
+				if (stamp.getModificationCount() == 0) {
+					const auto &chunk = manager.getChunk(chunk_pos.x, chunk_pos.z);
+					const auto rl_chunk = Voxel::encode_chunk(chunk);
+					const unsigned char * ptr = (unsigned char*)rl_chunk.data();
+					const unsigned int num_bytes = (unsigned int)(sizeof(rl_chunk[0]) * rl_chunk.size());
+					
+					printf("Chunk packet size: [%d]\n", num_bytes);
 
+					
+					SLNet::RakNetGUID guid = net.guid;
+					BitStream stream;
+					stream.Write((MessageID)ID_RL_CHUNK_DATA);
+					stream.Write((uint8)chunk_pos.x);
+					stream.Write((uint8)chunk_pos.z);
+					stream.Write(num_bytes);
+					stream.WriteAlignedBytes(ptr, num_bytes);
+					//peer->Send(&stream, PacketPriority::LOW_PRIORITY, PacketReliability::RELIABLE_WITH_ACK_RECEIPT, 0, guid, false);
+					peer->Send(&stream, PacketPriority::LOW_PRIORITY, PacketReliability::RELIABLE, 0, guid, false);
+					
+					stamp.increment();
+				}
+			}
 		}
 		
 	});

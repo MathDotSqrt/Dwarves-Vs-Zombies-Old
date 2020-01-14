@@ -5,6 +5,7 @@
 #include "glm.hpp"
 #include "gtx/quaternion.hpp"
 #include "RakNetTypes.h"
+#include "ChunkModStamp.h"
 
 struct PositionComponent : glm::vec3 { 
 	PositionComponent(glm::vec3 vec) : glm::vec3(vec) {}
@@ -63,7 +64,11 @@ struct ChunkBoundryComponent : glm::i32vec3 {
 };
 
 struct ClientChunkSnapshotComponent {
+	static constexpr int VIEW_RADIUS = 1;
+	static constexpr int VIEW_DIST = 2 * VIEW_RADIUS + 1;
+	
 	bool has_origin = false;	//right now simple bool
+	Voxel::ChunkModStamp snapshot[VIEW_DIST][VIEW_DIST];
 };
 
 struct NetClientComponent {

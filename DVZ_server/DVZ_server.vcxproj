@@ -203,12 +203,14 @@
     <ClCompile Include="RLEncoder.cpp" />
     <ClCompile Include="StatelessSystem.cpp" />
     <ClCompile Include="VoxelContainer.cpp" />
+    <ClCompile Include="VoxelUtil.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Allocator.h" />
     <ClInclude Include="Block.h" />
     <ClInclude Include="Chunk.h" />
     <ClInclude Include="ChunkManager.h" />
+    <ClInclude Include="ChunkModStamp.h" />
     <ClInclude Include="Common.h" />
     <ClInclude Include="Components.h" />
     <ClInclude Include="EntityAdmin.h" />
@@ -225,6 +227,7 @@
     <ClInclude Include="SingletonComponents.h" />
     <ClInclude Include="StatelessSystem.h" />
     <ClInclude Include="VoxelContainer.h" />
+    <ClInclude Include="VoxelUtil.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
