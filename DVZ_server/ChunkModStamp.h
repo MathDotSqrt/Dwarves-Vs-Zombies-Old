@@ -27,6 +27,11 @@ namespace Voxel {
 			return mod_counter;
 		}
 
+		void setModificationCount(int32 new_count) {
+			assert(new_count > mod_counter);
+			mod_counter = new_count;
+		}
+
 		int32 getCX() {
 			return cx;
 		}

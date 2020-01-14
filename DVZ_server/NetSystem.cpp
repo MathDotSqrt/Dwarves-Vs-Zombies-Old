@@ -172,13 +172,16 @@ void System::net_voxel(EntityAdmin &admin, float delta) {
 				const auto chunk_pos = bound + glm::i32vec3(x, 0, z);
 				auto &stamp = Voxel::getChunkModCounter(chunk_pos, snapshot);
 
-				if (stamp.getModificationCount() == 0) {
-					const auto &chunk = manager.getChunk(chunk_pos.x, chunk_pos.z);
+				const auto &chunk = manager.getChunk(chunk_pos.x, chunk_pos.z);
+				const auto mod_count = chunk.getModCount();
+
+				if (stamp.getModificationCount() < mod_count) {
+					//printf("%d %d %d\n", chunk.cx, chunk.cy, chunk.cz);
 					const auto rl_chunk = Voxel::encode_chunk(chunk);
 					const unsigned char * ptr = (unsigned char*)rl_chunk.data();
 					const unsigned int num_bytes = (unsigned int)(sizeof(rl_chunk[0]) * rl_chunk.size());
 					
-					printf("Chunk packet size: [%d]\n", num_bytes);
+					//printf("Chunk packet size: [%d]\n", num_bytes);
 
 					
 					SLNet::RakNetGUID guid = net.guid;
@@ -191,7 +194,7 @@ void System::net_voxel(EntityAdmin &admin, float delta) {
 					//peer->Send(&stream, PacketPriority::LOW_PRIORITY, PacketReliability::RELIABLE_WITH_ACK_RECEIPT, 0, guid, false);
 					peer->Send(&stream, PacketPriority::LOW_PRIORITY, PacketReliability::RELIABLE, 0, guid, false);
 					
-					stamp.increment();
+					stamp.setModificationCount(mod_count);
 				}
 			}
 		}

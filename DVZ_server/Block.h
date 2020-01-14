@@ -13,5 +13,9 @@ namespace Voxel {
 		bool operator==(const Block &other){
 			return type == other.type;
 		}
+
+		bool operator!=(const Block &other) {
+			return type != other.type;
+		}
 	};
 }

@@ -22,10 +22,12 @@ namespace Voxel {
 		const int cy;
 		const int cz;
 
-		ChunkManager &manager;
+		int mod_count = 0;
+
+		ChunkManager *manager;
 		FlatVoxelContainer *flat;
 
-		Chunk(int cx, int cy, int cz, ChunkManager &manager);	//todo disable move
+		Chunk(int cx, int cy, int cz, ChunkManager *manager);	//todo disable move
 		~Chunk();
 
 		constexpr int32 getHashCode() const {
@@ -43,6 +45,7 @@ namespace Voxel {
 		void setBlock(const int x, const int y, const int z, Block block);
 		void setBlock(const int i, Block block);
 
+		int getModCount() const;
 	};
 }
 	
