@@ -2,6 +2,7 @@
 #include "MathUtil.h"
 #include "../DVZ_common/ChunkConstants.h"
 #include "Allocator.h"
+#include "PoolAllocator.h"
 #include "Block.h"
 
 
@@ -24,11 +25,16 @@ namespace Voxel {
 
 		int mod_count = 0;
 
-		ChunkManager *manager;
+		ChunkManager &manager;
 		FlatVoxelContainer *flat;
 
-		Chunk(int cx, int cy, int cz, ChunkManager *manager);	//todo disable move
+		Chunk(int cx, int cy, int cz, ChunkManager &manager);	//todo disable move
+		Chunk(const Chunk &other) = delete;
+		Chunk(Chunk &&other);
 		~Chunk();
+
+		Chunk& operator=(const Chunk &other) = delete;
+		Chunk& operator=(Chunk &&other) = delete;
 
 		constexpr int32 getHashCode() const {
 			return Util::zorder_hash(cx, cy, cz);

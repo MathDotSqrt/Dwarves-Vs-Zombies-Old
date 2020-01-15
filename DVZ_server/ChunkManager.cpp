@@ -3,20 +3,19 @@
 #include "EntityAdmin.h"
 using namespace Voxel;
 
-#define CHUNK_ALLOC_SIZE 9 * 1024 * 1024
+#define CHUNK_ALLOC_SIZE 100 * 1024 * 1024
 
-ChunkManager::ChunkManager(Util::Allocator::IAllocator &parent) : 
-	voxel_allocator(sizeof(FlatVoxelContainer), alignof(FlatVoxelContainer), CHUNK_ALLOC_SIZE, parent) {
+ChunkManager::ChunkManager(Util::Allocator::IAllocator &parent) :  voxel_allocator(sizeof(FlatVoxelContainer), alignof(FlatVoxelContainer), CHUNK_ALLOC_SIZE, parent) {
 
 	world.reserve(sizeof(Chunk) * WORLD_X_LENGTH * WORLD_Z_LENGTH);
 
-	Util::Allocator::allocateNew<FlatVoxelContainer>(this->voxel_allocator);
-
 	for (int z = MIN_CHUNK_Z; z <= MAX_CHUNK_Z; z++) {
 		for (int x = MIN_CHUNK_X; x <= MAX_CHUNK_X; x++) {
-			world.push_back(Chunk(x, 0, z, this));
+			world.emplace_back(Chunk(x, 0, z, *this));
 		}
 	}
+
+	//voxel_allocator = pool;
 }
 
 
@@ -69,4 +68,12 @@ Block ChunkManager::getBlock(int x, int y, int z) const {
 	int bz = z & CHUNK_BLOCK_POS_MASK_Z;
 
 	return chunk.getBlock(bx, by, bz);
+}
+
+Voxel::FlatVoxelContainer* ChunkManager::allocFlatVoxel() {
+	return Util::Allocator::allocateNew<FlatVoxelContainer>(voxel_allocator);
+}
+
+void ChunkManager::freeFlatVoxel(FlatVoxelContainer *ptr) {
+	Util::Allocator::free<FlatVoxelContainer>(voxel_allocator, ptr);
 }

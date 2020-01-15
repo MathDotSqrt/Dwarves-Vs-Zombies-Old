@@ -34,7 +34,9 @@ namespace Voxel {
 
 		void setBlock(int x, int y, int z, Block block);
 		Block getBlock(int x, int y, int z) const;
-
+	private:
+		FlatVoxelContainer* allocFlatVoxel();	//todo figure out why alloc isnt working
+		void freeFlatVoxel(FlatVoxelContainer *ptr);	//todo figure out why alloc isnt working
 	};
 }
 /*SERVER*/
