@@ -132,6 +132,17 @@ void ChunkManager::loadChunkData(int cx, int cy, int cz, const RLEncoding &encod
 	auto chunk = getChunkInternal(cx, cy, cz);					
 	chunk->decodeRLEncoding(encoding);							//decode encoding into chunk
 	loadedChunkSet[hashcode(cx, cy, cz)] = std::move(chunk);	//chunk is now loaded
+	
+	auto left = getChunkIfMappedInternal(cx - 1, cy, cz);
+	auto right = getChunkIfMappedInternal(cx + 1, cy, cz);
+	auto front = getChunkIfMappedInternal(cx, cy, cz);
+	auto back = getChunkIfMappedInternal(cx, cy, cz);
+
+	if (left) left->flagDirtyMesh();
+	if (right) right->flagDirtyMesh();
+	if (front) front->flagDirtyMesh();
+	if (back) back->flagDirtyMesh();
+
 }
 
 ChunkRefHandle ChunkManager::copyChunkRefHandle(const ChunkRefHandle& handle) {
