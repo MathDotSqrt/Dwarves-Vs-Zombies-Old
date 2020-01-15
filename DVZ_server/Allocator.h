@@ -50,7 +50,6 @@ namespace Util::Allocator {
 
 	template<typename T>
 	T* allocateNew(IAllocator& allocator) {
-		printf("%zu\n", sizeof(T));
 		return new (allocator.allocate(sizeof(T), __alignof(T))) T;
 	}
 

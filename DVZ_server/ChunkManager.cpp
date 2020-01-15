@@ -3,7 +3,7 @@
 #include "EntityAdmin.h"
 using namespace Voxel;
 
-#define CHUNK_ALLOC_SIZE 100 * 1024 * 1024
+#define CHUNK_ALLOC_SIZE 450 * 1024 * 1024
 
 ChunkManager::ChunkManager(Util::Allocator::IAllocator &parent) :  voxel_allocator(sizeof(FlatVoxelContainer), alignof(FlatVoxelContainer), CHUNK_ALLOC_SIZE, parent) {
 

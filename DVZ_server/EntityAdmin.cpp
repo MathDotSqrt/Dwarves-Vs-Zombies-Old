@@ -9,7 +9,7 @@
 
 #define MAX_CONNECTIONS 10
 #define SERVER_PORT 60000
-#define ALLOC_SIZE 200 * 1024 * 1024
+#define ALLOC_SIZE 500 * 1024 * 1024
 
 EntityAdmin::EntityAdmin() : peer(SLNet::RakPeerInterface::GetInstance()), allocator(ALLOC_SIZE, malloc(ALLOC_SIZE)){
 	addSystemUpdateFunction(StatelessSystem(System::net_update));

@@ -15,7 +15,7 @@ Chunk::Chunk(int cx, int cy, int cz, ChunkManager &manager) :
 			for (int bx = 0; bx < CHUNK_WIDTH_X; bx++) {
 				int i = toIndex(bx, by, bz);
 				
-				if (by < CHUNK_WIDTH_Y / 3 + cy * 5) {
+				if (by < CHUNK_WIDTH_Y / 3 + (cz + cx) * 1) {
 					setBlock(i, Block(BlockType::BLOCK_TYPE_DIRT));
 				}
 				else {
