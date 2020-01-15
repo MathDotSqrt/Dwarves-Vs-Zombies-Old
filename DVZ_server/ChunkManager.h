@@ -29,6 +29,8 @@ namespace Voxel {
 
 		void update(EntityAdmin &admin, float delta);
 
+		bool isInbound(int cx, int cz);
+
 		Chunk& getChunk(int cx, int cz);
 		const Chunk& getChunk(int cx, int cz) const;
 

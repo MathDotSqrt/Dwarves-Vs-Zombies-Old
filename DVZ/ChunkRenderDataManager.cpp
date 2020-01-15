@@ -213,7 +213,7 @@ void ChunkRenderDataManager::enqueueChunks(ChunkManager &manager) {
 			const auto &chunk = needsMeshCache[chunkIndex];
 			BlockState state = chunk->tryGetBlockState();
 
-			if (state == BlockState::LOADED && manager.isChunkNeighborhoodLoaded(chunk)) {
+			if (state == BlockState::LOADED /*&& manager.isChunkNeighborhoodLoaded(chunk)*/ ) {
 				chunkNeighbors = manager.getChunkNeighborsIfMapped(chunk);
 				break;
 			}

@@ -170,6 +170,10 @@ void System::net_voxel(EntityAdmin &admin, float delta) {
 		for (int z = -RADIUS; z <= RADIUS; z++) {
 			for (int x = -RADIUS; x <= RADIUS; x++) {
 				const auto chunk_pos = bound + glm::i32vec3(x, 0, z);
+				if (!manager.isInbound(chunk_pos.x, chunk_pos.z)) {
+					continue;
+				}
+
 				auto &stamp = Voxel::getChunkModCounter(chunk_pos, snapshot);
 
 				const auto &chunk = manager.getChunk(chunk_pos.x, chunk_pos.z);

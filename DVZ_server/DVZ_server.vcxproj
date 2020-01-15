@@ -222,6 +222,7 @@
     <ClInclude Include="MathUtil.h" />
     <ClInclude Include="NetSystem.h" />
     <ClInclude Include="NetUtil.h" />
+    <ClInclude Include="PerlinNoise.h" />
     <ClInclude Include="PoolAllocator.h" />
     <ClInclude Include="RLEncoder.h" />
     <ClInclude Include="SingletonComponents.h" />
