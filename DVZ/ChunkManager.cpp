@@ -24,7 +24,7 @@ ChunkManager::ChunkManager(Util::Allocator::IAllocator &parent) :
 	this->chunkLightEngine = Util::Allocator::allocateNew<ChunkLightEngine>(chunkMesherAllocator);
 
 	this->chunkSet.max_load_factor(1.0f);
-	this->loadChunks(0, 0, 0, LOAD_DISTANCE);
+	//this->loadChunks(0, 0, 0, LOAD_DISTANCE);
 }
 
 
@@ -60,8 +60,8 @@ void ChunkManager::update(float x, float y, float z) {
 		this->currentChunkY = chunkY;
 		this->currentChunkZ = chunkZ;
 
-		Util::Performance::Timer updateTimer("Queue Load/Mesh");
-		this->loadChunks(chunkX, chunkY, chunkZ, LOAD_DISTANCE);
+		//Util::Performance::Timer updateTimer("Queue Load/Mesh");
+		//this->loadChunks(chunkX, chunkY, chunkZ, LOAD_DISTANCE);
 	}
 
 	{
@@ -70,8 +70,8 @@ void ChunkManager::update(float x, float y, float z) {
 	}
 
 	{
-		Util::Performance::Timer enqueueChunksTimer("Enqueue Chunks");
-		enqueueChunks();
+		//Util::Performance::Timer enqueueChunksTimer("Enqueue Chunks");
+		//enqueueChunks();
 	}
 
 }

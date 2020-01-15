@@ -202,15 +202,24 @@ void ChunkRenderDataManager::updateDirtyChunks(ChunkManager &manager) {
 void ChunkRenderDataManager::enqueueChunks(ChunkManager &manager) {
 	for (int i = 0; i < 4 && needsMeshCache.size() > 0; i++) {
 		size_t chunkIndex = needsMeshCache.size() - 1;
-		const auto &chunk = needsMeshCache[chunkIndex];
-		while (chunk->tryGetBlockState() == BlockState::NONE || chunk->tryGetBlockState() == BlockState::LOCKED || !manager.isChunkNeighborhoodLoaded(chunk)) {
+
+		ChunkNeighbors chunkNeighbors;
+
+		while (true) {
 			if (chunkIndex == 0) {
-				return;	//we are done
+				return; //we are done
 			}
+			
+			const auto &chunk = needsMeshCache[chunkIndex];
+			BlockState state = chunk->tryGetBlockState();
+
+			if (state == BlockState::LOADED && manager.isChunkNeighborhoodLoaded(chunk)) {
+				chunkNeighbors = manager.getChunkNeighborsIfMapped(chunk);
+				break;
+			}
+
 			chunkIndex--;
 		}
-
-		ChunkNeighbors chunkNeighbors = manager.getChunkNeighborsIfMapped(chunk);
 
 		int hashCode = chunkNeighbors.middle->getHashCode();
 		queuedChunks.push_back(hashCode);
