@@ -129,11 +129,25 @@ void Chunk::flagEntireChunkModified() {
 	mod_count++;
 }
 
+bool Chunk::isChunkModHistoryComplete(size_t mod_delta) const {
+	//mod delta is outside of buffer range
+	if (mod_delta > mod_buffer.get_size()) {
+		return false;
+	}
+	
+	for (int i = 0; i < mod_delta; i++) {
+		if (mod_buffer.read(i) == ChunkModEvent()) {
+			return false;
+		}
+	}
+	return true;
+}
+
 int Chunk::getModCount() const{
 	return mod_count;
 }
 
-const Util::RingBuffer<ChunkModEvent, 32>& Chunk::getModBuffer() const {
+const Util::RingBuffer<ChunkModEvent, Chunk::MOD_BUFFER_SIZE>& Chunk::getModBuffer() const {
 	return mod_buffer;
 }
 

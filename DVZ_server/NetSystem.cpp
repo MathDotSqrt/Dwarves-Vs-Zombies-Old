@@ -162,10 +162,11 @@ void System::net_voxel(EntityAdmin &admin, float delta) {
 	auto *peer = admin.getPeer();
 
 
-	std::unordered_map<const Voxel::Chunk*, std::vector<NetClientComponent>> chunkUpdateMap;
+	std::map<const Voxel::Chunk*, std::vector<NetClientComponent>> chunkFullUpdateMap;
+	std::map<const Voxel::Chunk*, std::map<int, std::vector<NetClientComponent>>> blockUpdateMap;
 
 	auto view = registry.view<NetClientComponent, ChunkBoundryComponent, ClientChunkSnapshotComponent>();
-	view.each([&manager, &chunkUpdateMap](auto &net, auto &bound, auto &snapshot) {
+	view.each([&manager, &chunkFullUpdateMap, &blockUpdateMap](auto &net, auto &bound, auto &snapshot) {
 		
 		//todo only call this when player moves boundries
 		Voxel::setSnapshotCenter(bound, snapshot);
@@ -182,9 +183,16 @@ void System::net_voxel(EntityAdmin &admin, float delta) {
 
 				const auto &chunk = manager.getChunk(chunk_pos.x, chunk_pos.z);
 				const auto mod_count = chunk.getModCount();
+				const auto mod_diff = mod_count - stamp.getModificationCount();
 
-				if (stamp.getModificationCount() < mod_count) {
-					chunkUpdateMap[&chunk].push_back(net);
+				//if there is a mod_diff need to send client chunk data
+				if (mod_diff > 0) {
+					if (chunk.isChunkModHistoryComplete(mod_diff)) {
+						blockUpdateMap[&chunk][mod_diff].push_back(net);
+					}
+					else {
+						chunkFullUpdateMap[&chunk].push_back(net);
+					}
 					stamp.setModificationCount(mod_count);
 				}
 			}
@@ -192,7 +200,39 @@ void System::net_voxel(EntityAdmin &admin, float delta) {
 		
 	});
 
-	for (auto &pair : chunkUpdateMap) {
+	//send block deltas packet per chunk, per num_block packets
+	for (const auto &chunk_map_pair : blockUpdateMap) {
+		const auto &chunk = *chunk_map_pair.first;
+		const auto &map = chunk_map_pair.second;
+		
+		for (const auto &pair : map) {
+			const auto mod_diff = pair.first;
+			const auto &clients = pair.second;
+
+			BitStream stream;
+			stream.Write((MessageID)ID_BLOCK_PLACE);
+			stream.Write((uint8)chunk.cx);
+			stream.Write((uint8)chunk.cz);
+			stream.Write((uint8)mod_diff);
+			
+			//write all the block deltas
+			for (int i = 0; i < mod_diff; i++) {
+				const auto &mod_event = chunk.getModBuffer().read(i);
+				stream.Write(mod_event.index);
+				stream.Write(mod_event.block);
+			}
+
+			for (const auto &client : clients) {
+				SLNet::RakNetGUID guid = client.guid;
+				peer->Send(&stream, PacketPriority::LOW_PRIORITY, PacketReliability::RELIABLE, 0, guid, false);
+			}
+
+		}
+	}
+
+
+
+	for (auto &pair : chunkFullUpdateMap) {
 		//printf("%d %d %d\n", chunk.cx, chunk.cy, chunk.cz);
 		const auto &chunk = *pair.first;
 		const auto &clients = pair.second;
