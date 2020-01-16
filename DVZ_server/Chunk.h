@@ -7,6 +7,8 @@
 #include "RingBuffer.h"
 
 
+
+//compression algo https://www.reddit.com/r/VoxelGameDev/comments/9yu8qy/palettebased_compression_for_chunked_discrete/
 namespace Voxel {
 	class ChunkManager;
 	

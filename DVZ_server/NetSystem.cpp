@@ -222,7 +222,7 @@ void System::net_voxel(EntityAdmin &admin, float delta) {
 				stream.Write(mod_event.block);
 			}
 
-			printf("Block delta packet size: [%zu]\n", stream.GetNumberOfBytesUsed());
+			//printf("Block delta packet size: [%zu]\n", stream.GetNumberOfBytesUsed());
 
 			for (const auto &client : clients) {
 				SLNet::RakNetGUID guid = client.guid;
