@@ -6,6 +6,7 @@
 #include "gtx/quaternion.hpp"
 #include "RakNetTypes.h"
 #include "ChunkModStamp.h"
+#include <unordered_map>
 
 struct PositionComponent : glm::vec3 { 
 	PositionComponent(glm::vec3 vec) : glm::vec3(vec) {}
@@ -67,8 +68,11 @@ struct ClientChunkSnapshotComponent {
 	static constexpr int VIEW_RADIUS = 7;
 	static constexpr int VIEW_DIST = 2 * VIEW_RADIUS + 1;
 	
-	bool has_origin = false;	//right now simple bool
-	Voxel::ChunkModStamp snapshot[VIEW_DIST][VIEW_DIST];
+	static constexpr int SYNC_RADIUS = 7;
+	static constexpr int SYNC_DIST = 2 * SYNC_RADIUS + 1;
+
+	//Voxel::ChunkModStamp snapshot[VIEW_DIST][VIEW_DIST];
+	std::unordered_map<int, int> chunkSnapshots;
 };
 
 struct NetClientComponent {

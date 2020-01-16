@@ -89,11 +89,6 @@ void block_place_packet(Packet *packet, EntityAdmin &admin) {
 
 	auto &manager = admin.getChunkManager();
 	manager.setBlock(blockPos.x, blockPos.y, blockPos.z, block);
-
-	admin.registry.view<ClientChunkSnapshotComponent>().each([](auto &snap) {
-		snap.has_origin = false;
-	});
-
 }
 
 void System::net_update(EntityAdmin &admin, float delta) {
@@ -161,7 +156,6 @@ void System::net_voxel(EntityAdmin &admin, float delta) {
 	auto &manager = admin.getChunkManager();
 	auto *peer = admin.getPeer();
 
-
 	std::map<const Voxel::Chunk*, std::vector<NetClientComponent>> chunkFullUpdateMap;
 	std::map<const Voxel::Chunk*, std::map<int, std::vector<NetClientComponent>>> blockUpdateMap;
 
@@ -169,7 +163,9 @@ void System::net_voxel(EntityAdmin &admin, float delta) {
 	view.each([&manager, &chunkFullUpdateMap, &blockUpdateMap](auto &net, auto &bound, auto &snapshot) {
 		
 		//todo only call this when player moves boundries
-		Voxel::setSnapshotCenter(bound, snapshot);
+		//Voxel::setSnapshotCenter(bound, snapshot);
+
+
 
 		auto RADIUS = ClientChunkSnapshotComponent::VIEW_RADIUS;
 		for (int z = -RADIUS; z <= RADIUS; z++) {
@@ -179,11 +175,13 @@ void System::net_voxel(EntityAdmin &admin, float delta) {
 					continue;
 				}
 
-				auto &stamp = Voxel::getChunkModCounter(chunk_pos, snapshot);
+				auto &modcount_snapshot = snapshot.chunkSnapshots[Util::zorder_hash(chunk_pos.x, 0, chunk_pos.z)];
+
+				//auto &stamp = Voxel::getChunkModCounter(chunk_pos, snapshot);
 
 				const auto &chunk = manager.getChunk(chunk_pos.x, chunk_pos.z);
-				const auto mod_count = chunk.getModCount();
-				const auto mod_diff = mod_count - stamp.getModificationCount();
+				const auto modcount = chunk.getModCount();
+				const auto mod_diff = modcount - modcount_snapshot;
 
 				//if there is a mod_diff need to send client chunk data
 				if (mod_diff > 0) {
@@ -195,7 +193,7 @@ void System::net_voxel(EntityAdmin &admin, float delta) {
 						//printf("ChunkEncoding: [%ld]\n", net);
 						chunkFullUpdateMap[&chunk].push_back(net);
 					}
-					stamp.setModificationCount(mod_count);
+					modcount_snapshot = modcount;
 				}
 			}
 		}
@@ -224,6 +222,8 @@ void System::net_voxel(EntityAdmin &admin, float delta) {
 				stream.Write(mod_event.block);
 			}
 
+			printf("Block delta packet size: [%zu]\n", stream.GetNumberOfBytesUsed());
+
 			for (const auto &client : clients) {
 				SLNet::RakNetGUID guid = client.guid;
 				peer->Send(&stream, PacketPriority::LOW_PRIORITY, PacketReliability::RELIABLE, 0, guid, false);
@@ -243,7 +243,6 @@ void System::net_voxel(EntityAdmin &admin, float delta) {
 		const unsigned char * ptr = (unsigned char*)rl_chunk.data();
 		const unsigned int num_bytes = (unsigned int)(sizeof(rl_chunk[0]) * rl_chunk.size());
 
-		//printf("Chunk packet size: [%d]\n", num_bytes);
 
 
 		BitStream stream;
@@ -253,6 +252,9 @@ void System::net_voxel(EntityAdmin &admin, float delta) {
 		stream.Write(num_bytes);
 		stream.WriteAlignedBytes(ptr, num_bytes);
 		//peer->Send(&stream, PacketPriority::LOW_PRIORITY, PacketReliability::RELIABLE_WITH_ACK_RECEIPT, 0, guid, false);
+
+		printf("Chunk packet size: [%d]\n", stream.GetNumberOfBytesUsed());
+
 
 		for (auto &net : clients) {
 			SLNet::RakNetGUID guid = net.guid;
