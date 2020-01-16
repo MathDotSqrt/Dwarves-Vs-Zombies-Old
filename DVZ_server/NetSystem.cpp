@@ -253,7 +253,7 @@ void System::net_voxel(EntityAdmin &admin, float delta) {
 		stream.WriteAlignedBytes(ptr, num_bytes);
 		//peer->Send(&stream, PacketPriority::LOW_PRIORITY, PacketReliability::RELIABLE_WITH_ACK_RECEIPT, 0, guid, false);
 
-		printf("Chunk packet size: [%d]\n", stream.GetNumberOfBytesUsed());
+		//printf("Chunk packet size: [%d]\n", stream.GetNumberOfBytesUsed());
 
 
 		for (auto &net : clients) {
