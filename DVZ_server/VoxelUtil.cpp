@@ -42,9 +42,9 @@ void Voxel::setSnapshotCenter(
 			//if mod_counter coord does not match chunk_coord; 
 			//new chunks so set zero mod count for chunk snapshot
 			if (mod_counter.getCX() != chunk_coord.x
-				|| mod_counter.getCY() != chunk_coord.y
+				//|| mod_counter.getCY() != chunk_coord.y
 				|| mod_counter.getCZ() != chunk_coord.z) {
-				mod_counter = ChunkModStamp(chunk_coord.x, chunk_coord.y, chunk_coord.z);
+				mod_counter = ChunkModStamp(chunk_coord.x, 0, chunk_coord.z);
 			}
 
 		}

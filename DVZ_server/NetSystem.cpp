@@ -188,9 +188,11 @@ void System::net_voxel(EntityAdmin &admin, float delta) {
 				//if there is a mod_diff need to send client chunk data
 				if (mod_diff > 0) {
 					if (chunk.isChunkModHistoryComplete(mod_diff)) {
+						//printf("BlockDelta: [%ld]\n", net);
 						blockUpdateMap[&chunk][mod_diff].push_back(net);
 					}
 					else {
+						//printf("ChunkEncoding: [%ld]\n", net);
 						chunkFullUpdateMap[&chunk].push_back(net);
 					}
 					stamp.setModificationCount(mod_count);
@@ -211,8 +213,8 @@ void System::net_voxel(EntityAdmin &admin, float delta) {
 
 			BitStream stream;
 			stream.Write((MessageID)ID_BLOCK_PLACE);
-			stream.Write((uint8)chunk.cx);
-			stream.Write((uint8)chunk.cz);
+			stream.Write((int8)chunk.cx);
+			stream.Write((int8)chunk.cz);
 			stream.Write((uint8)mod_diff);
 			
 			//write all the block deltas
@@ -246,8 +248,8 @@ void System::net_voxel(EntityAdmin &admin, float delta) {
 
 		BitStream stream;
 		stream.Write((MessageID)ID_RL_CHUNK_DATA);
-		stream.Write((uint8)chunk.cx);
-		stream.Write((uint8)chunk.cz);
+		stream.Write((int8)chunk.cx);
+		stream.Write((int8)chunk.cz);
 		stream.Write(num_bytes);
 		stream.WriteAlignedBytes(ptr, num_bytes);
 		//peer->Send(&stream, PacketPriority::LOW_PRIORITY, PacketReliability::RELIABLE_WITH_ACK_RECEIPT, 0, guid, false);

@@ -72,8 +72,8 @@ void recieve_net_id(Engine &engine, SLNet::Packet *packet) {
 void chunk_packet(Engine &engine, SLNet::Packet *packet) {
 	auto &manager = engine.ctx<Voxel::ChunkManager>();
 
-	uint8 cx = 0;
-	uint8 cz = 0;
+	int8 cx = 0;
+	int8 cz = 0;
 	uint32 num_bytes = 0;
 
 	SLNet::BitStream read(packet->data, packet->length, false);
@@ -91,8 +91,8 @@ void chunk_packet(Engine &engine, SLNet::Packet *packet) {
 
 void block_delta(Engine &engine, SLNet::Packet *packet) {
 	auto &manager = engine.ctx<Voxel::ChunkManager>();
-	uint8 cx = 0;
-	uint8 cz = 0;
+	int8 cx = 0;
+	int8 cz = 0;
 	uint8 mod_diff = 0;
 
 	SLNet::BitStream read(packet->data, packet->length, false);
