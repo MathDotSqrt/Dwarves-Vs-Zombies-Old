@@ -160,8 +160,12 @@ void System::net_voxel(EntityAdmin &admin, float delta) {
 	auto &registry = admin.registry;
 	auto &manager = admin.getChunkManager();
 	auto *peer = admin.getPeer();
+
+
+	std::unordered_map<const Voxel::Chunk*, std::vector<NetClientComponent>> chunkUpdateMap;
+
 	auto view = registry.view<NetClientComponent, ChunkBoundryComponent, ClientChunkSnapshotComponent>();
-	view.each([&manager, peer](auto &net, auto &bound, auto &snapshot) {
+	view.each([&manager, &chunkUpdateMap](auto &net, auto &bound, auto &snapshot) {
 		
 		//todo only call this when player moves boundries
 		Voxel::setSnapshotCenter(bound, snapshot);
@@ -180,28 +184,39 @@ void System::net_voxel(EntityAdmin &admin, float delta) {
 				const auto mod_count = chunk.getModCount();
 
 				if (stamp.getModificationCount() < mod_count) {
-					//printf("%d %d %d\n", chunk.cx, chunk.cy, chunk.cz);
-					const auto rl_chunk = Voxel::encode_chunk(chunk);
-					const unsigned char * ptr = (unsigned char*)rl_chunk.data();
-					const unsigned int num_bytes = (unsigned int)(sizeof(rl_chunk[0]) * rl_chunk.size());
-					
-					//printf("Chunk packet size: [%d]\n", num_bytes);
-
-					
-					SLNet::RakNetGUID guid = net.guid;
-					BitStream stream;
-					stream.Write((MessageID)ID_RL_CHUNK_DATA);
-					stream.Write((uint8)chunk_pos.x);
-					stream.Write((uint8)chunk_pos.z);
-					stream.Write(num_bytes);
-					stream.WriteAlignedBytes(ptr, num_bytes);
-					//peer->Send(&stream, PacketPriority::LOW_PRIORITY, PacketReliability::RELIABLE_WITH_ACK_RECEIPT, 0, guid, false);
-					peer->Send(&stream, PacketPriority::LOW_PRIORITY, PacketReliability::RELIABLE, 0, guid, false);
-					
+					chunkUpdateMap[&chunk].push_back(net);
 					stamp.setModificationCount(mod_count);
 				}
 			}
 		}
 		
 	});
+
+	for (auto &pair : chunkUpdateMap) {
+		//printf("%d %d %d\n", chunk.cx, chunk.cy, chunk.cz);
+		const auto &chunk = *pair.first;
+		const auto &clients = pair.second;
+
+		const auto rl_chunk = Voxel::encode_chunk(chunk);
+		const unsigned char * ptr = (unsigned char*)rl_chunk.data();
+		const unsigned int num_bytes = (unsigned int)(sizeof(rl_chunk[0]) * rl_chunk.size());
+
+		//printf("Chunk packet size: [%d]\n", num_bytes);
+
+
+		BitStream stream;
+		stream.Write((MessageID)ID_RL_CHUNK_DATA);
+		stream.Write((uint8)chunk.cx);
+		stream.Write((uint8)chunk.cz);
+		stream.Write(num_bytes);
+		stream.WriteAlignedBytes(ptr, num_bytes);
+		//peer->Send(&stream, PacketPriority::LOW_PRIORITY, PacketReliability::RELIABLE_WITH_ACK_RECEIPT, 0, guid, false);
+
+		for (auto &net : clients) {
+			SLNet::RakNetGUID guid = net.guid;
+			peer->Send(&stream, PacketPriority::LOW_PRIORITY, PacketReliability::RELIABLE, 0, guid, false);
+		}
+
+		
+	}
 }

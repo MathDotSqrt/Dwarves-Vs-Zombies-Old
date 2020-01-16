@@ -4,7 +4,7 @@
 #include "Allocator.h"
 #include "PoolAllocator.h"
 #include "Block.h"
-
+#include "RingBuffer.h"
 
 
 namespace Voxel {
