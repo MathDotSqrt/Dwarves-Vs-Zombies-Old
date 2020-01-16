@@ -28,7 +28,7 @@ void ChunkManager::update(EntityAdmin &admin, float delta) {
 }
 
 bool ChunkManager::isInbound(int cx, int cz) {
-	return cx > MIN_CHUNK_X && cx < MAX_CHUNK_X && cz > MIN_CHUNK_Z && cz < MAX_CHUNK_Z;
+	return cx >= MIN_CHUNK_X && cx <= MAX_CHUNK_X && cz >= MIN_CHUNK_Z && cz <= MAX_CHUNK_Z;
 }
 
 Chunk& ChunkManager::getChunk(int cx, int cz) {

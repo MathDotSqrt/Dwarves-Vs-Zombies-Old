@@ -89,11 +89,6 @@ void block_place_packet(Packet *packet, EntityAdmin &admin) {
 
 	auto &manager = admin.getChunkManager();
 	manager.setBlock(blockPos.x, blockPos.y, blockPos.z, block);
-
-	admin.registry.view<ClientChunkSnapshotComponent>().each([](auto &snap) {
-		snap.has_origin = false;
-	});
-
 }
 
 void System::net_update(EntityAdmin &admin, float delta) {
@@ -160,11 +155,17 @@ void System::net_voxel(EntityAdmin &admin, float delta) {
 	auto &registry = admin.registry;
 	auto &manager = admin.getChunkManager();
 	auto *peer = admin.getPeer();
+
+	std::map<const Voxel::Chunk*, std::vector<NetClientComponent>> chunkFullUpdateMap;
+	std::map<const Voxel::Chunk*, std::map<int, std::vector<NetClientComponent>>> blockUpdateMap;
+
 	auto view = registry.view<NetClientComponent, ChunkBoundryComponent, ClientChunkSnapshotComponent>();
-	view.each([&manager, peer](auto &net, auto &bound, auto &snapshot) {
+	view.each([&manager, &chunkFullUpdateMap, &blockUpdateMap](auto &net, auto &bound, auto &snapshot) {
 		
 		//todo only call this when player moves boundries
-		Voxel::setSnapshotCenter(bound, snapshot);
+		//Voxel::setSnapshotCenter(bound, snapshot);
+
+
 
 		auto RADIUS = ClientChunkSnapshotComponent::VIEW_RADIUS;
 		for (int z = -RADIUS; z <= RADIUS; z++) {
@@ -174,34 +175,92 @@ void System::net_voxel(EntityAdmin &admin, float delta) {
 					continue;
 				}
 
-				auto &stamp = Voxel::getChunkModCounter(chunk_pos, snapshot);
+				auto &modcount_snapshot = snapshot.chunkSnapshots[Util::zorder_hash(chunk_pos.x, 0, chunk_pos.z)];
+
+				//auto &stamp = Voxel::getChunkModCounter(chunk_pos, snapshot);
 
 				const auto &chunk = manager.getChunk(chunk_pos.x, chunk_pos.z);
-				const auto mod_count = chunk.getModCount();
+				const auto modcount = chunk.getModCount();
+				const auto mod_diff = modcount - modcount_snapshot;
 
-				if (stamp.getModificationCount() < mod_count) {
-					//printf("%d %d %d\n", chunk.cx, chunk.cy, chunk.cz);
-					const auto rl_chunk = Voxel::encode_chunk(chunk);
-					const unsigned char * ptr = (unsigned char*)rl_chunk.data();
-					const unsigned int num_bytes = (unsigned int)(sizeof(rl_chunk[0]) * rl_chunk.size());
-					
-					//printf("Chunk packet size: [%d]\n", num_bytes);
-
-					
-					SLNet::RakNetGUID guid = net.guid;
-					BitStream stream;
-					stream.Write((MessageID)ID_RL_CHUNK_DATA);
-					stream.Write((uint8)chunk_pos.x);
-					stream.Write((uint8)chunk_pos.z);
-					stream.Write(num_bytes);
-					stream.WriteAlignedBytes(ptr, num_bytes);
-					//peer->Send(&stream, PacketPriority::LOW_PRIORITY, PacketReliability::RELIABLE_WITH_ACK_RECEIPT, 0, guid, false);
-					peer->Send(&stream, PacketPriority::LOW_PRIORITY, PacketReliability::RELIABLE, 0, guid, false);
-					
-					stamp.setModificationCount(mod_count);
+				//if there is a mod_diff need to send client chunk data
+				if (mod_diff > 0) {
+					if (chunk.isChunkModHistoryComplete(mod_diff)) {
+						//printf("BlockDelta: [%ld]\n", net);
+						blockUpdateMap[&chunk][mod_diff].push_back(net);
+					}
+					else {
+						//printf("ChunkEncoding: [%ld]\n", net);
+						chunkFullUpdateMap[&chunk].push_back(net);
+					}
+					modcount_snapshot = modcount;
 				}
 			}
 		}
 		
 	});
+
+	//send block deltas packet per chunk, per num_block packets
+	for (const auto &chunk_map_pair : blockUpdateMap) {
+		const auto &chunk = *chunk_map_pair.first;
+		const auto &map = chunk_map_pair.second;
+		
+		for (const auto &pair : map) {
+			const auto mod_diff = pair.first;
+			const auto &clients = pair.second;
+
+			BitStream stream;
+			stream.Write((MessageID)ID_BLOCK_PLACE);
+			stream.Write((int8)chunk.cx);
+			stream.Write((int8)chunk.cz);
+			stream.Write((uint8)mod_diff);
+			
+			//write all the block deltas
+			for (int i = 0; i < mod_diff; i++) {
+				const auto &mod_event = chunk.getModBuffer().read(i);
+				stream.Write(mod_event.index);
+				stream.Write(mod_event.block);
+			}
+
+			printf("Block delta packet size: [%zu]\n", stream.GetNumberOfBytesUsed());
+
+			for (const auto &client : clients) {
+				SLNet::RakNetGUID guid = client.guid;
+				peer->Send(&stream, PacketPriority::LOW_PRIORITY, PacketReliability::RELIABLE, 0, guid, false);
+			}
+
+		}
+	}
+
+
+
+	for (auto &pair : chunkFullUpdateMap) {
+		//printf("%d %d %d\n", chunk.cx, chunk.cy, chunk.cz);
+		const auto &chunk = *pair.first;
+		const auto &clients = pair.second;
+
+		const auto rl_chunk = Voxel::encode_chunk(chunk);
+		const unsigned char * ptr = (unsigned char*)rl_chunk.data();
+		const unsigned int num_bytes = (unsigned int)(sizeof(rl_chunk[0]) * rl_chunk.size());
+
+
+
+		BitStream stream;
+		stream.Write((MessageID)ID_RL_CHUNK_DATA);
+		stream.Write((int8)chunk.cx);
+		stream.Write((int8)chunk.cz);
+		stream.Write(num_bytes);
+		stream.WriteAlignedBytes(ptr, num_bytes);
+		//peer->Send(&stream, PacketPriority::LOW_PRIORITY, PacketReliability::RELIABLE_WITH_ACK_RECEIPT, 0, guid, false);
+
+		printf("Chunk packet size: [%d]\n", stream.GetNumberOfBytesUsed());
+
+
+		for (auto &net : clients) {
+			SLNet::RakNetGUID guid = net.guid;
+			peer->Send(&stream, PacketPriority::LOW_PRIORITY, PacketReliability::RELIABLE, 0, guid, false);
+		}
+
+		
+	}
 }

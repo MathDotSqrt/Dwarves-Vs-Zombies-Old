@@ -127,6 +127,7 @@ public:
 
 	Block getBlock(int x, int y, int z);
 	void setBlock(int x, int y, int z, Block block);			//must do it on main thread
+	void setBlock(int index, Block block);
 
 	Light getLight(int x, int y, int z);
 	void setLight(int x, int y, int z, Light light);		//must do it in main thread
@@ -163,6 +164,10 @@ private:
 
 	inline void setBlockInternal(int x, int y, int z, Block b) {
 		blockData[toIndex(x, y, z)] = b;
+	}
+
+	inline void setBlockInternal(int index, Block b) {
+		blockData[index] = b;
 	}
 	
 	inline Light getLightInternal(int x, int y, int z) const {

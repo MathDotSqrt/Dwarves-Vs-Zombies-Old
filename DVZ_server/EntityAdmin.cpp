@@ -23,7 +23,9 @@ EntityAdmin::EntityAdmin() : peer(SLNet::RakPeerInterface::GetInstance()), alloc
 
 	registry.set<ConnectedClientMap>();
 	registry.set<CloseConnectionBuffer>();
+	printf("Generating Terrain...\n");
 	registry.set<Voxel::ChunkManager>(allocator);
+	printf("Done.\n");
 
 	registry.on_construct<NetClientComponent>().connect<&Event::net_client_connect>();
 	registry.on_destroy<NetClientComponent>().connect<&Event::net_client_disconnect>();

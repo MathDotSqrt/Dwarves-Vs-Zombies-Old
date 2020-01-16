@@ -10,11 +10,11 @@ namespace Voxel {
 		Block() {}
 		Block(BlockType type) : type(type) {}
 
-		bool operator==(const Block &other){
+		bool operator==(const Block &other) const {
 			return type == other.type;
 		}
 
-		bool operator!=(const Block &other) {
+		bool operator!=(const Block &other) const {
 			return type != other.type;
 		}
 	};
