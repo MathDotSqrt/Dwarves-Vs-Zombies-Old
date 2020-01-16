@@ -28,8 +28,12 @@ RAKNET_SRC = $(wildcard $(RAKNET_SRC_DIR)/*.cpp) #$(wildcard $(RAKNET_SRC_DIR)/c
 RAKNET_INCLUDES = $(wildcard $(RAKNET_INC_DIR)/*.h)
 RAKNET_OBJ = $(patsubst $(RAKNET_SRC_DIR)/%.cpp, $(RAKNET_OBJ_DIR)/%.o, $(RAKNET_SRC))
 
-INCLUDES = -I $(RAKNET_INC_DIR)/ -I ./ENTT/single_include/entt/ -I ./GLM/  
-LIBS = -L $(RAKNET_LIB_DIR) -lRakNet -lpthread 
+ZLIB_DIR = ./zlib
+ZLIB_INCLUDE = $(ZLIB_DIR)/include
+ZLIB_LIB_DIR = $(ZLIB_DIR)/lib/
+
+INCLUDES = -I $(RAKNET_INC_DIR)/ -I ./ENTT/single_include/entt/ -I ./GLM/ -I $(ZLIB_INCLUDE)
+LIBS = -L $(RAKNET_LIB_DIR) -L $(ZLIB_LIB_DIR) -lRakNet -lz -lpthread 
 
 all: $(OUT)
 	echo "Done."

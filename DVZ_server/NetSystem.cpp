@@ -14,6 +14,8 @@
 #include "ChunkManager.h"
 #include "RLEncoder.h"
 
+#include "zlib.h"
+
 using namespace System;
 using namespace SLNet;
 
