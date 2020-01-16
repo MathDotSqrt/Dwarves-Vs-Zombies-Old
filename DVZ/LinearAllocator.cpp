@@ -38,7 +38,7 @@ voidptr LinearAllocator::allocate(size_t size, uint8 alignment) {
 	this->used_mem = this->buffer_size - avalible_mem + size;
 	this->num_allocs += 1;
 
-	//LOG_ALLOC("LINEAR ALLOC");
+	LOG_ALLOC("LINEAR ALLOC");
 
 	return alignedPointer;
 }
