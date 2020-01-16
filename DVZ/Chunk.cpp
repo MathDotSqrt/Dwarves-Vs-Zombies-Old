@@ -224,6 +224,16 @@ void Chunk::setBlock(int x, int y, int z, Block block) {
 	}
 }
 
+void Chunk::setBlock(int index, Block block) {
+	//todo optimize out modulus
+	//the order is how i order them in the array
+	int x = index % CHUNK_WIDTH_X;			
+	int z = (index / CHUNK_WIDTH_X) % CHUNK_WIDTH_Z;
+	int y = index / (CHUNK_WIDTH_X * CHUNK_WIDTH_Z);
+
+	setBlock(x, y, z, block);
+}
+
 Light Chunk::getLight(int x, int y, int z) {
 	std::shared_lock<std::shared_mutex> lock(chunkMutex);
 	

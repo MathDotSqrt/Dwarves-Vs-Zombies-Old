@@ -89,6 +89,31 @@ void chunk_packet(Engine &engine, SLNet::Packet *packet) {
 	manager.loadChunkData(cx, 0, cz, encoding);
 }
 
+void block_delta(Engine &engine, SLNet::Packet *packet) {
+	auto &manager = engine.ctx<Voxel::ChunkManager>();
+	uint8 cx = 0;
+	uint8 cz = 0;
+	uint8 mod_diff = 0;
+
+	SLNet::BitStream read(packet->data, packet->length, false);
+	read.IgnoreBytes(sizeof(SLNet::MessageID));
+	read.Read(cx);
+	read.Read(cz);
+	read.Read(mod_diff);
+
+	auto chunk = manager.getChunk(cx, 0, cz);
+
+	for (int i = 0; i < mod_diff; i++) {
+		uint32 index = 0;
+		Voxel::Block block;
+
+		read.Read(index);
+		read.Read(block);
+		chunk->setBlock(index, block);
+	}
+
+}
+
 SLNet::MessageID get_packet_id(SLNet::Packet *packet) {
 	SLNet::MessageID id = (SLNet::MessageID)packet->data[0];
 
@@ -122,6 +147,9 @@ void System::netword_system(Engine &engine, float delta) {
 			break;
 		case ID_RL_CHUNK_DATA:
 			chunk_packet(engine, packet);
+			break;
+		case ID_BLOCK_PLACE:
+			block_delta(engine, packet);
 			break;
 		default:
 			LOG_NET("ID CAUGHT: %d", id);
