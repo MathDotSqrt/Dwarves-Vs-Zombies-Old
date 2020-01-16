@@ -54,30 +54,30 @@ Chunk::Chunk(int cx, int cy, int cz, ChunkManager &manager) :
 				int y = this->cy * CHUNK_WIDTH_Y + by;
 
 				if (y == 0) {
-					setBlock(bx, by, bz, Block(BlockType::BLOCK_TYPE_STONE));
+					setBlockInternal(bx, by, bz, Block(BlockType::BLOCK_TYPE_STONE));
 				}
 				else if (y < height) {
 
-					setBlock(bx, by, bz, Block(BlockType::BLOCK_TYPE_DIRT));
+					setBlockInternal(bx, by, bz, Block(BlockType::BLOCK_TYPE_DIRT));
 
 				}
 				else if (y < height + 1) {
 					double sandValue = noise.octaveNoise0_1(x / 30.0, z / 30.0, 1);
 					if ((y < 10) && sandValue > .6) {
-						setBlock(bx, by, bz, Block(BlockType::BLOCK_TYPE_SAND));
+						setBlockInternal(bx, by, bz, Block(BlockType::BLOCK_TYPE_SAND));
 
 					}
 					else {
-						setBlock(bx, by, bz, Block(BlockType::BLOCK_TYPE_GRASS));
+						setBlockInternal(bx, by, bz, Block(BlockType::BLOCK_TYPE_GRASS));
 						if (noise.noise0_1(x * .15, z * .15, 0) > 0.75) {
-							setBlock(bx, by + 1, bz, Block(BlockType::BLOCK_TYPE_ROSE));
+							setBlockInternal(bx, by + 1, bz, Block(BlockType::BLOCK_TYPE_ROSE));
 
 						}
 					}
 
 				}
 				else {
-					setBlock(bx, by, bz, Block(BlockType::BLOCK_TYPE_DEFAULT));
+					setBlockInternal(bx, by, bz, Block(BlockType::BLOCK_TYPE_DEFAULT));
 				}
 			}
 		}
@@ -119,12 +119,30 @@ void Chunk::setBlock(const int x, const int y, const int z, Block block) {
 }
 
 void Chunk::setBlock(const int i, Block block) {
-	if (flat->blocks[i] != block) {
-		flat->blocks[i] = block;
-		mod_count++;
-	}
+	setBlockInternal(i, block);
+	mod_buffer.push_front(ChunkModEvent(i, block));
+	mod_count++;
+}
+
+void Chunk::flagEntireChunkModified() {
+	mod_buffer.push_front(ChunkModEvent());
+	mod_count++;
 }
 
 int Chunk::getModCount() const{
 	return mod_count;
+}
+
+const Util::RingBuffer<ChunkModEvent, 32>& Chunk::getModBuffer() const {
+	return mod_buffer;
+}
+
+void Chunk::setBlockInternal(const int x, const int y, const int z, Block block){
+	setBlockInternal(toIndex(x, y, z), block);
+}
+
+void Chunk::setBlockInternal(const int i, Block block) { 
+	if (flat->blocks[i] != block) {
+		flat->blocks[i] = block;
+	}
 }
