@@ -1,5 +1,7 @@
 #include "GameSystems.h"
 
+
+#include "zlib.h"
 #include "macrologger.h"
 #include "Engine.h"
 #include "Components.h"
@@ -7,12 +9,16 @@
 #include "MessageIdentifiers.h"
 #include "BitStream.h"
 #include "GamePacketID.h"
-#include <unordered_map>
 
 #include "ChunkManager.h"
 
 #include "Mesh.h"
 #include "Scene.h"
+#include <unordered_map>
+
+
+
+
 void update_player(Engine &engine, SLNet::Packet *packet) {
 	SLNet::BitStream read(packet->data, packet->length, false);
 
@@ -81,6 +87,8 @@ void chunk_packet(Engine &engine, SLNet::Packet *packet) {
 	read.Read(cx);
 	read.Read(cz);
 	read.Read(num_bytes);
+
+	//z_stream stream;
 
 	Voxel::RLEncoding encoding(num_bytes / sizeof(Voxel::RLElement));
 	read.ReadAlignedBytes((unsigned char *)encoding.data(), num_bytes);

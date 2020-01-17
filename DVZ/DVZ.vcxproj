@@ -96,16 +96,16 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>$(SolutionDir)ENTT\single_include\entt;$(SolutionDir)\ENTT\src\entt;$(SolutionDir)RakNet\include;$(IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)RakNet\lib;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(SolutionDir)zlib\include;$(SolutionDir)ENTT\single_include\entt;$(SolutionDir)\ENTT\src\entt;$(SolutionDir)RakNet\include;$(IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)zlib\lib;$(SolutionDir)RakNet\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DebugSpeed|x64'">
-    <IncludePath>$(SolutionDir)ENTT\single_include\entt;$(SolutionDir)\ENTT\src\entt;$(SolutionDir)RakNet\include;$(IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)RakNet\lib;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(SolutionDir)zlib\include;$(SolutionDir)ENTT\single_include\entt;$(SolutionDir)\ENTT\src\entt;$(SolutionDir)RakNet\include;$(IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)zlib\lib;$(SolutionDir)RakNet\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <IncludePath>$(SolutionDir)ENTT\single_include\entt;$(SolutionDir)\ENTT\src\entt;$(SolutionDir)RakNet\include;$(SolutionDir)OpenGL\GLFW-win64-static\include;$(IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)RakNet\lib;$(SolutionDir)OpenGL\GLFW-win64-static\lib;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(SolutionDir)zlib\include;$(SolutionDir)ENTT\single_include\entt;$(SolutionDir)\ENTT\src\entt;$(SolutionDir)RakNet\include;$(SolutionDir)OpenGL\GLFW-win64-static\include;$(IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)zlib\lib;$(SolutionDir)RakNet\lib;$(SolutionDir)OpenGL\GLFW-win64-static\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -134,12 +134,12 @@
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp17</LanguageStandard>
-      <AdditionalIncludeDirectories>$(SolutionDir)RakNet\;$(SolutionDir)STD;$(SolutionDir)GLM\gtx;$(SolutionDir)GLM\gtc;$(SolutionDir)OpenGL\GLEW-win32\include;$(SolutionDir)OpenGL\GLFW-win64\include;$(SolutionDir)GLM;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)zlib\include;$(SolutionDir)RakNet\;$(SolutionDir)STD;$(SolutionDir)GLM\gtx;$(SolutionDir)GLM\gtc;$(SolutionDir)OpenGL\GLEW-win32\include;$(SolutionDir)OpenGL\GLFW-win64\include;$(SolutionDir)GLM;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <BasicRuntimeChecks>StackFrameRuntimeCheck</BasicRuntimeChecks>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>opengl32.lib;openGL32.lib;glew32.lib;glfw3.lib;RakNetDLL.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>$(SolutionDir)OpenGL\GLFW-win64\lib-vc2017;$(SolutionDir)OpenGL\GLEW-win32\lib\Release\x64;$(SolutionDir)RakNet\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>zlibwapi.lib;opengl32.lib;openGL32.lib;glew32.lib;glfw3.lib;RakNetDLL.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)zlib\lib;$(SolutionDir)OpenGL\GLFW-win64\lib-vc2017;$(SolutionDir)OpenGL\GLEW-win32\lib\Release\x64;$(SolutionDir)RakNet\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='DebugSpeed|x64'">
@@ -149,14 +149,14 @@
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp17</LanguageStandard>
-      <AdditionalIncludeDirectories>$(SolutionDir)RakNet\;$(SolutionDir)STD;$(SolutionDir)GLM\gtx;$(SolutionDir)GLM\gtc;$(SolutionDir)OpenGL\GLEW-win32\include;$(SolutionDir)OpenGL\GLFW-win64\include;$(SolutionDir)GLM;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)zlib\include;$(SolutionDir)RakNet\;$(SolutionDir)STD;$(SolutionDir)GLM\gtx;$(SolutionDir)GLM\gtc;$(SolutionDir)OpenGL\GLEW-win32\include;$(SolutionDir)OpenGL\GLFW-win64\include;$(SolutionDir)GLM;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <BasicRuntimeChecks>Default</BasicRuntimeChecks>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>opengl32.lib;openGL32.lib;glew32.lib;glfw3.lib;RakNetDLL.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>$(SolutionDir)OpenGL\GLFW-win64\lib-vc2017;$(SolutionDir)OpenGL\GLEW-win32\lib\Release\x64;$(SolutionDir)RakNet\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>zlibwapi.lib;opengl32.lib;openGL32.lib;glew32.lib;glfw3.lib;RakNetDLL.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)zlib\lib;$(SolutionDir)OpenGL\GLFW-win64\lib-vc2017;$(SolutionDir)OpenGL\GLEW-win32\lib\Release\x64;$(SolutionDir)RakNet\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -182,14 +182,14 @@
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp17</LanguageStandard>
-      <AdditionalIncludeDirectories>$(SolutionDir)RakNet\;$(SolutionDir)STD;$(SolutionDir)GLM\gtx;$(SolutionDir)GLM\gtc;$(SolutionDir)OpenGL\GLEW-win32\include;$(SolutionDir)OpenGL\GLFW-win64-static\include;$(SolutionDir)GLM;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)zlib\include;$(SolutionDir)RakNet\;$(SolutionDir)STD;$(SolutionDir)GLM\gtx;$(SolutionDir)GLM\gtc;$(SolutionDir)OpenGL\GLEW-win32\include;$(SolutionDir)OpenGL\GLFW-win64-static\include;$(SolutionDir)GLM;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>opengl32.lib;openGL32.lib;glew32.lib;glfw3.lib;RakNetDLL.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>$(SolutionDir)OpenGL\GLFW-win64-static\lib;$(SolutionDir)OpenGL\GLEW-win32\lib\Release\x64;$(SolutionDir)RakNet\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>zlibwapi.lib;opengl32.lib;openGL32.lib;glew32.lib;glfw3.lib;RakNetDLL.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)zlib\lib;$(SolutionDir)OpenGL\GLFW-win64-static\lib;$(SolutionDir)OpenGL\GLEW-win32\lib\Release\x64;$(SolutionDir)RakNet\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
