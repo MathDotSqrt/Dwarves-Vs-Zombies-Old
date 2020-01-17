@@ -80,6 +80,8 @@ namespace Voxel {
 		int getModCount() const;
 		const Util::RingBuffer<ChunkModEvent, MOD_BUFFER_SIZE>& getModBuffer() const;
 
+
+
 	private:
 		void setBlockInternal(const int x, const int y, const int z, Block block);
 		void setBlockInternal(const int index, Block block);
@@ -89,6 +91,7 @@ namespace Voxel {
 
 		ChunkManager &manager;
 		FlatVoxelContainer *flat;
+
 	};
 }
 	

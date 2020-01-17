@@ -235,21 +235,21 @@ void System::net_voxel(EntityAdmin &admin, float delta) {
 		}
 	}
 
-	std::array<uint8, 10 * sizeof(uint8) * 1024> buffer;
+	//std::array<uint8, 10 * sizeof(uint8) * 1024> buffer;
 
 	for (auto &pair : chunkFullUpdateMap) {
 		//printf("%d %d %d\n", chunk.cx, chunk.cy, chunk.cz);
 		const auto &chunk = *pair.first;
 		const auto &clients = pair.second;
 
-		unsigned long buffer_size = sizeof(buffer);
+		//unsigned long buffer_size = sizeof(buffer);
 
 		const auto rl_chunk = Voxel::encode_chunk(chunk);
 		const unsigned int num_bytes = (unsigned int)(sizeof(rl_chunk[0]) * rl_chunk.size());
 		unsigned char * ptr = (unsigned char*)rl_chunk.data();
 
-		auto status = compress2(buffer.data(), &buffer_size, ptr, num_bytes, Z_BEST_COMPRESSION);
-		printf("ZLIB | inflated [%ld] deflated: [%ld]\n", num_bytes, buffer_size);
+		//auto status = compress2(buffer.data(), &buffer_size, ptr, num_bytes, Z_BEST_COMPRESSION);
+		//printf("ZLIB | inflated [%ld] deflated: [%ld]\n", num_bytes, buffer_size);
 
 
 		BitStream stream;
