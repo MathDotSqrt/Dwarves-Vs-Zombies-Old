@@ -75,6 +75,7 @@
   <ImportGroup Label="ExtensionSettings">
   </ImportGroup>
   <ImportGroup Label="Shared">
+    <Import Project="..\DVZ_common\DVZ_common.vcxitems" Label="Shared" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
@@ -259,7 +260,6 @@
     <ClInclude Include="ChunkRenderDataManager.h" />
     <ClInclude Include="Client.h" />
     <ClInclude Include="ColorDepthFBO.h" />
-    <ClInclude Include="Common.h" />
     <ClInclude Include="Components.h" />
     <ClInclude Include="concurrentqueue.h" />
     <ClInclude Include="CubeGeometry.h" />

@@ -95,9 +95,6 @@
     <ClInclude Include="NetSystem.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Common.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="ChunkManager.h">
       <Filter>Header Files\Voxel</Filter>
     </ClInclude>

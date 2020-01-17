@@ -171,9 +171,6 @@
     <ClInclude Include="Allocator.h">
       <Filter>Header Files\Util</Filter>
     </ClInclude>
-    <ClInclude Include="Common.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="LinearAllocator.h">
       <Filter>Header Files\Util</Filter>
     </ClInclude>

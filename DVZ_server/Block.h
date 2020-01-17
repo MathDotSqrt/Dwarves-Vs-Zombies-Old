@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../DVZ_common/BlockTypeEnum.h"
+#include "BlockTypeEnum.h"
 
 namespace Voxel {
 	class Block {

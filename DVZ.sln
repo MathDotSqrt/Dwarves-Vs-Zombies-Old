@@ -20,6 +20,11 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DVZ_common", "DVZ_common\DVZ_common.vcxitems", "{53F85A62-BEC2-4C2F-BC38-68DEC91A56B3}"
 EndProject
 Global
+	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		DVZ_common\DVZ_common.vcxitems*{1c39d78d-0a3d-4731-8e81-543a8e42511d}*SharedItemsImports = 4
+		DVZ_common\DVZ_common.vcxitems*{53f85a62-bec2-4c2f-bc38-68dec91a56b3}*SharedItemsImports = 9
+		DVZ_common\DVZ_common.vcxitems*{9748807a-64f4-4b6e-9a39-6d2d562e1eaa}*SharedItemsImports = 4
+	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
 		Debug|x86 = Debug|x86

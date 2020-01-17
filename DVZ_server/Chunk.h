@@ -1,6 +1,6 @@
 #pragma once
 #include "MathUtil.h"
-#include "../DVZ_common/ChunkConstants.h"
+#include "ChunkConstants.h"
 #include "Allocator.h"
 #include "PoolAllocator.h"
 #include "Block.h"
