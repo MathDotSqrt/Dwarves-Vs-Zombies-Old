@@ -153,6 +153,8 @@ void System::net_broadcast(EntityAdmin &admin, float delta) {
 	}
 }
 
+std::array<uint8, 10 * sizeof(uint8) * 1024> buffer;
+
 void System::net_voxel(EntityAdmin &admin, float delta) {
 	auto &registry = admin.registry;
 	auto &manager = admin.getChunkManager();
@@ -235,20 +237,19 @@ void System::net_voxel(EntityAdmin &admin, float delta) {
 		}
 	}
 
-	//std::array<uint8, 10 * sizeof(uint8) * 1024> buffer;
-
 	for (auto &pair : chunkFullUpdateMap) {
 		//printf("%d %d %d\n", chunk.cx, chunk.cy, chunk.cz);
 		const auto &chunk = *pair.first;
 		const auto &clients = pair.second;
 
-		//unsigned long buffer_size = sizeof(buffer);
+		unsigned long buffer_size = sizeof(buffer);
 
 		const auto rl_chunk = Voxel::encode_chunk(chunk);
-		const unsigned int num_bytes = (unsigned int)(sizeof(rl_chunk[0]) * rl_chunk.size());
+		const uint32 inflated_bytes = (unsigned int)(sizeof(rl_chunk[0]) * rl_chunk.size());
 		unsigned char * ptr = (unsigned char*)rl_chunk.data();
 
-		//auto status = compress2(buffer.data(), &buffer_size, ptr, num_bytes, Z_BEST_COMPRESSION);
+		auto status = compress2(buffer.data(), &buffer_size, ptr, inflated_bytes, Z_BEST_COMPRESSION);
+		const uint32 deflated_bytes = buffer_size;
 		//printf("ZLIB | inflated [%ld] deflated: [%ld]\n", num_bytes, buffer_size);
 
 
@@ -256,9 +257,10 @@ void System::net_voxel(EntityAdmin &admin, float delta) {
 		stream.Write((MessageID)ID_RL_CHUNK_DATA);
 		stream.Write((int8)chunk.cx);
 		stream.Write((int8)chunk.cz);
-		stream.Write(num_bytes);						//uncompressed num_bytes;
-		stream.WriteAlignedBytes(ptr, num_bytes);
-
+		stream.Write(inflated_bytes);						//uncompressed num_bytes;
+		stream.Write(deflated_bytes);
+		stream.WriteAlignedBytes(buffer.data(), deflated_bytes);
+		//printf("[%ld]\n", stream.GetNumberOfBytesUsed());
 
 		for (auto &net : clients) {
 			SLNet::RakNetGUID guid = net.guid;

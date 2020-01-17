@@ -75,23 +75,27 @@ void recieve_net_id(Engine &engine, SLNet::Packet *packet) {
 	LOG_NET("CLIENT ID RECIEVED: %d", netID);
 }
 
+std::array<uint8, 10 * sizeof(uint8) * 1024> buffer;
+
 void chunk_packet(Engine &engine, SLNet::Packet *packet) {
 	auto &manager = engine.ctx<Voxel::ChunkManager>();
 
 	int8 cx = 0;
 	int8 cz = 0;
-	uint32 num_bytes = 0;
+	uint32 inflate_bytes = 0;
+	uint32 deflate_bytes = 0;
 
 	SLNet::BitStream read(packet->data, packet->length, false);
 	read.IgnoreBytes(sizeof(SLNet::MessageID));
 	read.Read(cx);
 	read.Read(cz);
-	read.Read(num_bytes);
+	read.Read(inflate_bytes);
+	read.Read(deflate_bytes);
+	read.ReadAlignedBytes(buffer.data(), deflate_bytes);
 
-	//z_stream stream;
-
-	Voxel::RLEncoding encoding(num_bytes / sizeof(Voxel::RLElement));
-	read.ReadAlignedBytes((unsigned char *)encoding.data(), num_bytes);
+	Voxel::RLEncoding encoding(inflate_bytes / sizeof(Voxel::RLElement));
+	unsigned long source_length = inflate_bytes;
+	uncompress((uint8*)encoding.data(), &source_length, buffer.data(), deflate_bytes);
 
 	//todo buffer this at a later time...
 	manager.loadChunkData(cx, 0, cz, encoding);
