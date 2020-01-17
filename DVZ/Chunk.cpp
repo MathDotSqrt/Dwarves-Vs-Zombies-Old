@@ -90,7 +90,7 @@ void Chunk::decodeRLEncoding(const RLEncoding &encoding) {
 	int index = 0;
 	for (auto pair : encoding) {
 		auto count = pair.first;
-		Block block = pair.second;
+		Block block(pair.second);
 		while (count) {
 			assert(index < CHUNK_VOLUME);
 			blockData[index] = block;

@@ -17,7 +17,7 @@ const RLEncoding Voxel::encode_chunk(const Chunk &chunk) {
 			i++;
 		}
 		
-		encoding.push_back(std::make_pair(count, chunk.getBlock(i)));
+		encoding.push_back(std::make_pair(count, chunk.getBlock(i).type));
 	}
 
 	return encoding;
