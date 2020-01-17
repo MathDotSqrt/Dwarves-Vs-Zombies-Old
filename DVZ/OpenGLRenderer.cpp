@@ -17,7 +17,8 @@ MaterialID TextureMaterial::type = MaterialID::TEXTURE_MATERIAL_ID;
 MaterialID BlockMaterial::type = MaterialID::BLOCK_MATERIAL_ID;
 
 OpenGLRenderer::OpenGLRenderer(Scene *scene) : 
-	final(Window::getWidth(), Window::getHeight()), 
+	//final(Window::getWidth(), Window::getHeight()),
+	final(3440, 1440),
 	shadow(2048, 2048),
 	vbo(GL_ARRAY_BUFFER),
 	start(Window::getTime())
@@ -75,6 +76,9 @@ void OpenGLRenderer::resize(int newWidth, int newHeight) {
 	LOG_RENDER("Resize (%d, %d)", newWidth, newHeight);
 	Scene::Camera *camera = &scene->cameraCache[scene->getMainCameraID()];
 	camera->aspect = (float)newWidth / newHeight;
+
+	window_width = newWidth;
+	window_height = newHeight;
 
 	this->perspectiveProjection = glm::perspective(camera->fov, camera->aspect, camera->near, camera->far);
 	glViewport(0, 0, newWidth, newHeight);

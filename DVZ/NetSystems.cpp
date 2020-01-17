@@ -4,6 +4,7 @@
 #include "zlib.h"
 #include "macrologger.h"
 #include "Engine.h"
+#include "Timer.h"
 #include "Components.h"
 #include "RakPeerInterface.h"
 #include "MessageIdentifiers.h"
@@ -138,6 +139,7 @@ SLNet::MessageID get_packet_id(SLNet::Packet *packet) {
 }
 
 void System::netword_system(Engine &engine, float delta) {
+	Util::Performance::Timer netTimer("Packet parser");
 	auto peer = engine.ctx<SLNet::RakPeerInterface*>();
 
 	entt::entity id = engine.getPlayer();

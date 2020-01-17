@@ -13,7 +13,7 @@ public:
 	GLenum textureTarget;
 	int width;
 	int height;
-	
+
 	TEX(TEX&&);
 	~TEX();
 	TEX(const TEX&) = delete;
