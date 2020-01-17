@@ -6,6 +6,7 @@
 namespace Voxel {
 	class Chunk;
 	
-	typedef std::vector<std::pair<uint16, Block>> RLEncoding;
+	typedef uint16 RLFreqType;
+	typedef std::vector<std::pair<RLFreqType, Block>> RLEncoding;
 	const RLEncoding encode_chunk(const Chunk &chunk);
 }

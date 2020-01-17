@@ -47,7 +47,7 @@ Chunk::Chunk(int cx, int cy, int cz, ChunkManager &manager) :
 
 			//}
 
-			double height = pow(noise.octaveNoise0_1(x / 140.0, z / 140.0, 6), 4.5) * 155;
+			double height = pow(noise.octaveNoise0_1(x / 140.0, z / 140.0, 6), 4.5) * 155 + 25;
 
 			for (int by = 0; by < CHUNK_WIDTH_Y; by++) {
 

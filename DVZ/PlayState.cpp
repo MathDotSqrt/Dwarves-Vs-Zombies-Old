@@ -81,8 +81,8 @@ void PlayState::init() {
 	/*SUN CAMERA*/
 
 	/*NET*/
-	e.attemptConnection("3.86.12.190", 60000);		//AWS
-	//e.attemptConnection("127.0.0.1", 60000);		//LOCAL
+	//e.attemptConnection("3.86.12.190", 60000);		//AWS
+	e.attemptConnection("127.0.0.1", 60000);		//LOCAL
 	/*NET*/
 
 	/*SYSTEM*/

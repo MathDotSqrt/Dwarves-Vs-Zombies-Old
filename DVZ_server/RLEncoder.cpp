@@ -4,13 +4,13 @@
 using namespace Voxel;
 
 const RLEncoding Voxel::encode_chunk(const Chunk &chunk) {
-	constexpr uint16 MAX_COUNT = std::numeric_limits<uint16>::max();
+	constexpr auto MAX_COUNT = std::numeric_limits<RLFreqType>::max();
 	
 	Voxel::RLEncoding encoding;
 	
 
 	for (int i = 0; i < Chunk::MAX_INDEX - 1; i++) {
-		uint16 count = 1;
+		RLFreqType count = 1;
 
 		while (count != MAX_COUNT && chunk.getBlock(i) == chunk.getBlock(i + 1)) {
 			count++;

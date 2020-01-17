@@ -97,15 +97,15 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <IncludePath>$(SolutionDir)ENTT\single_include\entt;$(SolutionDir)RakNet\include;$(SolutionDir)GLM;$(IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)RakNet\lib;$(LibraryPath)</LibraryPath>
+    <LibraryPath>$(SolutionDir)zlib\lib;$(SolutionDir)RakNet\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DebugSpeed|x64'">
     <IncludePath>$(SolutionDir)ENTT\single_include\entt;$(SolutionDir)GLM;$(SolutionDir)RakNet\include;$(IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)RakNet\lib;$(LibraryPath)</LibraryPath>
+    <LibraryPath>$(SolutionDir)zlib\lib;$(SolutionDir)RakNet\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <IncludePath>$(SolutionDir)ENTT\single_include\entt;$(SolutionDir)GLM;$(SolutionDir)RakNet\include;$(IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)RakNet\lib;$(LibraryPath)</LibraryPath>
+    <LibraryPath>$(SolutionDir)zlib\lib;$(SolutionDir)RakNet\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
