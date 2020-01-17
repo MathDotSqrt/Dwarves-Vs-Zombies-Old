@@ -65,7 +65,7 @@ struct ChunkBoundryComponent : glm::i32vec3 {
 };
 
 struct ClientChunkSnapshotComponent {
-	static constexpr int VIEW_RADIUS = 7;
+	static constexpr int VIEW_RADIUS = 9;
 	static constexpr int VIEW_DIST = 2 * VIEW_RADIUS + 1;
 	
 	static constexpr int SYNC_RADIUS = 7;
