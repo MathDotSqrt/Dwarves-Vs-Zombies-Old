@@ -27,8 +27,8 @@ EntityAdmin::EntityAdmin() : peer(SLNet::RakPeerInterface::GetInstance()), alloc
 	registry.set<Voxel::ChunkManager>(allocator);
 	printf("Done.\n");
 
-	registry.on_construct<NetClientComponent>().connect<&Event::net_client_connect>();
-	registry.on_destroy<NetClientComponent>().connect<&Event::net_client_disconnect>();
+	registry.on_construct<Component::NetClient>().connect<&Event::net_client_connect>();
+	registry.on_destroy<Component::NetClient>().connect<&Event::net_client_disconnect>();
 
 	SLNet::SocketDescriptor sd(SERVER_PORT, nullptr);
 	peer->Startup(MAX_CONNECTIONS, &sd, 1);

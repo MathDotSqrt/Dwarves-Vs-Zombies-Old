@@ -21,7 +21,9 @@ using namespace System;
 
 
 void System::input_system(Engine &engine, float delta) {
-	engine.view<InputComponent>().each([](auto &input) {
+	using namespace Component;
+	
+	engine.view<Input>().each([](auto &input) {
 		input.mousePos[0] = input.mousePos[1];
 
 		if (Window::isFocused()) {
@@ -40,7 +42,7 @@ void System::input_system(Engine &engine, float delta) {
 
 	});
 
-	engine.group<InputComponent>(entt::get<DirComponent, RotationComponent, VelocityComponent>)
+	engine.group<Input>(entt::get<Dir, Rotation, Velocity>)
 		.each([delta](auto &input, auto &dir, auto &rot, auto &vel) {
 
 		const float SPEED = 9.0f;
@@ -71,22 +73,26 @@ void System::input_system(Engine &engine, float delta) {
 	entt::entity player = engine.getPlayer();
 	if (Window::isPressed('T')) {
 		//engine->replace<PositionComponent>(player, glm::vec3(0, 4, 0));
-		PositionComponent &comp = engine.get<PositionComponent>(player);
+		Position &comp = engine.get<Position>(player);
 		comp.x = 0;
 		comp.z = 0;
 	}
 }
 
 void System::movement_system(Engine &engine, float delta) {
-	engine.group<PositionComponent, VelocityComponent>().each([delta](auto &pos, auto &vel) {
+	using namespace Component;
+	
+	engine.group<Position, Velocity>().each([delta](auto &pos, auto &vel) {
 		pos += vel * delta;
 	});
 }
 
 void System::voxel_system(Engine &engine, float delta) {
+	using namespace Component;
+	
 	Voxel::ChunkManager &manager = engine.ctx<Voxel::ChunkManager>();
-	PositionComponent p = engine.get<PositionComponent>(engine.getPlayer());
-	RotationComponent r = engine.get<RotationComponent>(engine.getPlayer());
+	Position p = engine.get<Position>(engine.getPlayer());
+	Rotation r = engine.get<Rotation>(engine.getPlayer());
 	glm::vec3 playerPos = p;
 	glm::vec3 playerRot = glm::eulerAngles(r);
 
@@ -97,8 +103,8 @@ void System::voxel_system(Engine &engine, float delta) {
 	bool left = Window::isMousePressed(Window::LEFT_CLICK);
 	bool right = Window::isMousePressed(Window::RIGHT_CLICK);
 	if (badCode && (left || right)) {
-		DirComponent dir = engine.get<DirComponent>(engine.getPlayer());
-		RotationComponent rot = engine.get<RotationComponent>(engine.getPlayer());
+		Dir dir = engine.get<Dir>(engine.getPlayer());
+		Rotation rot = engine.get<Rotation>(engine.getPlayer());
 
 		glm::vec3 ray = glm::rotate(rot, dir.forward);
 		Voxel::BlockRayCast cast = manager.castRay(playerPos, ray, 10);
@@ -123,9 +129,10 @@ void System::voxel_system(Engine &engine, float delta) {
 }
 
 void System::render_system(Engine &engine, float delta) {
+	using namespace Component;
 	auto &scene = engine.ctx<Graphics::Scene>();
 
-	engine.group<RenderInstanceComponent>(entt::get<PositionComponent, RotationComponent, ScaleComponent>)
+	engine.group<RenderInstance>(entt::get<Position, Rotation, Scale>)
 		.each([&scene](auto &instanceComponent, auto &positionComponent, auto &rotationComponent, auto &scaleComponent)
 	{
 		auto transformationID = scene.instanceCache[instanceComponent.instanceID].transformationID;
@@ -139,7 +146,7 @@ void System::render_system(Engine &engine, float delta) {
 		transformation.scale = scaleComponent;
 	});
 
-	engine.group<PointLightComponent>(entt::get<PositionComponent>)
+	engine.group<PointLight>(entt::get<Position>)
 		.each([&scene](auto &pointLightComponent, auto &positionComponent)
 	{
 		Graphics::Scene::PointLight &pointLight = scene.pointLightCache[pointLightComponent.lightInstanceID];
@@ -151,7 +158,7 @@ void System::render_system(Engine &engine, float delta) {
 		pointLight.intensity = pointLightComponent.intensity;
 	});
 
-	engine.group<CameraInstanceComponent>(entt::get<PositionComponent, RotationComponent, DirComponent>)
+	engine.group<CameraInstance>(entt::get<Position, Rotation, Dir>)
 		.each([&scene](auto &cameraComponent, auto &positionComponent, auto &rotationComponent, auto &dirComponent)
 	{
 		auto &camera = scene.cameraCache[cameraComponent.cameraID];

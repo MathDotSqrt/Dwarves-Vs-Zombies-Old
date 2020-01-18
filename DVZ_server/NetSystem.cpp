@@ -20,18 +20,19 @@ using namespace System;
 using namespace SLNet;
 
 void incomming_connection_packet(RakPeerInterface *peer, Packet *packet, entt::registry &registry) {
+	using namespace Component;
 	printf("New connection from [%s]\n", packet->systemAddress.ToString());
 
 	entt::entity player = registry.create();
-	registry.assign<NetClientComponent>(player, packet->guid);
-	registry.assign<PositionComponent>(player, glm::vec3(0, 0, 0));
-	registry.assign<RotationComponent>(player, glm::vec3(0, 0, 0));
-	registry.assign<VelocityComponent>(player, glm::vec3(0, 0, 0));
-	registry.assign<DirComponent>(player, glm::vec3(0, 0, -1), glm::vec3(0, 1, 0), glm::vec3(1, 0, 0));
-	registry.assign<InputComponent>(player);
-	registry.assign<AFKComponent>(player);
-	registry.assign<ChunkBoundryComponent>(player, glm::vec3(0, 0, 0));
-	registry.assign<ClientChunkSnapshotComponent>(player);
+	registry.assign<NetClient>(player, packet->guid);
+	registry.assign<Position>(player, glm::vec3(0, 0, 0));
+	registry.assign<Rotation>(player, glm::vec3(0, 0, 0));
+	registry.assign<Velocity>(player, glm::vec3(0, 0, 0));
+	registry.assign<Dir>(player, glm::vec3(0, 0, -1), glm::vec3(0, 1, 0), glm::vec3(1, 0, 0));
+	registry.assign<Input>(player);
+	registry.assign<AFK>(player);
+	registry.assign<ChunkBoundry>(player, glm::vec3(0, 0, 0));
+	registry.assign<ClientChunkSnapshot>(player);
 	
 	BitStream out;
 	out.Write((MessageID)ID_CLIENT_NET_ID);
@@ -50,6 +51,7 @@ void disconnection_packet(Packet *packet, entt::registry &registry) {
 }
 
 void client_input_packet(Packet *packet, entt::registry &registry) {
+	using namespace Component;
 	auto &map = registry.ctx<ConnectedClientMap>();
 	auto iter = map.find(packet->guid);
 
@@ -60,8 +62,8 @@ void client_input_packet(Packet *packet, entt::registry &registry) {
 	entt::entity clientEntity = map[packet->guid];
 
 	//auto &pos = registry.get<PositionComponent>(clientEntity);
-	auto &rot = registry.get<RotationComponent>(clientEntity);
-	auto &input = registry.get<InputComponent>(clientEntity);
+	auto &rot = registry.get<Rotation>(clientEntity);
+	auto &input = registry.get<Input>(clientEntity);
 
 	BitStream in(packet->data, packet->length, false);
 	in.IgnoreBytes(sizeof(MessageID));
@@ -134,15 +136,17 @@ void System::net_disconnect(EntityAdmin &admin, float delta){
 }
 
 void System::net_broadcast(EntityAdmin &admin, float delta) {
+	using namespace Component;
+	
 	auto &registry = admin.registry;
 	auto *peer = admin.getPeer();
 	auto &map = registry.ctx<ConnectedClientMap>();
 
-	auto view = registry.view<PositionComponent, RotationComponent>();
+	auto view = registry.view<Position, Rotation>();
 
 	for (entt::entity e : view) {
-		PositionComponent pos = view.get<PositionComponent>(e);
-		RotationComponent rot = view.get<RotationComponent>(e);
+		Position pos = view.get<Position>(e);
+		Rotation rot = view.get<Rotation>(e);
 
 		BitStream stream;
 		stream.Write((MessageID)ID_PLAYER_MOVE);
@@ -156,15 +160,16 @@ void System::net_broadcast(EntityAdmin &admin, float delta) {
 std::array<uint8, 10 * sizeof(uint8) * 1024> buffer;
 
 void System::net_voxel(EntityAdmin &admin, float delta) {
+	using namespace Component;
 	auto &registry = admin.registry;
 	auto &manager = admin.getChunkManager();
 	auto *peer = admin.getPeer();
 
-	std::map<const Voxel::Chunk*, std::vector<NetClientComponent>> chunkFullUpdateMap;
-	std::map<const Voxel::Chunk*, std::map<int, std::vector<NetClientComponent>>> blockUpdateMap;
+	std::map<const Voxel::Chunk*, std::vector<NetClient>> chunkFullUpdateMap;
+	std::map<const Voxel::Chunk*, std::map<int, std::vector<NetClient>>> blockUpdateMap;
 
 
-	auto view = registry.view<NetClientComponent, ChunkBoundryComponent, ClientChunkSnapshotComponent>();
+	auto view = registry.view<NetClient, ChunkBoundry, ClientChunkSnapshot>();
 	view.each([&manager, &chunkFullUpdateMap, &blockUpdateMap](auto &net, auto &bound, auto &snapshot) {
 		
 		//todo only call this when player moves boundries
@@ -172,7 +177,7 @@ void System::net_voxel(EntityAdmin &admin, float delta) {
 
 
 
-		auto RADIUS = ClientChunkSnapshotComponent::VIEW_RADIUS;
+		auto RADIUS = ClientChunkSnapshot::VIEW_RADIUS;
 		for (int z = -RADIUS; z <= RADIUS; z++) {
 			for (int x = -RADIUS; x <= RADIUS; x++) {
 				const auto chunk_pos = bound + glm::i32vec3(x, 0, z);

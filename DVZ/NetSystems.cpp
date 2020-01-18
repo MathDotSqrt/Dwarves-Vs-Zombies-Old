@@ -21,6 +21,8 @@
 
 
 void update_player(Engine &engine, SLNet::Packet *packet) {
+	using namespace Component;
+	
 	SLNet::BitStream read(packet->data, packet->length, false);
 
 	read.IgnoreBytes(sizeof(SLNet::MessageID));
@@ -44,24 +46,25 @@ void update_player(Engine &engine, SLNet::Packet *packet) {
 		auto &mesh_cache = engine.ctx<ResourceManager::MeshCache>();
 
 		playerID = engine.create();
-		engine.assign<PositionComponent>(playerID, pos);
-		engine.assign<RotationComponent>(playerID, glm::quat(glm::vec3(0, 0, 0)));
-		engine.assign<ScaleComponent>(playerID, glm::vec3(1, 1, 1));
+		engine.assign<Position>(playerID, pos);
+		engine.assign<Rotation>(playerID, glm::quat(glm::vec3(0, 0, 0)));
+		engine.assign<Scale>(playerID, glm::vec3(1, 1, 1));
 		
 		auto instanceID = scene.createRenderInstance(mesh_cache.handle("SpunkWalker"_hs), Graphics::NormalMaterial());
-		engine.assign<RenderInstanceComponent>(playerID, instanceID);
+		engine.assign<RenderInstance>(playerID, instanceID);
 
 		map[netID] = playerID;
 	}
 	else if(playerID = iter->second; playerID != engine.getPlayer()){
-		auto &position = engine.get<PositionComponent>(playerID);
-		auto &rotation = engine.get<RotationComponent>(playerID);
+		auto &position = engine.get<Position>(playerID);
+		auto &rotation = engine.get<Rotation>(playerID);
 		position = pos;
 		rotation = rot;
 	}
 }
 
 void recieve_net_id(Engine &engine, SLNet::Packet *packet) {
+	using namespace Component;
 	SLNet::BitStream stream(packet->data, packet->length, false);
 
 	auto &map = engine.ctx<std::unordered_map<entt::entity, entt::entity>>();
@@ -70,7 +73,7 @@ void recieve_net_id(Engine &engine, SLNet::Packet *packet) {
 	entt::entity playerID = engine.getPlayer();
 	entt::entity netID = entt::null;
 	stream.Read(netID);
-	engine.assign_or_replace<NetworkComponent>(playerID, netID);
+	engine.assign_or_replace<Network>(playerID, netID);
 	map.erase(netID);
 	map[netID] = playerID;
 	LOG_NET("CLIENT ID RECIEVED: %d", netID);
@@ -172,13 +175,15 @@ void System::netword_system(Engine &engine, float delta) {
 }
 
 void System::send_packet_system(Engine &engine, float delta) {
-	auto view = engine.view<PlayerComponent, NetworkComponent>();
+	using namespace Component;
+	
+	auto view = engine.view<Player, Network>();
 	if (view.size()) {
 		entt::entity playerID = *view.begin();
-		auto &pos = engine.get<PositionComponent>(playerID);
-		auto &rot = engine.get<RotationComponent>(playerID);
-		auto &input = engine.get<InputComponent>(playerID);
-		auto &net = engine.get<NetworkComponent>(playerID);
+		auto &pos = engine.get<Position>(playerID);
+		auto &rot = engine.get<Rotation>(playerID);
+		auto &input = engine.get<Input>(playerID);
+		auto &net = engine.get<Network>(playerID);
 		SLNet::BitStream out;
 		out.Write((SLNet::MessageID)ID_CLIENT_INPUT);
 		out.Write(rot);

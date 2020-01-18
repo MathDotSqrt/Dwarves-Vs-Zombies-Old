@@ -90,20 +90,22 @@ bool Engine::isConnected() {
 }
 
 entt::entity Engine::addPlayer(float x, float y, float z) {
+	using namespace Component;
+	
 	if (this->main != entt::null) {
 		LOG_WARNING("Attempting to make two main entities...");
 		return this->main;
 	}
 
 	entt::entity id = this->create();
-	this->assign<PlayerComponent>(id);
-	this->assign<PositionComponent>(id, glm::vec3(x, y, z));
-	this->assign<RotationComponent>(id, glm::quat(1, 0, 0, 0));
-	this->assign<VelocityComponent>(id, glm::vec3(0, 0, 0));
-	this->assign<RotationalVelocityComponent>(id, glm::vec3(0, 0, 0));
-	this->assign<DirComponent>(id, glm::vec3(0, 0, -1), glm::vec3(0, 1, 0), glm::vec3(1, 0, 0));
-	this->assign<InputComponent>(id);
-	this->assign<CameraInstanceComponent>(id, this->ctx<Graphics::Scene>().getMainCameraID());
+	this->assign<Player>(id);
+	this->assign<Position>(id, glm::vec3(x, y, z));
+	this->assign<Rotation>(id, glm::quat(1, 0, 0, 0));
+	this->assign<Velocity>(id, glm::vec3(0, 0, 0));
+	this->assign<RotationalVelocity>(id, glm::vec3(0, 0, 0));
+	this->assign<Dir>(id, glm::vec3(0, 0, -1), glm::vec3(0, 1, 0), glm::vec3(1, 0, 0));
+	this->assign<Input>(id);
+	this->assign<CameraInstance>(id, this->ctx<Graphics::Scene>().getMainCameraID());
 
 	this->main = id;
 

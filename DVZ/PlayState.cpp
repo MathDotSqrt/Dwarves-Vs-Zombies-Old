@@ -29,7 +29,7 @@ void PlayState::init() {
 	/*PLAYER*/
 	entt::entity playerID = e.addPlayer(0, 0, 0);
 	unsigned int pointLightInstanceID = scene.createPointLightInstance();
-	e.assign<PointLightComponent>(playerID, pointLightInstanceID, glm::vec3(1, 1, 1), 60.0f);
+	e.assign<Component::PointLight>(playerID, pointLightInstanceID, glm::vec3(1, 1, 1), 60.0f);
 	/*PLAYER*/
 	
 	/*TREE*/
@@ -38,11 +38,11 @@ void PlayState::init() {
 	unsigned int renderID = scene.createRenderInstance(model, material);
 
 	entt::entity tree = e.create();
-	e.assign<PositionComponent>(tree, glm::vec3(0, 0, 0));
-	e.assign<RotationComponent>(tree, glm::quat(glm::vec3(0, 0, 0)));
-	e.assign<ScaleComponent>(tree, glm::vec3(1, 1, 1));
-	e.assign<RotationalVelocityComponent>(tree, glm::vec3(0, 1, 0));
-	e.assign<RenderInstanceComponent>(tree, renderID);
+	e.assign<Component::Position>(tree, glm::vec3(0, 0, 0));
+	e.assign<Component::Rotation>(tree, glm::quat(glm::vec3(0, 0, 0)));
+	e.assign<Component::Scale>(tree, glm::vec3(1, 1, 1));
+	e.assign<Component::RotationalVelocity>(tree, glm::vec3(0, 1, 0));
+	e.assign<Component::RenderInstance>(tree, renderID);
 	/*TREE*/
 
 	/*WALKER*/
@@ -51,21 +51,21 @@ void PlayState::init() {
 	uint32 walkerRenderID = scene.createRenderInstance(walkerModel, walkerMaterial);
 
 	entt::entity walker = e.create();
-	e.assign<PositionComponent>(walker, glm::vec3(10, 10, 10));
-	e.assign<RotationComponent>(walker, glm::quat(glm::vec3(0, 0, 0)));
-	e.assign<ScaleComponent>(walker, glm::vec3(1));
-	e.assign<VelocityComponent>(walker, glm::vec3(-10, .1f, 2));
-	e.assign<RenderInstanceComponent>(walker, walkerRenderID);
+	e.assign<Component::Position>(walker, glm::vec3(10, 10, 10));
+	e.assign<Component::Rotation>(walker, glm::quat(glm::vec3(0, 0, 0)));
+	e.assign<Component::Scale>(walker, glm::vec3(1));
+	e.assign<Component::Velocity>(walker, glm::vec3(-10, .1f, 2));
+	e.assign<Component::RenderInstance>(walker, walkerRenderID);
 	/*WALKER*/
 
 	/*SUN CAMERA*/
 	entt::entity sunID = e.create();
-	e.assign<PositionComponent>(sunID, glm::vec3(-0, 20, 25));
-	e.assign<RotationComponent>(sunID, glm::quat(glm::vec3(-.5, .1, 0)));
-	e.assign<ScaleComponent>(sunID, glm::vec3(1, 1, 1));
-	e.assign<DirComponent>(sunID, glm::vec3(0, 0, -1), glm::vec3(0, 1, 0), glm::vec3(1, 0, 0));
-	e.assign<RotationalVelocityComponent>(sunID, glm::vec3(0, .1, 0));
-	e.assign<VelocityComponent>(sunID, glm::vec3(.1, .1, 0));
+	e.assign<Component::Position>(sunID, glm::vec3(-0, 20, 25));
+	e.assign<Component::Rotation>(sunID, glm::quat(glm::vec3(-.5, .1, 0)));
+	e.assign<Component::Scale>(sunID, glm::vec3(1, 1, 1));
+	e.assign<Component::Dir>(sunID, glm::vec3(0, 0, -1), glm::vec3(0, 1, 0), glm::vec3(1, 0, 0));
+	e.assign<Component::RotationalVelocity>(sunID, glm::vec3(0, .1, 0));
+	e.assign<Component::Velocity>(sunID, glm::vec3(.1, .1, 0));
 	
 	Graphics::Scene::Camera sunCamera = {
 		glm::vec3(100, 10, 0),
@@ -76,8 +76,8 @@ void PlayState::init() {
 	auto cameraID = scene.createCameraInstance(sunCamera);
 	scene.setSunCameraID(cameraID);
 	//scene->setMainCamera(cameraID);
-	e.assign<CameraInstanceComponent>(sunID, cameraID);
-	e.assign<RenderInstanceComponent>(sunID, scene.createRenderInstance(walkerModel, walkerMaterial));
+	e.assign<Component::CameraInstance>(sunID, cameraID);
+	e.assign<Component::RenderInstance>(sunID, scene.createRenderInstance(walkerModel, walkerMaterial));
 	/*SUN CAMERA*/
 
 	/*NET*/

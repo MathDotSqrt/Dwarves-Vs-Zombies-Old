@@ -8,9 +8,11 @@
 using namespace GameLogic;
 
 void GameLogic::input_system(EntityAdmin &admin, float delta) {
+	using namespace Component;
+	
 	entt::registry &registry = admin.registry;
 
-	registry.group<InputComponent>(entt::get<DirComponent, RotationComponent, VelocityComponent>)
+	registry.group<Input>(entt::get<Dir, Rotation, Velocity>)
 		.each([delta](auto &input, auto &dir, auto &rot, auto &vel) {
 		
 		const float SPEED = 9.0f;
@@ -40,23 +42,26 @@ void GameLogic::input_system(EntityAdmin &admin, float delta) {
 }
 
 void GameLogic::movement_system(EntityAdmin &admin, float delta) {
+	using namespace Component;
+	
 	entt::registry &registry = admin.registry;
-	registry.group<PositionComponent, VelocityComponent>().each([delta](auto &pos, auto &vel) {
+	registry.group<Position, Velocity>().each([delta](auto &pos, auto &vel) {
 		pos += delta * vel;
 	});
 
 }
 
 void GameLogic::afk_system(EntityAdmin &admin, float delta) {
+	using namespace Component;
 	constexpr float AFK_TIMEOUT = 60 * 5;		//five minutes
 	
 	entt::registry &registry = admin.registry;
-	auto view = registry.view<InputComponent, AFKComponent, NetClientComponent>();
+	auto view = registry.view<Input, AFK, NetClient>();
 
 	for (entt::entity e : view) {
-		auto &input = view.get<InputComponent>(e);
-		auto &afk = view.get<AFKComponent>(e);
-		auto &client = view.get<NetClientComponent>(e);
+		auto &input = view.get<Input>(e);
+		auto &afk = view.get<AFK>(e);
+		auto &client = view.get<NetClient>(e);
 
 		if (afk.lastInput == input) {
 			afk.timer += delta;
@@ -75,10 +80,11 @@ void GameLogic::afk_system(EntityAdmin &admin, float delta) {
 }
 
 void GameLogic::voxel_system(EntityAdmin &admin, float delta) {
+	using namespace Component;
 	auto &manager = admin.getChunkManager();
 	manager.update(admin, delta);
 
-	admin.registry.view<PositionComponent, ChunkBoundryComponent>().each([](auto &pos, auto &bound) {
+	admin.registry.view<Position, ChunkBoundry>().each([](auto &pos, auto &bound) {
 		bound.x = (int)(pos.x / Voxel::CHUNK_RENDER_WIDTH_X);
 		bound.y = (int)(pos.y / Voxel::CHUNK_RENDER_WIDTH_Y);
 		bound.z = (int)(pos.z / Voxel::CHUNK_RENDER_WIDTH_Z);

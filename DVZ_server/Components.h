@@ -8,79 +8,83 @@
 #include "ChunkModStamp.h"
 #include <unordered_map>
 
-struct PositionComponent : glm::vec3 { 
-	PositionComponent(glm::vec3 vec) : glm::vec3(vec) {}
-};
+namespace Component {
+	struct Position : glm::vec3 {
+		Position(glm::vec3 vec) : glm::vec3(vec) {}
+	};
 
-struct RotationComponent : glm::quat { 
-	RotationComponent(glm::quat quat) : glm::quat(quat){}
-};
+	struct Rotation : glm::quat {
+		Rotation(glm::quat quat) : glm::quat(quat) {}
+	};
 
-struct VelocityComponent : glm::vec3 { 
-	VelocityComponent(glm::vec3 vec) : glm::vec3(vec) {}
-};
+	struct Velocity : glm::vec3 {
+		Velocity(glm::vec3 vec) : glm::vec3(vec) {}
+	};
 
-struct DirComponent {
-	glm::vec3 forward;
-	glm::vec3 up;
-	glm::vec3 right;
-};
+	struct Dir {
+		glm::vec3 forward;
+		glm::vec3 up;
+		glm::vec3 right;
+	};
 
-struct InputComponent {
-//	glm::vec2 mousePos[2];		//[0] previous frame position [1] current frame position
-	bool up;
-	bool down;
-	bool left;
-	bool right;
-	bool space;
-	bool shift;
-	bool ctrl;
+	struct Input {
+		//	glm::vec2 mousePos[2];		//[0] previous frame position [1] current frame position
+		bool up;
+		bool down;
+		bool left;
+		bool right;
+		bool space;
+		bool shift;
+		bool ctrl;
 
-	InputComponent() : 
-		up(false), 
-		down(false), 
-		left(false), 
-		right(false), 
-		space(false),
-		shift(false),
-		ctrl(false) {}
+		Input() :
+			up(false),
+			down(false),
+			left(false),
+			right(false),
+			space(false),
+			shift(false),
+			ctrl(false) {}
 
-	bool operator==(const InputComponent &other) {
-		return up == other.up
-			&& down == other.down
-			&& left == other.left
-			&& right == other.right
-			&& space == other.space
-			&& shift == other.shift
-			&& ctrl == other.ctrl;
-	}
+		bool operator==(const Input &other) {
+			return up == other.up
+				&& down == other.down
+				&& left == other.left
+				&& right == other.right
+				&& space == other.space
+				&& shift == other.shift
+				&& ctrl == other.ctrl;
+		}
 
-	bool operator!=(const InputComponent &other) {
-		return !operator==(other);
-	}
-};
+		bool operator!=(const Input &other) {
+			return !operator==(other);
+		}
+	};
 
-struct ChunkBoundryComponent : glm::i32vec3 {
-	ChunkBoundryComponent(glm::i32vec3 vec) : glm::i32vec3(vec) {}
-};
+	struct ChunkBoundry : glm::i32vec3 {
+		ChunkBoundry(glm::i32vec3 vec) : glm::i32vec3(vec) {}
+	};
 
-struct ClientChunkSnapshotComponent {
-	static constexpr int VIEW_RADIUS = 9;
-	static constexpr int VIEW_DIST = 2 * VIEW_RADIUS + 1;
-	
-	static constexpr int SYNC_RADIUS = 7;
-	static constexpr int SYNC_DIST = 2 * SYNC_RADIUS + 1;
+	struct ClientChunkSnapshot {
+		static constexpr int VIEW_RADIUS = 9;
+		static constexpr int VIEW_DIST = 2 * VIEW_RADIUS + 1;
 
-	//Voxel::ChunkModStamp snapshot[VIEW_DIST][VIEW_DIST];
-	std::unordered_map<int, int> chunkSnapshots;
-};
+		static constexpr int SYNC_RADIUS = 7;
+		static constexpr int SYNC_DIST = 2 * SYNC_RADIUS + 1;
 
-struct NetClientComponent {
-	SLNet::RakNetGUID guid;
-};
+		//Voxel::ChunkModStamp snapshot[VIEW_DIST][VIEW_DIST];
+		std::unordered_map<int, int> chunkSnapshots;
+	};
 
-struct AFKComponent {
-	float timer;
-	InputComponent lastInput;
-};
+	struct NetClient {
+		SLNet::RakNetGUID guid;
+	};
+
+	struct AFK {
+		float timer;
+		Input lastInput;
+	};
+}
+
+
 /*SERVER COMPONENTS*/

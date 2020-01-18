@@ -2,8 +2,8 @@
 #include "glm.hpp"
 #include "ChunkModStamp.h"
 
-struct ChunkBoundryComponent;
-struct ClientChunkSnapshotComponent;
+//struct ChunkBoundryComponent;
+//struct ClientChunkSnapshotComponent;
 
 namespace Voxel {
 	//ChunkModStamp& getChunkModCounter(

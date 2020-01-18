@@ -5,75 +5,75 @@
 #include "Block.h"
 #include "AABB.h"
 
-struct PlayerComponent {
+namespace Component {
+	struct Player {
 
-};
+	};
 
-struct PositionComponent : glm::vec3 {
-	PositionComponent(glm::vec3 vec) : glm::vec3(vec) {}
-};
+	struct Position : glm::vec3 {
+		Position(glm::vec3 vec) : glm::vec3(vec) {}
+	};
 
-struct RotationComponent : glm::quat {
-	RotationComponent(glm::quat quat) : glm::quat(quat) {}
-};
+	struct Rotation : glm::quat {
+		Rotation(glm::quat quat) : glm::quat(quat) {}
+	};
 
-struct ScaleComponent : glm::vec3 {
-	ScaleComponent(glm::vec3 vec) : glm::vec3(vec) {}
-};
+	struct Scale : glm::vec3 {
+		Scale(glm::vec3 vec) : glm::vec3(vec) {}
+	};
 
-struct VelocityComponent : glm::vec3 {
-	VelocityComponent(glm::vec3 vec) : glm::vec3(vec) {}
-};
+	struct Velocity : glm::vec3 {
+		Velocity(glm::vec3 vec) : glm::vec3(vec) {}
+	};
 
-struct RotationalVelocityComponent : glm::vec3{
-	RotationalVelocityComponent(glm::vec3 vec) : glm::vec3(vec) {}
-};
+	struct RotationalVelocity : glm::vec3 {
+		RotationalVelocity(glm::vec3 vec) : glm::vec3(vec) {}
+	};
 
-struct DirComponent {
-	glm::vec3 forward;
-	glm::vec3 up;
-	glm::vec3 right;
-};
+	struct Dir {
+		glm::vec3 forward;
+		glm::vec3 up;
+		glm::vec3 right;
+	};
 
-struct InputComponent {
-	glm::vec2 mousePos[2];		//[0] previous frame position [1] current frame position
+	struct Input {
+		glm::vec2 mousePos[2];		//[0] previous frame position [1] current frame position
 
-	bool up;
-	bool down;
-	bool left;
-	bool right;
-	bool space;
-	bool shift;
-	bool ctrl;
-};
+		bool up;
+		bool down;
+		bool left;
+		bool right;
+		bool space;
+		bool shift;
+		bool ctrl;
+	};
 
-struct BulletComponent {
-	float timeAlive;
-	float lifeTime;
-};
+	struct Bullet {
+		float timeAlive;
+		float lifeTime;
+	};
 
-struct RenderInstanceComponent {
-	uint32 instanceID;
-};
+	struct RenderInstance {
+		uint32 instanceID;
+	};
 
-struct PointLightComponent {
-	uint32 lightInstanceID;
-	glm::vec3 color;
-	float intensity;
-};
+	struct PointLight {
+		uint32 lightInstanceID;
+		glm::vec3 color;
+		float intensity;
+	};
 
-struct CameraInstanceComponent {
-	uint32 cameraID;
-};
+	struct CameraInstance {
+		uint32 cameraID;
+	};
 
-struct NetworkComponent {
-	uint32 netID;
-};
+	struct Network {
+		uint32 netID;
+	};
 
-struct PrototypeComponent {
-	PrototypeID ID;
-};
+	struct Prototype {
+		PrototypeID ID;
+	};
 
-struct AABBComponent : public Physics::AABB{
+}
 
-};
