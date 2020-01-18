@@ -3,6 +3,7 @@
 #include <gtx/quaternion.hpp>
 #include "PrototypeID.h"
 #include "Block.h"
+#include "AABB.h"
 
 struct PlayerComponent {
 
@@ -71,4 +72,8 @@ struct NetworkComponent {
 
 struct PrototypeComponent {
 	PrototypeID ID;
+};
+
+struct AABBComponent : public Physics::AABB{
+
 };

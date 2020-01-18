@@ -14,6 +14,7 @@
     <ProjectCapability Include="SourceItemsFromImports" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="$(MSBuildThisFileDirectory)AABB.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)BlockTypeEnum.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)ChunkConstants.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Common.h" />
