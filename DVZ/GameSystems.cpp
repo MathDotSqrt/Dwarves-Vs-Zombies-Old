@@ -98,7 +98,7 @@ void System::voxel_collision_system(Engine &engine, float delta) {
 		
 
 		//glm::vec3 vel_mask(1.0f, 1.0f, 1.0f);
-		const glm::vec3 new_pos = pos + vel * delta;
+		const glm::vec3 new_pos = pos;// + vel * delta;
 
 		//glm::vec3 blocked_components(1, 1, 1);
 
@@ -131,7 +131,7 @@ void System::voxel_collision_system(Engine &engine, float delta) {
 				const Voxel::Block new_block = manager.getBlock(new_block_coord.x, new_block_coord.y, new_block_coord.z);
 				if (value[largest_component] < .001f && new_block.getMeshType() != Voxel::MeshType::MESH_TYPE_BLOCK) {
 					vel[largest_component] = 0;
-					//pos[largest_component] = block_center[largest_component] - sign_vel[largest_component] * .55f;
+					//pos[largest_component] += .25f - aabb_delta[largest_component];//block_center[largest_component] + sign_vel[largest_component] * .55f;
 				}
 			}
 		}
