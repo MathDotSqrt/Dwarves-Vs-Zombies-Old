@@ -96,7 +96,11 @@ void System::voxel_collision_system(Engine &engine, float delta) {
 	view.each([delta, &manager](const auto &aabb, auto &pos, auto &vel) {
 		const auto AIR = Voxel::Block(Voxel::BLOCK_TYPE_DEFAULT);
 		
+
+		//glm::vec3 vel_mask(1.0f, 1.0f, 1.0f);
 		const glm::vec3 new_pos = pos + vel * delta;
+
+		//glm::vec3 blocked_components(1, 1, 1);
 
 		for (int i = 0; i < 8; i++) {
 			const glm::vec3 aabb_point = (new_pos + aabb.getPoint(i));
@@ -105,19 +109,35 @@ void System::voxel_collision_system(Engine &engine, float delta) {
 
 			if (block.getMeshType() == Voxel::MeshType::MESH_TYPE_BLOCK) {
 				const glm::vec3 block_center = block_coord + glm::vec3(.5f, .5f, .5f);
-				const glm::vec3 delta = aabb_point - block_center;
-				
-				
-				vel = glm::vec3(0);//glm::abs(v * .5f) * vel;
+				const glm::vec3 aabb_delta = aabb_point - block_center;
+				const glm::vec3 pos_delta = pos - block_center;
 
-				printf("I: %d | %f %f %f\n", i, delta.x, delta.y, delta.z);
+				const glm::vec3 sign_aabb_delta = glm::sign(aabb_delta);
+				const glm::vec3 sign_vel = glm::sign(glm::vec3(vel));
+				
+				//vel = glm::vec3(0);//glm::abs(v * .5f) * vel;
 
-				//const auto v = glm::abs(delta);
-				//const auto largest_component = v.y > v.x ? (v.z > v.y ? 2 : 1) : (v.z > v.x ? 2 : 0);
-				//LOG_ALWAYS("%d component", largest_component);
-				//vel[largest_component] = 0;
+
+				const auto v = glm::abs(pos_delta);
+				const auto largest_component = v.y > v.x ? (v.z > v.y ? 2 : 1) : (v.z > v.x ? 2 : 0);
+
+				
+
+				const glm::vec3 value = glm::abs(sign_vel + sign_aabb_delta);
+				
+				glm::vec3 new_block_coord = block_coord;
+				new_block_coord[largest_component] -= sign_vel[largest_component];
+
+				const Voxel::Block new_block = manager.getBlock(new_block_coord.x, new_block_coord.y, new_block_coord.z);
+				if (value[largest_component] < .001f && new_block.getMeshType() != Voxel::MeshType::MESH_TYPE_BLOCK) {
+					vel[largest_component] = 0;
+					//pos[largest_component] = block_center[largest_component] - sign_vel[largest_component] * .55f;
+				}
 			}
 		}
+
+		//printf("I: %f %f %f\n", blocked_components.x, blocked_components.y, blocked_components.z);
+
 
 	});
 
