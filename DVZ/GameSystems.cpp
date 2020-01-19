@@ -99,8 +99,8 @@ void System::voxel_collision_system(Engine &engine, float delta) {
 		const glm::vec3 new_pos = pos + vel * delta;
 
 		for (int i = 0; i < 8; i++) {
-			const glm::vec3 aabb_point = new_pos + aabb.getPoint(i);
-			const glm::vec3 block_coord(glm::trunc(aabb_point - glm::vec3(.5f, .5f, .5f)));
+			const glm::vec3 aabb_point = (new_pos + aabb.getPoint(i));
+			const glm::vec3 block_coord(glm::floor(aabb_point));
 			const Voxel::Block block = manager.getBlock(block_coord.x, block_coord.y, block_coord.z);
 
 			if (block.getMeshType() == Voxel::MeshType::MESH_TYPE_BLOCK) {
