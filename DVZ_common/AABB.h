@@ -1,39 +1,39 @@
 #pragma once
 #include "Common.h"
 #include "glm.hpp"
+#include <assert.h>
 
 namespace Physics {
 	struct AABB {
-		const float32 min_x, min_y, min_z;
-		const float32 width, height, length;
+		glm::vec3 min;
+		glm::vec3 max;
+		
 
-		AABB( float min_x, float min_y, float min_z, 
-			  float width, float height, float length) : 
-			min_x(min_x), min_y(min_y), min_z(min_z),
-			width(width), height(height), length(length){}
+		AABB(glm::vec3 min, glm::vec3 max) : min(min), max(max){}
 
-		constexpr float32 getMinX() const {
-			return min_x;
+		glm::vec3 getMin() const {
+			return min;
 		}
 
-		constexpr float32 getMinY() const {
-			return min_y;
+		glm::vec3 getMax() const {
+			return max;
 		}
 
-		constexpr float32 getMinZ() const {
-			return min_z;
-		}
+		glm::vec3 getPoint(int i) const {
+			assert(i >= 0 && i < 8);
 
-		constexpr float32 getMaxX() const {
-			return min_x + width;
-		}
+			switch (i) {
+			case 0: return glm::vec3(min.x, min.y, min.z); break;
+			case 1: return glm::vec3(max.x, min.y, min.z); break;
+			case 2: return glm::vec3(min.x, min.y, max.z); break;
+			case 3: return glm::vec3(max.x, min.y, max.z); break;
+			case 4: return glm::vec3(min.x, max.y, min.z); break;
+			case 5: return glm::vec3(max.x, max.y, min.z); break;
+			case 6: return glm::vec3(min.x, max.y, max.z); break;
+			case 7: return glm::vec3(max.x, max.y, max.z); break;
+			default: return glm::vec3(10000000);
+			}
 
-		constexpr float32 getMaxY() const {
-			return min_y + height;
-		}
-
-		constexpr float32 getMaxZ() const {
-			return min_z + length;
 		}
 	};
 }

@@ -27,9 +27,10 @@ void PlayState::init() {
 	auto &mesh_cache = e.ctx<ResourceManager::MeshCache>();
 
 	/*PLAYER*/
-	entt::entity playerID = e.addPlayer(0, 0, 0);
+	entt::entity playerID = e.addPlayer(0, 20, 0);
 	unsigned int pointLightInstanceID = scene.createPointLightInstance();
 	e.assign<Component::PointLight>(playerID, pointLightInstanceID, glm::vec3(1, 1, 1), 60.0f);
+	e.assign<const Physics::AABB>(playerID, Physics::AABB(glm::vec3(-.4f, -.4f, -.4f), glm::vec3(.4f, .4f, .4f)));
 	/*PLAYER*/
 	
 	/*TREE*/
@@ -38,12 +39,14 @@ void PlayState::init() {
 	unsigned int renderID = scene.createRenderInstance(model, material);
 
 	entt::entity tree = e.create();
-	e.assign<Component::Position>(tree, glm::vec3(0, 0, 0));
+	e.assign<Component::Position>(tree, glm::vec3(0, 15, 0));
 	e.assign<Component::Rotation>(tree, glm::quat(glm::vec3(0, 0, 0)));
-	e.assign<Component::Scale>(tree, glm::vec3(1, 1, 1));
+	e.assign<Component::Scale>(tree, glm::vec3(.1, .1, .1));
 	e.assign<Component::RotationalVelocity>(tree, glm::vec3(0, 1, 0));
 	e.assign<Component::RenderInstance>(tree, renderID);
 	/*TREE*/
+
+	//e.getBlockPlaceBuffer().push_back(std::make_pair(glm::vec3(0), Voxel::Block(Voxel::BlockType::BLOCK_TYPE_GLASS)));
 
 	/*WALKER*/
 	auto walkerModel = mesh_cache.load<ResourceManager::MeshLoader>("SpunkWalker"_hs, "res/SpunkWalker.xobj");
@@ -51,10 +54,10 @@ void PlayState::init() {
 	uint32 walkerRenderID = scene.createRenderInstance(walkerModel, walkerMaterial);
 
 	entt::entity walker = e.create();
-	e.assign<Component::Position>(walker, glm::vec3(10, 10, 10));
+	e.assign<Component::Position>(walker, glm::vec3(0, 15, 10));
 	e.assign<Component::Rotation>(walker, glm::quat(glm::vec3(0, 0, 0)));
 	e.assign<Component::Scale>(walker, glm::vec3(1));
-	e.assign<Component::Velocity>(walker, glm::vec3(-10, .1f, 2));
+	//e.assign<Component::Velocity>(walker, glm::vec3(-10, .1f, 2));
 	e.assign<Component::RenderInstance>(walker, walkerRenderID);
 	/*WALKER*/
 
@@ -89,6 +92,8 @@ void PlayState::init() {
 	e.addSystem(StatelessSystem(System::netword_system));
 	e.addSystem(StatelessSystem(System::input_system));
 	e.addSystem(StatelessSystem(System::shader_update_system, std::chrono::seconds(1)));
+
+	e.addSystem(StatelessSystem(System::voxel_collision_system));
 	e.addSystem(StatelessSystem(System::movement_system));
 	e.addSystem(StatelessSystem(System::voxel_system));
 	e.addSystem(StatelessSystem(System::send_packet_system));

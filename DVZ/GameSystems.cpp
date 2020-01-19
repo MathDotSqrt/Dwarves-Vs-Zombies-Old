@@ -87,6 +87,42 @@ void System::movement_system(Engine &engine, float delta) {
 	});
 }
 
+void System::voxel_collision_system(Engine &engine, float delta) {
+	using namespace Component;
+	auto &manager = engine.ctx<Voxel::ChunkManager>();
+
+	auto view = engine.view<const Physics::AABB, Position, Velocity>();
+
+	view.each([delta, &manager](const auto &aabb, auto &pos, auto &vel) {
+		const auto AIR = Voxel::Block(Voxel::BLOCK_TYPE_DEFAULT);
+		
+		const glm::vec3 new_pos = pos + vel * delta;
+
+		for (int i = 0; i < 8; i++) {
+			const glm::vec3 aabb_point = new_pos + aabb.getPoint(i);
+			const glm::vec3 block_coord(glm::trunc(aabb_point - glm::vec3(.5f, .5f, .5f)));
+			const Voxel::Block block = manager.getBlock(block_coord.x, block_coord.y, block_coord.z);
+
+			if (block.getMeshType() == Voxel::MeshType::MESH_TYPE_BLOCK) {
+				const glm::vec3 block_center = block_coord + glm::vec3(.5f, .5f, .5f);
+				const glm::vec3 delta = aabb_point - block_center;
+				
+				
+				vel = glm::vec3(0);//glm::abs(v * .5f) * vel;
+
+				printf("I: %d | %f %f %f\n", i, delta.x, delta.y, delta.z);
+
+				//const auto v = glm::abs(delta);
+				//const auto largest_component = v.y > v.x ? (v.z > v.y ? 2 : 1) : (v.z > v.x ? 2 : 0);
+				//LOG_ALWAYS("%d component", largest_component);
+				//vel[largest_component] = 0;
+			}
+		}
+
+	});
+
+}
+
 void System::voxel_system(Engine &engine, float delta) {
 	using namespace Component;
 	
