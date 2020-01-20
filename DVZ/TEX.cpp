@@ -70,7 +70,7 @@ TEX::Builder::Builder(std::string filename) {
 	this->filename = filename;
 	mipmap = false;
 	useMipMap = false;
-	rgb().repeat().nearest().borderColor(0, 0, 0, 1).unsignedByteType();
+	rgb().repeat().nearest().borderColor(1, 0, 1, 1).unsignedByteType();
 }
 
 TEX::Builder::~Builder() {

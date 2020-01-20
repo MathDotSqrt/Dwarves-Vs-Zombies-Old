@@ -53,12 +53,14 @@ namespace Voxel {
 		int currentCZ = -1000;
 	public:
 
-		Graphics::TEX debugTEX = Graphics::TEX::Builder("res/WorldTerrain2.png")
-			.rgb()
-			.linear()
-			.mipmapLinear()
-			.repeat()
-			.buildTextureAtlasArray(2, 2);
+		//Graphics::TEX debugTEX = Graphics::TEX::Builder("res/WorldTerrain2.png")
+		//	.rgb()
+		//	.linear()
+		//	.mipmapLinear()
+		//	.repeat()
+		//	.buildTextureAtlasArray(2, 2);
+
+		Graphics::TEX worldTEX = Graphics::TEX::Builder("res/WorldTerrain.png").rgb().unsignedByteType().buildTextureAtlasArray(16, 16);
 
 		ChunkRenderDataManager(Util::Allocator::IAllocator &parent);
 		~ChunkRenderDataManager();
