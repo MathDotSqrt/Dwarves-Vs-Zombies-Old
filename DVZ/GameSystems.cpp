@@ -91,63 +91,69 @@ void System::voxel_collision_system(Engine &engine, float delta) {
 	using namespace Component;
 	auto &manager = engine.ctx<Voxel::ChunkManager>();
 
+
+
 	auto view = engine.view<const Physics::AABB, Position, Velocity>();
-
 	view.each([delta, &manager](const auto &aabb, auto &pos, auto &vel) {
+		constexpr auto to_voxel_coord = [](const glm::vec3 &vec) {
+			return glm::i32vec3(glm::floor(vec));
+		};
+		constexpr auto MAX_SAMPLE_DELTA = .5f;
 		const auto AIR = Voxel::Block(Voxel::BLOCK_TYPE_DEFAULT);
-		const auto MAX_SAMPLE_DELTA = .5f;
+		
 
-		if (glm::length2(vel*delta) == 0) {
+
+		const glm::vec3 vel_delta = vel * delta;
+
+		//if vel is zero. no collision to check
+		if (glm::length2(vel_delta) == 0) {
 			return;
 		}
 
-		//glm::vec3 vel_mask(1.0f, 1.0f, 1.0f);
 
-		const int NUM_SAMPLES = (int)floor(glm::length(vel * delta) / .125f);
-		const glm::vec3 sample_vel = vel * delta * (1.0f / NUM_SAMPLES);
+		const auto min = to_voxel_coord(pos + aabb.getMin());
+		const auto max = to_voxel_coord(pos + aabb.getMax());
+		int voxel_collision_volume = (max.x - min.x + 1) * (max.y - min.y + 1) * (max.z - min.z + 1);
+
+		printf("%d\n", voxel_collision_volume);
+
+		const int NUM_SAMPLES = (int)floor(glm::length(vel_delta) / .125f);
+		const glm::vec3 sample_vel = vel_delta * (1.0f / NUM_SAMPLES);
 
 		for (int sample = 1; sample <= NUM_SAMPLES; sample++) {
 			const glm::vec3 new_pos = pos + sample_vel * (float)sample;
 			for (int i = 0; i < 8; i++) {
 				const glm::vec3 aabb_point = (new_pos + aabb.getPoint(i));
-				const glm::vec3 block_coord(glm::floor(aabb_point));
+				const glm::i32vec3 block_coord = to_voxel_coord(aabb_point);
 				const Voxel::Block block = manager.getBlock(block_coord.x, block_coord.y, block_coord.z);
 
 				if (block.getMeshType() == Voxel::MeshType::MESH_TYPE_BLOCK) {
-					const glm::vec3 block_center = block_coord + glm::vec3(.5f, .5f, .5f);
+					const glm::vec3 block_center = glm::vec3(block_coord) + glm::vec3(.5f, .5f, .5f);
 					const glm::vec3 aabb_delta = aabb_point - block_center;
 					const glm::vec3 pos_delta = pos - block_center;
 
-					const glm::vec3 sign_aabb_delta = glm::sign(aabb_delta);
-					const glm::vec3 sign_vel = glm::sign(glm::vec3(vel));
-
-					//vel = glm::vec3(0);//glm::abs(v * .5f) * vel;
-
+					const glm::i32vec3 sign_aabb_delta = glm::sign(aabb_delta);
+					const glm::i32vec3 sign_vel = glm::sign(glm::vec3(vel));
 
 					const auto v = glm::abs(pos_delta);
 					const auto largest_component = v.y > v.x ? (v.z > v.y ? 2 : 1) : (v.z > v.x ? 2 : 0);
 
-
-
 					const glm::vec3 value = glm::abs(sign_vel + sign_aabb_delta);
 
-					glm::vec3 new_block_coord = block_coord;
+					//testing if blockface is facing air to push aabb twords. 
+					//if it isnt facing air dont push place and mess with that axis vel
+					glm::i32vec3 new_block_coord = block_coord;
 					new_block_coord[largest_component] -= sign_vel[largest_component];
-
 					const Voxel::Block new_block = manager.getBlock(new_block_coord.x, new_block_coord.y, new_block_coord.z);
-					if (value[largest_component] < .001f && new_block.getMeshType() != Voxel::MeshType::MESH_TYPE_BLOCK) {
+					
+					if (value[largest_component] == 0 && new_block.getMeshType() != Voxel::MeshType::MESH_TYPE_BLOCK) {
 						vel[largest_component] = 0;
+						//todo figure out how to place the player
 						//pos[largest_component] += .25f - aabb_delta[largest_component];//block_center[largest_component] + sign_vel[largest_component] * .55f;
 					}
 				}
 			}
 		}
-
-
-		
-
-		//printf("I: %f %f %f\n", blocked_components.x, blocked_components.y, blocked_components.z);
-
 
 	});
 

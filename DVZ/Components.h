@@ -30,6 +30,10 @@ namespace Component {
 		RotationalVelocity(glm::vec3 vec) : glm::vec3(vec) {}
 	};
 
+	struct Acceleration : glm::vec3 {
+		Acceleration(glm::vec3 vec) : glm::vec3(vec) {}
+	};
+
 	struct Dir {
 		glm::vec3 forward;
 		glm::vec3 up;
