@@ -37,8 +37,8 @@ struct Fog {
 };
 
 uniform vec3 camera_pos;
-uniform sampler2D shadowTex;
 uniform sampler2DArray tex;
+uniform sampler2D shadowTex;
 //uniform sampler2DArray debug;
 
 
@@ -127,7 +127,7 @@ void main(){
 
 	/*TEXTURE*/
 	vec2 texcoord = frag_uv.xy;
-	float texindex = frag_uv.z + frag_uv.w * SPRITE_COL;
+	float texindex = frag_uv.w + frag_uv.z * SPRITE_COL;
 	vec3 texcoord3D = vec3(texcoord, texindex);
 	vec4 tex_color = toLinear(texture(tex, texcoord3D));
 

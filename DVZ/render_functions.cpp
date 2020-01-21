@@ -184,11 +184,12 @@ iterator Graphics::render_chunks(Voxel::ChunkRenderDataManager *manager, Scene *
 	Scene::PointLight &point = scene->pointLightCache[0];
 
 	//shader->setUniform1i("debug", 0);
-	shader->setUniform1i("shadowTex", 0);
-	shader->setUniform1i("tex", 1);
+	shader->setUniform1i("tex", 0);
+	shader->setUniform1i("shadowTex", 1);
+
 	//manager->debugTEX.bindActiveTexture(0);
-	fbo->getDepthAttachment().bindActiveTexture(0);
-	manager->worldTEX.bindActiveTexture(1);
+	manager->worldTEX.bindActiveTexture(0);
+	fbo->getDepthAttachment().bindActiveTexture(1);
 
 
 	for (auto iterator = manager->begin(); iterator != manager->end(); iterator++) {
