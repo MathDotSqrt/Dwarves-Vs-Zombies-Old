@@ -240,7 +240,7 @@ TEX TEX::Builder::buildTextureAtlasArray(int rows, int cols) {
 	stbi_image_free(image);
 
 	int num_sprites = rows * cols;
-	int mipmapLevelCount = 8;
+	int mipmapLevelCount = useMipMap ? 4 : 1;		//mipmap is bounded by [1, log2(max(width, height)) + 1]
 
 	textureTarget = GL_TEXTURE_2D_ARRAY;
 	glGenTextures(1, &texID);

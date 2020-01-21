@@ -2,8 +2,8 @@
 #include <limits.h>
 
 using namespace Voxel;
-#define IMG_WIDTH 256
-#define IMG_HEIGHT 256
+//#define IMG_WIDTH 256
+//#define IMG_HEIGHT 256
 
 BlockManager::BlockManager(){
 	BlockAttribs AIR(
