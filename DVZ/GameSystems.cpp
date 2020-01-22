@@ -95,46 +95,56 @@ void System::voxel_collision_system(Engine &engine, float delta) {
 
 	auto view = engine.view<const Physics::AABB, Position, Velocity>();
 	view.each([delta, &manager](const auto &aabb, auto &pos, auto &vel) {
+		const auto AIR = Voxel::Block(Voxel::BLOCK_TYPE_DEFAULT);
+		constexpr auto MAX_POS_SAMPLE_DELTA = .25f;
+		constexpr auto MAX_AABB_SAMPLE_DELTA = .9f;
 		constexpr auto to_voxel_coord = [](const glm::vec3 &vec) {
 			return glm::i32vec3(glm::floor(vec));
 		};
-		constexpr auto MAX_SAMPLE_DELTA = .5f;
-		const auto AIR = Voxel::Block(Voxel::BLOCK_TYPE_DEFAULT);
+		constexpr auto invert_vec = [](const glm::i32vec3 &vec) {
+			return glm::vec3(1.0f / vec.x, 1.0f / vec.y, 1.0f / vec.z);
+		};
 
 
 		const glm::vec3 vel_delta = vel * delta;
-
-		//if vel is zero. no collision to check
 		if (glm::length2(vel_delta) == 0) {
+			//if vel is zero. no collision to check
 			return;
 		}
 
-		const int NUM_SAMPLES = (int)floor(glm::length(vel_delta) / MAX_SAMPLE_DELTA) + 1;
-		const glm::vec3 sample_vel = vel_delta * (1.0f / NUM_SAMPLES);
+		const auto min = aabb.getMin();
+		const auto max = aabb.getMax();
+		const glm::i32vec3 NUM_AABB_SAMPLES = glm::i32vec3(glm::floor((max - min) * (1.0f / MAX_AABB_SAMPLE_DELTA))) + glm::i32vec3(1);
+		printf("%d %d %d\n", NUM_AABB_SAMPLES.x, NUM_AABB_SAMPLES.y, NUM_AABB_SAMPLES.z);
+		const glm::vec3 AABB_SAMPLE = (max - min) * invert_vec(NUM_AABB_SAMPLES);
 
-		for (int sample = 1; sample <= NUM_SAMPLES; sample++) {
+		const int NUM_POS_SAMPLES = (int)floor(glm::length(vel_delta) / MAX_POS_SAMPLE_DELTA) + 1;
+		const glm::vec3 sample_vel = vel_delta * (1.0f / NUM_POS_SAMPLES);
+
+		for (int sample = 1; sample <= NUM_POS_SAMPLES; sample++) {
 			const glm::vec3 new_pos = pos + sample_vel * (float)sample;
 
-			const auto min = to_voxel_coord(new_pos + aabb.getMin());
-			const auto max = to_voxel_coord(new_pos + aabb.getMax());
-			int collision_width = max.x - min.x + 1;
-			int collision_height = max.y - min.y + 1;
-			int collision_length = max.z - min.z + 1;
+			const auto min_aabb_point = pos + aabb.getMin();
+			const auto max_aabb_point = pos + aabb.getMax();
 
-			for (int bx = 0; bx < collision_width; bx++) {
-				for (int bz = 0; bz < collision_length; bz++) {
-					for (int by = 0; by < collision_height; by++) {
-						const glm::i32vec3 block_coord = min + glm::i32vec3(bx, by, bz);
+			for (int x_sample = 0; x_sample <= NUM_AABB_SAMPLES.x; x_sample++) {
+				for (int y_sample = 0; y_sample <= NUM_AABB_SAMPLES.y; y_sample++) {
+					for (int z_sample = 0; z_sample <= NUM_AABB_SAMPLES.z; z_sample++) {
+
+						const glm::vec3 aabb_point = min_aabb_point + AABB_SAMPLE * glm::vec3(x_sample, y_sample, z_sample);
+						const glm::i32vec3 block_coord = to_voxel_coord(aabb_point);
 						const Voxel::Block block = manager.getBlock(block_coord.x, block_coord.y, block_coord.z);
 
 						if (block.getMeshType() == Voxel::MeshType::MESH_TYPE_BLOCK) {
 							const glm::vec3 block_center = glm::vec3(block_coord) + glm::vec3(.5f, .5f, .5f);
+							const glm::vec3 aabb_delta = aabb_point - block_center;
 							const glm::vec3 pos_delta = pos - block_center;
 
+							const glm::i32vec3 sign_aabb_delta = glm::sign(aabb_delta);
 							const glm::i32vec3 sign_pos_delta = glm::sign(pos_delta);
 							const glm::i32vec3 sign_vel = glm::sign(glm::vec3(vel));
 
-							const auto v = glm::abs(pos_delta);
+							const auto v = glm::abs(aabb_delta);
 							const auto largest_component = v.y > v.x ? (v.z > v.y ? 2 : 1) : (v.z > v.x ? 2 : 0);
 
 							const glm::vec3 value = glm::abs(sign_vel + sign_pos_delta);
@@ -147,6 +157,7 @@ void System::voxel_collision_system(Engine &engine, float delta) {
 
 							if (value[largest_component] == 0 && new_block.getMeshType() != Voxel::MeshType::MESH_TYPE_BLOCK) {
 								vel[largest_component] = 0;
+								printf("COMPONENT %d\n", largest_component);
 								//todo figure out how to place the player
 								//pos[largest_component] += .25f - aabb_delta[largest_component];//block_center[largest_component] + sign_vel[largest_component] * .55f;
 							}
