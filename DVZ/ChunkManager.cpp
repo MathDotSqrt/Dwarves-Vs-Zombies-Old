@@ -184,6 +184,29 @@ bool ChunkManager::isChunkNeighborhoodLoaded(const ChunkRefHandle &handle) const
 	return isChunkNeighborhoodLoaded(handle->chunk_x, handle->chunk_y, handle->chunk_z);
 }
 
+Block ChunkManager::getBlockIfMapped(int x, int y, int z) const {
+	const int cx = x >> CHUNK_SHIFT_X;
+	const int cy = y >> CHUNK_SHIFT_Y;
+	const int cz = z >> CHUNK_SHIFT_Z;
+
+	std::shared_lock<std::shared_mutex> readlock(chunkSetMutex);
+
+	const auto iter = chunkSet.find(hashcode(cx, cy, cz));
+	if (iter != chunkSet.end()) {
+		const auto &chunk = iter->second.first;
+		const int bx = x & CHUNK_BLOCK_POS_MASK_X;
+		const int by = y & CHUNK_BLOCK_POS_MASK_Y;
+		const int bz = z & CHUNK_BLOCK_POS_MASK_Z;
+		return chunk->getBlock(bx, by, bz);
+	}
+
+	return Block(BlockType::BLOCK_TYPE_DEFAULT);
+}
+
+Block ChunkManager::getBlockIfMapped(glm::i32vec3 vec) const {
+	return getBlockIfMapped(vec.x, vec.y, vec.z);
+}
+
 Block ChunkManager::getBlock(int x, int y, int z) {
 	int cx = x >> CHUNK_SHIFT_X;
 	int cy = y >> CHUNK_SHIFT_Y;
@@ -197,6 +220,10 @@ Block ChunkManager::getBlock(int x, int y, int z) {
 	int by = y & CHUNK_BLOCK_POS_MASK_Y;
 	int bz = z & CHUNK_BLOCK_POS_MASK_Z;
 	return chunk->getBlock(bx, by, bz);
+}
+
+Block ChunkManager::getBlock(glm::i32vec3 vec) {
+	return getBlock(vec.x, vec.y, vec.z);
 }
 
 void ChunkManager::setBlock(int x, int y, int z, Block block) {

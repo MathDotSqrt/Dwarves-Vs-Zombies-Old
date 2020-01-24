@@ -96,7 +96,11 @@ public:
 	bool isChunkNeighborhoodLoaded(int cx, int cy, int cz) const;
 	bool isChunkNeighborhoodLoaded(const ChunkRefHandle &handle) const;
 
+	Block getBlockIfMapped(int x, int y, int z) const;
+	Block getBlockIfMapped(glm::i32vec3 vec) const;
+
 	Block getBlock(int x, int y, int z);
+	Block getBlock(glm::i32vec3 vec);
 	void setBlock(int x, int y, int z, Block block);
 	Block getBlock(float x, float y, float z);
 	void setBlock(float x, float y, float z, Block block);
