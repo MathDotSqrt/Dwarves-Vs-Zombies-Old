@@ -19,6 +19,10 @@ namespace Physics {
 			return max;
 		}
 
+		glm::vec3 getMiddle() const {
+			return (max + min) * .5f;
+		}
+
 		glm::vec3 getPoint(int i) const {
 			assert(i >= 0 && i < 8);
 

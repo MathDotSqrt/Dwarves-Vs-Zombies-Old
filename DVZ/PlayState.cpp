@@ -5,6 +5,7 @@
 #include "Components.h"
 #include "StatelessSystem.h"
 #include "GameSystems.h"
+#include "CollisionSystems.h"
 
 #include "Scene.h"
 #include "ModelGeometry.h"

@@ -207,7 +207,9 @@
     <ClCompile Include="ChunkRenderData.cpp" />
     <ClCompile Include="ChunkRenderDataManager.cpp" />
     <ClCompile Include="Client.cpp" />
+    <ClCompile Include="CollisionSystems.cpp" />
     <ClCompile Include="ColorDepthFBO.cpp" />
+    <ClCompile Include="CoordIterator.cpp" />
     <ClCompile Include="CubeGeometry.cpp" />
     <ClCompile Include="DemoState.cpp" />
     <ClCompile Include="DepthFBO.cpp" />
@@ -259,9 +261,11 @@
     <ClInclude Include="ChunkRenderData.h" />
     <ClInclude Include="ChunkRenderDataManager.h" />
     <ClInclude Include="Client.h" />
+    <ClInclude Include="CollisionSystems.h" />
     <ClInclude Include="ColorDepthFBO.h" />
     <ClInclude Include="Components.h" />
     <ClInclude Include="concurrentqueue.h" />
+    <ClInclude Include="CoordIterator.h" />
     <ClInclude Include="CubeGeometry.h" />
     <ClInclude Include="DemoState.h" />
     <ClInclude Include="DepthFBO.h" />
