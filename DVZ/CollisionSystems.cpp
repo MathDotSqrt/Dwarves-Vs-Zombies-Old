@@ -14,6 +14,10 @@ std::optional<float> x_axis_voxel_intersection(const glm::vec3 vel, BlockCoord m
 std::optional<float> y_axis_voxel_intersection(const glm::vec3 vel, BlockCoord min, BlockCoord max, const Voxel::ChunkManager &manager);
 std::optional<float> z_axis_voxel_intersection(const glm::vec3 vel, BlockCoord min, BlockCoord max, const Voxel::ChunkManager &manager);
 
+std::optional<Physics::AABB> xy_edge_intersection(const glm::vec3 vel, BlockCoord min, BlockCoord max, const Voxel::ChunkManager &manager);
+std::optional<Physics::AABB> yz_edge_intersection(const glm::vec3 vel, BlockCoord min, BlockCoord max, const Voxel::ChunkManager &manager);
+std::optional<Physics::AABB> zx_edge_intersection(const glm::vec3 vel, BlockCoord min, BlockCoord max, const Voxel::ChunkManager &manager);
+
 void System::voxel_collision_system(Engine &engine, float delta) {
 	using namespace Component;
 
@@ -54,9 +58,16 @@ std::optional<float> x_axis_voxel_intersection(const glm::vec3 vel, BlockCoord m
 
 	std::optional<float> block_face_x;
 	const int x_coord = vel.x > 0 ? max.x : min.x;
-	const int min_y = vel.y > 0 ? min.y : min.y + 1;
+
+	//if vel.y or vel.z is nonzero we do not sample those edges 
+	//those edges are handled in a separate edge collision handling
+
+	//if vel.y or vel.z is zero there will be no edge collision handling
+	//we can sample all edges for face collision handling
+
+	const int min_y = vel.y >= 0 ? min.y : min.y + 1;
 	const int max_y = vel.y > 0 ? max.y - 1 : max.y;
-	const int min_z = vel.z > 0 ? min.z : min.z + 1;
+	const int min_z = vel.z >= 0 ? min.z : min.z + 1;
 	const int max_z = vel.z > 0 ? max.z - 1 : max.z;
 
 	for (int y = min_y; y <= max_y; y++) {
@@ -78,11 +89,17 @@ std::optional<float> y_axis_voxel_intersection(const glm::vec3 vel, BlockCoord m
 		return std::nullopt;	//nothing to return
 	}
 
+	//if vel.x or vel.z is nonzero we do not sample those edges 
+	//those edges are handled in a separate edge collision handling
+
+	//if vel.x or vel.z is zero there will be no edge collision handling
+	//we can sample all edges for face collision handling
+
 	std::optional<float> block_face_y;
 	const int y_coord = vel.y > 0 ? max.y : min.y;
-	const int min_x = vel.x > 0 ? min.x : min.x + 1;
+	const int min_x = vel.x >= 0 ? min.x : min.x + 1;
 	const int max_x = vel.x > 0 ? max.x - 1 : max.x;
-	const int min_z = vel.z > 0 ? min.z : min.z + 1;
+	const int min_z = vel.z >= 0 ? min.z : min.z + 1;
 	const int max_z = vel.z > 0 ? max.z - 1 : max.z;
 
 	for (int x = min_x; x <= max_x; x++) {
@@ -104,11 +121,17 @@ std::optional<float> z_axis_voxel_intersection(const glm::vec3 vel, BlockCoord m
 		return std::nullopt;	//nothing to return
 	}
 
+	//if vel.x or vel.y is nonzero we do not sample those edges 
+	//those edges are handled in a separate edge collision handling
+
+	//if vel.x or vel.y is zero there will be no edge collision handling
+	//we can sample all edges for face collision handling
+
 	std::optional<float> block_face_z;
 	const int z_coord = vel.z > 0 ? max.z : min.z;
-	const int min_x = vel.x > 0 ? min.x : min.x + 1;
+	const int min_x = vel.x >= 0 ? min.x : min.x + 1;
 	const int max_x = vel.x > 0 ? max.x - 1 : max.x;
-	const int min_y = vel.y > 0 ? min.y : min.y + 1;
+	const int min_y = vel.y >= 0 ? min.y : min.y + 1;
 	const int max_y = vel.y > 0 ? max.y - 1 : max.y;
 
 	for (int x = min_x; x <= max_x; x++) {
@@ -123,4 +146,17 @@ std::optional<float> z_axis_voxel_intersection(const glm::vec3 vel, BlockCoord m
 	}
 
 	return block_face_z;
+}
+
+std::optional<Physics::AABB> xy_edge_intersection(const glm::vec3 vel, BlockCoord min, BlockCoord max, const Voxel::ChunkManager &manager) {
+	
+	if (vel.x == 0 || vel.y == 0) {
+		return std::nullopt;
+	}
+
+	std::optional<Physics::AABB> corner_block;
+
+
+
+	return corner_block;
 }
