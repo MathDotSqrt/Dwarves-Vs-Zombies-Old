@@ -14,9 +14,9 @@ std::optional<float> x_axis_voxel_intersection(const glm::vec3 vel, BlockCoord m
 std::optional<float> y_axis_voxel_intersection(const glm::vec3 vel, BlockCoord min, BlockCoord max, const Voxel::ChunkManager &manager);
 std::optional<float> z_axis_voxel_intersection(const glm::vec3 vel, BlockCoord min, BlockCoord max, const Voxel::ChunkManager &manager);
 
-std::optional<Physics::AABB> xy_edge_intersection(const glm::vec3 vel, BlockCoord min, BlockCoord max, const Voxel::ChunkManager &manager);
-std::optional<Physics::AABB> yz_edge_intersection(const glm::vec3 vel, BlockCoord min, BlockCoord max, const Voxel::ChunkManager &manager);
-std::optional<Physics::AABB> zx_edge_intersection(const glm::vec3 vel, BlockCoord min, BlockCoord max, const Voxel::ChunkManager &manager);
+std::optional<std::pair<float, float>> xy_edge_intersection(const glm::vec3 vel, BlockCoord min, BlockCoord max, const Voxel::ChunkManager &manager);
+std::optional<std::pair<float, float>> yz_edge_intersection(const glm::vec3 vel, BlockCoord min, BlockCoord max, const Voxel::ChunkManager &manager);
+std::optional<std::pair<float, float>> zx_edge_intersection(const glm::vec3 vel, BlockCoord min, BlockCoord max, const Voxel::ChunkManager &manager);
 
 void System::voxel_collision_system(Engine &engine, float delta) {
 	using namespace Component;
@@ -148,14 +148,82 @@ std::optional<float> z_axis_voxel_intersection(const glm::vec3 vel, BlockCoord m
 	return block_face_z;
 }
 
-std::optional<Physics::AABB> xy_edge_intersection(const glm::vec3 vel, BlockCoord min, BlockCoord max, const Voxel::ChunkManager &manager) {
+std::optional<std::pair<float, float>> xy_edge_intersection(const glm::vec3 vel, BlockCoord min, BlockCoord max, const Voxel::ChunkManager &manager) {
 	
 	if (vel.x == 0 || vel.y == 0) {
 		return std::nullopt;
 	}
 
-	std::optional<Physics::AABB> corner_block;
+	std::optional<std::pair<float, float>> corner_block;
+	
+	const auto x_coord = vel.x > 0 ? max.x : min.x;
+	const auto y_coord = vel.y > 0 ? max.y : min.y;
 
+	for (int z = min.z; z <= max.z; z++) {
+		const BlockCoord coord(x_coord, y_coord, z);
+		const Voxel::Block block = manager.getBlockIfMapped(coord);
+
+		if (block.getMeshType() == Voxel::MeshType::MESH_TYPE_BLOCK) {
+			const float x_pos = vel.x > 0 ? coord.x : coord.x + 1.0f;
+			const float y_pos = vel.y > 0 ? coord.y : coord.y + 1.0f;
+
+			corner_block = std::make_pair(x_pos, y_pos);
+		}
+	}
+
+
+	return corner_block;
+}
+
+std::optional<std::pair<float, float>> yz_edge_intersection(const glm::vec3 vel, BlockCoord min, BlockCoord max, const Voxel::ChunkManager &manager) {
+
+	if (vel.y == 0 || vel.z == 0) {
+		return std::nullopt;
+	}
+
+	std::optional<std::pair<float, float>> corner_block;
+
+	const auto y_coord = vel.y > 0 ? max.y : min.y;
+	const auto z_coord = vel.z > 0 ? max.z : min.z;
+
+	for (int x = min.x; x <= max.x; x++) {
+		const BlockCoord coord(x, y_coord, z_coord);
+		const Voxel::Block block = manager.getBlockIfMapped(coord);
+
+		if (block.getMeshType() == Voxel::MeshType::MESH_TYPE_BLOCK) {
+			const float y_pos = vel.y > 0 ? coord.y : coord.y + 1.0f;
+			const float z_pos = vel.z > 0 ? coord.z : coord.z + 1.0f;
+
+			corner_block = std::make_pair(y_pos, z_pos);
+		}
+	}
+
+
+	return corner_block;
+}
+
+std::optional<std::pair<float, float>> zx_edge_intersection(const glm::vec3 vel, BlockCoord min, BlockCoord max, const Voxel::ChunkManager &manager) {
+
+	if (vel.z == 0 || vel.x == 0) {
+		return std::nullopt;
+	}
+
+	std::optional<std::pair<float, float>> corner_block;
+
+	const auto z_coord = vel.x > 0 ? max.x : min.x;
+	const auto x_coord = vel.y > 0 ? max.y : min.y;
+
+	for (int y = min.y; y <= max.y; y++) {
+		const BlockCoord coord(x_coord, y, z_coord);
+		const Voxel::Block block = manager.getBlockIfMapped(coord);
+
+		if (block.getMeshType() == Voxel::MeshType::MESH_TYPE_BLOCK) {
+			const float z_pos = vel.z > 0 ? coord.z : coord.z + 1.0f;
+			const float x_pos = vel.x > 0 ? coord.x : coord.x + 1.0f;
+
+			corner_block = std::make_pair(z_pos, x_pos);
+		}
+	}
 
 
 	return corner_block;
