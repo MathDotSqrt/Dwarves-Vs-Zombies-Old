@@ -107,6 +107,7 @@ glm::i32vec2 convert(float sign, int min, int max) {
 	//if max > min, the bounds returned will be the bound relevent for face collision
 	//detection. The edge will be ommited from bounds if sign is non zero in the direction
 	//vel is. Edge collision handling is handeled differently
+	//if sign is 0, no edge collision handling would occur, so return original bound
 	return glm::i32vec2(sign >= 0 ? min : min + 1, sign > 0 ? max - 1 : max);
 }
 
@@ -118,19 +119,13 @@ std::optional<float> x_axis_voxel_intersection(const glm::vec3 vel, BlockCoord m
 	std::optional<float> block_face_x;
 	const int x_coord = vel.x > 0 ? max.x : min.x;
 
-	//if vel.y or vel.z is nonzero we do not sample those edges 
-	//those edges are handled in a separate edge collision handling
-
-	//if vel.y or vel.z is zero there will be no edge collision handling
-	//we can sample all edges for face collision handling
-
 	const auto y_bound = convert(vel.y, min.y, max.y);
 	const auto z_bound = convert(vel.z, min.z, max.z);
 
-	const int min_y = vel.y >= 0 ? min.y : min.y + 1;
-	const int max_y = vel.y > 0 ? max.y - 1 : max.y;
-	const int min_z = vel.z >= 0 ? min.z : min.z + 1;
-	const int max_z = vel.z > 0 ? max.z - 1 : max.z;
+	const int min_y = y_bound[0];
+	const int max_y = y_bound[1];
+	const int min_z = z_bound[0];
+	const int max_z = z_bound[1];
 
 	for (int y = min_y; y <= max_y; y++) {
 		for (int z = min_z;  z <= max_z; z++) {
@@ -151,19 +146,18 @@ std::optional<float> y_axis_voxel_intersection(const glm::vec3 vel, BlockCoord m
 		return std::nullopt;	//nothing to return
 	}
 
-	//if vel.x or vel.z is nonzero we do not sample those edges 
-	//those edges are handled in a separate edge collision handling
-
-	//if vel.x or vel.z is zero there will be no edge collision handling
-	//we can sample all edges for face collision handling
-
 	std::optional<float> block_face_y;
 	const int y_coord = vel.y > 0 ? max.y : min.y;
-	const int min_x = vel.x >= 0 ? min.x : min.x + 1;
-	const int max_x = vel.x > 0 ? max.x - 1 : max.x;
-	const int min_z = vel.z >= 0 ? min.z : min.z + 1;
-	const int max_z = vel.z > 0 ? max.z - 1 : max.z;
+	
+	
+	const auto x_bound = convert(vel.x, min.x, max.x);
+	const auto z_bound = convert(vel.z, min.z, max.z);
 
+	const int min_x = x_bound[0];
+	const int max_x = x_bound[1];
+	const int min_z = z_bound[0];
+	const int max_z = z_bound[1];
+	
 	for (int x = min_x; x <= max_x; x++) {
 		for (int z = min_z; z <= max_z; z++) {
 			const BlockCoord coord(x, y_coord, z);
@@ -183,19 +177,18 @@ std::optional<float> z_axis_voxel_intersection(const glm::vec3 vel, BlockCoord m
 		return std::nullopt;	//nothing to return
 	}
 
-	//if vel.x or vel.y is nonzero we do not sample those edges 
-	//those edges are handled in a separate edge collision handling
-
-	//if vel.x or vel.y is zero there will be no edge collision handling
-	//we can sample all edges for face collision handling
 
 	std::optional<float> block_face_z;
 	const int z_coord = vel.z > 0 ? max.z : min.z;
-	const int min_x = vel.x >= 0 ? min.x : min.x + 1;
-	const int max_x = vel.x > 0 ? max.x - 1 : max.x;
-	const int min_y = vel.y >= 0 ? min.y : min.y + 1;
-	const int max_y = vel.y > 0 ? max.y - 1 : max.y;
+	
+	const auto x_bound = convert(vel.x, min.x, max.x);
+	const auto y_bound = convert(vel.y, min.y, max.y);
 
+	const int min_x = x_bound[0];
+	const int max_x = x_bound[1];
+	const int min_y = y_bound[0];
+	const int max_y = y_bound[1];
+	
 	for (int x = min_x; x <= max_x; x++) {
 		for (int y = min_y; y <= max_y; y++) {
 			const BlockCoord coord(x, y, z_coord);
