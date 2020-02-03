@@ -44,10 +44,14 @@ void System::voxel_collision_system(Engine &engine, float delta) {
 		}
 
 		if (face_y.has_value()) {
+			printf("FACE Y\n");
+
 			vel.y = 0;
 		}
 
 		if (face_z.has_value()) {
+			printf("FACE Z\n");
+
 			vel.z = 0;
 		}
 
@@ -66,8 +70,7 @@ void System::voxel_collision_system(Engine &engine, float delta) {
 			const auto edge_zx = zx_edge_intersection(vel, blockMin, blockMax, manager);			//returns closest edge block faces in zx direction
 
 			if (edge_xy.has_value()) {
-				printf("EDGE X\n");
-
+				printf("EDGE XY\n");
 				const auto edge_x_pos = edge_xy->first;
 				const auto edge_y_pos = edge_xy->second;
 
@@ -77,13 +80,50 @@ void System::voxel_collision_system(Engine &engine, float delta) {
 				const auto delta_x = glm::abs(edge_x_pos - current_x_pos);
 				const auto delta_y = glm::abs(edge_y_pos - current_y_pos);
 
-				//printf("x: %f y: %f\n", delta_x, delta_y);
-
-
-				if (delta_x < delta_y && !face_x.has_value()) {
+				if (delta_x < delta_y && !face_y.has_value()) {
 					vel.x = 0;
 				}
-				else if (!face_y.has_value()){
+				else if (!face_x.has_value()){
+					vel.y = 0;
+				}
+			}
+
+			if (edge_yz.has_value()) {
+				printf("EDGE YZ\n");
+
+				const auto edge_y_pos = edge_yz->first;
+				const auto edge_z_pos = edge_yz->second;
+
+				const auto current_y_pos = vel.y > 0 ? max.y : min.y;
+				const auto current_z_pos = vel.z > 0 ? max.z : min.z;
+
+				const auto delta_y = glm::abs(edge_y_pos - current_y_pos);
+				const auto delta_z = glm::abs(edge_z_pos - current_z_pos);
+
+				if (delta_y < delta_z && !face_z.has_value()) {
+					vel.y = 0;
+				}
+				else if(!face_y.has_value()){
+					vel.z = 0;
+				}
+			}
+
+			if (edge_zx.has_value()) {
+				printf("EDGE ZX\n");
+
+				const auto edge_z_pos = edge_zx->first;
+				const auto edge_x_pos = edge_zx->second;
+
+				const auto current_z_pos = vel.z > 0 ? max.z : min.z;
+				const auto current_x_pos = vel.x > 0 ? max.x : min.x;
+
+				const auto delta_z = glm::abs(edge_z_pos - current_z_pos);
+				const auto delta_x = glm::abs(edge_x_pos - current_x_pos);
+
+				if (delta_z < delta_x && !face_x.has_value()) {
+					vel.z = 0;
+				}
+				else if(!face_z.has_value()){
 					vel.x = 0;
 				}
 			}
@@ -265,8 +305,8 @@ std::optional<std::pair<float, float>> zx_edge_intersection(const glm::vec3 vel,
 
 	std::optional<std::pair<float, float>> corner_block;
 
-	const auto z_coord = vel.x > 0 ? max.x : min.x;
-	const auto x_coord = vel.y > 0 ? max.y : min.y;
+	const auto z_coord = vel.z > 0 ? max.z : min.z;
+	const auto x_coord = vel.x > 0 ? max.x : min.x;
 
 	for (int y = min.y; y <= max.y; y++) {
 		const BlockCoord coord(x_coord, y, z_coord);
