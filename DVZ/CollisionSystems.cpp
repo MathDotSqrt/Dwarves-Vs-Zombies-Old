@@ -10,6 +10,7 @@ using namespace System;
 
 typedef glm::i32vec3 BlockCoord;
 
+glm::i32vec2 convert(float sign, int min, int max);
 std::optional<float> x_axis_voxel_intersection(const glm::vec3 vel, BlockCoord min, BlockCoord max, const Voxel::ChunkManager &manager);
 std::optional<float> y_axis_voxel_intersection(const glm::vec3 vel, BlockCoord min, BlockCoord max, const Voxel::ChunkManager &manager);
 std::optional<float> z_axis_voxel_intersection(const glm::vec3 vel, BlockCoord min, BlockCoord max, const Voxel::ChunkManager &manager);
@@ -25,30 +26,88 @@ void System::voxel_collision_system(Engine &engine, float delta) {
 
 	auto view = engine.view<Position, Velocity, const Physics::AABB>();
 	view.each([&manager, delta](auto &pos, auto &vel, const auto &aabb) {
+
+		//Face collision handling
 		const auto next_pos = pos + vel * delta;
-		const BlockCoord min(glm::floor(next_pos + aabb.getMin()));
-		const BlockCoord max(glm::floor(next_pos + aabb.getMax()));
+		const auto min = next_pos + aabb.getMin();
+		const auto max = next_pos + aabb.getMax();
+		const BlockCoord blockMin(glm::floor(min));
+		const BlockCoord blockMax(glm::floor(max));
 
-		const auto intersect_x = x_axis_voxel_intersection(vel, min, max, manager);
-		const auto intersect_y = y_axis_voxel_intersection(vel, min, max, manager);
-		const auto intersect_z = z_axis_voxel_intersection(vel, min, max, manager);
+		const auto face_x = x_axis_voxel_intersection(vel, blockMin, blockMax, manager);		//returns closest block face in x axis
+		const auto face_y = y_axis_voxel_intersection(vel, blockMin, blockMax, manager);		//returns closest block face in y axis
+		const auto face_z = z_axis_voxel_intersection(vel, blockMin, blockMax, manager);		//returns closest block face in z axis
 
-		if (intersect_x.has_value()) {
-			pos.x = *intersect_x + (vel.x > 0 ? aabb.getMin().x : aabb.getMax().x);
-
+		if (face_x.has_value()) {
+			printf("FACE X\n");
 			vel.x = 0;
 		}
 
-		if (intersect_y.has_value()) {
+		if (face_y.has_value()) {
 			vel.y = 0;
 		}
 
-		if (intersect_z.has_value()) {
+		if (face_z.has_value()) {
 			vel.z = 0;
 		}
-		//const auto intersect_y = y_axis_voxel_intersection(vel, min, max, manager);
-		//const auto intersect_z = z_axis_voxel_intersection(vel, min, max, manager);
+
+		//Edge collision handling
+		{
+			//vel and pos have been modified by face collision handling. 
+			//create new scope to reuse variable names
+			const auto next_pos = pos + vel * delta;
+			const auto min = next_pos + aabb.getMin();
+			const auto max = next_pos + aabb.getMax();
+			const BlockCoord blockMin(glm::floor(min));
+			const BlockCoord blockMax(glm::floor(max));
+
+			const auto edge_xy = xy_edge_intersection(vel, blockMin, blockMax, manager);			//returns closest edge block faces in xy direction
+			const auto edge_yz = yz_edge_intersection(vel, blockMin, blockMax, manager);			//returns closest edge block faces in yz direction
+			const auto edge_zx = zx_edge_intersection(vel, blockMin, blockMax, manager);			//returns closest edge block faces in zx direction
+
+			if (edge_xy.has_value()) {
+				printf("EDGE X\n");
+
+				const auto edge_x_pos = edge_xy->first;
+				const auto edge_y_pos = edge_xy->second;
+
+				const auto current_x_pos = vel.x > 0 ? max.x : min.x;
+				const auto current_y_pos = vel.y > 0 ? max.y : min.y;
+
+				const auto delta_x = glm::abs(edge_x_pos - current_x_pos);
+				const auto delta_y = glm::abs(edge_y_pos - current_y_pos);
+
+				//printf("x: %f y: %f\n", delta_x, delta_y);
+
+
+				if (delta_x < delta_y && !face_x.has_value()) {
+					vel.x = 0;
+				}
+				else if (!face_y.has_value()){
+					vel.x = 0;
+				}
+			}
+		}
+		
 	});
+}
+
+glm::i32vec2 convert(float sign, int min, int max) {
+	//this is the function that takes in the aabb min and max block coord 
+	//and the relevent sign component of the vel vector and returns the inclusive bounds
+	//for the block samples for face collision handling
+	
+
+	//if min==max, the bounds returned will be the same
+	if (min == max) {
+		return glm::i32vec2(min, max);
+	}
+
+
+	//if max > min, the bounds returned will be the bound relevent for face collision
+	//detection. The edge will be ommited from bounds if sign is non zero in the direction
+	//vel is. Edge collision handling is handeled differently
+	return glm::i32vec2(sign >= 0 ? min : min + 1, sign > 0 ? max - 1 : max);
 }
 
 std::optional<float> x_axis_voxel_intersection(const glm::vec3 vel, BlockCoord min, BlockCoord max, const Voxel::ChunkManager &manager) {
@@ -64,6 +123,9 @@ std::optional<float> x_axis_voxel_intersection(const glm::vec3 vel, BlockCoord m
 
 	//if vel.y or vel.z is zero there will be no edge collision handling
 	//we can sample all edges for face collision handling
+
+	const auto y_bound = convert(vel.y, min.y, max.y);
+	const auto z_bound = convert(vel.z, min.z, max.z);
 
 	const int min_y = vel.y >= 0 ? min.y : min.y + 1;
 	const int max_y = vel.y > 0 ? max.y - 1 : max.y;
