@@ -15,9 +15,9 @@ std::optional<float> x_axis_voxel_intersection(const glm::vec3 vel, BlockCoord m
 std::optional<float> y_axis_voxel_intersection(const glm::vec3 vel, BlockCoord min, BlockCoord max, const Voxel::ChunkManager &manager);
 std::optional<float> z_axis_voxel_intersection(const glm::vec3 vel, BlockCoord min, BlockCoord max, const Voxel::ChunkManager &manager);
 
-std::optional<std::pair<float, float>> xy_edge_intersection(const glm::vec3 vel, BlockCoord min, BlockCoord max, const Voxel::ChunkManager &manager);
-std::optional<std::pair<float, float>> yz_edge_intersection(const glm::vec3 vel, BlockCoord min, BlockCoord max, const Voxel::ChunkManager &manager);
-std::optional<std::pair<float, float>> zx_edge_intersection(const glm::vec3 vel, BlockCoord min, BlockCoord max, const Voxel::ChunkManager &manager);
+std::optional<glm::vec3> xy_edge_intersection(const glm::vec3 vel, BlockCoord min, BlockCoord max, const Voxel::ChunkManager &manager);
+std::optional<glm::vec3> yz_edge_intersection(const glm::vec3 vel, BlockCoord min, BlockCoord max, const Voxel::ChunkManager &manager);
+std::optional<glm::vec3> zx_edge_intersection(const glm::vec3 vel, BlockCoord min, BlockCoord max, const Voxel::ChunkManager &manager);
 
 void System::voxel_collision_system(Engine &engine, float delta) {
 	using namespace Component;
@@ -55,6 +55,7 @@ void System::voxel_collision_system(Engine &engine, float delta) {
 			vel.z = 0;
 		}
 
+		//Edge collision handling
 		{
 			//vel and pos have been modified by face collision handling. 
 			//create new scope to reuse variable names
@@ -65,11 +66,13 @@ void System::voxel_collision_system(Engine &engine, float delta) {
 			const BlockCoord blockMax(glm::floor(max));
 
 			const auto edge_xy = xy_edge_intersection(vel, blockMin, blockMax, manager);			//returns closest edge block faces in xy direction
+			const auto edge_yz = yz_edge_intersection(vel, blockMin, blockMax, manager);			//returns closest edge block faces in yz direction
+			const auto edge_zx = zx_edge_intersection(vel, blockMin, blockMax, manager);			//returns closest edge block faces in zx direction
 
 			if (edge_xy.has_value()) {
 				printf("EDGE XY\n");
-				const auto edge_x_pos = edge_xy->first;
-				const auto edge_y_pos = edge_xy->second;
+				const auto edge_x_pos = edge_xy->x;
+				const auto edge_y_pos = edge_xy->y;
 
 				const auto current_x_pos = vel.x > 0 ? max.x : min.x;
 				const auto current_y_pos = vel.y > 0 ? max.y : min.y;
@@ -77,31 +80,19 @@ void System::voxel_collision_system(Engine &engine, float delta) {
 				const auto delta_x = glm::abs(edge_x_pos - current_x_pos);
 				const auto delta_y = glm::abs(edge_y_pos - current_y_pos);
 
-				if (delta_x < delta_y) {
+				if (delta_x < delta_y && !edge_yz.has_value()) {
 					vel.x = 0;
 				}
-				else {
+				else if (!edge_zx.has_value()) {
 					vel.y = 0;
 				}
 			}
-		}
-		{
-			//vel and pos have been modified by face collision handling. 
-			//create new scope to reuse variable names
-			const auto next_pos = pos + vel * delta;
-			const auto min = next_pos + aabb.getMin();
-			const auto max = next_pos + aabb.getMax();
-			const BlockCoord blockMin(glm::floor(min));
-			const BlockCoord blockMax(glm::floor(max));
-
-			const auto edge_yz = yz_edge_intersection(vel, blockMin, blockMax, manager);			//returns closest edge block faces in yz direction
-
 
 			if (edge_yz.has_value()) {
 				printf("EDGE YZ\n");
 
-				const auto edge_y_pos = edge_yz->first;
-				const auto edge_z_pos = edge_yz->second;
+				const auto edge_y_pos = edge_yz->y;
+				const auto edge_z_pos = edge_yz->z;
 
 				const auto current_y_pos = vel.y > 0 ? max.y : min.y;
 				const auto current_z_pos = vel.z > 0 ? max.z : min.z;
@@ -109,32 +100,19 @@ void System::voxel_collision_system(Engine &engine, float delta) {
 				const auto delta_y = glm::abs(edge_y_pos - current_y_pos);
 				const auto delta_z = glm::abs(edge_z_pos - current_z_pos);
 
-				if (delta_y < delta_z) {
+				if (delta_y < delta_z && !edge_zx.has_value()) {
 					vel.y = 0;
 				}
-				else {
+				else if (!edge_xy.has_value()) {
 					vel.z = 0;
 				}
 			}
-		}
-
-		{
-			//vel and pos have been modified by face collision handling. 
-			//create new scope to reuse variable names
-			const auto next_pos = pos + vel * delta;
-			const auto min = next_pos + aabb.getMin();
-			const auto max = next_pos + aabb.getMax();
-			const BlockCoord blockMin(glm::floor(min));
-			const BlockCoord blockMax(glm::floor(max));
-
-			const auto edge_zx = zx_edge_intersection(vel, blockMin, blockMax, manager);			//returns closest edge block faces in zx direction
-
 
 			if (edge_zx.has_value()) {
 				printf("EDGE ZX\n");
 
-				const auto edge_z_pos = edge_zx->first;
-				const auto edge_x_pos = edge_zx->second;
+				const auto edge_z_pos = edge_zx->z;
+				const auto edge_x_pos = edge_zx->x;
 
 				const auto current_z_pos = vel.z > 0 ? max.z : min.z;
 				const auto current_x_pos = vel.x > 0 ? max.x : min.x;
@@ -142,24 +120,15 @@ void System::voxel_collision_system(Engine &engine, float delta) {
 				const auto delta_z = glm::abs(edge_z_pos - current_z_pos);
 				const auto delta_x = glm::abs(edge_x_pos - current_x_pos);
 
-				if (delta_z < delta_x) {
+				if (delta_z < delta_x && !edge_xy.has_value()) {
 					vel.z = 0;
 				}
-				else {
+				else if (!edge_yz.has_value()) {
 					vel.x = 0;
 				}
 			}
 		}
 
-		//Edge collision handling
-		{
-			
-
-			
-
-			
-		}
-		
 	});
 }
 
@@ -167,7 +136,7 @@ glm::i32vec2 convert(float sign, int min, int max) {
 	//this is the function that takes in the aabb min and max block coord 
 	//and the relevent sign component of the vel vector and returns the inclusive bounds
 	//for the block samples for face collision handling
-	
+
 
 	//if min==max, the bounds returned will be the same
 	if (min == max) {
@@ -199,7 +168,7 @@ std::optional<float> x_axis_voxel_intersection(const glm::vec3 vel, BlockCoord m
 	const int max_z = z_bound[1];
 
 	for (int y = min_y; y <= max_y; y++) {
-		for (int z = min_z;  z <= max_z; z++) {
+		for (int z = min_z; z <= max_z; z++) {
 			const BlockCoord coord(x_coord, y, z);
 			const Voxel::Block block = manager.getBlockIfMapped(coord);
 
@@ -219,8 +188,8 @@ std::optional<float> y_axis_voxel_intersection(const glm::vec3 vel, BlockCoord m
 
 	std::optional<float> block_face_y;
 	const int y_coord = vel.y > 0 ? max.y : min.y;
-	
-	
+
+
 	const auto x_bound = convert(vel.x, min.x, max.x);
 	const auto z_bound = convert(vel.z, min.z, max.z);
 
@@ -228,7 +197,7 @@ std::optional<float> y_axis_voxel_intersection(const glm::vec3 vel, BlockCoord m
 	const int max_x = x_bound[1];
 	const int min_z = z_bound[0];
 	const int max_z = z_bound[1];
-	
+
 	for (int x = min_x; x <= max_x; x++) {
 		for (int z = min_z; z <= max_z; z++) {
 			const BlockCoord coord(x, y_coord, z);
@@ -251,7 +220,7 @@ std::optional<float> z_axis_voxel_intersection(const glm::vec3 vel, BlockCoord m
 
 	std::optional<float> block_face_z;
 	const int z_coord = vel.z > 0 ? max.z : min.z;
-	
+
 	const auto x_bound = convert(vel.x, min.x, max.x);
 	const auto y_bound = convert(vel.y, min.y, max.y);
 
@@ -259,7 +228,7 @@ std::optional<float> z_axis_voxel_intersection(const glm::vec3 vel, BlockCoord m
 	const int max_x = x_bound[1];
 	const int min_y = y_bound[0];
 	const int max_y = y_bound[1];
-	
+
 	for (int x = min_x; x <= max_x; x++) {
 		for (int y = min_y; y <= max_y; y++) {
 			const BlockCoord coord(x, y, z_coord);
@@ -274,14 +243,14 @@ std::optional<float> z_axis_voxel_intersection(const glm::vec3 vel, BlockCoord m
 	return block_face_z;
 }
 
-std::optional<std::pair<float, float>> xy_edge_intersection(const glm::vec3 vel, BlockCoord min, BlockCoord max, const Voxel::ChunkManager &manager) {
-	
+std::optional<glm::vec3> xy_edge_intersection(const glm::vec3 vel, BlockCoord min, BlockCoord max, const Voxel::ChunkManager &manager) {
+
 	if (vel.x == 0 || vel.y == 0) {
 		return std::nullopt;
 	}
 
-	std::optional<std::pair<float, float>> corner_block;
-	
+	std::optional<glm::vec3> corner_block;
+
 	const auto x_coord = vel.x > 0 ? max.x : min.x;
 	const auto y_coord = vel.y > 0 ? max.y : min.y;
 
@@ -292,8 +261,9 @@ std::optional<std::pair<float, float>> xy_edge_intersection(const glm::vec3 vel,
 		if (block.getMeshType() == Voxel::MeshType::MESH_TYPE_BLOCK) {
 			const float x_pos = vel.x > 0 ? coord.x : coord.x + 1.0f;
 			const float y_pos = vel.y > 0 ? coord.y : coord.y + 1.0f;
+			const float z_pos = vel.z > 0 ? coord.z : coord.z + 1.0f;
 
-			corner_block = std::make_pair(x_pos, y_pos);
+			corner_block = glm::vec3(x_pos, y_pos, z_pos);
 		}
 	}
 
@@ -301,13 +271,13 @@ std::optional<std::pair<float, float>> xy_edge_intersection(const glm::vec3 vel,
 	return corner_block;
 }
 
-std::optional<std::pair<float, float>> yz_edge_intersection(const glm::vec3 vel, BlockCoord min, BlockCoord max, const Voxel::ChunkManager &manager) {
+std::optional<glm::vec3> yz_edge_intersection(const glm::vec3 vel, BlockCoord min, BlockCoord max, const Voxel::ChunkManager &manager) {
 
 	if (vel.y == 0 || vel.z == 0) {
 		return std::nullopt;
 	}
 
-	std::optional<std::pair<float, float>> corner_block;
+	std::optional<glm::vec3> corner_block;
 
 	const auto y_coord = vel.y > 0 ? max.y : min.y;
 	const auto z_coord = vel.z > 0 ? max.z : min.z;
@@ -319,8 +289,9 @@ std::optional<std::pair<float, float>> yz_edge_intersection(const glm::vec3 vel,
 		if (block.getMeshType() == Voxel::MeshType::MESH_TYPE_BLOCK) {
 			const float y_pos = vel.y > 0 ? coord.y : coord.y + 1.0f;
 			const float z_pos = vel.z > 0 ? coord.z : coord.z + 1.0f;
+			const float x_pos = vel.x > 0 ? coord.x : coord.x + 1.0f;
 
-			corner_block = std::make_pair(y_pos, z_pos);
+			corner_block = glm::vec3(x_pos, y_pos, z_pos);
 		}
 	}
 
@@ -328,13 +299,13 @@ std::optional<std::pair<float, float>> yz_edge_intersection(const glm::vec3 vel,
 	return corner_block;
 }
 
-std::optional<std::pair<float, float>> zx_edge_intersection(const glm::vec3 vel, BlockCoord min, BlockCoord max, const Voxel::ChunkManager &manager) {
+std::optional<glm::vec3> zx_edge_intersection(const glm::vec3 vel, BlockCoord min, BlockCoord max, const Voxel::ChunkManager &manager) {
 
 	if (vel.z == 0 || vel.x == 0) {
 		return std::nullopt;
 	}
 
-	std::optional<std::pair<float, float>> corner_block;
+	std::optional<glm::vec3> corner_block;
 
 	const auto z_coord = vel.z > 0 ? max.z : min.z;
 	const auto x_coord = vel.x > 0 ? max.x : min.x;
@@ -346,8 +317,9 @@ std::optional<std::pair<float, float>> zx_edge_intersection(const glm::vec3 vel,
 		if (block.getMeshType() == Voxel::MeshType::MESH_TYPE_BLOCK) {
 			const float z_pos = vel.z > 0 ? coord.z : coord.z + 1.0f;
 			const float x_pos = vel.x > 0 ? coord.x : coord.x + 1.0f;
+			const float y_pos = vel.y > 0 ? coord.y : coord.y + 1.0f;
 
-			corner_block = std::make_pair(z_pos, x_pos);
+			corner_block = glm::vec3(x_pos, y_pos, z_pos);
 		}
 	}
 
