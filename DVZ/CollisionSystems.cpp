@@ -80,10 +80,10 @@ void System::voxel_collision_system(Engine &engine, float delta) {
 				const auto delta_x = glm::abs(edge_x_pos - current_x_pos);
 				const auto delta_y = glm::abs(edge_y_pos - current_y_pos);
 
-				if (delta_x < delta_y && !face_y.has_value()) {
+				if (delta_x < delta_y && !face_y.has_value() && !edge_yz.has_value()) {
 					vel.x = 0;
 				}
-				else if (!face_x.has_value()){
+				else if (!face_x.has_value() && !edge_zx.has_value()){
 					vel.y = 0;
 				}
 			}
@@ -100,10 +100,10 @@ void System::voxel_collision_system(Engine &engine, float delta) {
 				const auto delta_y = glm::abs(edge_y_pos - current_y_pos);
 				const auto delta_z = glm::abs(edge_z_pos - current_z_pos);
 
-				if (delta_y < delta_z && !face_z.has_value()) {
+				if (delta_y < delta_z && !face_z.has_value() && !edge_zx.has_value()) {
 					vel.y = 0;
 				}
-				else if(!face_y.has_value()){
+				else if(!face_y.has_value() && !edge_xy.has_value()){
 					vel.z = 0;
 				}
 			}
@@ -120,10 +120,10 @@ void System::voxel_collision_system(Engine &engine, float delta) {
 				const auto delta_z = glm::abs(edge_z_pos - current_z_pos);
 				const auto delta_x = glm::abs(edge_x_pos - current_x_pos);
 
-				if (delta_z < delta_x && !face_x.has_value()) {
+				if (delta_z < delta_x && !face_x.has_value() && !edge_xy.has_value()) {
 					vel.z = 0;
 				}
-				else if(!face_z.has_value()){
+				else if(!face_z.has_value() && !edge_yz.has_value()){
 					vel.x = 0;
 				}
 			}
