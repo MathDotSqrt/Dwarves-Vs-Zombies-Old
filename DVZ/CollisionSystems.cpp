@@ -55,7 +55,6 @@ void System::voxel_collision_system(Engine &engine, float delta) {
 			vel.z = 0;
 		}
 
-		//Edge collision handling
 		{
 			//vel and pos have been modified by face collision handling. 
 			//create new scope to reuse variable names
@@ -66,8 +65,6 @@ void System::voxel_collision_system(Engine &engine, float delta) {
 			const BlockCoord blockMax(glm::floor(max));
 
 			const auto edge_xy = xy_edge_intersection(vel, blockMin, blockMax, manager);			//returns closest edge block faces in xy direction
-			const auto edge_yz = yz_edge_intersection(vel, blockMin, blockMax, manager);			//returns closest edge block faces in yz direction
-			const auto edge_zx = zx_edge_intersection(vel, blockMin, blockMax, manager);			//returns closest edge block faces in zx direction
 
 			if (edge_xy.has_value()) {
 				printf("EDGE XY\n");
@@ -80,13 +77,25 @@ void System::voxel_collision_system(Engine &engine, float delta) {
 				const auto delta_x = glm::abs(edge_x_pos - current_x_pos);
 				const auto delta_y = glm::abs(edge_y_pos - current_y_pos);
 
-				if (delta_x < delta_y && !face_y.has_value() && !edge_yz.has_value()) {
+				if (delta_x < delta_y) {
 					vel.x = 0;
 				}
-				else if (!face_x.has_value() && !edge_zx.has_value()){
+				else {
 					vel.y = 0;
 				}
 			}
+		}
+		{
+			//vel and pos have been modified by face collision handling. 
+			//create new scope to reuse variable names
+			const auto next_pos = pos + vel * delta;
+			const auto min = next_pos + aabb.getMin();
+			const auto max = next_pos + aabb.getMax();
+			const BlockCoord blockMin(glm::floor(min));
+			const BlockCoord blockMax(glm::floor(max));
+
+			const auto edge_yz = yz_edge_intersection(vel, blockMin, blockMax, manager);			//returns closest edge block faces in yz direction
+
 
 			if (edge_yz.has_value()) {
 				printf("EDGE YZ\n");
@@ -100,13 +109,26 @@ void System::voxel_collision_system(Engine &engine, float delta) {
 				const auto delta_y = glm::abs(edge_y_pos - current_y_pos);
 				const auto delta_z = glm::abs(edge_z_pos - current_z_pos);
 
-				if (delta_y < delta_z && !face_z.has_value() && !edge_zx.has_value()) {
+				if (delta_y < delta_z) {
 					vel.y = 0;
 				}
-				else if(!face_y.has_value() && !edge_xy.has_value()){
+				else {
 					vel.z = 0;
 				}
 			}
+		}
+
+		{
+			//vel and pos have been modified by face collision handling. 
+			//create new scope to reuse variable names
+			const auto next_pos = pos + vel * delta;
+			const auto min = next_pos + aabb.getMin();
+			const auto max = next_pos + aabb.getMax();
+			const BlockCoord blockMin(glm::floor(min));
+			const BlockCoord blockMax(glm::floor(max));
+
+			const auto edge_zx = zx_edge_intersection(vel, blockMin, blockMax, manager);			//returns closest edge block faces in zx direction
+
 
 			if (edge_zx.has_value()) {
 				printf("EDGE ZX\n");
@@ -120,13 +142,22 @@ void System::voxel_collision_system(Engine &engine, float delta) {
 				const auto delta_z = glm::abs(edge_z_pos - current_z_pos);
 				const auto delta_x = glm::abs(edge_x_pos - current_x_pos);
 
-				if (delta_z < delta_x && !face_x.has_value() && !edge_xy.has_value()) {
+				if (delta_z < delta_x) {
 					vel.z = 0;
 				}
-				else if(!face_z.has_value() && !edge_yz.has_value()){
+				else {
 					vel.x = 0;
 				}
 			}
+		}
+
+		//Edge collision handling
+		{
+			
+
+			
+
+			
 		}
 		
 	});
