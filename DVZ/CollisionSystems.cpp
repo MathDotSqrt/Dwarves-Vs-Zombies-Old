@@ -145,6 +145,20 @@ void System::voxel_collision_system(Engine &engine, float delta) {
 
 			if(corner.has_value()){
 				printf("HAS CORNER\n");
+
+				const glm::vec3 current_pos(vel.x > 0 ? max.x : min.x, vel.y > 0 ? max.y : min.y, vel.z > 0 ? max.z : min.z);
+				const auto delta = glm::abs(*corner - current_pos);
+
+				if (delta.x < delta.y && delta.x < delta.z) {
+					vel.x = 0;
+				}
+				else if (delta.y < delta.z) {
+					vel.y = 0;
+				}
+				else {
+					vel.z = 0;
+				}
+
 			}
 		}
 
