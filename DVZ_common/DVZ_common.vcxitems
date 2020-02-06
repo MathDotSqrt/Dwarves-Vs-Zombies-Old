@@ -20,8 +20,10 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)ChunkConstants.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Common.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)RLEncoding.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)VoxelCollision.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="$(MSBuildThisFileDirectory)Block.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)VoxelCollision.cpp" />
   </ItemGroup>
 </Project>
