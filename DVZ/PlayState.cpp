@@ -31,7 +31,7 @@ void PlayState::init() {
 	entt::entity playerID = e.addPlayer(0, 20, 0);
 	unsigned int pointLightInstanceID = scene.createPointLightInstance();
 	e.assign<Component::PointLight>(playerID, pointLightInstanceID, glm::vec3(1, 1, 1), 60.0f);
-	e.assign<const Physics::AABB>(playerID, Physics::AABB(glm::vec3(-.3f, -.3f, -.3f), glm::vec3(.3f, .3f, .3f)));
+	e.assign<const Physics::AABB>(playerID, Physics::AABB(glm::vec3(-.3f, -1.3f, -.3f), glm::vec3(.3f, .3f, .3f)));
 	/*PLAYER*/
 	
 	/*TREE*/

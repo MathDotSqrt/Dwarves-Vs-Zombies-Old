@@ -1,7 +1,7 @@
 #include "EntityAdmin.h"
 #include "Components.h"
 #include "SingletonComponents.h"
-
+#include "AABB.h"
 
 #include "NetSystem.h"
 #include "MessageIdentifiers.h"
@@ -25,7 +25,8 @@ void incomming_connection_packet(RakPeerInterface *peer, Packet *packet, entt::r
 
 	entt::entity player = registry.create();
 	registry.assign<NetClient>(player, packet->guid);
-	registry.assign<Position>(player, glm::vec3(0, 0, 0));
+	registry.assign<const Physics::AABB>(player, glm::vec3(-.3f, -1.3f, -.3f), glm::vec3(.3f, .3f, .3f));
+	registry.assign<Position>(player, glm::vec3(0, 20, 0));
 	registry.assign<Rotation>(player, glm::vec3(0, 0, 0));
 	registry.assign<Velocity>(player, glm::vec3(0, 0, 0));
 	registry.assign<Dir>(player, glm::vec3(0, 0, -1), glm::vec3(0, 1, 0), glm::vec3(1, 0, 0));
