@@ -3,10 +3,16 @@
 
 using namespace Physics;
 
+//Type used for block coord
 typedef glm::i32vec3 BlockCoord;
+
+//optional types for all collision strategies
 typedef std::optional<float> FaceOptional;
 typedef std::optional<std::pair<float, float>> EdgeOptional;
 typedef std::optional<glm::vec3> CornerOptional;
+
+//function for getting block from both client and server. 
+//this is to reduce code duplication
 typedef std::function<Voxel::Block(glm::i32vec3)> GetBlockFunc;
 
 
@@ -22,7 +28,7 @@ EdgeOptional zx_edge_intersection(const glm::vec3 vel, BlockCoord min, BlockCoor
 CornerOptional corner_intersection(const glm::vec3 vel, BlockCoord min, BlockCoord max, GetBlockFunc &func);
 
 glm::vec3 Physics::face_collision_handling(glm::vec3 pos, glm::vec3 vel, Physics::AABB aabb, float delta, GetBlockFunc &getBlock) {
-	//Face collision handling
+	
 	const auto next_pos = pos + vel * delta;
 	const auto min = next_pos + aabb.getMin();
 	const auto max = next_pos + aabb.getMax();
@@ -49,8 +55,6 @@ glm::vec3 Physics::face_collision_handling(glm::vec3 pos, glm::vec3 vel, Physics
 }
 
 glm::vec3 Physics::edge_collision_handling(glm::vec3 pos, glm::vec3 vel, Physics::AABB aabb, float delta, GetBlockFunc &getBlock) {
-	//vel and pos have been modified by face collision handling. 
-			//create new scope to reuse variable names
 	const auto next_pos = pos + vel * delta;
 	const auto min = next_pos + aabb.getMin();
 	const auto max = next_pos + aabb.getMax();
@@ -62,19 +66,26 @@ glm::vec3 Physics::edge_collision_handling(glm::vec3 pos, glm::vec3 vel, Physics
 	const auto edge_zx = zx_edge_intersection(vel, blockMin, blockMax, getBlock);			//returns closest edge block faces in zx direction
 
 	if (edge_xy.has_value()) {
+		//if edge was found return closest face from x and y pos
 		const auto edge_x_pos = edge_xy->first;
 		const auto edge_y_pos = edge_xy->second;
 
+		//return x and y position of aabb face
 		const auto current_x_pos = vel.x > 0 ? max.x : min.x;
 		const auto current_y_pos = vel.y > 0 ? max.y : min.y;
 
 		const auto delta_x = glm::abs(edge_x_pos - current_x_pos);
 		const auto delta_y = glm::abs(edge_y_pos - current_y_pos);
 
-		if (delta_x < delta_y && !edge_yz.has_value()) {
+		//cant push in axis direction if there exists other edges in the way
+		const auto can_push_x = !edge_yz.has_value();
+		const auto can_push_y = !edge_zx.has_value();
+
+		//the push occurs only on the axis with the smallest intersection for edge xy
+		if (delta_x < delta_y && can_push_x) {
 			vel.x = 0;
 		}
-		else if (!edge_zx.has_value()) {
+		else if (can_push_y) {
 			vel.y = 0;
 		}
 	}
@@ -89,10 +100,13 @@ glm::vec3 Physics::edge_collision_handling(glm::vec3 pos, glm::vec3 vel, Physics
 		const auto delta_y = glm::abs(edge_y_pos - current_y_pos);
 		const auto delta_z = glm::abs(edge_z_pos - current_z_pos);
 
-		if (delta_y < delta_z && !edge_zx.has_value()) {
+		const auto can_push_y = !edge_zx.has_value();
+		const auto can_push_z = !edge_xy.has_value();
+
+		if (delta_y < delta_z && can_push_y) {
 			vel.y = 0;
 		}
-		else if (!edge_xy.has_value()) {
+		else if (can_push_z) {
 			vel.z = 0;
 		}
 	}
@@ -107,10 +121,13 @@ glm::vec3 Physics::edge_collision_handling(glm::vec3 pos, glm::vec3 vel, Physics
 		const auto delta_z = glm::abs(edge_z_pos - current_z_pos);
 		const auto delta_x = glm::abs(edge_x_pos - current_x_pos);
 
-		if (delta_z < delta_x && !edge_xy.has_value()) {
+		const auto can_push_z = !edge_xy.has_value();
+		const auto can_push_x = !edge_yz.has_value();
+
+		if (delta_z < delta_x && can_push_z) {
 			vel.z = 0;
 		}
-		else if (!edge_yz.has_value()) {
+		else if (can_push_x) {
 			vel.x = 0;
 		}
 	}
@@ -131,6 +148,7 @@ glm::vec3 Physics::corner_collision_handling(glm::vec3 pos, glm::vec3 vel, Physi
 		const glm::vec3 current_pos(vel.x > 0 ? max.x : min.x, vel.y > 0 ? max.y : min.y, vel.z > 0 ? max.z : min.z);
 		const auto delta = glm::abs(*corner - current_pos);
 
+		//push in the axis with smallest intersection
 		if (delta.x < delta.y && delta.x < delta.z) {
 			vel.x = 0;
 		}
