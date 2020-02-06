@@ -149,8 +149,8 @@ BlockTexCoords::BlockTexCoords(std::vector<uint8> rc, uint8 numRows, uint8 numCo
 			this->texCoords[i].col = rc[3];
 		}
 
-		this->top.row = rc[0];
-		this->top.col = rc[1];
+		this->coord.top.row = rc[0];
+		this->coord.top.col = rc[1];
 	}
 
 }

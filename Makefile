@@ -7,14 +7,20 @@ BINARY = x64
 MODE = Debug
 
 SOURCE_DIR = ./DVZ_server
+SOURCE_COMMON_DIR = ./DVZ_common
+
 OBJ_DIR = $(SOURCE_DIR)/$(BINARY)/$(MODE)
+OBJ_COMMON_DIR = $(SOURCE_COMMON_DIR)/$(BINARY)/$(MODE)
 OUT_DIR = ./$(BINARY)/$(MODE)
 
 DEPS = $(wildcard $(SOURCE_DIR)/*.h)
 SRCS = $(wildcard $(SOURCE_DIR)/*.cpp)
-OBJ = $(patsubst $(SOURCE_DIR)/%.cpp, $(OBJ_DIR)/%.o, $(SRCS))
 
+DEPS_COMMON = $(wildcard $(SOURCE_COMMON_DIR)/*.h)
+SRCS_COMMON = $(wildcard $(SOURCE_COMMON_DIR)/*.cpp)
 
+OBJ = $(patsubst $(SOURCE_DIR)/%.cpp, $(OBJ_DIR)/%.o, $(SRCS)) 
+OBJ_COMMON = $(patsubst $(SOURCE_COMMON_DIR)/%.cpp, $(OBJ_COMMON_DIR)/%.o, $(SRCS_COMMON))
 
 RAKNET_LIB = RakNet
 RAKNET_LIB_DIR = ./RakNet/lib
@@ -32,7 +38,7 @@ ZLIB_DIR = ./zlib
 ZLIB_INCLUDE = $(ZLIB_DIR)/include
 ZLIB_LIB_DIR = $(ZLIB_DIR)/lib/
 
-INCLUDES = -I $(RAKNET_INC_DIR)/ -I ./ENTT/single_include/entt/ -I ./GLM/ -I $(ZLIB_INCLUDE)
+INCLUDES = -I $(SOURCE_COMMON_DIR) -I $(RAKNET_INC_DIR)/ -I ./ENTT/single_include/entt/ -I ./GLM/ -I $(ZLIB_INCLUDE)
 LIBS = -L $(RAKNET_LIB_DIR) -L $(ZLIB_LIB_DIR) -lRakNet -lz -lpthread 
 
 all: $(OUT)
@@ -45,12 +51,14 @@ run: $(OUT)
 #SERVER BUILD
 $(OUT): $(RAKNET_LIB) $(OUT_DIR)/$(OUT) 
 
-$(OUT_DIR)/$(OUT): $(OBJ)
+$(OUT_DIR)/$(OUT): $(OBJ) $(OBJ_COMMON)
 	$(CC) -o $@ $^ $(INCLUDES) $(LIBS)
 
-$(OBJ_DIR)/%.o: $(SOURCE_DIR)/%.cpp $(DEPS)
+$(OBJ_DIR)/%.o: $(SOURCE_DIR)/%.cpp $(DEPS) $(DEPS_COMMON)
 	$(CC) $(CFLAGS) -c -o $@ $< $(INCLUDES)
 
+$(OBJ_COMMON_DIR)/%.o: $(SOURCE_COMMON_DIR)/%.cpp $(DEPS_COMMON)
+	$(CC) $(CFLAGS) -c -o $@ $< $(INCLUDES)
 
 #RAKNETLIB BUILD
 $(RAKNET_LIB): $(RAKNET_LIB_PATH)

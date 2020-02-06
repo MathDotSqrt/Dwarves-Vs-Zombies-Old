@@ -1,6 +1,6 @@
 #pragma once
 #pragma once
-#include "common.h"
+#include "Common.h"
 #include "glm.hpp"
 #include <vector>
 #include "BlockTypeEnum.h"
@@ -63,7 +63,7 @@ namespace Voxel {
 			SpriteTexCoords right;
 			SpriteTexCoords front;
 			SpriteTexCoords back;
-		};
+		} coord;
 		SpriteTexCoords texCoords[6];
 
 		BlockTexCoords();
