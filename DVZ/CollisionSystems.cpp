@@ -17,19 +17,19 @@ typedef std::function<Voxel::BlockType(glm::i32vec3)> GetBlockFunc;
 
 
 glm::i32vec2 convert(float sign, int min, int max);
-FaceOptional x_axis_voxel_intersection(const glm::vec3 vel, BlockCoord min, BlockCoord max, GetBlockFunc func);
-FaceOptional y_axis_voxel_intersection(const glm::vec3 vel, BlockCoord min, BlockCoord max, GetBlockFunc func);
-FaceOptional z_axis_voxel_intersection(const glm::vec3 vel, BlockCoord min, BlockCoord max, GetBlockFunc func);
+FaceOptional x_axis_voxel_intersection(const glm::vec3 vel, BlockCoord min, BlockCoord max, GetBlockFunc &func);
+FaceOptional y_axis_voxel_intersection(const glm::vec3 vel, BlockCoord min, BlockCoord max, GetBlockFunc &func);
+FaceOptional z_axis_voxel_intersection(const glm::vec3 vel, BlockCoord min, BlockCoord max, GetBlockFunc &func);
 
-EdgeOptional xy_edge_intersection(const glm::vec3 vel, BlockCoord min, BlockCoord max, GetBlockFunc func);
-EdgeOptional yz_edge_intersection(const glm::vec3 vel, BlockCoord min, BlockCoord max, GetBlockFunc func);
-EdgeOptional zx_edge_intersection(const glm::vec3 vel, BlockCoord min, BlockCoord max, GetBlockFunc func);
+EdgeOptional xy_edge_intersection(const glm::vec3 vel, BlockCoord min, BlockCoord max, GetBlockFunc &func);
+EdgeOptional yz_edge_intersection(const glm::vec3 vel, BlockCoord min, BlockCoord max, GetBlockFunc &func);
+EdgeOptional zx_edge_intersection(const glm::vec3 vel, BlockCoord min, BlockCoord max, GetBlockFunc &func);
 
-std::optional<glm::vec3> corner_intersection(const glm::vec3 vel, BlockCoord min, BlockCoord max, GetBlockFunc func);
+std::optional<glm::vec3> corner_intersection(const glm::vec3 vel, BlockCoord min, BlockCoord max, GetBlockFunc &func);
 
-glm::vec3 face_collision_handling(glm::vec3 pos, glm::vec3 vel, Physics::AABB aabb, float delta, GetBlockFunc func);
-glm::vec3 edge_collision_handling(glm::vec3 pos, glm::vec3 vel, Physics::AABB aabb, float delta, GetBlockFunc func);
-glm::vec3 corner_collision_handling(glm::vec3 pos, glm::vec3 vel, Physics::AABB aabb, float delta, GetBlockFunc func);
+glm::vec3 face_collision_handling(glm::vec3 pos, glm::vec3 vel, Physics::AABB aabb, float delta, GetBlockFunc &func);
+glm::vec3 edge_collision_handling(glm::vec3 pos, glm::vec3 vel, Physics::AABB aabb, float delta, GetBlockFunc &func);
+glm::vec3 corner_collision_handling(glm::vec3 pos, glm::vec3 vel, Physics::AABB aabb, float delta, GetBlockFunc &func);
 
 void System::voxel_collision_system(Engine &engine, float delta) {
 	using namespace Component;
@@ -50,7 +50,7 @@ void System::voxel_collision_system(Engine &engine, float delta) {
 	});
 }
 
-glm::vec3 face_collision_handling(glm::vec3 pos, glm::vec3 vel, Physics::AABB aabb, float delta, GetBlockFunc getBlock) {
+glm::vec3 face_collision_handling(glm::vec3 pos, glm::vec3 vel, Physics::AABB aabb, float delta, GetBlockFunc &getBlock) {
 	//Face collision handling
 	const auto next_pos = pos + vel * delta;
 	const auto min = next_pos + aabb.getMin();
@@ -77,7 +77,7 @@ glm::vec3 face_collision_handling(glm::vec3 pos, glm::vec3 vel, Physics::AABB aa
 	return vel;
 }
 
-glm::vec3 edge_collision_handling(glm::vec3 pos, glm::vec3 vel, Physics::AABB aabb, float delta, GetBlockFunc getBlock) {
+glm::vec3 edge_collision_handling(glm::vec3 pos, glm::vec3 vel, Physics::AABB aabb, float delta, GetBlockFunc &getBlock) {
 	//vel and pos have been modified by face collision handling. 
 			//create new scope to reuse variable names
 	const auto next_pos = pos + vel * delta;
@@ -147,7 +147,7 @@ glm::vec3 edge_collision_handling(glm::vec3 pos, glm::vec3 vel, Physics::AABB aa
 	return vel;
 }
 
-glm::vec3 corner_collision_handling(glm::vec3 pos, glm::vec3 vel, Physics::AABB aabb, float delta, GetBlockFunc getBlock) {
+glm::vec3 corner_collision_handling(glm::vec3 pos, glm::vec3 vel, Physics::AABB aabb, float delta, GetBlockFunc &getBlock) {
 	const auto next_pos = pos + vel * delta;
 	const auto min = next_pos + aabb.getMin();
 	const auto max = next_pos + aabb.getMax();
@@ -194,7 +194,7 @@ glm::i32vec2 convert(float sign, int min, int max) {
 	return glm::i32vec2(sign >= 0 ? min : min + 1, sign > 0 ? max - 1 : max);
 }
 
-FaceOptional x_axis_voxel_intersection(const glm::vec3 vel, BlockCoord min, BlockCoord max, GetBlockFunc getBlock) {
+FaceOptional x_axis_voxel_intersection(const glm::vec3 vel, BlockCoord min, BlockCoord max, GetBlockFunc &getBlock) {
 	if (vel.x == 0) {
 		return std::nullopt;	//nothing to return
 	}
@@ -224,7 +224,7 @@ FaceOptional x_axis_voxel_intersection(const glm::vec3 vel, BlockCoord min, Bloc
 	return block_face_x;
 }
 
-FaceOptional y_axis_voxel_intersection(const glm::vec3 vel, BlockCoord min, BlockCoord max, GetBlockFunc getBlock) {
+FaceOptional y_axis_voxel_intersection(const glm::vec3 vel, BlockCoord min, BlockCoord max, GetBlockFunc &getBlock) {
 	if (vel.y == 0) {
 		return std::nullopt;	//nothing to return
 	}
@@ -255,7 +255,7 @@ FaceOptional y_axis_voxel_intersection(const glm::vec3 vel, BlockCoord min, Bloc
 	return block_face_y;
 }
 
-FaceOptional z_axis_voxel_intersection(const glm::vec3 vel, BlockCoord min, BlockCoord max, GetBlockFunc getBlock) {
+FaceOptional z_axis_voxel_intersection(const glm::vec3 vel, BlockCoord min, BlockCoord max, GetBlockFunc &getBlock) {
 	if (vel.z == 0) {
 		return std::nullopt;	//nothing to return
 	}
@@ -286,7 +286,7 @@ FaceOptional z_axis_voxel_intersection(const glm::vec3 vel, BlockCoord min, Bloc
 	return block_face_z;
 }
 
-EdgeOptional xy_edge_intersection(const glm::vec3 vel, BlockCoord min, BlockCoord max, GetBlockFunc getBlock) {
+EdgeOptional xy_edge_intersection(const glm::vec3 vel, BlockCoord min, BlockCoord max, GetBlockFunc &getBlock) {
 
 	if (vel.x == 0 || vel.y == 0) {
 		return std::nullopt;
@@ -317,7 +317,7 @@ EdgeOptional xy_edge_intersection(const glm::vec3 vel, BlockCoord min, BlockCoor
 	return corner_block;
 }
 
-EdgeOptional yz_edge_intersection(const glm::vec3 vel, BlockCoord min, BlockCoord max, GetBlockFunc getBlock) {
+EdgeOptional yz_edge_intersection(const glm::vec3 vel, BlockCoord min, BlockCoord max, GetBlockFunc &getBlock) {
 
 	if (vel.y == 0 || vel.z == 0) {
 		return std::nullopt;
@@ -348,7 +348,7 @@ EdgeOptional yz_edge_intersection(const glm::vec3 vel, BlockCoord min, BlockCoor
 	return corner_block;
 }
 
-EdgeOptional zx_edge_intersection(const glm::vec3 vel, BlockCoord min, BlockCoord max, GetBlockFunc getBlock) {
+EdgeOptional zx_edge_intersection(const glm::vec3 vel, BlockCoord min, BlockCoord max, GetBlockFunc &getBlock) {
 
 	if (vel.z == 0 || vel.x == 0) {
 		return std::nullopt;
@@ -379,7 +379,7 @@ EdgeOptional zx_edge_intersection(const glm::vec3 vel, BlockCoord min, BlockCoor
 	return corner_block;
 }
 
-std::optional<glm::vec3> corner_intersection(const glm::vec3 vel, BlockCoord min, BlockCoord max, GetBlockFunc getBlock) {
+std::optional<glm::vec3> corner_intersection(const glm::vec3 vel, BlockCoord min, BlockCoord max, GetBlockFunc &getBlock) {
 	if (vel.x == 0 || vel.y == 0 || vel.z == 0) {
 		return std::nullopt;
 	}
