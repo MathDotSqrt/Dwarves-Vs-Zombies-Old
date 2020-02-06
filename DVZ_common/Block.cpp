@@ -5,7 +5,7 @@ using namespace Voxel;
 //#define IMG_WIDTH 256
 //#define IMG_HEIGHT 256
 
-BlockManager::BlockManager(){
+BlockManager::BlockManager() {
 	BlockAttribs AIR(
 		BlockType::BLOCK_TYPE_DEFAULT,
 		MeshType::MESH_TYPE_NONE,
@@ -102,7 +102,7 @@ void BlockManager::addBlock(BlockAttribs block) {
 	this->blockAttribs[block.blockType] = block;
 }
 
-BlockAttribs::BlockAttribs(){
+BlockAttribs::BlockAttribs() {
 	blockType = BlockType::BLOCK_TYPE_INVALID;
 	meshType = MeshType::MESH_TYPE_BLOCK;
 	occludeType = OccludeType::OCCLUDE_TYPE_ALL;
@@ -127,21 +127,21 @@ BlockAttribs::BlockAttribs(BlockType block, MeshType mesh, OccludeType occlude, 
 	this->color = color;
 }
 
-BlockTexCoords::BlockTexCoords(){
-	
+BlockTexCoords::BlockTexCoords() {
+
 }
 
 BlockTexCoords::BlockTexCoords(uint8 r, uint8 c, uint8 numRows, uint8 numCols) {
 	for (int i = 0; i < 6; i++) {
 		this->texCoords[i].row = r;
 		this->texCoords[i].col = c;
-		
+
 	}
 }
 
 BlockTexCoords::BlockTexCoords(std::vector<uint8> rc, uint8 numRows, uint8 numCols) {
 	assert(rc.size() % 2 == 0);
-	assert(rc.size() <= 6*2);
+	assert(rc.size() <= 6 * 2);
 
 	if (rc.size() == 4) {
 		for (int i = 0; i < 6; i++) {

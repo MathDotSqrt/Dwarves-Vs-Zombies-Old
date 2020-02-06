@@ -16,6 +16,9 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)AABB.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)Block.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Header Files">
@@ -24,5 +27,10 @@
     <Filter Include="Source Files">
       <UniqueIdentifier>{e02c7964-8d20-454e-a166-2fe1d438a72d}</UniqueIdentifier>
     </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="$(MSBuildThisFileDirectory)Block.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

@@ -197,7 +197,6 @@
     <ClCompile Include="Allocator.cpp" />
     <ClCompile Include="AllocatorHandle.cpp" />
     <ClCompile Include="Attrib.cpp" />
-    <ClCompile Include="Block.cpp" />
     <ClCompile Include="Chunk.cpp" />
     <ClCompile Include="ChunkGeometry.cpp" />
     <ClCompile Include="ChunkLightEngine.cpp" />
@@ -249,7 +248,6 @@
     <ClInclude Include="Allocator.h" />
     <ClInclude Include="AllocatorHandle.h" />
     <ClInclude Include="Attrib.h" />
-    <ClInclude Include="Block.h" />
     <ClInclude Include="blockingconcurrentqueue.h" />
     <ClInclude Include="Chunk.h" />
     <ClInclude Include="ChunkGeometry.h" />

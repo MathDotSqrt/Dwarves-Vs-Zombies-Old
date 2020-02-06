@@ -1,13 +1,14 @@
 #pragma once
+#pragma once
 #include "common.h"
 #include "glm.hpp"
 #include <vector>
-#include "../DVZ_common/BlockTypeEnum.h"
+#include "BlockTypeEnum.h"
 
 namespace Voxel {
 	//constexpr float BLOCK_RENDER_SIZE = 1.0f;
 
-	enum class MeshType: uint8 {
+	enum class MeshType : uint8 {
 		MESH_TYPE_NONE,
 		MESH_TYPE_BLOCK,
 		MESH_TYPE_X
@@ -108,11 +109,11 @@ namespace Voxel {
 
 	struct Block {
 		BlockType type;
-		Block() : type(BlockType::BLOCK_TYPE_DEFAULT){
+		Block() : type(BlockType::BLOCK_TYPE_DEFAULT) {
 		}
 
 
-		Block(BlockType type) : type(type){
+		Block(BlockType type) : type(type) {
 		}
 
 		bool operator==(const Block &other) {
@@ -122,7 +123,7 @@ namespace Voxel {
 		bool operator!=(const Block &other) {
 			return this->type != other.type;
 		}
-		
+
 		inline MeshType getMeshType() const {
 			return BlockManager::getInstance()->getBlockAttrib(type)->meshType;
 
