@@ -56,6 +56,7 @@ namespace Voxel {
 	};
 
 	union BlockTexCoords {
+		//annoyingly i have to name this struct for the linux build for block
 		struct {
 			SpriteTexCoords top;
 			SpriteTexCoords bottom;

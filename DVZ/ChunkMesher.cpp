@@ -207,60 +207,60 @@ void ChunkMesher::createCulledCube(int x, int y, int z, Block b, LightFace l, Ch
 	/*FRONT*/
 	if (!tags.pz) {
 		glm::i8vec3 n0(0, 0, 1);
-		v0 = { glm::u8vec4(p0, l.pz), n0, uv.front.uv2() };
-		v1 = { glm::u8vec4(p1, l.pz), n0, uv.front.uv3() };
-		v2 = { glm::u8vec4(p2, l.pz), n0, uv.front.uv1() };
-		v3 = { glm::u8vec4(p3, l.pz), n0, uv.front.uv0() };
+		v0 = { glm::u8vec4(p0, l.pz), n0, uv.coord.front.uv2() };
+		v1 = { glm::u8vec4(p1, l.pz), n0, uv.coord.front.uv3() };
+		v2 = { glm::u8vec4(p2, l.pz), n0, uv.coord.front.uv1() };
+		v3 = { glm::u8vec4(p3, l.pz), n0, uv.coord.front.uv0() };
 		geometry->appendFace(v0, v1, v2, v3);
 	}
 
 	/*BACK*/
 	if (!tags.nz) {
 		glm::i8vec3 n1(0, 0, -1);
-		v0 = { glm::u8vec4(p4, l.nz), n1, uv.back.uv2() };
-		v1 = { glm::u8vec4(p5, l.nz), n1, uv.back.uv3() };
-		v2 = { glm::u8vec4(p6, l.nz), n1, uv.back.uv1() };
-		v3 = { glm::u8vec4(p7, l.nz), n1, uv.back.uv0() };
+		v0 = { glm::u8vec4(p4, l.nz), n1, uv.coord.back.uv2() };
+		v1 = { glm::u8vec4(p5, l.nz), n1, uv.coord.back.uv3() };
+		v2 = { glm::u8vec4(p6, l.nz), n1, uv.coord.back.uv1() };
+		v3 = { glm::u8vec4(p7, l.nz), n1, uv.coord.back.uv0() };
 		geometry->appendFace(v0, v1, v2, v3);
 	}
 
 	/*LEFT*/
 	if (!tags.nx) {
 		glm::i8vec3 n2(-1, 0, 0);
-		v0 = { glm::u8vec4(p5, l.nx), n2, uv.left.uv2() };
-		v1 = { glm::u8vec4(p0, l.nx), n2, uv.left.uv3() };
-		v2 = { glm::u8vec4(p3, l.nx), n2, uv.left.uv1() };
-		v3 = { glm::u8vec4(p6, l.nx), n2, uv.left.uv0() };
+		v0 = { glm::u8vec4(p5, l.nx), n2, uv.coord.left.uv2() };
+		v1 = { glm::u8vec4(p0, l.nx), n2, uv.coord.left.uv3() };
+		v2 = { glm::u8vec4(p3, l.nx), n2, uv.coord.left.uv1() };
+		v3 = { glm::u8vec4(p6, l.nx), n2, uv.coord.left.uv0() };
 		geometry->appendFace(v0, v1, v2, v3);
 	}
 
 	/*RIGHT*/
 	if (!tags.px) {
 		glm::i8vec3 n3(1, 0, 0);
-		v0 = { glm::u8vec4(p1, l.px), n3, uv.right.uv2() };
-		v1 = { glm::u8vec4(p4, l.px), n3, uv.right.uv3() };
-		v2 = { glm::u8vec4(p7, l.px), n3, uv.right.uv1() };
-		v3 = { glm::u8vec4(p2, l.px), n3, uv.right.uv0() };
+		v0 = { glm::u8vec4(p1, l.px), n3, uv.coord.right.uv2() };
+		v1 = { glm::u8vec4(p4, l.px), n3, uv.coord.right.uv3() };
+		v2 = { glm::u8vec4(p7, l.px), n3, uv.coord.right.uv1() };
+		v3 = { glm::u8vec4(p2, l.px), n3, uv.coord.right.uv0() };
 		geometry->appendFace(v0, v1, v2, v3);
 	}
 
 	/*TOP*/
 	if (!tags.py) {
 		glm::i8vec3 n4(0, 1, 0);
-		v0 = { glm::u8vec4(p3, l.py), n4, uv.top.uv2() };
-		v1 = { glm::u8vec4(p2, l.py), n4, uv.top.uv3() };
-		v2 = { glm::u8vec4(p7, l.py), n4, uv.top.uv1() };
-		v3 = { glm::u8vec4(p6, l.py), n4, uv.top.uv0() };
+		v0 = { glm::u8vec4(p3, l.py), n4, uv.coord.top.uv2() };
+		v1 = { glm::u8vec4(p2, l.py), n4, uv.coord.top.uv3() };
+		v2 = { glm::u8vec4(p7, l.py), n4, uv.coord.top.uv1() };
+		v3 = { glm::u8vec4(p6, l.py), n4, uv.coord.top.uv0() };
 		geometry->appendFace(v0, v1, v2, v3);
 	}
 
 	/*BOTTOM*/
 	if (!tags.ny) {
 		glm::i8vec3 n5(0, -1, 0);
-		v0 = { glm::u8vec4(p1, l.ny), n5, uv.bottom.uv2() };
-		v1 = { glm::u8vec4(p0, l.ny), n5, uv.bottom.uv3() };
-		v2 = { glm::u8vec4(p5, l.ny), n5, uv.bottom.uv1() };
-		v3 = { glm::u8vec4(p4, l.ny), n5, uv.bottom.uv0() };
+		v0 = { glm::u8vec4(p1, l.ny), n5, uv.coord.bottom.uv2() };
+		v1 = { glm::u8vec4(p0, l.ny), n5, uv.coord.bottom.uv3() };
+		v2 = { glm::u8vec4(p5, l.ny), n5, uv.coord.bottom.uv1() };
+		v3 = { glm::u8vec4(p4, l.ny), n5, uv.coord.bottom.uv0() };
 		geometry->appendFace(v0, v1, v2, v3);
 	}
 }
@@ -291,17 +291,17 @@ void ChunkMesher::createX(int x, int y, int z, Block b, Light l, ChunkGeometry *
 	BlockVertex v0, v1, v2, v3;
 
 	glm::i8vec3 n0(0, 0, 0);
-	v0 = { p0, n0, uv.front.uv2() };
-	v1 = { p4, n0, uv.front.uv3() };
-	v2 = { p7, n0, uv.front.uv1() };
-	v3 = { p3, n0, uv.front.uv0() };
+	v0 = { p0, n0, uv.coord.front.uv2() };
+	v1 = { p4, n0, uv.coord.front.uv3() };
+	v2 = { p7, n0, uv.coord.front.uv1() };
+	v3 = { p3, n0, uv.coord.front.uv0() };
 	geometry->appendFace(v0, v1, v2, v3);
 	geometry->appendFace(v1, v0, v3, v2);
 
-	v0 = { p1, n0, uv.front.uv2() };
-	v1 = { p5, n0, uv.front.uv3() };
-	v2 = { p6, n0, uv.front.uv1() };
-	v3 = { p2, n0, uv.front.uv0() };
+	v0 = { p1, n0, uv.coord.front.uv2() };
+	v1 = { p5, n0, uv.coord.front.uv3() };
+	v2 = { p6, n0, uv.coord.front.uv1() };
+	v3 = { p2, n0, uv.coord.front.uv0() };
 	geometry->appendFace(v0, v1, v2, v3);
 	geometry->appendFace(v1, v0, v3, v2);
 }
