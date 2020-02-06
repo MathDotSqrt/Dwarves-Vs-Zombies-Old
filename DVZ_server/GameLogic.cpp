@@ -4,6 +4,7 @@
 #include "NetUtil.h"
 #include "ChunkManager.h"
 #include "RLEncoder.h"
+#include "VoxelCollision.h"
 
 using namespace GameLogic;
 
@@ -90,4 +91,23 @@ void GameLogic::voxel_system(EntityAdmin &admin, float delta) {
 		bound.z = (int)(pos.z / Voxel::CHUNK_RENDER_WIDTH_Z);
 	});
 
+}
+
+void GameLogic::voxel_collision_system(EntityAdmin &admin, float delta) {
+	using namespace Component;
+	auto &registry = admin.registry;
+
+	const auto &manager = registry.ctx<Voxel::ChunkManager>();
+
+	Physics::GetBlockFunc getBlockFunc = [&manager](const glm::i32vec3 &coord) {
+		return manager.getBlock(coord);
+	};
+
+
+	auto view = registry.view<Position, Velocity, const Physics::AABB>();
+	view.each([&getBlockFunc, delta](auto &pos, auto &vel, const auto &aabb) {
+		vel = face_collision_handling(pos, vel, aabb, delta, getBlockFunc);
+		vel = edge_collision_handling(pos, vel, aabb, delta, getBlockFunc);
+		vel = corner_collision_handling(pos, vel, aabb, delta, getBlockFunc);
+	});
 }

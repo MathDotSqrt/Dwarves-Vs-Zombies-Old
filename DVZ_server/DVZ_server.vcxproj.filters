@@ -116,9 +116,6 @@
     <ClInclude Include="MathUtil.h">
       <Filter>Header Files\Util</Filter>
     </ClInclude>
-    <ClInclude Include="Block.h">
-      <Filter>Header Files\Voxel</Filter>
-    </ClInclude>
     <ClInclude Include="VoxelContainer.h">
       <Filter>Header Files\Voxel</Filter>
     </ClInclude>

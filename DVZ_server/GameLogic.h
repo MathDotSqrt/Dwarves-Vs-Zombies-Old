@@ -6,4 +6,5 @@ namespace GameLogic {
 	void movement_system(EntityAdmin &admin, float delta);
 	void afk_system(EntityAdmin &admin, float delta);
 	void voxel_system(EntityAdmin &admin, float delta);
+	void voxel_collision_system(EntityAdmin &admin, float delta);
 }

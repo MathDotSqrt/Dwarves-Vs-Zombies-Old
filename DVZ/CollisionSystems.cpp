@@ -12,7 +12,7 @@ void System::voxel_collision_system(Engine &engine, float delta) {
 
 	const auto &manager = engine.ctx<Voxel::ChunkManager>();
 	Physics::GetBlockFunc getBlockFunc = [&manager](const glm::i32vec3 &coord) {
-		return manager.getBlockIfMapped(coord).type;
+		return manager.getBlockIfMapped(coord);
 	};
 
 

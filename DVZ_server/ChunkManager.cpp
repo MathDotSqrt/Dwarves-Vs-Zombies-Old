@@ -65,13 +65,21 @@ Block ChunkManager::getBlock(int x, int y, int z) const {
 	int cy = y >> CHUNK_SHIFT_Y;
 	int cz = z >> CHUNK_SHIFT_Z;
 
-	const auto &chunk = getChunk(cx, cz);
+	if (cx >= MIN_CHUNK_X && cx <= MAX_CHUNK_X && cz >= MIN_CHUNK_Z && cz <= MAX_CHUNK_Z) {
+		const auto &chunk = getChunk(cx, cz);
 
-	int bx = x & CHUNK_BLOCK_POS_MASK_X;
-	int by = y & CHUNK_BLOCK_POS_MASK_Y;
-	int bz = z & CHUNK_BLOCK_POS_MASK_Z;
+		int bx = x & CHUNK_BLOCK_POS_MASK_X;
+		int by = y & CHUNK_BLOCK_POS_MASK_Y;
+		int bz = z & CHUNK_BLOCK_POS_MASK_Z;
 
-	return chunk.getBlock(bx, by, bz);
+		return chunk.getBlock(bx, by, bz);
+	}
+
+	return Block(BlockType::BLOCK_TYPE_DEFAULT);
+}
+
+Block ChunkManager::getBlock(glm::i32vec3 coord) const {
+	return getBlock(coord.x, coord.y, coord.z);
 }
 
 Voxel::FlatVoxelContainer* ChunkManager::allocFlatVoxel() {

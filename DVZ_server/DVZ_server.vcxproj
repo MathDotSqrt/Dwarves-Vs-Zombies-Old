@@ -208,7 +208,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Allocator.h" />
-    <ClInclude Include="Block.h" />
     <ClInclude Include="Chunk.h" />
     <ClInclude Include="ChunkManager.h" />
     <ClInclude Include="ChunkModStamp.h" />
