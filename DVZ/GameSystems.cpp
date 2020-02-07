@@ -79,9 +79,10 @@ void System::input_system(Engine &engine, float delta) {
 		const glm::quat qPitch = glm::angleAxis((float)-mouseDelta.y * TURN_SPEED / 100.0f, (glm::vec3)dir.right);
 		
 		rot = (qYaw * (rot)) * qPitch;
-		const auto move_dir = glm::quat(glm::vec3(0, glm::yaw(rot), 0));
 
-		
+		const auto yaw = glm::yaw(rot);
+		const auto roll = glm::roll(rot);
+		const auto move_dir = glm::quat(glm::vec3(roll, yaw, roll));
 
 		const glm::vec3 newForward = move_dir * userForward;
 		const glm::vec3 newRight = move_dir * userRight;
