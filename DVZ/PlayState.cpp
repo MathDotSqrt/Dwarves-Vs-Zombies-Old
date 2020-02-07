@@ -92,8 +92,8 @@ void PlayState::init() {
 	/*SYSTEM*/
 	e.addSystem(StatelessSystem(System::shader_update_system, std::chrono::seconds(1)));
 	e.addSystem(StatelessSystem(System::netword_system));
-	e.addSystem(StatelessSystem(System::input_system));
 	e.addSystem(StatelessSystem(System::gravity_system));
+	e.addSystem(StatelessSystem(System::input_system));
 	e.addSystem(StatelessSystem(System::voxel_collision_system));
 	e.addSystem(StatelessSystem(System::movement_system));
 	e.addSystem(StatelessSystem(System::voxel_system));

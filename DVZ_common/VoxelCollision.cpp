@@ -78,8 +78,8 @@ glm::vec3 Physics::edge_collision_handling(glm::vec3 pos, glm::vec3 vel, Physics
 		const auto delta_y = glm::abs(edge_y_pos - current_y_pos);
 
 		//cant push in axis direction if there exists other edges in the way
-		const auto can_push_x = !edge_yz.has_value();
-		const auto can_push_y = !edge_zx.has_value();
+		const auto can_push_x = true;// !edge_yz.has_value();
+		const auto can_push_y = true;// !edge_zx.has_value();
 
 		//the push occurs only on the axis with the smallest intersection for edge xy
 		if (delta_x < delta_y && can_push_x) {
@@ -100,8 +100,8 @@ glm::vec3 Physics::edge_collision_handling(glm::vec3 pos, glm::vec3 vel, Physics
 		const auto delta_y = glm::abs(edge_y_pos - current_y_pos);
 		const auto delta_z = glm::abs(edge_z_pos - current_z_pos);
 
-		const auto can_push_y = !edge_zx.has_value();
-		const auto can_push_z = !edge_xy.has_value();
+		const auto can_push_y = true;// !edge_zx.has_value();
+		const auto can_push_z = true;// !edge_xy.has_value();
 
 		if (delta_y < delta_z && can_push_y) {
 			vel.y = 0;
@@ -121,8 +121,8 @@ glm::vec3 Physics::edge_collision_handling(glm::vec3 pos, glm::vec3 vel, Physics
 		const auto delta_z = glm::abs(edge_z_pos - current_z_pos);
 		const auto delta_x = glm::abs(edge_x_pos - current_x_pos);
 
-		const auto can_push_z = !edge_xy.has_value();
-		const auto can_push_x = !edge_yz.has_value();
+		const auto can_push_z = true;// !edge_xy.has_value();
+		const auto can_push_x = true;// !edge_yz.has_value();
 
 		if (delta_z < delta_x && can_push_z) {
 			vel.z = 0;
@@ -167,7 +167,7 @@ glm::vec3 Physics::corner_collision_handling(glm::vec3 pos, glm::vec3 vel, Physi
 glm::i32vec2 convert(float sign, int min, int max) {
 	//this is the function that takes in the aabb min and max block coord 
 	//and the relevent sign component of the vel vector and returns the inclusive bounds
-	//for the block samples for face collision handling
+	//for the block samples for face/edge collision handling
 
 
 	//if min==max, the bounds returned will be the same
