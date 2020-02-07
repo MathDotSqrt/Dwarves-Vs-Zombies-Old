@@ -21,6 +21,21 @@
 
 using namespace System;
 
+void System::gravity_system(Engine &engine, float delta) {
+	using namespace Component;
+	engine.view<Velocity, Acceleration>().each([delta](auto &vel, auto &accel) {
+		accel = glm::vec3(0, -15.0f, 0);
+		vel += accel * delta;
+	});
+}
+
+void System::movement_system(Engine &engine, float delta) {
+	using namespace Component;
+
+	engine.group<Position, Velocity>().each([delta](auto &pos, auto &vel) {
+		pos += vel * delta;
+	});
+}
 
 void System::input_system(Engine &engine, float delta) {
 	using namespace Component;
@@ -59,16 +74,23 @@ void System::input_system(Engine &engine, float delta) {
 		glm::vec3 userForward = dir.forward * forward * (input.ctrl ? FAST_SPEED : SPEED);
 		glm::vec3 userRight = dir.right * right * (input.ctrl ? FAST_SPEED : SPEED);
 
-		glm::vec3 newForward = rot * userForward;
-		glm::vec3 newRight = rot * userRight;
-
-		vel = newForward + newRight;
-		vel.y += up * (input.ctrl ? FAST_SPEED : SPEED);
-
 		//todo see if i need to put this above newForward and newRight code
 		glm::quat qYaw = glm::angleAxis((float)-mouseDelta.x * TURN_SPEED / 100.0f, (glm::vec3)dir.up);
 		glm::quat qPitch = glm::angleAxis((float)-mouseDelta.y * TURN_SPEED / 100.0f, (glm::vec3)dir.right);
 		rot = (qYaw * (rot)) * qPitch;
+
+		glm::vec3 newForward = rot * userForward;
+		glm::vec3 newRight = rot * userRight;
+
+		const glm::vec3 new_vel = newForward + newRight + glm::vec3(0, up * (input.ctrl ? FAST_SPEED : SPEED), 0);
+
+		const float new_y = up == 0 ? vel.y : glm::min(glm::max(new_vel.y + vel.y, input.ctrl ? -FAST_SPEED : -SPEED), input.ctrl ? FAST_SPEED : SPEED);
+
+		vel = glm::vec3(new_vel.x, new_y, new_vel.z);
+
+		
+
+		
 
 	});
 
@@ -80,131 +102,6 @@ void System::input_system(Engine &engine, float delta) {
 		comp.z = 0;
 	}
 }
-
-void System::movement_system(Engine &engine, float delta) {
-	using namespace Component;
-	
-	engine.group<Position, Velocity>().each([delta](auto &pos, auto &vel) {
-		pos += vel * delta;
-	});
-}
-
-//void System::voxel_collision_system(Engine &engine, float delta) {
-//	using namespace Component;
-//	auto &manager = engine.ctx<Voxel::ChunkManager>();
-//
-//
-//
-//	auto view = engine.view<const Physics::AABB, Position, Velocity>();
-//	view.each([delta, &manager](const auto &aabb, auto &pos, auto &vel) {
-//		constexpr BLOCK_SCALE = 1.0f;
-//		const auto AIR = Voxel::Block(Voxel::BLOCK_TYPE_DEFAULT);
-//
-//		std::optional<float> xaxis_coord;
-//		std::optional<float> yaxis_coord;
-//		std::optional<float> zaxis_coord;
-//
-//		const auto next_pos = pos + vel * delta;
-//
-//		const auto min = pos + aabb.getMin();
-//		const auto max = pos + aabb.getMax();
-//		const auto width = max.x - min.x;
-//		const auto height = max.y - min.y;
-//		const auto lendth = max.z - min.z;
-//
-//
-//		const auto minBlock = glm::i32vec3(glm::floor(min));
-//		const auto maxBlock = glm::i32vec3(glm::floor(max));
-//
-//
-//		//x axis
-//
-//		const auto min_x = glm::i32vec3(vel.x > 0 ? maxBlock.x : minBlock.x, minBlock.y, minBlock.z);
-//		const auto max_x = glm::i32vec3(vel.x > 0 ? maxBlock.x : minBlock.x, maxBlock.y, maxBlock.z);
-//		auto Voxel::CoordIterator x_iter(min_x, max_x);
-//		for (int i = 0; i < x_iter.length(); i++) {
-//			const auto block_coord = x_iter.next();
-//			const auto block = manager.getBlockIfMapped(block_coord);
-//
-//			if (block.getMeshType() != Voxel::MeshType::MESH_TYPE_BLOCK) {
-//				continue;
-//			}
-//
-//			if (!xaxis_coord.has_value()) {
-//				xaxis_coord = vel.x > 0
-//
-//			}
-//			else {
-//			}
-//
-//		}
-//		
-//
-//
-//		if (vel.x > 0) {		//moving right
-//			for (int by = minBlock.y + 1; by < maxBlock.y; by++) {
-//				for (int bz = minBlock.z + 1; bz < maxBlock.z; bz++) {
-//					const auto block_coord = glm::i32vec3(maxBlock.x, by, bz);
-//					Voxel::Block block = manager.getBlock(block_coord);
-//					if (block.getMeshType() == Voxel::MeshType::MESH_TYPE_BLOCK) {
-//						if (xaxis.has_value() == false) {
-//							xaxis = Physics::AABB(block_coord, block_coord + glm::i32vec3(1));
-//						}
-//
-//						
-//					}
-//						
-//				}
-//			}
-//		}
-//		else if (vel.x < 0) {	//moving left
-//			for (int by = minBlock.y + 1; by < maxBlock.y; by++) {
-//				for (int bz = minBlock.z + 1; bz < maxBlock.z; bz++) {
-//					if (manager.getBlock(minBlock.x, by, bz).getMeshType() == Voxel::MeshType::MESH_TYPE_BLOCK)
-//						verticalWall.push_back(glm::i32vec3(minBlock.x, by, bz));
-//				}
-//			}
-//		}
-//
-//		if (vel.z > 0) {		//moving forward
-//			for (int by = minBlock.y + 1; by < maxBlock.y; by++) {
-//				for (int bx = minBlock.x + 1; bx < maxBlock.x; bx++) {
-//					if (manager.getBlock(bx, by, maxBlock.z).getMeshType() == Voxel::MeshType::MESH_TYPE_BLOCK)
-//						verticalWall.push_back(glm::i32vec3(bx, by, maxBlock.z));
-//				}
-//			}
-//		}
-//		else if (vel.z < 0) {	//moving back
-//			for (int by = minBlock.y + 1; by < maxBlock.y; by++) {
-//				for (int bx = minBlock.x + 1; bx < maxBlock.x; bx++) {
-//					if (manager.getBlock(bx, by, minBlock.z).getMeshType() == Voxel::MeshType::MESH_TYPE_BLOCK)
-//						verticalWall.push_back(glm::i32vec3(bx, by, minBlock.z));
-//				}
-//			}
-//		}
-//
-//		if (vel.y > 0) {		//moving up
-//			for (int bz = minBlock.z + 1; bz < maxBlock.z; bz++) {
-//				for (int bx = minBlock.x + 1; bx < maxBlock.x; bx++) {
-//					if (manager.getBlock(bx, by, minBlock.z).getMeshType() == Voxel::MeshType::MESH_TYPE_BLOCK)
-//						verticalWall.push_back(glm::i32vec3(bx, by, minBlock.z));
-//				}
-//			}
-//		}
-//		else if (vel.y < 0) {	//moving down
-//			for (int bz = minBlock.z + 1; bz < maxBlock.z; bz++) {
-//				for (int bx = minBlock.x + 1; bx < maxBlock.x; bx++) {
-//					if (manager.getBlock(bx, by, minBlock.z).getMeshType() == Voxel::MeshType::MESH_TYPE_BLOCK)
-//						verticalWall.push_back(glm::i32vec3(bx, by, minBlock.z));
-//				}
-//			}
-//		}
-//
-//
-//
-//	});
-//
-//}
 
 void System::voxel_system(Engine &engine, float delta) {
 	using namespace Component;

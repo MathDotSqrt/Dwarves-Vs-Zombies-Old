@@ -16,12 +16,12 @@ void System::voxel_collision_system(Engine &engine, float delta) {
 	};
 
 
-	auto view = engine.view<Position, Velocity, const Physics::AABB>();
-	view.each([&getBlockFunc, delta](auto &pos, auto &vel, const auto &aabb) {
+	auto view = engine.view<Position, Velocity, VoxelCollision>();
+	view.each([&getBlockFunc, delta](auto &pos, auto &vel, auto &collision) {
 		
-		vel = face_collision_handling(pos, vel, aabb, delta, getBlockFunc);
-		vel = edge_collision_handling(pos, vel, aabb, delta, getBlockFunc);
-		vel = corner_collision_handling(pos, vel, aabb, delta, getBlockFunc);
+		vel = face_collision_handling(pos, vel, collision.aabb, delta, getBlockFunc);
+		vel = edge_collision_handling(pos, vel, collision.aabb, delta, getBlockFunc);
+		vel = corner_collision_handling(pos, vel, collision.aabb, delta, getBlockFunc);
 
 	});
 }

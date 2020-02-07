@@ -25,7 +25,7 @@ void incomming_connection_packet(RakPeerInterface *peer, Packet *packet, entt::r
 
 	entt::entity player = registry.create();
 	registry.assign<NetClient>(player, packet->guid);
-	registry.assign<const Physics::AABB>(player, glm::vec3(-.3f, -1.3f, -.3f), glm::vec3(.3f, .3f, .3f));
+	registry.assign<Component::VoxelCollision>(player, Physics::AABB(glm::vec3(-.3f, -1.5f, -.3f), glm::vec3(.3f, .3f, .3f)));
 	registry.assign<Position>(player, glm::vec3(0, 20, 0));
 	registry.assign<Rotation>(player, glm::vec3(0, 0, 0));
 	registry.assign<Velocity>(player, glm::vec3(0, 0, 0));

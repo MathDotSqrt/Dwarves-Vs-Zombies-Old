@@ -102,6 +102,7 @@ entt::entity Engine::addPlayer(float x, float y, float z) {
 	this->assign<Position>(id, glm::vec3(x, y, z));
 	this->assign<Rotation>(id, glm::quat(1, 0, 0, 0));
 	this->assign<Velocity>(id, glm::vec3(0, 0, 0));
+	this->assign<Acceleration>(id, glm::vec3(0, -1, 0));
 	this->assign<RotationalVelocity>(id, glm::vec3(0, 0, 0));
 	this->assign<Dir>(id, glm::vec3(0, 0, -1), glm::vec3(0, 1, 0), glm::vec3(1, 0, 0));
 	this->assign<Input>(id);

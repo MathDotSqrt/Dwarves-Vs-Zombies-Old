@@ -2,6 +2,9 @@
 
 #include "glm.hpp"
 #include "gtx/quaternion.hpp"
+#include "AABB.h"
+#include "Block.h"
+#include <optional>
 
 namespace Component {
 	struct Player {
@@ -36,5 +39,20 @@ namespace Component {
 		glm::vec3 forward;
 		glm::vec3 up;
 		glm::vec3 right;
+	};
+
+
+
+	struct VoxelCollision {
+		Physics::AABB aabb;
+
+		std::optional<Voxel::Block> px = std::nullopt;
+		std::optional<Voxel::Block> nx = std::nullopt;
+		std::optional<Voxel::Block> py = std::nullopt;
+		std::optional<Voxel::Block> ny = std::nullopt;
+		std::optional<Voxel::Block> pz = std::nullopt;
+		std::optional<Voxel::Block> nz = std::nullopt;
+
+		VoxelCollision(Physics::AABB aabb) : aabb(aabb) {}
 	};
 }

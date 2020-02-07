@@ -31,7 +31,7 @@ void PlayState::init() {
 	entt::entity playerID = e.addPlayer(0, 20, 0);
 	unsigned int pointLightInstanceID = scene.createPointLightInstance();
 	e.assign<Component::PointLight>(playerID, pointLightInstanceID, glm::vec3(1, 1, 1), 60.0f);
-	e.assign<const Physics::AABB>(playerID, Physics::AABB(glm::vec3(-.3f, -1.3f, -.3f), glm::vec3(.3f, .3f, .3f)));
+	e.assign<Component::VoxelCollision>(playerID, Component::VoxelCollision(Physics::AABB(glm::vec3(-.3f, -1.5f, -.3f), glm::vec3(.3f, .3f, .3f))));
 	/*PLAYER*/
 	
 	/*TREE*/
@@ -90,10 +90,10 @@ void PlayState::init() {
 	/*NET*/
 
 	/*SYSTEM*/
+	e.addSystem(StatelessSystem(System::shader_update_system, std::chrono::seconds(1)));
 	e.addSystem(StatelessSystem(System::netword_system));
 	e.addSystem(StatelessSystem(System::input_system));
-	e.addSystem(StatelessSystem(System::shader_update_system, std::chrono::seconds(1)));
-
+	e.addSystem(StatelessSystem(System::gravity_system));
 	e.addSystem(StatelessSystem(System::voxel_collision_system));
 	e.addSystem(StatelessSystem(System::movement_system));
 	e.addSystem(StatelessSystem(System::voxel_system));
