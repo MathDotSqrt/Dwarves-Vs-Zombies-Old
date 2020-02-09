@@ -69,6 +69,7 @@ void run() {
 	Graphics::Shader::disposeAll();
 }
 
+
 int main(void) {
 	run();
 	return 0;

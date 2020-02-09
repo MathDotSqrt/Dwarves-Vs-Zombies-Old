@@ -24,7 +24,7 @@ using namespace System;
 void System::gravity_system(Engine &engine, float delta) {
 	using namespace Component;
 	engine.view<Velocity, Acceleration>().each([delta](auto &vel, auto &accel) {
-		accel = glm::vec3(0, -15.0f, 0);
+		accel = glm::vec3(0, -25.0f, 0);
 		vel += accel * delta;
 	});
 }
@@ -62,6 +62,12 @@ void System::input_system(Engine &engine, float delta) {
 	engine.group<Input>(entt::get<Dir, Rotation, Velocity>)
 		.each([delta](auto &input, auto &dir, auto &rot, auto &vel) {
 
+		auto remove_pitch_rot = [](const glm::quat &rot) {
+			const float yaw = glm::yaw(rot);
+			const float roll = glm::roll(rot);
+			return glm::quat(glm::vec3(roll, yaw, roll));
+		};
+
 		const float SPEED = 9.0f;
 		const float TURN_SPEED = .5f;
 		const float FAST_SPEED = 88.0f;
@@ -78,23 +84,26 @@ void System::input_system(Engine &engine, float delta) {
 		const glm::quat qYaw = glm::angleAxis((float)-mouseDelta.x * TURN_SPEED / 100.0f, (glm::vec3)dir.up);
 		const glm::quat qPitch = glm::angleAxis((float)-mouseDelta.y * TURN_SPEED / 100.0f, (glm::vec3)dir.right);
 		
-		rot = (qYaw * (rot)) * qPitch;
+		glm::quat newRot = (qYaw * (rot)) * qPitch;
 
-		const auto yaw = glm::yaw(rot);
-		const auto roll = glm::roll(rot);
-		const auto move_dir = glm::quat(glm::vec3(roll, yaw, roll));
+		const auto move_dir = remove_pitch_rot(newRot);
 
-		const glm::vec3 newForward = move_dir * userForward;
-		const glm::vec3 newRight = move_dir * userRight;
-		const glm::vec3 newUp = glm::vec3(0, up * (input.ctrl ? FAST_SPEED : SPEED), 0);
+		
 
-		const glm::vec3 input_vel = newForward + newRight + newUp;
+		const glm::vec3 moveForward = move_dir * userForward;
+		const glm::vec3 moveRight = move_dir * userRight;
+		const glm::vec3 moveUp = glm::vec3(0, up * (input.ctrl ? FAST_SPEED : SPEED), 0);
+
+		const glm::vec3 input_vel = moveForward + moveRight + moveUp;
+
+
 
 		if(up > 0)
 			vel = input_vel;
 		else
 			vel = glm::vec3(input_vel.x, vel.y, input_vel.z);
 
+		rot = newRot;
 
 	});
 
