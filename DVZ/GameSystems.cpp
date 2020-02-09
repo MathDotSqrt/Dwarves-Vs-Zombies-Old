@@ -75,26 +75,29 @@ void System::input_system(Engine &engine, float delta) {
 		const float forward = (float)input.up - (float)input.down;
 		const float right = (float)input.right - (float)input.left;
 		const float up = (float)input.space - (float)input.shift;
-		const glm::vec2 mouseDelta = input.mousePos[1] - input.mousePos[0];
+		const glm::vec2 mouse_delta = input.mousePos[1] - input.mousePos[0];
 
-		const glm::vec3 userForward = dir.forward * forward * (input.ctrl ? FAST_SPEED : SPEED);
-		const glm::vec3 userRight = dir.right * right * (input.ctrl ? FAST_SPEED : SPEED);
+		const glm::vec3 user_forward = dir.forward * forward * (input.ctrl ? FAST_SPEED : SPEED);
+		const glm::vec3 user_right = dir.right * right * (input.ctrl ? FAST_SPEED : SPEED);
 
 		//todo see if i need to put this above newForward and newRight code
-		const glm::quat qYaw = glm::angleAxis((float)-mouseDelta.x * TURN_SPEED / 100.0f, (glm::vec3)dir.up);
-		const glm::quat qPitch = glm::angleAxis((float)-mouseDelta.y * TURN_SPEED / 100.0f, (glm::vec3)dir.right);
+		const glm::quat q_yaw = glm::angleAxis((float)-mouse_delta.x * TURN_SPEED / 100.0f, (glm::vec3)dir.up);
+		const glm::quat q_pitch = glm::angleAxis((float)-mouse_delta.y * TURN_SPEED / 100.0f, (glm::vec3)dir.right);
 		
-		glm::quat newRot = (qYaw * (rot)) * qPitch;
-
-		const auto move_dir = remove_pitch_rot(newRot);
+		glm::quat new_rot = (q_yaw * (rot)) * q_pitch;
+		glm::quat move_dir = remove_pitch_rot(new_rot);
+		if (glm::dot(new_rot * dir.forward, move_dir * dir.forward) < 0) {
+			new_rot = q_yaw * rot;
+			move_dir = remove_pitch_rot(new_rot);
+		}
 
 		
 
-		const glm::vec3 moveForward = move_dir * userForward;
-		const glm::vec3 moveRight = move_dir * userRight;
-		const glm::vec3 moveUp = glm::vec3(0, up * (input.ctrl ? FAST_SPEED : SPEED), 0);
+		const glm::vec3 move_forward = move_dir * user_forward;
+		const glm::vec3 move_right = move_dir * user_right;
+		const glm::vec3 move_up = glm::vec3(0, up * (input.ctrl ? FAST_SPEED : SPEED), 0);
 
-		const glm::vec3 input_vel = moveForward + moveRight + moveUp;
+		const glm::vec3 input_vel = move_forward + move_right + move_up;
 
 
 
@@ -103,7 +106,7 @@ void System::input_system(Engine &engine, float delta) {
 		else
 			vel = glm::vec3(input_vel.x, vel.y, input_vel.z);
 
-		rot = newRot;
+		rot = new_rot;
 
 	});
 
