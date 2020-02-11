@@ -1,6 +1,4 @@
 #include "GameSystems.h"
-
-
 #include "zlib.h"
 #include "macrologger.h"
 #include "Engine.h"
@@ -16,9 +14,6 @@
 #include "Mesh.h"
 #include "Scene.h"
 #include <unordered_map>
-
-
-
 
 void update_player(Engine &engine, SLNet::Packet *packet) {
 	using namespace Component;
@@ -47,8 +42,10 @@ void update_player(Engine &engine, SLNet::Packet *packet) {
 
 		playerID = engine.create();
 		engine.assign<Position>(playerID, pos);
-		engine.assign<Rotation>(playerID, glm::quat(glm::vec3(0, 0, 0)));
+		//engine.assign<Velocity>(playerID, glm::vec3(0));
+		engine.assign<Rotation>(playerID, rot);
 		engine.assign<Scale>(playerID, glm::vec3(1, 1, 1));
+		engine.assign<VoxelCollision>(playerID, VoxelCollision(Physics::AABB(glm::vec3(-.3f, -1.5f, -.3f), glm::vec3(.3f, .3f, .3f))));
 		
 		auto instanceID = scene.createRenderInstance(mesh_cache.handle("SpunkWalker"_hs), Graphics::NormalMaterial());
 		engine.assign<RenderInstance>(playerID, instanceID);
@@ -179,21 +176,33 @@ void System::send_packet_system(Engine &engine, float delta) {
 	
 	auto view = engine.view<Player, Network>();
 	if (view.size()) {
+		//entt::entity playerID = *view.begin();
+		//auto &pos = engine.get<Position>(playerID);
+		//auto &rot = engine.get<Rotation>(playerID);
+		//auto &input = engine.get<Input>(playerID);
+		//auto &net = engine.get<Network>(playerID);
+		//SLNet::BitStream out;
+		//out.Write((SLNet::MessageID)ID_CLIENT_INPUT);
+		//out.Write(rot);
+		//out.Write(input.up);
+		//out.Write(input.down);
+		//out.Write(input.left);
+		//out.Write(input.right);
+		//out.Write(input.space);
+		//out.Write(input.shift);
+		//out.Write(input.ctrl);
+		////out.Write(input.mousePos[0]);
+		////out.Write(input.mousePos[1]);
+
+
 		entt::entity playerID = *view.begin();
 		auto &pos = engine.get<Position>(playerID);
 		auto &rot = engine.get<Rotation>(playerID);
-		auto &input = engine.get<Input>(playerID);
 		auto &net = engine.get<Network>(playerID);
 		SLNet::BitStream out;
-		out.Write((SLNet::MessageID)ID_CLIENT_INPUT);
+		out.Write((SLNet::MessageID)ID_CLIENT_MOVE);
+		out.Write(pos);
 		out.Write(rot);
-		out.Write(input.up);
-		out.Write(input.down);
-		out.Write(input.left);
-		out.Write(input.right);
-		out.Write(input.space);
-		out.Write(input.shift);
-		out.Write(input.ctrl);
 		//out.Write(input.mousePos[0]);
 		//out.Write(input.mousePos[1]);
 

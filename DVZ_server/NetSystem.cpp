@@ -25,7 +25,7 @@ void incomming_connection_packet(RakPeerInterface *peer, Packet *packet, entt::r
 
 	entt::entity player = registry.create();
 	registry.assign<NetClient>(player, packet->guid);
-	registry.assign<Component::VoxelCollision>(player, Physics::AABB(glm::vec3(-.3f, -1.5f, -.3f), glm::vec3(.3f, .3f, .3f)));
+	registry.assign<VoxelCollision>(player, Physics::AABB(glm::vec3(-.3f, -1.5f, -.3f), glm::vec3(.3f, .3f, .3f)));
 	registry.assign<Position>(player, glm::vec3(0, 20, 0));
 	registry.assign<Rotation>(player, glm::vec3(0, 0, 0));
 	registry.assign<Velocity>(player, glm::vec3(0, 0, 0));
@@ -80,6 +80,26 @@ void client_input_packet(Packet *packet, entt::registry &registry) {
 	input.ctrl = in.ReadBit();
 }
 
+void client_move_packet(Packet *packet, entt::registry &registry) {
+	using namespace Component;
+	auto &map = registry.ctx<ConnectedClientMap>();
+	auto iter = map.find(packet->guid);
+
+	if (iter == map.end()) {
+		return;
+	}
+
+	entt::entity clientEntity = map[packet->guid];
+
+	auto &pos = registry.get<Position>(clientEntity);
+	auto &rot = registry.get<Rotation>(clientEntity);
+
+	BitStream in(packet->data, packet->length, false);
+	in.IgnoreBytes(sizeof(MessageID));
+	in.Read(pos);
+	in.Read(rot);
+}
+
 void block_place_packet(Packet *packet, EntityAdmin &admin) {
 	
 	auto peer = admin.getPeer();
@@ -113,7 +133,10 @@ void System::net_update(EntityAdmin &admin, float delta) {
 			disconnection_packet(packet, registry);
 			break;
 		case ID_CLIENT_INPUT:
-			client_input_packet(packet, registry);
+			//client_input_packet(packet, registry);
+			break;
+		case ID_CLIENT_MOVE:
+			client_move_packet(packet, registry);
 			break;
 		case ID_BLOCK_PLACE:
 			block_place_packet(packet, admin);
@@ -144,9 +167,10 @@ void System::net_broadcast(EntityAdmin &admin, float delta) {
 	auto *peer = admin.getPeer();
 	auto &map = registry.ctx<ConnectedClientMap>();
 
-	auto view = registry.view<Position, Rotation>();
+	auto view = registry.view<NetClient, Position, Rotation>();
 
 	for (entt::entity e : view) {
+		NetClient client = view.get<NetClient>(e);
 		Position pos = view.get<Position>(e);
 		Rotation rot = view.get<Rotation>(e);
 
@@ -155,7 +179,7 @@ void System::net_broadcast(EntityAdmin &admin, float delta) {
 		stream.Write(e);
 		stream.Write(pos);
 		stream.Write(rot);
-		peer->Send(&stream, PacketPriority::MEDIUM_PRIORITY, PacketReliability::UNRELIABLE, 0, UNASSIGNED_RAKNET_GUID, true);
+		peer->Send(&stream, PacketPriority::MEDIUM_PRIORITY, PacketReliability::UNRELIABLE_SEQUENCED, 0, client.guid, true);
 	}
 }
 

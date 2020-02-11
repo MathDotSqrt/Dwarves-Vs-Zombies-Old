@@ -14,7 +14,7 @@
 EntityAdmin::EntityAdmin() : peer(SLNet::RakPeerInterface::GetInstance()), allocator(ALLOC_SIZE, malloc(ALLOC_SIZE)){
 	addSystemUpdateFunction(StatelessSystem(System::net_update));
 	addSystemUpdateFunction(StatelessSystem(GameLogic::gravity_system));
-	addSystemUpdateFunction(StatelessSystem(GameLogic::input_system));
+	//addSystemUpdateFunction(StatelessSystem(GameLogic::input_system));
 	addSystemUpdateFunction(StatelessSystem(GameLogic::afk_system));
 	addSystemUpdateFunction(StatelessSystem(GameLogic::voxel_collision_system));
 	addSystemUpdateFunction(StatelessSystem(GameLogic::movement_system));
