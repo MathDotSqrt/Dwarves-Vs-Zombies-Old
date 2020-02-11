@@ -71,6 +71,7 @@ void System::input_system(Engine &engine, float delta) {
 		const float SPEED = 9.0f;
 		const float TURN_SPEED = .5f;
 		const float FAST_SPEED = 88.0f;
+		const float LOOK_DOWN_CONSTANT = .01f;
 
 		const float forward = (float)input.up - (float)input.down;
 		const float right = (float)input.right - (float)input.left;
@@ -86,7 +87,7 @@ void System::input_system(Engine &engine, float delta) {
 		
 		glm::quat new_rot = (q_yaw * (rot)) * q_pitch;
 		glm::quat move_dir = remove_pitch_rot(new_rot);
-		if (glm::dot(new_rot * dir.forward, move_dir * dir.forward) < 0) {
+		if (glm::dot(new_rot * dir.forward, move_dir * dir.forward) < LOOK_DOWN_CONSTANT) {
 			new_rot = q_yaw * rot;
 			move_dir = remove_pitch_rot(new_rot);
 		}
