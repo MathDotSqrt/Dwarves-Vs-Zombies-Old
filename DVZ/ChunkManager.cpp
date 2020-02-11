@@ -242,6 +242,9 @@ void ChunkManager::setBlock(int x, int y, int z, Block block) {
 	chunk->setBlock(bx, by, bz, block);
 }
 
+void ChunkManager::setBlock(glm::i32vec3 block_coord, Block block) {
+	setBlock(block_coord.x, block_coord.y, block_coord.z, block);
+}
 //todo potential bug if chunk has weird width
 Block ChunkManager::getBlock(float x, float y, float z) {
 	return this->getBlock((int)x, (int)y, (int)z);

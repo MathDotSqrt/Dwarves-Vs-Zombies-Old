@@ -3,8 +3,9 @@
 #include "Components.h"
 #include "macrologger.h"
 
-#include "Window.h"
+#include "GameUtil.h"
 
+#include "Window.h"
 
 #include "glm.hpp"
 #include "VAO.h"
@@ -24,7 +25,7 @@ using namespace System;
 void System::gravity_system(Engine &engine, float delta) {
 	using namespace Component;
 	engine.view<Velocity, Acceleration>().each([delta](auto &vel, auto &accel) {
-		accel = glm::vec3(0, -25.0f, 0);
+		accel = glm::vec3(0, -35.0f, 0);
 		vel += accel * delta;
 	});
 }
@@ -62,45 +63,51 @@ void System::input_system(Engine &engine, float delta) {
 	engine.group<Input>(entt::get<Dir, Rotation, Velocity>)
 		.each([delta](auto &input, auto &dir, auto &rot, auto &vel) {
 
+		/*CONSTANTS*/
+		const float SPEED = 9.0f;
+		const float TURN_SPEED = .5f;
+		const float FAST_SPEED = 88.0f;
+		const float LOOK_DOWN_CONSTANT = .01f;
+		/*CONSTANTS*/
+
 		auto remove_pitch_rot = [](const glm::quat &rot) {
 			const float yaw = glm::yaw(rot);
 			const float roll = glm::roll(rot);
 			return glm::quat(glm::vec3(roll, yaw, roll));
 		};
 
-		const float SPEED = 9.0f;
-		const float TURN_SPEED = .5f;
-		const float FAST_SPEED = 88.0f;
-		const float LOOK_DOWN_CONSTANT = .01f;
-
+		
+		/*Movement scalars*/
 		const float forward = (float)input.up - (float)input.down;
 		const float right = (float)input.right - (float)input.left;
 		const float up = (float)input.space - (float)input.shift;
 		const glm::vec2 mouse_delta = input.mousePos[1] - input.mousePos[0];
+		/*Movement scalars*/
 
+		/*Movement input vectors/quaternions*/
 		const glm::vec3 user_forward = dir.forward * forward * (input.ctrl ? FAST_SPEED : SPEED);
 		const glm::vec3 user_right = dir.right * right * (input.ctrl ? FAST_SPEED : SPEED);
 
-		//todo see if i need to put this above newForward and newRight code
 		const glm::quat q_yaw = glm::angleAxis((float)-mouse_delta.x * TURN_SPEED / 100.0f, (glm::vec3)dir.up);
 		const glm::quat q_pitch = glm::angleAxis((float)-mouse_delta.y * TURN_SPEED / 100.0f, (glm::vec3)dir.right);
-		
+		/*Movement input vectors/quaternions*/
+
+		/*Camera rotation code*/
 		glm::quat new_rot = (q_yaw * (rot)) * q_pitch;
-		glm::quat move_dir = remove_pitch_rot(new_rot);
+		glm::quat move_dir = remove_pitch_rot(new_rot);		//rotation quaternion without pitch
 		if (glm::dot(new_rot * dir.forward, move_dir * dir.forward) < LOOK_DOWN_CONSTANT) {
 			new_rot = q_yaw * rot;
 			move_dir = remove_pitch_rot(new_rot);
 		}
+		/*Camera rotation code*/
 
-		
-
+		/*Actual velocity vectors*/
 		const glm::vec3 move_forward = move_dir * user_forward;
 		const glm::vec3 move_right = move_dir * user_right;
 		const glm::vec3 move_up = glm::vec3(0, up * (input.ctrl ? FAST_SPEED : SPEED), 0);
 
 		const glm::vec3 input_vel = move_forward + move_right + move_up;
-
-
+		/*Actual velocity vectors*/
 
 		if(up > 0)
 			vel = input_vel;
@@ -124,31 +131,29 @@ void System::voxel_system(Engine &engine, float delta) {
 	using namespace Component;
 	
 	Voxel::ChunkManager &manager = engine.ctx<Voxel::ChunkManager>();
-	Position p = engine.get<Position>(engine.getPlayer());
-	Rotation r = engine.get<Rotation>(engine.getPlayer());
-	glm::vec3 playerPos = p;
-	glm::vec3 playerRot = glm::eulerAngles(r);
 
-	manager.update(playerPos.x, playerPos.y, playerPos.z);
+	const auto playerID = engine.getPlayer();
+
+	const Position pos = engine.get<Position>(playerID);
+	const Rotation rot = engine.get<Rotation>(playerID);
+	manager.update(pos.x, pos.y, pos.z);
 
 	static bool badCode = true;
-
-	bool left = Window::isMousePressed(Window::LEFT_CLICK);
-	bool right = Window::isMousePressed(Window::RIGHT_CLICK);
+	const bool left = Window::isMousePressed(Window::LEFT_CLICK);
+	const bool right = Window::isMousePressed(Window::RIGHT_CLICK);
 	if (badCode && (left || right)) {
-		Dir dir = engine.get<Dir>(engine.getPlayer());
-		Rotation rot = engine.get<Rotation>(engine.getPlayer());
+		const Dir dir = engine.get<Dir>(engine.getPlayer());
 
 		glm::vec3 ray = glm::rotate(rot, dir.forward);
-		Voxel::BlockRayCast cast = manager.castRay(playerPos, ray, 10);
+		Voxel::BlockRayCast cast = manager.castRay(pos, ray, 10);
 
-		if (left && cast.block != Voxel::Block()) {
-			manager.setBlock(cast.nx, cast.ny, cast.nz, Voxel::Block(Voxel::BlockType::BLOCK_TYPE_PURPLE));
-			engine.getBlockPlaceBuffer().push_back(std::pair(glm::i32vec3(cast.nx, cast.ny, cast.nz), Voxel::Block(Voxel::BlockType::BLOCK_TYPE_PURPLE)));
+		if (right && cast.block != Voxel::Block()) {
+			const glm::i32vec3 block_coord(cast.nx, cast.ny, cast.nz);
+			GameUtil::attempt_place_block_net(engine, block_coord, Voxel::Block(Voxel::BlockType::BLOCK_TYPE_PURPLE));
 		}
-		else if (right) {
-			manager.setBlock(cast.x, cast.y, cast.z, Voxel::Block());
-			engine.getBlockPlaceBuffer().push_back(std::pair(glm::i32vec3(cast.x, cast.y, cast.z), Voxel::Block(Voxel::BlockType::BLOCK_TYPE_DEFAULT)));
+		else if (left) {
+			const glm::i32vec3 block_coord(cast.x, cast.y, cast.z);
+			GameUtil::attempt_place_block_net(engine, block_coord, Voxel::BlockType::BLOCK_TYPE_DEFAULT);
 		}
 
 		badCode = false;
@@ -158,7 +163,7 @@ void System::voxel_system(Engine &engine, float delta) {
 	}
 
 	auto &renderDataManager = engine.ctx<Voxel::ChunkRenderDataManager>();
-	renderDataManager.update(playerPos, playerRot, manager);
+	renderDataManager.update(pos, glm::eulerAngles(rot), manager);
 }
 
 void System::render_system(Engine &engine, float delta) {

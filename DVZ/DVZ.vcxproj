@@ -217,6 +217,7 @@
     <ClCompile Include="GameState.cpp" />
     <ClCompile Include="GameStateManager.cpp" />
     <ClCompile Include="GameSystems.cpp" />
+    <ClCompile Include="GameUtil.cpp" />
     <ClCompile Include="Geometry.cpp" />
     <ClCompile Include="IEntityListener.cpp" />
     <ClCompile Include="LinearAllocator.cpp" />
@@ -273,6 +274,7 @@
     <ClInclude Include="GameState.h" />
     <ClInclude Include="GameStateManager.h" />
     <ClInclude Include="GameSystems.h" />
+    <ClInclude Include="GameUtil.h" />
     <ClInclude Include="Geometry.h" />
     <ClInclude Include="IEntityListener.h" />
     <ClInclude Include="IRenderer.h" />

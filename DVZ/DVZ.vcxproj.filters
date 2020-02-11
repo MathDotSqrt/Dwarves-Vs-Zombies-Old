@@ -258,6 +258,9 @@
     <ClInclude Include="CollisionSystems.h">
       <Filter>Header Files\Systems</Filter>
     </ClInclude>
+    <ClInclude Include="GameUtil.h">
+      <Filter>Header Files\Systems</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -399,6 +402,9 @@
       <Filter>Source Files\Voxel</Filter>
     </ClCompile>
     <ClCompile Include="CollisionSystems.cpp">
+      <Filter>Source Files\Systems</Filter>
+    </ClCompile>
+    <ClCompile Include="GameUtil.cpp">
       <Filter>Source Files\Systems</Filter>
     </ClCompile>
   </ItemGroup>

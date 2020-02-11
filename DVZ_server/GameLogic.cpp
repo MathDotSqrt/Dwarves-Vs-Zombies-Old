@@ -16,28 +16,43 @@ void GameLogic::input_system(EntityAdmin &admin, float delta) {
 	registry.group<Input>(entt::get<Dir, Rotation, Velocity>)
 		.each([delta](auto &input, auto &dir, auto &rot, auto &vel) {
 		
+		/*CONSTANTS*/
 		const float SPEED = 9.0f;
 		const float TURN_SPEED = .5f;
 		const float FAST_SPEED = 88.0f;
+		const float LOOK_DOWN_CONSTANT = .01f;
+		/*CONSTANTS*/
 
-		float forward = (float)input.up - (float)input.down;
-		float right = (float)input.right - (float)input.left;
-		float up = (float)input.space - (float)input.shift;
-		//glm::vec2 mouseDelta = input.mousePos[1] - input.mousePos[0];
+		auto remove_pitch_rot = [](const glm::quat &rot) {
+			const float yaw = glm::yaw(rot);
+			const float roll = glm::roll(rot);
+			return glm::quat(glm::vec3(roll, yaw, roll));
+		};
 
-		glm::vec3 userForward = dir.forward * forward * (input.ctrl ? FAST_SPEED : SPEED);
-		glm::vec3 userRight = dir.right * right * (input.ctrl ? FAST_SPEED : SPEED);
 
-		glm::vec3 newForward = rot * userForward;
-		glm::vec3 newRight = rot * userRight;
+		/*Movement scalars*/
+		const float forward = (float)input.up - (float)input.down;
+		const float right = (float)input.right - (float)input.left;
+		const float up = (float)input.space - (float)input.shift;
+		/*Movement scalars*/
 
-		vel = newForward + newRight;
-		vel.y += up * (input.ctrl ? FAST_SPEED : SPEED);
+		/*Movement input vectors/quaternions*/
+		const glm::vec3 user_forward = dir.forward * forward * (input.ctrl ? FAST_SPEED : SPEED);
+		const glm::vec3 user_right = dir.right * right * (input.ctrl ? FAST_SPEED : SPEED);
+		/*Movement input vectors/quaternions*/
 
-		//todo see if i need to put this above newForward and newRight code
-		//glm::quat qYaw = glm::angleAxis((float)-mouseDelta.x * TURN_SPEED / 100.0f, (glm::vec3)dir.up);
-		//glm::quat qPitch = glm::angleAxis((float)-mouseDelta.y * TURN_SPEED / 100.0f, (glm::vec3)dir.right);
-		//rot = (qYaw * (rot)) * qPitch;
+		/*Actual velocity vectors*/
+		const glm::vec3 move_forward = rot * user_forward;
+		const glm::vec3 move_right = rot * user_right;
+		const glm::vec3 move_up = glm::vec3(0, up * (input.ctrl ? FAST_SPEED : SPEED), 0);
+
+		const glm::vec3 input_vel = move_forward + move_right + move_up;
+		/*Actual velocity vectors*/
+
+		if (up > 0)
+			vel = input_vel;
+		else
+			vel = glm::vec3(input_vel.x, vel.y, input_vel.z);
 
 	});
 }

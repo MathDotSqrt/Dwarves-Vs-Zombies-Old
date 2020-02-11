@@ -102,6 +102,7 @@ public:
 	Block getBlock(int x, int y, int z);
 	Block getBlock(glm::i32vec3 vec);
 	void setBlock(int x, int y, int z, Block block);
+	void setBlock(glm::i32vec3 vec, Block block);
 	Block getBlock(float x, float y, float z);
 	void setBlock(float x, float y, float z, Block block);
 
