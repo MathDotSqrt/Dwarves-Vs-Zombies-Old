@@ -29,6 +29,7 @@ void incomming_connection_packet(RakPeerInterface *peer, Packet *packet, entt::r
 	registry.assign<Position>(player, glm::vec3(0, 20, 0));
 	registry.assign<Rotation>(player, glm::vec3(0, 0, 0));
 	registry.assign<Velocity>(player, glm::vec3(0, 0, 0));
+	registry.assign<Acceleration>(player, glm::vec3(0));
 	registry.assign<Dir>(player, glm::vec3(0, 0, -1), glm::vec3(0, 1, 0), glm::vec3(1, 0, 0));
 	registry.assign<Input>(player);
 	registry.assign<AFK>(player);
