@@ -11,11 +11,6 @@ typedef std::optional<float> FaceOptional;
 typedef std::optional<std::pair<float, float>> EdgeOptional;
 typedef std::optional<glm::vec3> CornerOptional;
 
-//function for getting block from both client and server. 
-//this is to reduce code duplication
-typedef std::function<Voxel::Block(glm::i32vec3)> GetBlockFunc;
-
-
 glm::i32vec2 convert(float sign, int min, int max);
 FaceOptional x_axis_voxel_intersection(const glm::vec3 vel, BlockCoord min, BlockCoord max, GetBlockFunc &func);
 FaceOptional y_axis_voxel_intersection(const glm::vec3 vel, BlockCoord min, BlockCoord max, GetBlockFunc &func);
@@ -26,6 +21,18 @@ EdgeOptional yz_edge_intersection(const glm::vec3 vel, BlockCoord min, BlockCoor
 EdgeOptional zx_edge_intersection(const glm::vec3 vel, BlockCoord min, BlockCoord max, GetBlockFunc &func);
 
 CornerOptional corner_intersection(const glm::vec3 vel, BlockCoord min, BlockCoord max, GetBlockFunc &func);
+
+
+
+
+void Physics::face_block_sample(glm::vec3 next_pos, Component::VoxelCollision &collision, GetBlockFunc &getBlock) {
+	const auto min = next_pos + collision.aabb.getMin();
+	const auto max = next_pos + collision.aabb.getMax();
+	const BlockCoord blockMin(glm::floor(min));
+	const BlockCoord blockMax(glm::floor(max));
+}
+
+
 
 glm::vec3 Physics::face_collision_handling(glm::vec3 pos, glm::vec3 vel, Physics::AABB aabb, float delta, GetBlockFunc &getBlock) {
 	
