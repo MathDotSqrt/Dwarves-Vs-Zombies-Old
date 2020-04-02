@@ -120,6 +120,8 @@ void GameLogic::voxel_system(EntityAdmin &admin, float delta) {
 
 void GameLogic::voxel_collision_system(EntityAdmin &admin, float delta) {
 	using namespace Component;
+	using namespace Physics;
+
 	auto &registry = admin.registry;
 
 	const auto &manager = registry.ctx<Voxel::ChunkManager>();
@@ -146,6 +148,7 @@ void GameLogic::voxel_collision_system(EntityAdmin &admin, float delta) {
 			vel = vel_sample.first;
 			collision.sample = vel_sample.second;
 		}
+
 
 	});
 }

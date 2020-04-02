@@ -37,17 +37,22 @@ Physics::face_collision_handling(glm::vec3 pos, glm::vec3 vel, const Component::
 	const auto face_z = z_axis_voxel_intersection(vel, blockMin, blockMax, getBlock);		//returns closest block face in z axis
 	
 	Component::VoxelCollisionSample sample;	//default nulls for all the samples
-	sample.set(glm::sign(vel), { face_x, face_y, face_z });
 
 	if (face_x.has_value()) {
+		const auto face_block = face_x->second;
+		sample.setX(glm::sign(vel.x), face_x->second);
 		vel.x = 0;
 	}
 
 	if (face_y.has_value()) {
+		const auto face_block = face_y->second;
+		sample.setY(glm::sign(vel.y), face_y->second);
 		vel.y = 0;
 	}
 
 	if (face_z.has_value()) {
+		const auto face_block = face_z->second;
+		sample.setZ(glm::sign(vel.z), face_z->second);
 		vel.z = 0;
 	}
 

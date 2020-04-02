@@ -9,6 +9,7 @@ using namespace System;
 
 void System::voxel_collision_system(Engine &engine, float delta) {
 	using namespace Component;
+	using namespace Physics;
 
 	const auto &manager = engine.ctx<Voxel::ChunkManager>();
 	Physics::GetBlockFunc getBlockFunc = [&manager](const glm::i32vec3 &coord) {
@@ -33,5 +34,6 @@ void System::voxel_collision_system(Engine &engine, float delta) {
 			vel = vel_sample.first;
 			collision.sample = vel_sample.second;
 		}
+
 	});
 }

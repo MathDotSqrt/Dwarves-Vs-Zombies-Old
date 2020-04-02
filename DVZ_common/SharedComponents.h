@@ -49,16 +49,6 @@ namespace Component {
 		std::optional<Voxel::Block> pz;
 		std::optional<Voxel::Block> nz;
 
-		void set(glm::vec3 sign, glm::vec<3, std::optional<Voxel::Block>> block) {
-			auto &x = sign.x > 0 ? px : nx;
-			auto &y = sign.y > 0 ? py : ny;
-			auto &z = sign.z > 0 ? pz : nz;
-
-			x = block.x;
-			y = block.y;
-			z = block.z;
-		}
-
 		void setX(float sign, std::optional<Voxel::Block> block) {
 			if (sign > 0) {
 				px = block;
