@@ -41,17 +41,18 @@ namespace Component {
 		glm::vec3 right;
 	};
 
-
-
-	struct VoxelCollision {
-		Physics::AABB aabb;
-
+	struct VoxelCollisionSample {
 		std::optional<std::pair<float, Voxel::Block>> px;
 		std::optional<std::pair<float, Voxel::Block>> nx;
 		std::optional<std::pair<float, Voxel::Block>> py;
 		std::optional<std::pair<float, Voxel::Block>> ny;
 		std::optional<std::pair<float, Voxel::Block>> pz;
 		std::optional<std::pair<float, Voxel::Block>> nz;
+	};
+
+	struct VoxelCollision {
+		Physics::AABB aabb;
+		VoxelCollisionSample sample;
 
 		VoxelCollision(Physics::AABB aabb) : aabb(aabb) {}
 

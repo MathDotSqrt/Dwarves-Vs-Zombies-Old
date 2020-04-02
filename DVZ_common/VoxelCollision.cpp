@@ -25,25 +25,30 @@ CornerOptional corner_intersection(const glm::vec3 vel, BlockCoord min, BlockCoo
 
 
 
-void Physics::face_block_sample(glm::vec3 pos, glm::vec3 vel_delta, Component::VoxelCollision &collision, GetBlockFunc &getBlock) {
+Component::VoxelCollisionSample Physics::face_block_sample(glm::vec3 pos, glm::vec3 vel_delta, const Component::VoxelCollision &collision, GetBlockFunc &getBlock) {
+	const auto &aabb = collision.aabb;
+	auto sample = collision.sample;
+	
 	const auto next_pos = pos + vel_delta;
-	const auto min = next_pos + collision.aabb.getMin();
-	const auto max = next_pos + collision.aabb.getMax();
+	const auto min = next_pos + aabb.getMin();
+	const auto max = next_pos + aabb.getMax();
 	const BlockCoord blockMin(glm::floor(min));
 	const BlockCoord blockMax(glm::floor(max));
 
 	const auto sign_vel = glm::sign(vel_delta);
 
-	auto &face_x = sign_vel.x < 0 ? collision.nx : collision.px;
-	auto &face_y = sign_vel.y < 0 ? collision.ny : collision.py;
-	auto &face_z = sign_vel.z < 0 ? collision.nz : collision.pz;
+	auto &face_x = sign_vel.x < 0 ? sample.nx : sample.px;
+	auto &face_y = sign_vel.y < 0 ? sample.ny : sample.py;
+	auto &face_z = sign_vel.z < 0 ? sample.nz : sample.pz;
 
 	face_x = x_axis_voxel_intersection(vel_delta, min, max, getBlock);
 	face_y = y_axis_voxel_intersection(vel_delta, min, max, getBlock);
 	face_z = z_axis_voxel_intersection(vel_delta, min, max, getBlock);
+
+	return sample;
 }
 
-void Physics::edge_block_sample(glm::vec3 pos, glm::vec3 vel_delta, Component::VoxelCollision &collision, GetBlockFunc &getBlock){
+Component::VoxelCollisionSample Physics::edge_block_sample(glm::vec3 pos, glm::vec3 vel_delta, const Component::VoxelCollision &collision, GetBlockFunc &getBlock){
 	const auto next_pos = pos + vel_delta;
 	const auto min = next_pos + collision.aabb.getMin();
 	const auto max = next_pos + collision.aabb.getMax();
@@ -65,7 +70,7 @@ void Physics::edge_block_sample(glm::vec3 pos, glm::vec3 vel_delta, Component::V
 			
 		}
 	}
-
+	return collision.sample;
 }
 
 glm::vec3 Physics::face_collision_handling(glm::vec3 pos, glm::vec3 vel, Physics::AABB aabb, float delta, GetBlockFunc &getBlock) {
