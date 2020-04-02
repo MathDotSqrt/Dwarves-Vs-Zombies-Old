@@ -46,13 +46,16 @@ namespace Component {
 	struct VoxelCollision {
 		Physics::AABB aabb;
 
-		std::optional<Voxel::Block> px = std::nullopt;
-		std::optional<Voxel::Block> nx = std::nullopt;
-		std::optional<Voxel::Block> py = std::nullopt;
-		std::optional<Voxel::Block> ny = std::nullopt;
-		std::optional<Voxel::Block> pz = std::nullopt;
-		std::optional<Voxel::Block> nz = std::nullopt;
+		std::optional<std::pair<float, Voxel::Block>> px;
+		std::optional<std::pair<float, Voxel::Block>> nx;
+		std::optional<std::pair<float, Voxel::Block>> py;
+		std::optional<std::pair<float, Voxel::Block>> ny;
+		std::optional<std::pair<float, Voxel::Block>> pz;
+		std::optional<std::pair<float, Voxel::Block>> nz;
 
 		VoxelCollision(Physics::AABB aabb) : aabb(aabb) {}
+
 	};
+
+
 }

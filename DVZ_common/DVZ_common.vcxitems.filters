@@ -25,6 +25,7 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)SharedComponents.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)GameUtil.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Header Files">
@@ -41,5 +42,6 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)VoxelCollision.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)GameUtil.cpp" />
   </ItemGroup>
 </Project>
