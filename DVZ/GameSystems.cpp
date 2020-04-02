@@ -38,6 +38,13 @@ void System::movement_system(Engine &engine, float delta) {
 	});
 }
 
+void System::player_state_system(Engine &engine, float delta) {
+	using namespace Component;
+	engine.view<Player, VoxelCollision>().each([](auto &player, auto &collision) {
+		player.can_jump = collision.sample.ny.has_value();
+	});
+}
+
 void System::input_system(Engine &engine, float delta) {
 	using namespace Component;
 	
@@ -60,8 +67,8 @@ void System::input_system(Engine &engine, float delta) {
 
 	});
 
-	engine.group<Input>(entt::get<Dir, Rotation, Velocity>)
-		.each([delta](auto &input, auto &dir, auto &rot, auto &vel) {
+	engine.group<Input>(entt::get<Dir, Rotation, Velocity, Player>)
+		.each([delta](auto &input, auto &dir, auto &rot, auto &vel, auto &player) {
 
 		/*CONSTANTS*/
 		const float SPEED = 9.0f;
@@ -109,7 +116,7 @@ void System::input_system(Engine &engine, float delta) {
 		const glm::vec3 input_vel = move_forward + move_right + move_up;
 		/*Actual velocity vectors*/
 
-		if(up > 0)
+		if(up > 0 && player.can_jump)
 			vel = input_vel;
 		else
 			vel = glm::vec3(input_vel.x, vel.y, input_vel.z);

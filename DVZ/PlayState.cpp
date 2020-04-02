@@ -12,6 +12,7 @@
 #include "TEX.h"
 
 #include "ResourceManager.h"
+#include "Window.h"
 
 
 PlayState::PlayState(GameStateManager *gsm) : GameState(gsm) {
@@ -28,7 +29,7 @@ void PlayState::init() {
 	auto &mesh_cache = e.ctx<ResourceManager::MeshCache>();
 
 	/*PLAYER*/
-	entt::entity playerID = e.addPlayer(0, 20, 0);
+	entt::entity playerID = e.addPlayer(0, 250, 0);
 	unsigned int pointLightInstanceID = scene.createPointLightInstance();
 	e.assign<Component::PointLight>(playerID, pointLightInstanceID, glm::vec3(1, 1, 1), 60.0f);
 	e.assign<Component::VoxelCollision>(playerID, Component::VoxelCollision(Physics::AABB(glm::vec3(-.3f, -1.5f, -.3f), glm::vec3(.3f, .3f, .3f))));
@@ -89,17 +90,7 @@ void PlayState::init() {
 	e.attemptConnection("127.0.0.1", 60000);		//LOCAL
 	/*NET*/
 
-	/*SYSTEM*/
-	e.addSystem(StatelessSystem(System::shader_update_system, std::chrono::seconds(1)));
-	e.addSystem(StatelessSystem(System::netword_system));
-	e.addSystem(StatelessSystem(System::gravity_system));
-	e.addSystem(StatelessSystem(System::input_system));
-	e.addSystem(StatelessSystem(System::voxel_collision_system));
-	e.addSystem(StatelessSystem(System::movement_system));
-	e.addSystem(StatelessSystem(System::voxel_system));
-	e.addSystem(StatelessSystem(System::send_packet_system));
-	e.addSystem(StatelessSystem(System::render_system));
-	/*SYSTEM*/
+	
 
 }
 
@@ -109,6 +100,19 @@ void PlayState::cleanUp() {
 
 void PlayState::entered() {
 	LOG_STATE("entered");
+	/*SYSTEM*/
+	e.addSystem(StatelessSystem(System::shader_update_system, std::chrono::seconds(1)));
+	e.addSystem(StatelessSystem(System::netword_system));
+	e.addSystem(StatelessSystem(System::player_state_system));
+	e.addSystem(StatelessSystem(System::gravity_system));
+	e.addSystem(StatelessSystem(System::input_system));
+	e.addSystem(StatelessSystem(System::voxel_collision_system));
+	e.addSystem(StatelessSystem(System::movement_system));
+	e.addSystem(StatelessSystem(System::voxel_system));
+	e.addSystem(StatelessSystem(System::send_packet_system));
+	e.addSystem(StatelessSystem(System::render_system));
+	
+	/*SYSTEM*/
 }
 
 void PlayState::leaving() {
@@ -118,7 +122,5 @@ void PlayState::leaving() {
 
 void PlayState::update(float delta) {
 	this->e.update(delta);
-
-	
 }
 
