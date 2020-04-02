@@ -18,10 +18,20 @@ void System::voxel_collision_system(Engine &engine, float delta) {
 
 	auto view = engine.view<Position, Velocity, VoxelCollision>();
 	view.each([&getBlockFunc, delta](auto &pos, auto &vel, auto &collision) {
-		
-		vel = face_collision_handling(pos, vel, collision.aabb, delta, getBlockFunc);
-		vel = edge_collision_handling(pos, vel, collision.aabb, delta, getBlockFunc);
-		vel = corner_collision_handling(pos, vel, collision.aabb, delta, getBlockFunc);
-
+		{
+			const auto vel_sample = face_collision_handling(pos, vel, collision, delta, getBlockFunc);
+			vel = vel_sample.first;
+			collision.sample = vel_sample.second;
+		}
+		{
+			const auto vel_sample = edge_collision_handling(pos, vel, collision, delta, getBlockFunc);
+			vel = vel_sample.first;
+			collision.sample = vel_sample.second;
+		}
+		{
+			const auto vel_sample = corner_collision_handling(pos, vel, collision, delta, getBlockFunc);
+			vel = vel_sample.first;
+			collision.sample = vel_sample.second;
+		}
 	});
 }

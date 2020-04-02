@@ -42,12 +42,49 @@ namespace Component {
 	};
 
 	struct VoxelCollisionSample {
-		std::optional<std::pair<float, Voxel::Block>> px;
-		std::optional<std::pair<float, Voxel::Block>> nx;
-		std::optional<std::pair<float, Voxel::Block>> py;
-		std::optional<std::pair<float, Voxel::Block>> ny;
-		std::optional<std::pair<float, Voxel::Block>> pz;
-		std::optional<std::pair<float, Voxel::Block>> nz;
+		std::optional<Voxel::Block> px;
+		std::optional<Voxel::Block> nx;
+		std::optional<Voxel::Block> py;
+		std::optional<Voxel::Block> ny;
+		std::optional<Voxel::Block> pz;
+		std::optional<Voxel::Block> nz;
+
+		void set(glm::vec3 sign, glm::vec<3, std::optional<Voxel::Block>> block) {
+			auto &x = sign.x > 0 ? px : nx;
+			auto &y = sign.y > 0 ? py : ny;
+			auto &z = sign.z > 0 ? pz : nz;
+
+			x = block.x;
+			y = block.y;
+			z = block.z;
+		}
+
+		void setX(float sign, std::optional<Voxel::Block> block) {
+			if (sign > 0) {
+				px = block;
+			}
+			else{
+				nx = block;
+			}
+		}
+
+		void setY(float sign, std::optional<Voxel::Block> block) {
+			if (sign > 0) {
+				py = block;
+			}
+			else {
+				ny = block;
+			}
+		}
+
+		void setZ(float sign, std::optional<Voxel::Block> block) {
+			if (sign > 0) {
+				pz = block;
+			}
+			else {
+				nz = block;
+			}
+		}
 	};
 
 	struct VoxelCollision {
