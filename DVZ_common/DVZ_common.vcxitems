@@ -20,14 +20,13 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)BlockTypeEnum.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)ChunkConstants.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Common.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)GameUtil.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)MathUtil.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)RLEncoding.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)SharedComponents.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)VoxelCollision.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="$(MSBuildThisFileDirectory)Block.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)GameUtil.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)VoxelCollision.cpp" />
   </ItemGroup>
 </Project>
