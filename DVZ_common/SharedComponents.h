@@ -8,9 +8,10 @@
 
 namespace Component {
 	struct Player {
-		bool can_jump;
+		bool is_sprinting;
+		bool is_grounded;
 
-		Player() : can_jump(false) {}
+		Player() : is_sprinting(false), is_grounded(false) {}
 	};
 
 	struct Position : glm::vec3 {

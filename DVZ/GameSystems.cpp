@@ -41,7 +41,21 @@ void System::movement_system(Engine &engine, float delta) {
 void System::player_state_system(Engine &engine, float delta) {
 	using namespace Component;
 	engine.view<Player, VoxelCollision>().each([](auto &player, auto &collision) {
-		player.can_jump = collision.sample.ny.has_value();
+		player.is_grounded = collision.sample.ny.has_value();
+		player.is_sprinting = Window::isPressed(Window::LCTRL);
+	});
+}
+
+void System::sprint_system(Engine &engine, float delta) {
+	using namespace Component;
+
+	auto &scene = engine.ctx<Graphics::Scene>();
+	const auto &camera = scene.cameraCache[scene.getMainCameraID()];
+	auto view = engine.view<Player, CameraInstance>();
+	view.each([&scene](auto &player, auto &cameraComponent) {
+		constexpr float degToRad = 3.1415926f / 180.0f;
+		auto &camera = scene.cameraCache[cameraComponent.cameraID];
+		camera.fov = player.is_sprinting ? 80 * degToRad : 70 * degToRad;
 	});
 }
 
@@ -117,7 +131,7 @@ void System::input_system(Engine &engine, float delta) {
 		const glm::vec3 input_vel = move_forward + move_right + move_up;
 		/*Actual velocity vectors*/
 
-		if(up > 0 && player.can_jump)
+		if(up > 0 && player.is_grounded)
 			vel = input_vel;
 		else
 			vel = glm::vec3(input_vel.x, vel.y, input_vel.z);

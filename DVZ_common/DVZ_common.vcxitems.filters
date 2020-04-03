@@ -26,6 +26,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="$(MSBuildThisFileDirectory)GameUtil.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\DVZ\PerlinNoise.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Header Files">

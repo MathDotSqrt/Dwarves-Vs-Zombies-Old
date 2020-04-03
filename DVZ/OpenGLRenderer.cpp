@@ -63,8 +63,8 @@ void OpenGLRenderer::init(Scene *scene) {
 		1000
 	};
 
-	unsigned int cameraID = this->scene->createCameraInstance(camera);
-	this->scene->setMainCamera(cameraID);
+	unsigned int cameraID = scene->createCameraInstance(camera);
+	scene->setMainCamera(cameraID);
 
 	Window::addResizeCallback(this);
 	resize(Window::getWidth(), Window::getHeight());
@@ -80,12 +80,16 @@ void OpenGLRenderer::resize(int newWidth, int newHeight) {
 	window_width = newWidth;
 	window_height = newHeight;
 
-	this->perspectiveProjection = glm::perspective(camera->fov, camera->aspect, camera->near, camera->far);
+	perspectiveProjection = glm::perspective(camera->fov, camera->aspect, camera->near, camera->far);
 	glViewport(0, 0, newWidth, newHeight);
 }
 
 void OpenGLRenderer::prerender() {
 	duration = Window::getTime() - start;
+
+	const auto &camera = scene->cameraCache[scene->getMainCameraID()];
+	perspectiveProjection = glm::perspective(camera.fov, camera.aspect, camera.near, camera.far);
+	
 
 	sortedRenderStateKeys.clear();
 	
