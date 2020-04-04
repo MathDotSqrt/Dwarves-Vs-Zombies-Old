@@ -12,7 +12,7 @@ typedef std::optional<std::pair<glm::vec2, Voxel::Block>> EdgeOptional;
 typedef std::optional<std::pair<glm::vec3, Voxel::Block>> CornerOptional;
 
 
-constexpr float EPSILON = 0.001f;
+constexpr float EPSILON = 0.01f;
 
 
 glm::i32vec2 convert(float sign, int min, int max);
@@ -43,19 +43,31 @@ Physics::face_collision_handling(glm::vec3 pos, glm::vec3 vel, const Component::
 	const auto face_y = y_axis_voxel_intersection(vel, blockMin, blockMax, getBlock);		//returns closest block face in y axis
 	const auto face_z = z_axis_voxel_intersection(vel, blockMin, blockMax, getBlock);		//returns closest block face in z axis
 
-	auto handle_collision = [delta_time, vel] (int component, FaceOptional face, float current_pos) {
-		std::optional<Voxel::Block> block;
+	for (int i = 0; i < 4; i++) {
 		
+	}
+
+	auto handle_collision = [delta_time, vel] (int component, FaceOptional face, float current_pos) {
+		float new_vel = 0.0f;
+		std::optional<Voxel::Block> face_block;
+
 		if (face.has_value()) {
 			const auto face_pos = face->first;
-			const auto face_block = face->second;
-			const auto new_vel = (face_pos - current_pos) / delta_time;
+			new_vel = (face_pos - current_pos) / delta_time;
+			new_vel *= 1.0f - EPSILON;
 
-			block = face_block;
-			return std::make_pair((float)0, block);
+			face_block = face->second;
+
+			if (component == 1 && glm::abs(new_vel) > 0.00000001f) {
+				printf("face_pos %f | pos %f | vel.y %f | new_vel %f\n ", face_pos, current_pos, vel.y * delta_time, new_vel * delta_time);
+			}
+		}
+		else {
+			new_vel = vel[component];
+			face_block = std::nullopt;
 		}
 
-		return std::make_pair(vel[component], block);
+		return std::make_pair(new_vel, face_block);
 	};
 	
 	const auto vel_block_x = handle_collision(0, face_x, vel.x > 0 ? max.x : min.x);
@@ -274,7 +286,7 @@ FaceOptional y_axis_voxel_intersection(const glm::vec3 vel, BlockCoord min, Bloc
 			const Voxel::Block block = getBlock(coord);
 
 			if (block.getMeshType() == Voxel::MeshType::MESH_TYPE_BLOCK) {
-				const auto y_pos = vel.y > 0 ? (float)y_coord : y_coord + 1.0f;
+				const auto y_pos = vel.y >= 0 ? (float)y_coord : y_coord + 1.0f;
 				block_face_y = std::make_pair(y_pos, block);
 			}
 		}
