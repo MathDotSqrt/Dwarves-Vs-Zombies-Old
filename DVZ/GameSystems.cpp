@@ -115,7 +115,7 @@ void System::input_system(Engine &engine, float delta) {
 		/*CONSTANTS*/
 		const float SPEED = 8.0f;
 		const float RIGHT_SPEED = 4.0f;
-		const float JUMP_FORCE = 11.0f;
+		const float JUMP_FORCE = 10.0f;
 		const float TURN_SPEED = .5f;
 		const float FAST_SPEED = 13.0f;
 		const float LOOK_DOWN_CONSTANT = .01f;

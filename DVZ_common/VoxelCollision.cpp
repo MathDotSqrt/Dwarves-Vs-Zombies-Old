@@ -11,6 +11,10 @@ typedef std::optional<std::pair<float, Voxel::Block>> FaceOptional;
 typedef std::optional<std::pair<glm::vec2, Voxel::Block>> EdgeOptional;
 typedef std::optional<std::pair<glm::vec3, Voxel::Block>> CornerOptional;
 
+
+constexpr float EPSILON = 0.001f;
+
+
 glm::i32vec2 convert(float sign, int min, int max);
 FaceOptional x_axis_voxel_intersection(const glm::vec3 vel, BlockCoord min, BlockCoord max, GetBlockFunc &func);
 FaceOptional y_axis_voxel_intersection(const glm::vec3 vel, BlockCoord min, BlockCoord max, GetBlockFunc &func);
@@ -23,40 +27,48 @@ EdgeOptional zx_edge_intersection(const glm::vec3 vel, BlockCoord min, BlockCoor
 CornerOptional corner_intersection(const glm::vec3 vel, BlockCoord min, BlockCoord max, GetBlockFunc &func);
 
 std::pair<glm::vec3, Component::VoxelCollisionSample> 
-Physics::face_collision_handling(glm::vec3 pos, glm::vec3 vel, const Component::VoxelCollision &collision, float delta, GetBlockFunc &getBlock) {
+Physics::face_collision_handling(glm::vec3 pos, glm::vec3 vel, const Component::VoxelCollision &collision, float delta_time, GetBlockFunc &getBlock) {
 	const auto &aabb = collision.aabb;
 
-	const auto next_pos = pos + vel * delta;
-	const auto min = next_pos + aabb.getMin();
-	const auto max = next_pos + aabb.getMax();
-	const BlockCoord blockMin(glm::floor(min));
-	const BlockCoord blockMax(glm::floor(max));
+	const auto min = pos + aabb.getMin();
+	const auto max = pos + aabb.getMax();
+
+	const auto next_pos = pos + vel * delta_time;
+	const auto next_min = next_pos + aabb.getMin();
+	const auto next_max = next_pos + aabb.getMax();
+	const BlockCoord blockMin(glm::floor(next_min));
+	const BlockCoord blockMax(glm::floor(next_max));
 
 	const auto face_x = x_axis_voxel_intersection(vel, blockMin, blockMax, getBlock);		//returns closest block face in x axis
 	const auto face_y = y_axis_voxel_intersection(vel, blockMin, blockMax, getBlock);		//returns closest block face in y axis
 	const auto face_z = z_axis_voxel_intersection(vel, blockMin, blockMax, getBlock);		//returns closest block face in z axis
+
+	auto handle_collision = [delta_time, vel] (int component, FaceOptional face, float current_pos) {
+		std::optional<Voxel::Block> block;
+		
+		if (face.has_value()) {
+			const auto face_pos = face->first;
+			const auto face_block = face->second;
+			const auto new_vel = (face_pos - current_pos) / delta_time;
+
+			block = face_block;
+			return std::make_pair((float)0, block);
+		}
+
+		return std::make_pair(vel[component], block);
+	};
 	
+	const auto vel_block_x = handle_collision(0, face_x, vel.x > 0 ? max.x : min.x);
+	const auto vel_block_y = handle_collision(1, face_y, vel.y > 0 ? max.y : min.y);
+	const auto vel_block_z = handle_collision(2, face_z, vel.z > 0 ? max.z : min.z);
+
 	Component::VoxelCollisionSample sample;	//default nulls for all the samples
+	sample.setX(glm::sign(vel.x), vel_block_x.second);
+	sample.setY(glm::sign(vel.y), vel_block_y.second);
+	sample.setZ(glm::sign(vel.z), vel_block_z.second);
 
-	if (face_x.has_value()) {
-		const auto face_block = face_x->second;
-		sample.setX(glm::sign(vel.x), face_x->second);
-		vel.x = 0;
-	}
-
-	if (face_y.has_value()) {
-		const auto face_block = face_y->second;
-		sample.setY(glm::sign(vel.y), face_y->second);
-		vel.y = 0;
-	}
-
-	if (face_z.has_value()) {
-		const auto face_block = face_z->second;
-		sample.setZ(glm::sign(vel.z), face_z->second);
-		vel.z = 0;
-	}
-
-	return std::make_pair(vel, sample);
+	glm::vec3 new_vel { vel_block_x.first, vel_block_y.first, vel_block_z.first };
+	return std::make_pair(new_vel, sample);
 }
 
 std::pair<glm::vec3, Component::VoxelCollisionSample> 
