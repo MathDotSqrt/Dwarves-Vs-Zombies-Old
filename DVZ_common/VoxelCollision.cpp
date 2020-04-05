@@ -84,26 +84,24 @@ Physics::face_collision_handling(glm::vec3 pos, glm::vec3 vel, const Component::
 		intersection<FaceOptional>(pos, vel_delta, aabb, getBlock, &z_axis_voxel_intersection, SAMPLE);
 
 	Component::VoxelCollisionSample sample;	//default nulls for all the samples
-	auto handle_collision = [delta_time, vel, &sample] 
+	auto handle_collision = [&] 
 	(int component, FaceOptional face, float current_pos) {
 		if (face.has_value()) {
 			const auto face_pos = face->first;
 			const auto face_block = face->second;
 			sample.set(component, glm::sign(vel[component]), face_block);
-			return calc_target_vel(face_pos, current_pos, delta_time);
+			vel[component] = calc_target_vel(face_pos, current_pos, delta_time);
 		}
-
-		return vel[component];
 	};
 	
 	const auto min = pos + aabb.getMin();
 	const auto max = pos + aabb.getMax();
-	const auto vel_x = handle_collision(0, face_x, vel.x > 0 ? max.x : min.x);
-	const auto vel_y = handle_collision(1, face_y, vel.y > 0 ? max.y : min.y);
-	const auto vel_z = handle_collision(2, face_z, vel.z > 0 ? max.z : min.z);
-	
-	glm::vec3 new_vel { vel_x, vel_y, vel_z };
-	return std::make_pair(new_vel, sample);
+
+	//modifies the state of vel and sample
+	handle_collision(0, face_x, vel.x > 0 ? max.x : min.x);
+	handle_collision(1, face_y, vel.y > 0 ? max.y : min.y);
+	handle_collision(2, face_z, vel.z > 0 ? max.z : min.z);
+	return std::make_pair(vel, sample);
 }
 
 std::pair<glm::vec3, Component::VoxelCollisionSample> 
