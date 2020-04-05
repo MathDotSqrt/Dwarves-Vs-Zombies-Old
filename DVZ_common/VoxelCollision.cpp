@@ -26,7 +26,9 @@ EdgeOptional zx_edge_intersection(const glm::vec3 vel, BlockCoord min, BlockCoor
 
 CornerOptional corner_intersection(const glm::vec3 vel, BlockCoord min, BlockCoord max, GetBlockFunc &func);
 
-
+float calc_target_vel(float target_pos, float current_pos, float delta_time) {
+	return (target_pos - current_pos) / delta_time * (1 - EPSILON);
+}
 
 template<typename OPT, typename FUNC>
 OPT 
@@ -87,12 +89,8 @@ Physics::face_collision_handling(glm::vec3 pos, glm::vec3 vel, const Component::
 		if (face.has_value()) {
 			const auto face_pos = face->first;
 			const auto face_block = face->second;
-
-			float new_vel = (face_pos - current_pos) / delta_time;
-			new_vel *= 1.0f - EPSILON;
-			
 			sample.set(component, glm::sign(vel[component]), face_block);
-			return new_vel;
+			return calc_target_vel(face_pos, current_pos, delta_time);
 		}
 
 		return vel[component];
@@ -145,13 +143,11 @@ Physics::edge_collision_handling(glm::vec3 pos, glm::vec3 vel, const Component::
 
 			if (delta_0 < delta_1) {
 				sample.set(comp0, glm::sign(vel[comp0]), edge_block);
-				vel[comp0] = (edge_pos[0] - current_pos_0) / delta_time;
-				vel[comp0] *= 1 - EPSILON;
+				vel[comp0] = calc_target_vel(edge_pos[0], current_pos_0, delta_time);
 			}
 			else {
 				sample.set(comp1, glm::sign(vel[comp1]), edge_block);
-				vel[comp1] = (edge_pos[1] - current_pos_1) / delta_time;
-				vel[comp1] *= 1 - EPSILON;
+				vel[comp1] = calc_target_vel(edge_pos[1], current_pos_1, delta_time);
 			}
 		}
 	};
@@ -202,15 +198,15 @@ Physics::corner_collision_handling(glm::vec3 pos, glm::vec3 vel, const Component
 		//push in the axis with smallest intersection
 		if (delta.x < delta.y && delta.x < delta.z) {
 			sample.setX(sign_vel.x, corner_block);
-			vel.x = (corner_pos.x - current_aabb_pos.x) / delta_time;
+			vel.x = calc_target_vel(corner_pos.x, current_aabb_pos.x, delta_time);
 		}
 		else if (delta.y < delta.z) {
 			sample.setY(sign_vel.y, corner_block);
-			vel.y = (corner_pos.y - current_aabb_pos.y) / delta_time;
+			vel.y = calc_target_vel(corner_pos.y, current_aabb_pos.y, delta_time);
 		}
 		else {
 			sample.setZ(sign_vel.z, corner_block);
-			vel.z = (corner_pos.z - current_aabb_pos.z) / delta_time;
+			vel.z = calc_target_vel(corner_pos.z, current_aabb_pos.z, delta_time);
 		}
 
 	}
