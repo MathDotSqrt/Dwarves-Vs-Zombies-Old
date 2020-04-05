@@ -52,6 +52,14 @@ namespace Component {
 		std::optional<Voxel::Block> pz;
 		std::optional<Voxel::Block> nz;
 
+		void set(int component, float sign, std::optional<Voxel::Block> block) {
+			switch (component) {
+			case 0: setX(sign, block); break;
+			case 1: setY(sign, block); break;
+			case 2: setZ(sign, block); break;
+			}
+		}
+
 		void setX(float sign, std::optional<Voxel::Block> block) {
 			if (sign > 0) {
 				px = block;

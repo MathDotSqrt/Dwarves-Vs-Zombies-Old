@@ -29,7 +29,7 @@ void PlayState::init() {
 	auto &mesh_cache = e.ctx<ResourceManager::MeshCache>();
 
 	/*PLAYER*/
-	entt::entity playerID = e.addPlayer(0, 250, 0);
+	entt::entity playerID = e.addPlayer(0, 5, 0);
 	unsigned int pointLightInstanceID = scene.createPointLightInstance();
 	e.assign<Component::PointLight>(playerID, pointLightInstanceID, glm::vec3(1, 1, 1), 60.0f);
 	e.assign<Component::VoxelCollision>(playerID, Component::VoxelCollision(Physics::AABB(glm::vec3(-.3f, -1.5f, -.3f), glm::vec3(.3f, .3f, .3f))));
