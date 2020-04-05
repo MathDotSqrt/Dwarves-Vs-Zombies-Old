@@ -40,56 +40,48 @@ Chunk::Chunk(int cx, int cy, int cz, ChunkManager &manager) :
 		for (int bx = 0; bx < CHUNK_WIDTH_X; bx++) {
 			int x = this->cx * CHUNK_WIDTH_X + bx;
 
-			for (int by = 0; by < CHUNK_WIDTH_Y; by++) {
-				if (by == 0) {
-					setBlockInternal(bx, by, bz, BlockType::BLOCK_TYPE_DIRT);
-				}
-				else {
-					setBlockInternal(bx, by, bz, BlockType::BLOCK_TYPE_DEFAULT);
-				}
-			}
-
-			//if ((chunk_x + chunk_z) % 2 == 0) {
-			//	setBlockInternal(bx, 0, bz, Block(BlockType::BLOCK_TYPE_PURPLE));
-			//}
-			//else {
-			//	setBlockInternal(bx, 0, bz, Block(BlockType::BLOCK_TYPE_DIRT));
-
-			//}
-
-			//double height = pow(noise.octaveNoise0_1(x / 140.0, z / 140.0, 6), 4.5) * 155;
-
 			//for (int by = 0; by < CHUNK_WIDTH_Y; by++) {
-
-			//	int y = this->cy * CHUNK_WIDTH_Y + by;
-
-			//	if (y == 0) {
-			//		setBlockInternal(bx, by, bz, Block(BlockType::BLOCK_TYPE_STONE));
-			//	}
-			//	else if (y < height) {
-
-			//		setBlockInternal(bx, by, bz, Block(BlockType::BLOCK_TYPE_DIRT));
-
-			//	}
-			//	else if (y < height + 1) {
-			//		double sandValue = noise.octaveNoise0_1(x / 30.0, z / 30.0, 1);
-			//		if ((y < 10) && sandValue > .6) {
-			//			setBlockInternal(bx, by, bz, Block(BlockType::BLOCK_TYPE_SAND));
-
-			//		}
-			//		else {
-			//			setBlockInternal(bx, by, bz, Block(BlockType::BLOCK_TYPE_GRASS));
-			//			if (noise.noise0_1(x * .15, z * .15, 0) > 0.75) {
-			//				setBlockInternal(bx, by + 1, bz, Block(BlockType::BLOCK_TYPE_ROSE));
-
-			//			}
-			//		}
-
+			//	if (by == 0) {
+			//		setBlockInternal(bx, by, bz, BlockType::BLOCK_TYPE_DIRT);
 			//	}
 			//	else {
-			//		setBlockInternal(bx, by, bz, Block(BlockType::BLOCK_TYPE_DEFAULT));
+			//		setBlockInternal(bx, by, bz, BlockType::BLOCK_TYPE_DEFAULT);
 			//	}
 			//}
+
+			double height = pow(noise.octaveNoise0_1(x / 140.0, z / 140.0, 6), 4.5) * 155;
+
+			for (int by = 0; by < CHUNK_WIDTH_Y; by++) {
+
+				int y = this->cy * CHUNK_WIDTH_Y + by;
+
+				if (y == 0) {
+					setBlockInternal(bx, by, bz, Block(BlockType::BLOCK_TYPE_STONE));
+				}
+				else if (y < height) {
+
+					setBlockInternal(bx, by, bz, Block(BlockType::BLOCK_TYPE_DIRT));
+
+				}
+				else if (y < height + 1) {
+					double sandValue = noise.octaveNoise0_1(x / 30.0, z / 30.0, 1);
+					if ((y < 10) && sandValue > .6) {
+						setBlockInternal(bx, by, bz, Block(BlockType::BLOCK_TYPE_SAND));
+
+					}
+					else {
+						setBlockInternal(bx, by, bz, Block(BlockType::BLOCK_TYPE_GRASS));
+						if (noise.noise0_1(x * .15, z * .15, 0) > 0.75) {
+							setBlockInternal(bx, by + 1, bz, Block(BlockType::BLOCK_TYPE_ROSE));
+
+						}
+					}
+
+				}
+				else {
+					setBlockInternal(bx, by, bz, Block(BlockType::BLOCK_TYPE_DEFAULT));
+				}
+			}
 		}
 	}
 
