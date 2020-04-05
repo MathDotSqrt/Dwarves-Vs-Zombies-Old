@@ -43,37 +43,34 @@ void System::player_state_system(Engine &engine, float delta) {
 	using namespace Component;
 	engine.view<Player, VoxelCollision>().each([](auto &player, auto &collision) {
 		player.is_grounded = collision.sample.ny.has_value();
-		player.is_sprinting = Window::isPressed(Window::LCTRL);
+		//player.is_sprinting = Window::isPressed(Window::LCTRL);
 	});
 }
 
 void System::sprint_system(Engine &engine, float delta) {
 	using namespace Component;
 
-	engine.view<Player>().each([](auto &player) {
-		if (player.is_grounded) {
-			player.is_sprinting = Window::isPressed(Window::LCTRL);
+	engine.view<Player, Velocity>().each([](auto &player, auto &vel) {
+		constexpr float SPRINT_THRESH = 60.0f;
+
+		const float speed_2 = glm::length2(static_cast<glm::vec3>(vel));
+		if (player.is_sprinting || player.is_grounded) {
+			player.is_sprinting = Window::isPressed('w') 
+				&& Window::isPressed(Window::LCTRL) 
+				&& (speed_2 > SPRINT_THRESH);
 		}
-		else if(!Window::isPressed(Window::LCTRL)){
+		else{
 			player.is_sprinting = false;
 		}
-
 	});
 
 	auto &scene = engine.ctx<Graphics::Scene>();
 	const auto &camera = scene.cameraCache[scene.getMainCameraID()];
-	auto view = engine.view<Player, Velocity, CameraInstance>();
-	view.each([&scene, delta](auto &player, auto &vel, auto &cameraComponent) {
+	auto view = engine.view<Player, CameraInstance>();
+	view.each([&scene, delta](auto &player, auto &cameraComponent) {
 		constexpr float SPRINT_FOV = glm::radians(90.0f);
 		constexpr float WALK_FOV = glm::radians(80.0f);
 		constexpr float SPRINT_FOV_SPEED = 20.0f;
-		constexpr float SPRINT_THRESH = 60.0f;
-
-
-		const float speed_2 = glm::length2(static_cast<glm::vec3>(vel));
-		if (player.is_sprinting) {
-			player.is_sprinting = Window::isPressed('w') && (speed_2 > SPRINT_THRESH);
-		}
 
 		auto &camera = scene.cameraCache[cameraComponent.cameraID];
 		const float current_fov = camera.fov;

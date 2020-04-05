@@ -4,6 +4,7 @@
 #include "ChunkManager.h"
 #include "VoxelCollision.h"
 
+#include "Timer.h"
 
 using namespace System;
 
@@ -17,8 +18,10 @@ void System::voxel_collision_system(Engine &engine, float delta) {
 	};
 
 
+	Util::Performance::Timer timer("Collision");
 	auto view = engine.view<Position, Velocity, VoxelCollision>();
 	view.each([&getBlockFunc, delta](auto &pos, auto &vel, auto &collision) {
+		
 		{
 			const auto vel_sample = face_collision_handling(pos, vel, collision, delta, getBlockFunc);
 			vel = vel_sample.first;

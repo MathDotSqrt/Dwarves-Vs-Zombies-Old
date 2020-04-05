@@ -72,7 +72,7 @@ intersection(
 
 std::pair<glm::vec3, Component::VoxelCollisionSample> 
 Physics::face_collision_handling(glm::vec3 pos, glm::vec3 vel, const Component::VoxelCollision &collision, float delta_time, GetBlockFunc &getBlock) {
-	constexpr float SAMPLE = 1.6f;
+	constexpr float SAMPLE = 1.1f;
 	const auto &aabb = collision.aabb;
 	const auto vel_delta = vel * delta_time;
 
@@ -106,7 +106,7 @@ Physics::face_collision_handling(glm::vec3 pos, glm::vec3 vel, const Component::
 
 std::pair<glm::vec3, Component::VoxelCollisionSample> 
 Physics::edge_collision_handling(glm::vec3 pos, glm::vec3 vel, const Component::VoxelCollision &collision, float delta_time, GetBlockFunc &getBlock) {
-	constexpr float SAMPLE = 2.0f;
+	constexpr float SAMPLE = 1.5f;
 	const auto vel_delta = vel * delta_time;
 	const auto &aabb = collision.aabb;
 	auto sample = collision.sample;
@@ -160,7 +160,7 @@ Physics::edge_collision_handling(glm::vec3 pos, glm::vec3 vel, const Component::
 
 std::pair<glm::vec3, Component::VoxelCollisionSample>
 Physics::corner_collision_handling(glm::vec3 pos, glm::vec3 vel, const Component::VoxelCollision &collision, float delta_time , GetBlockFunc &getBlock) {
-	constexpr float SAMPLE = 4.0f;
+	constexpr float SAMPLE = 1.5f;
 
 	const auto &aabb = collision.aabb;
 	auto sample = collision.sample;
