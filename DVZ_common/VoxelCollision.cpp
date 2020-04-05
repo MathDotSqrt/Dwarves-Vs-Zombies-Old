@@ -33,18 +33,31 @@ Physics::face_collision_handling(glm::vec3 pos, glm::vec3 vel, const Component::
 	const auto min = pos + aabb.getMin();
 	const auto max = pos + aabb.getMax();
 
-	const auto next_pos = pos + vel * delta_time;
-	const auto next_min = next_pos + aabb.getMin();
-	const auto next_max = next_pos + aabb.getMax();
-	const BlockCoord blockMin(glm::floor(next_min));
-	const BlockCoord blockMax(glm::floor(next_max));
-
-	const auto face_x = x_axis_voxel_intersection(vel, blockMin, blockMax, getBlock);		//returns closest block face in x axis
-	const auto face_y = y_axis_voxel_intersection(vel, blockMin, blockMax, getBlock);		//returns closest block face in y axis
-	const auto face_z = z_axis_voxel_intersection(vel, blockMin, blockMax, getBlock);		//returns closest block face in z axis
-
-	for (int i = 0; i < 4; i++) {
+	auto voxel_intersection 
+		= [delta_time, &vel, &aabb, &getBlock](glm::vec3 next_pos, glm::vec<3, FaceOptional> &faces) {
 		
+		const auto next_min = next_pos + aabb.getMin();
+		const auto next_max = next_pos + aabb.getMax();
+		const BlockCoord blockMin(glm::floor(next_min));
+		const BlockCoord blockMax(glm::floor(next_max));
+
+
+		if (!faces.x.has_value()) {
+			faces.x = x_axis_voxel_intersection(vel, blockMin, blockMax, getBlock);
+		}
+		if (!faces.y.has_value()) {
+			faces.y = y_axis_voxel_intersection(vel, blockMin, blockMax, getBlock);
+		}
+		if (!faces.z.has_value()) {
+			faces.z = z_axis_voxel_intersection(vel, blockMin, blockMax, getBlock);
+		}
+
+	};
+
+	glm::vec<3, FaceOptional> faces(std::nullopt);
+	for (int i = 0; i < 4; i++) {
+		const auto next_position = pos + (vel * (i + 1.0f) * (.25f)) * delta_time;
+		voxel_intersection(next_position, faces);
 	}
 
 	auto handle_collision = [delta_time, vel] (int component, FaceOptional face, float current_pos) {
@@ -55,10 +68,9 @@ Physics::face_collision_handling(glm::vec3 pos, glm::vec3 vel, const Component::
 			const auto face_pos = face->first;
 			new_vel = (face_pos - current_pos) / delta_time;
 			new_vel *= 1.0f - EPSILON;
-
 			face_block = face->second;
 
-			if (component == 1 && glm::abs(new_vel) > 0.00000001f) {
+			if (component == 1) {
 				printf("face_pos %f | pos %f | vel.y %f | new_vel %f\n ", face_pos, current_pos, vel.y * delta_time, new_vel * delta_time);
 			}
 		}
@@ -70,9 +82,9 @@ Physics::face_collision_handling(glm::vec3 pos, glm::vec3 vel, const Component::
 		return std::make_pair(new_vel, face_block);
 	};
 	
-	const auto vel_block_x = handle_collision(0, face_x, vel.x > 0 ? max.x : min.x);
-	const auto vel_block_y = handle_collision(1, face_y, vel.y > 0 ? max.y : min.y);
-	const auto vel_block_z = handle_collision(2, face_z, vel.z > 0 ? max.z : min.z);
+	const auto vel_block_x = handle_collision(0, faces.x, vel.x > 0 ? max.x : min.x);
+	const auto vel_block_y = handle_collision(1, faces.y, vel.y > 0 ? max.y : min.y);
+	const auto vel_block_z = handle_collision(2, faces.z, vel.z > 0 ? max.z : min.z);
 
 	Component::VoxelCollisionSample sample;	//default nulls for all the samples
 	sample.setX(glm::sign(vel.x), vel_block_x.second);
