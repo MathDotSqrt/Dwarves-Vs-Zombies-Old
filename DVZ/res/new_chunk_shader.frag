@@ -156,7 +156,7 @@ void main(){
 	final_color = toGamma(final_color);
 	//final_color = vec4(shadow_calc(frag_pos_sun_space));
 
-	if(tex_color.a < .5){
+	if(tex_color.a < 1){
 		discard; 
 	}
 }

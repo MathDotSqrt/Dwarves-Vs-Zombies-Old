@@ -61,7 +61,7 @@ namespace Voxel {
 		//	.buildTextureAtlasArray(2, 2);
 
 		//Graphics::TEX TEX = Graphics::TEX::Builder("res/WorldTerrain2.png").buildTextureAtlasArray(16, 16);
-		Graphics::TEX worldTEX = Graphics::TEX::Builder("res/terrain.png").mipmapLinear().buildTextureAtlasArray(16, 16);
+		Graphics::TEX worldTEX = Graphics::TEX::Builder("res/terrain.png").rgba().mipmapLinear().buildTextureAtlasArray(16, 16);
 
 		ChunkRenderDataManager(Util::Allocator::IAllocator &parent);
 		~ChunkRenderDataManager();

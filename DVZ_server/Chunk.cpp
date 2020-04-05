@@ -71,12 +71,10 @@ Chunk::Chunk(int cx, int cy, int cz, ChunkManager &manager) :
 					}
 					else {
 						setBlockInternal(bx, by, bz, Block(BlockType::BLOCK_TYPE_GRASS));
-						if (noise.noise0_1(x * .15, z * .15, 0) > 0.75) {
-							setBlockInternal(bx, by + 1, bz, Block(BlockType::BLOCK_TYPE_ROSE));
-
-						}
 					}
-
+				}
+				else if (y < height + 2 && noise.noise0_1(x * .15, y, z * .15) > 0.75) {
+					setBlockInternal(bx, by, bz, Block(BlockType::BLOCK_TYPE_ROSE));
 				}
 				else {
 					setBlockInternal(bx, by, bz, Block(BlockType::BLOCK_TYPE_DEFAULT));
