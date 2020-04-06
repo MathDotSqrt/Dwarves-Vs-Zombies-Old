@@ -39,6 +39,16 @@ void System::movement_system(Engine &engine, float delta) {
 	});
 }
 
+void System::friction_system(Engine &engine, float delta) {
+	using namespace Component;
+
+	auto view = engine.view<Player, Velocity>();
+	view.each([delta](auto &player, auto &vel) {
+		constexpr float FRIC = 0.01f;
+
+	});
+}
+
 void System::player_state_system(Engine &engine, float delta) {
 	using namespace Component;
 	engine.view<Player, VoxelCollision>().each([](auto &player, auto &collision) {
