@@ -43,26 +43,25 @@ void System::player_state_system(Engine &engine, float delta) {
 	using namespace Component;
 	engine.view<Player, VoxelCollision>().each([](auto &player, auto &collision) {
 		player.is_grounded = collision.sample.ny.has_value();
-		//player.is_sprinting = Window::isPressed(Window::LCTRL);
 	});
-}
-
-void System::sprint_system(Engine &engine, float delta) {
-	using namespace Component;
 
 	engine.view<Player, Velocity>().each([](auto &player, auto &vel) {
 		constexpr float SPRINT_THRESH = 60.0f;
 
 		const float speed_2 = glm::length2(static_cast<glm::vec3>(vel));
 		if (player.is_sprinting || player.is_grounded) {
-			player.is_sprinting = Window::isPressed('w') 
-				&& Window::isPressed(Window::LCTRL) 
+			player.is_sprinting = Window::isPressed('w')
+				&& Window::isPressed(Window::LCTRL)
 				&& (speed_2 > SPRINT_THRESH);
 		}
-		else{
+		else {
 			player.is_sprinting = false;
 		}
 	});
+}
+
+void System::sprint_system(Engine &engine, float delta) {
+	using namespace Component;
 
 	auto &scene = engine.ctx<Graphics::Scene>();
 	const auto &camera = scene.cameraCache[scene.getMainCameraID()];
@@ -111,10 +110,11 @@ void System::input_system(Engine &engine, float delta) {
 
 		/*CONSTANTS*/
 		const float SPEED = 8.0f;
-		const float RIGHT_SPEED = 4.0f;
+		const float RIGHT_SPEED = 6.0f;
+		const float FAST_SPEED = 13.0f;
+
 		const float JUMP_FORCE = 10.0f;
 		const float TURN_SPEED = .5f;
-		const float FAST_SPEED = 13.0f;
 		const float LOOK_DOWN_CONSTANT = .01f;
 		/*CONSTANTS*/
 
@@ -134,7 +134,7 @@ void System::input_system(Engine &engine, float delta) {
 
 		/*Movement input vectors/quaternions*/
 		const glm::vec3 user_forward = dir.forward * forward * (player.is_sprinting ? FAST_SPEED : SPEED);
-		const glm::vec3 user_right = dir.right * right * (player.is_sprinting ? FAST_SPEED : RIGHT_SPEED);
+		const glm::vec3 user_right = dir.right * right * RIGHT_SPEED;
 
 		const glm::quat q_yaw = glm::angleAxis((float)-mouse_delta.x * TURN_SPEED / 100.0f, (glm::vec3)dir.up);
 		const glm::quat q_pitch = glm::angleAxis((float)-mouse_delta.y * TURN_SPEED / 100.0f, (glm::vec3)dir.right);
