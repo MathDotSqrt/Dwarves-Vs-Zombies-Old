@@ -106,7 +106,7 @@ Physics::face_collision_handling(glm::vec3 pos, glm::vec3 vel, const Component::
 
 std::pair<glm::vec3, Component::VoxelCollisionSample> 
 Physics::edge_collision_handling(glm::vec3 pos, glm::vec3 vel, const Component::VoxelCollision &collision, float delta_time, GetBlockFunc &getBlock) {
-	constexpr float SAMPLE = 1.1f;
+	constexpr float SAMPLE = .9f;
 	const auto vel_delta = vel * delta_time;
 	const auto &aabb = collision.aabb;
 	auto sample = collision.sample;
@@ -160,7 +160,7 @@ Physics::edge_collision_handling(glm::vec3 pos, glm::vec3 vel, const Component::
 
 std::pair<glm::vec3, Component::VoxelCollisionSample>
 Physics::corner_collision_handling(glm::vec3 pos, glm::vec3 vel, const Component::VoxelCollision &collision, float delta_time , GetBlockFunc &getBlock) {
-	constexpr float SAMPLE = 1.1f;
+	constexpr float SAMPLE = .9f;
 
 	const auto &aabb = collision.aabb;
 	auto sample = collision.sample;
@@ -219,7 +219,7 @@ glm::i32vec2 convert(float sign, int min, int max) {
 
 
 	//if min==max, the bounds returned will be the same
-	if (min == max) {
+	if (min == max || sign == 0) {
 		return glm::i32vec2(min, max);
 	}
 
@@ -228,7 +228,9 @@ glm::i32vec2 convert(float sign, int min, int max) {
 	//detection. The edge will be ommited from bounds if sign is non zero in the direction
 	//vel is. Edge collision handling is handeled differently
 	//if sign is 0, no edge collision handling would occur, so return original bound
+	//return glm::i32vec2(sign >= 0 ? min : min + 1, sign > 0 ? max - 1 : max);
 	return glm::i32vec2(sign >= 0 ? min : min + 1, sign > 0 ? max - 1 : max);
+
 }
 
 FaceOptional x_axis_voxel_intersection(const glm::vec3 vel, BlockCoord min, BlockCoord max, GetBlockFunc &getBlock) {
@@ -437,6 +439,7 @@ CornerOptional corner_intersection(const glm::vec3 vel, BlockCoord min, BlockCoo
 		const float x_pos = vel.x > 0 ? coord.x : coord.x + 1.0f;
 		const float y_pos = vel.y > 0 ? coord.y : coord.y + 1.0f;
 		const float z_pos = vel.z > 0 ? coord.z : coord.z + 1.0f;
+		printf("CORNER\n");
 
 		corner = std::make_pair(glm::vec3(x_pos, y_pos, z_pos), block);
 	}

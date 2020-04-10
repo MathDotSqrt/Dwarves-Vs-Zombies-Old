@@ -38,5 +38,8 @@ void System::voxel_collision_system(Engine &engine, float delta) {
 			collision.sample = vel_sample.second;
 		}
 
+		//printf(" px %d | py %d | pz %d\n", collision.sample.px.has_value(), collision.sample.py.has_value(), collision.sample.pz.has_value());
+		//printf(" nx %d | ny %d | nz %d\n", collision.sample.nx.has_value(), collision.sample.ny.has_value(), collision.sample.nz.has_value());
+		//printf("----------------------\n");
 	});
 }

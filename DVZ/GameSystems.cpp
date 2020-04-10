@@ -119,11 +119,11 @@ void System::input_system(Engine &engine, float delta) {
 		.each([delta](auto &input, auto &dir, auto &rot, auto &vel, auto &player) {
 
 		/*CONSTANTS*/
-		const float SPEED = 8.0f;
-		const float RIGHT_SPEED = 6.0f;
-		const float FAST_SPEED = 13.0f;
+		const float SPEED = 8.0f * 60;
+		const float RIGHT_SPEED = 6.0f * 60;
+		const float FAST_SPEED = 13.0f * 60;
 
-		const float JUMP_FORCE = 10.0f;
+		const float JUMP_FORCE = 10.0f * 60;
 		const float TURN_SPEED = .5f;
 		const float LOOK_DOWN_CONSTANT = .01f;
 		/*CONSTANTS*/
@@ -164,7 +164,7 @@ void System::input_system(Engine &engine, float delta) {
 		const glm::vec3 move_right = move_dir * user_right;
 		const glm::vec3 move_up = glm::vec3(0, up * JUMP_FORCE, 0);
 
-		const glm::vec3 input_vel = move_forward + move_right + move_up;
+		const glm::vec3 input_vel = (move_forward + move_right + move_up) * delta;
 		/*Actual velocity vectors*/
 
 		if(up > 0 && player.is_grounded)
