@@ -134,11 +134,11 @@ void GameLogic::voxel_collision_system(EntityAdmin &admin, float delta) {
 	auto view = registry.view<Position, Velocity, VoxelCollision>();
 	view.each([&getBlockFunc, delta](auto &pos, auto &vel, auto &collision) {
 		collision.sample 
-			= face_collision_handling(pos, vel, collision, delta, getBlockFunc);
+			= face_collision_sample(pos, vel, collision, delta, getBlockFunc);
 		collision.sample 
-			= edge_collision_handling(pos, vel, collision, delta, getBlockFunc);
+			= edge_collision_sample(pos, vel, collision, delta, getBlockFunc);
 		collision.sample 
-			= corner_collision_handling(pos, vel, collision, delta, getBlockFunc);
+			= corner_collision_sample(pos, vel, collision, delta, getBlockFunc);
 		
 
 
