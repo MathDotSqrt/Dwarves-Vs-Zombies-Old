@@ -5,6 +5,7 @@ using namespace Physics;
 
 //Type used for block coord
 typedef glm::i32vec3 BlockCoord;
+typedef Component::VoxelCollisionSample::VoxelSample VoxelSample;
 
 //optional types for all collision strategies
 typedef std::optional<std::pair<float, Voxel::Block>> FaceOptional;
@@ -26,11 +27,52 @@ EdgeOptional zx_edge_intersection(const glm::vec3 vel, BlockCoord min, BlockCoor
 
 CornerOptional corner_intersection(const glm::vec3 vel, BlockCoord min, BlockCoord max, GetBlockFunc &func);
 
-void setSample(int component, float sign, const Component::VoxelCollisionSample::Sample &sample, Component::VoxelCollisionSample &samples) {
+void assignIfCloser(float sign, const VoxelSample &source, std::optional<VoxelSample> &dest) {
+	sign = glm::sign(sign);
+	assert(sign != 0);
+
+	if (dest.has_value()) {
+		const auto dest_pos = dest->first;
+		const auto new_pos = source.first;
+		//this tests if the new sample would be closer to the aabb 
+		//this test depends on the direction the entity is moving
+		//if vel is positive the smaller the position the closer it is
+		//if vel is negative the larger the position the closer it is
+		if (sign * dest_pos > sign * new_pos) {
+			dest = source;
+		}
+	}
+	else{
+		//if dest contains no value then assign the new sample
+		dest = source;
+	}
+}
+
+void setSample(int component, float sign, const VoxelSample &sample, Component::VoxelCollisionSample &samples) {
+	sign = glm::sign(sign);
+	
 	switch (component) {
-	case 0: auto &x = sign > 0 ? samples.px : samples.nx; x = sample; break;
-	case 1: auto &y = sign > 0 ? samples.py : samples.ny; y = sample; break;
-	case 2: auto &z = sign > 0 ? samples.pz : samples.nz; z = sample; break;
+	case 0: 
+	{
+		assert(sign != 0);
+		auto &x = sign > 0 ? samples.px : samples.nx;
+		assignIfCloser(sign, sample, x);
+		break;
+	}
+	case 1: 
+	{
+		assert(sign != 0);
+		auto &y = sign > 0 ? samples.py : samples.ny;
+		assignIfCloser(sign, sample, y);
+		break;
+	}
+	case 2: 
+	{
+		assert(sign != 0);
+		auto &z = sign > 0 ? samples.pz : samples.nz;
+		assignIfCloser(sign, sample, z);
+		break;
+	}
 	}
 }
 
@@ -78,14 +120,14 @@ intersection(
 }
 
 
-std::pair<glm::vec3, Component::VoxelCollisionSample> 
+Component::VoxelCollisionSample
 Physics::face_collision_handling(glm::vec3 pos, glm::vec3 vel, const Component::VoxelCollision &collision, float delta_time, GetBlockFunc &getBlock) {
 	constexpr float SAMPLE = .9f;
 	const auto &aabb = collision.aabb;
 	const auto vel_delta = vel * delta_time;
 
 	const auto face_x = 
-		intersection<FaceOptional>( pos, vel_delta, aabb, getBlock, &x_axis_voxel_intersection, SAMPLE);
+		intersection<FaceOptional>(pos, vel_delta, aabb, getBlock, &x_axis_voxel_intersection, SAMPLE);
 	const auto face_y = 
 		intersection<FaceOptional>(pos, vel_delta, aabb, getBlock, &y_axis_voxel_intersection, SAMPLE);
 	const auto face_z = 
@@ -111,10 +153,10 @@ Physics::face_collision_handling(glm::vec3 pos, glm::vec3 vel, const Component::
 	handle_collision(0, face_x, vel.x > 0 ? max.x : min.x);
 	handle_collision(1, face_y, vel.y > 0 ? max.y : min.y);
 	handle_collision(2, face_z, vel.z > 0 ? max.z : min.z);
-	return std::make_pair(vel, sample);
+	return sample;
 }
 
-std::pair<glm::vec3, Component::VoxelCollisionSample> 
+Component::VoxelCollisionSample
 Physics::edge_collision_handling(glm::vec3 pos, glm::vec3 vel, const Component::VoxelCollision &collision, float delta_time, GetBlockFunc &getBlock) {
 	constexpr float SAMPLE = .9f;
 	const auto vel_delta = vel * delta_time;
@@ -150,25 +192,27 @@ Physics::edge_collision_handling(glm::vec3 pos, glm::vec3 vel, const Component::
 			const auto delta_1 = glm::abs(edge_pos[1] - next_pos_1);
 
 			if (delta_0 < delta_1) {
-				sample.set(comp0, glm::sign(vel[comp0]), edge_block);
-				vel[comp0] = calc_target_vel(edge_pos[0], current_pos_0, delta_time);
+				const auto sign = vel[comp0];
+				const auto voxel_sample = std::make_pair(edge_pos[0], edge_block);
+				setSample(comp0, sign, voxel_sample, sample);
 			}
 			else {
-				sample.set(comp1, glm::sign(vel[comp1]), edge_block);
-				vel[comp1] = calc_target_vel(edge_pos[1], current_pos_1, delta_time);
+				const auto sign = vel[comp1];
+				const auto voxel_sample = std::make_pair(edge_pos[1], edge_block);
+				setSample(comp1, sign, voxel_sample, sample);
 			}
 		}
 	};
 
-	//modifies state of vel and sample
+	//modifies state of sample
 	handle_collision(0, 1, edge_xy);
 	handle_collision(1, 2, edge_yz);
 	handle_collision(2, 0, edge_zx);
 
-	return std::make_pair(vel, sample);
+	return sample;
 }
 
-std::pair<glm::vec3, Component::VoxelCollisionSample>
+Component::VoxelCollisionSample
 Physics::corner_collision_handling(glm::vec3 pos, glm::vec3 vel, const Component::VoxelCollision &collision, float delta_time , GetBlockFunc &getBlock) {
 	constexpr float SAMPLE = .9f;
 
@@ -205,21 +249,21 @@ Physics::corner_collision_handling(glm::vec3 pos, glm::vec3 vel, const Component
 
 		//push in the axis with smallest intersection
 		if (delta.x < delta.y && delta.x < delta.z) {
-			sample.setX(sign_vel.x, corner_block);
-			vel.x = calc_target_vel(corner_pos.x, current_aabb_pos.x, delta_time);
+			const auto voxel_sample = std::make_pair(corner_pos.x, corner_block);
+			setSample(0, sign_vel.x, voxel_sample, sample);
 		}
 		else if (delta.y < delta.z) {
-			sample.setY(sign_vel.y, corner_block);
-			vel.y = calc_target_vel(corner_pos.y, current_aabb_pos.y, delta_time);
+			const auto voxel_sample = std::make_pair(corner_pos.y, corner_block);
+			setSample(1, sign_vel.y, voxel_sample, sample);
 		}
 		else {
-			sample.setZ(sign_vel.z, corner_block);
-			vel.z = calc_target_vel(corner_pos.z, current_aabb_pos.z, delta_time);
+			const auto voxel_sample = std::make_pair(corner_pos.z, corner_block);
+			setSample(2, sign_vel.z, voxel_sample, sample);
 		}
 
 	}
 
-	return std::make_pair(vel, sample);
+	return sample;
 }
 
 glm::i32vec2 convert(float sign, int min, int max) {

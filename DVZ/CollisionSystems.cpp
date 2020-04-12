@@ -27,6 +27,10 @@ void System::voxel_collision_system(Engine &engine, float delta) {
 		collision.sample = edge_collision_handling(pos, vel, collision, delta, getBlockFunc);
 		collision.sample = corner_collision_handling(pos, vel, collision, delta, getBlockFunc);
 
+		if (collision.sample.ny.has_value()) {
+			vel.y = 0;
+		}
+
 		//{
 		//	const auto vel_sample = face_collision_handling(pos, vel, collision, delta, getBlockFunc);
 		//	vel = vel_sample.first;
