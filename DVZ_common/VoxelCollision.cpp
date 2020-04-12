@@ -13,7 +13,6 @@ typedef std::optional<std::pair<glm::vec2, Voxel::Block>> EdgeOptional;
 typedef std::optional<std::pair<glm::vec3, Voxel::Block>> CornerOptional;
 
 
-constexpr float EPSILON = 0.001f;
 
 
 glm::i32vec2 convert(float sign, int min, int max);
@@ -76,9 +75,7 @@ void setSample(int component, float sign, const VoxelSample &sample, Component::
 	}
 }
 
-float calc_target_vel(float target_pos, float current_pos, float delta_time) {
-	return (target_pos - current_pos) / delta_time * (1 - EPSILON);
-}
+
 
 template<typename OPT, typename FUNC>
 OPT 

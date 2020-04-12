@@ -5,6 +5,8 @@
 #include "ChunkManager.h"
 #include "RLEncoder.h"
 #include "VoxelCollision.h"
+#include "HandleVoxelCollision.h"
+
 
 using namespace GameLogic;
 
@@ -135,12 +137,13 @@ void GameLogic::voxel_collision_system(EntityAdmin &admin, float delta) {
 	view.each([&getBlockFunc, delta](auto &pos, auto &vel, auto &collision) {
 		collision.sample 
 			= face_collision_sample(pos, vel, collision, delta, getBlockFunc);
+		vel = handle_collision(pos, vel, collision, delta);
 		collision.sample 
 			= edge_collision_sample(pos, vel, collision, delta, getBlockFunc);
+		vel = handle_collision(pos, vel, collision, delta);
 		collision.sample 
 			= corner_collision_sample(pos, vel, collision, delta, getBlockFunc);
-		
-
+		vel = handle_collision(pos, vel, collision, delta);
 
 	});
 }

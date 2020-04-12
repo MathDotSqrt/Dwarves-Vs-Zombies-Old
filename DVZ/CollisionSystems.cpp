@@ -3,6 +3,7 @@
 #include "Engine.h"
 #include "ChunkManager.h"
 #include "VoxelCollision.h"
+#include "HandleVoxelCollision.h"
 
 #include "Timer.h"
 
@@ -23,13 +24,15 @@ void System::voxel_collision_system(Engine &engine, float delta) {
 	view.each([&getBlockFunc, delta](auto &pos, auto &vel, auto &collision) {
 		
 
-		collision.sample = face_collision_sample(pos, vel, collision, delta, getBlockFunc);
-		collision.sample = edge_collision_sample(pos, vel, collision, delta, getBlockFunc);
-		collision.sample = corner_collision_sample(pos, vel, collision, delta, getBlockFunc);
-
-		if (collision.sample.ny.has_value()) {
-			vel.y = 0;
-		}
+		collision.sample 
+			= face_collision_sample(pos, vel, collision, delta, getBlockFunc);
+		vel = handle_collision(pos, vel, collision, delta);
+		collision.sample 
+			= edge_collision_sample(pos, vel, collision, delta, getBlockFunc);
+		vel = handle_collision(pos, vel, collision, delta);
+		collision.sample 
+			= corner_collision_sample(pos, vel, collision, delta, getBlockFunc);
+		vel = handle_collision(pos, vel, collision, delta);
 
 		//{
 		//	const auto vel_sample = face_collision_handling(pos, vel, collision, delta, getBlockFunc);

@@ -11,11 +11,11 @@ namespace Physics {
 
 		AABB(glm::vec3 min, glm::vec3 max) : min(min), max(max){}
 
-		glm::vec3 getMin() const {
+		const glm::vec3 &getMin() const {
 			return min;
 		}
 
-		glm::vec3 getMax() const {
+		const glm::vec3 &getMax() const {
 			return max;
 		}
 
