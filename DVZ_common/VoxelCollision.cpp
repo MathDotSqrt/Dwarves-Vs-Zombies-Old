@@ -26,6 +26,14 @@ EdgeOptional zx_edge_intersection(const glm::vec3 vel, BlockCoord min, BlockCoor
 
 CornerOptional corner_intersection(const glm::vec3 vel, BlockCoord min, BlockCoord max, GetBlockFunc &func);
 
+void setSample(int component, float sign, const Component::VoxelCollisionSample::Sample &sample, Component::VoxelCollisionSample &samples) {
+	switch (component) {
+	case 0: auto &x = sign > 0 ? samples.px : samples.nx; x = sample; break;
+	case 1: auto &y = sign > 0 ? samples.py : samples.ny; y = sample; break;
+	case 2: auto &z = sign > 0 ? samples.pz : samples.nz; z = sample; break;
+	}
+}
+
 float calc_target_vel(float target_pos, float current_pos, float delta_time) {
 	return (target_pos - current_pos) / delta_time * (1 - EPSILON);
 }
@@ -89,8 +97,10 @@ Physics::face_collision_handling(glm::vec3 pos, glm::vec3 vel, const Component::
 		if (face.has_value()) {
 			const auto face_pos = face->first;
 			const auto face_block = face->second;
-			sample.set(component, glm::sign(vel[component]), face_block);
-			vel[component] = calc_target_vel(face_pos, current_pos, delta_time);
+
+			const auto sign = glm::sign(vel[component]);
+			const auto voxel_sample = std::make_pair(face_pos, face_block);
+			setSample(component, sign, voxel_sample, sample);
 		}
 	};
 	

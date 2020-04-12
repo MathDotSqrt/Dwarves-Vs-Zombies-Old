@@ -45,47 +45,13 @@ namespace Component {
 	};
 
 	struct VoxelCollisionSample {
-		std::optional<Voxel::Block> px;
-		std::optional<Voxel::Block> nx;
-		std::optional<Voxel::Block> py;
-		std::optional<Voxel::Block> ny;
-		std::optional<Voxel::Block> pz;
-		std::optional<Voxel::Block> nz;
-
-		void set(int component, float sign, std::optional<Voxel::Block> block) {
-			switch (component) {
-			case 0: setX(sign, block); break;
-			case 1: setY(sign, block); break;
-			case 2: setZ(sign, block); break;
-			}
-		}
-
-		void setX(float sign, std::optional<Voxel::Block> block) {
-			if (sign > 0) {
-				px = block;
-			}
-			else{
-				nx = block;
-			}
-		}
-
-		void setY(float sign, std::optional<Voxel::Block> block) {
-			if (sign > 0) {
-				py = block;
-			}
-			else {
-				ny = block;
-			}
-		}
-
-		void setZ(float sign, std::optional<Voxel::Block> block) {
-			if (sign > 0) {
-				pz = block;
-			}
-			else {
-				nz = block;
-			}
-		}
+		typedef std::pair<float, Voxel::Block> Sample;
+		std::optional<Sample> px;
+		std::optional<Sample> nx;
+		std::optional<Sample> py;
+		std::optional<Sample> ny;
+		std::optional<Sample> pz;
+		std::optional<Sample> nz;
 	};
 
 	struct VoxelCollision {
