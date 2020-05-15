@@ -184,6 +184,8 @@ Physics::edge_collision_sample(glm::vec3 pos, glm::vec3 vel, const Component::Vo
 			const auto edge_pos = edge->first;
 			const auto edge_block = edge->second;
 
+			
+
 			const auto current_pos_0 = vel[comp0] > 0 ? current_max[comp0] : current_min[comp0];
 			const auto current_pos_1 = vel[comp1] > 0 ? current_max[comp1] : current_min[comp1];
 			const auto next_pos_0 = vel[comp0] > 0 ? next_max[comp0] : next_min[comp0];
@@ -471,6 +473,10 @@ EdgeOptional zx_edge_intersection(const glm::vec3 vel, BlockCoord min, BlockCoor
 	for (int y = min_y; y <= max_y; y++) {
 		const BlockCoord coord(x_coord, y, z_coord);
 		const Voxel::Block block = getBlock(coord);
+
+		if (block.type == Voxel::BlockType::BLOCK_TYPE_GLASS) {
+			printf("EDGE\n");
+		}
 
 		if (block.getMeshType() == Voxel::MeshType::MESH_TYPE_BLOCK) {
 			const float z_pos = vel.z > 0 ? coord.z : coord.z + 1.0f;

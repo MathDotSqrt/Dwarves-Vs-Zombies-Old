@@ -1,10 +1,10 @@
 #include "HandleVoxelCollision.h"
 
-constexpr float EPSILON = 0.01f;
+constexpr float EPSILON = 0.00f;
 
 float calc_target_vel(float target_pos, float current_pos, float delta_time) {
 	const float new_vel = (target_pos - current_pos) / delta_time;
-	return  new_vel - glm::sign(new_vel) * EPSILON;
+	return  new_vel + glm::sign(new_vel) * EPSILON;
 }
 
 glm::vec3
@@ -34,6 +34,7 @@ handle_collision(glm::vec3 pos, glm::vec3 vel, const Component::VoxelCollision &
 	else if (sample.nz.has_value()) {
 		vel.z = calc_target_vel(sample.nz->first, min.z, delta_time);
 	}
+
 
 	return vel;
 }
