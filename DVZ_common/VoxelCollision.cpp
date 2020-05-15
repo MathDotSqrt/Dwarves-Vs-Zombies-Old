@@ -96,6 +96,8 @@ intersection(
 	const float INV_NUM_ITER = 1.0f / NUM_ITER;
 
 	//optional stores the optional returned from the intersection test
+	BlockCoord lastMin;
+	BlockCoord lastMax;
 	OPT optional;
 	for (int i = 1; i <= NUM_ITER; i++) {
 		//frac is the percentage of the vel we want to sample
@@ -106,11 +108,19 @@ intersection(
 		const BlockCoord blockMin(glm::floor(next_min));
 		const BlockCoord blockMax(glm::floor(next_max));
 
+		if (blockMin == lastMin && blockMax == lastMax && i > 1) {
+			//noneed to retest
+			continue;
+		}
+
 		optional = voxel_intersection(vel_delta, blockMin, blockMax, getBlock);
 		//if we intersect early stop
 		if (optional.has_value()) {
 			break;
 		}
+
+		lastMin = blockMin;
+		lastMax = blockMax;
 	}
 
 	return optional;
@@ -134,8 +144,6 @@ Physics::face_collision_sample(glm::vec3 pos, glm::vec3 vel, const Component::Vo
 	auto handle_collision = [&] 
 	(int component, FaceOptional face, float current_pos) {
 		if (face.has_value()) {
-			
-
 			const auto face_pos = face->first;
 			const auto face_block = face->second;
 
@@ -179,7 +187,6 @@ Physics::edge_collision_sample(glm::vec3 pos, glm::vec3 vel, const Component::Vo
 	auto handle_collision 
 		= [&](int comp0, int comp1, const EdgeOptional &edge) {
 		if (edge.has_value()) {
-			//printf("EDGE\n");
 
 			const auto edge_pos = edge->first;
 			const auto edge_block = edge->second;
@@ -344,13 +351,6 @@ FaceOptional y_axis_voxel_intersection(const glm::vec3 vel, BlockCoord min, Bloc
 			const BlockCoord coord(x, y_coord, z);
 			const Voxel::Block block = getBlock(coord);
 
-			if (block.type == Voxel::BlockType::BLOCK_TYPE_GLASS) {
-				printf("%d %d %d | %d %d %d\n", min.x, min.y, min.z, max.x, max.y, max.z);
-				printf("%d %d | %d %d\n", min_x, min_z, max_x, max_z);
-				printf("x: %f z: %f\n", vel.x, vel.z);
-				printf("BOUNCE\n");
-			}
-
 			if (block.getMeshType() == Voxel::MeshType::MESH_TYPE_BLOCK) {
 				const auto y_pos = vel.y >= 0 ? (float)y_coord : y_coord + 1.0f;
 				block_face_y = std::make_pair(y_pos, block);
@@ -473,10 +473,6 @@ EdgeOptional zx_edge_intersection(const glm::vec3 vel, BlockCoord min, BlockCoor
 	for (int y = min_y; y <= max_y; y++) {
 		const BlockCoord coord(x_coord, y, z_coord);
 		const Voxel::Block block = getBlock(coord);
-
-		if (block.type == Voxel::BlockType::BLOCK_TYPE_GLASS) {
-			printf("EDGE\n");
-		}
 
 		if (block.getMeshType() == Voxel::MeshType::MESH_TYPE_BLOCK) {
 			const float z_pos = vel.z > 0 ? coord.z : coord.z + 1.0f;
