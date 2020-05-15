@@ -119,7 +119,7 @@ intersection(
 
 Component::VoxelCollisionSample
 Physics::face_collision_sample(glm::vec3 pos, glm::vec3 vel, const Component::VoxelCollision &collision, float delta_time, GetBlockFunc &getBlock) {
-	constexpr float SAMPLE = .9f;
+	constexpr float SAMPLE = .1f;
 	const auto &aabb = collision.aabb;
 	const auto vel_delta = vel * delta_time;
 
@@ -134,6 +134,8 @@ Physics::face_collision_sample(glm::vec3 pos, glm::vec3 vel, const Component::Vo
 	auto handle_collision = [&] 
 	(int component, FaceOptional face, float current_pos) {
 		if (face.has_value()) {
+			
+
 			const auto face_pos = face->first;
 			const auto face_block = face->second;
 
@@ -177,6 +179,8 @@ Physics::edge_collision_sample(glm::vec3 pos, glm::vec3 vel, const Component::Vo
 	auto handle_collision 
 		= [&](int comp0, int comp1, const EdgeOptional &edge) {
 		if (edge.has_value()) {
+			//printf("EDGE\n");
+
 			const auto edge_pos = edge->first;
 			const auto edge_block = edge->second;
 
@@ -226,6 +230,7 @@ Physics::corner_collision_sample(glm::vec3 pos, glm::vec3 vel, const Component::
 	const auto corner
 		= intersection<CornerOptional>(pos, vel_delta, aabb, getBlock, &corner_intersection, SAMPLE);
 	if (corner.has_value()) {
+		//printf("CORNER\n");
 		const glm::vec3 current_aabb_pos{
 			vel.x > 0 ? current_max.x : current_min.x,
 			vel.y > 0 ? current_max.y : current_min.y,
@@ -336,6 +341,13 @@ FaceOptional y_axis_voxel_intersection(const glm::vec3 vel, BlockCoord min, Bloc
 		for (int z = min_z; z <= max_z; z++) {
 			const BlockCoord coord(x, y_coord, z);
 			const Voxel::Block block = getBlock(coord);
+
+			if (block.type == Voxel::BlockType::BLOCK_TYPE_GLASS) {
+				printf("%d %d %d | %d %d %d\n", min.x, min.y, min.z, max.x, max.y, max.z);
+				printf("%d %d | %d %d\n", min_x, min_z, max_x, max_z);
+				printf("x: %f z: %f\n", vel.x, vel.z);
+				printf("BOUNCE\n");
+			}
 
 			if (block.getMeshType() == Voxel::MeshType::MESH_TYPE_BLOCK) {
 				const auto y_pos = vel.y >= 0 ? (float)y_coord : y_coord + 1.0f;
@@ -490,7 +502,6 @@ CornerOptional corner_intersection(const glm::vec3 vel, BlockCoord min, BlockCoo
 		const float x_pos = vel.x > 0 ? coord.x : coord.x + 1.0f;
 		const float y_pos = vel.y > 0 ? coord.y : coord.y + 1.0f;
 		const float z_pos = vel.z > 0 ? coord.z : coord.z + 1.0f;
-		printf("CORNER\n");
 
 		corner = std::make_pair(glm::vec3(x_pos, y_pos, z_pos), block);
 	}

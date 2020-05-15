@@ -22,11 +22,14 @@ void System::voxel_collision_system(Engine &engine, float delta) {
 	Util::Performance::Timer timer("Collision");
 	auto view = engine.view<Position, Velocity, VoxelCollision>();
 	view.each([&getBlockFunc, delta](auto &pos, auto &vel, auto &collision) {
-		
+		volatile int x = 0;
 
 		collision.sample 
 			= face_collision_sample(pos, vel, collision, delta, getBlockFunc);
 		vel = handle_collision(pos, vel, collision, delta);
+		if (vel.y > 26) {
+			x++;
+		}
 		collision.sample 
 			= edge_collision_sample(pos, vel, collision, delta, getBlockFunc);
 		vel = handle_collision(pos, vel, collision, delta);

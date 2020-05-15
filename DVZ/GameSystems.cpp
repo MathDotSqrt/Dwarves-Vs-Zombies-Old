@@ -121,8 +121,6 @@ void System::collision_test_system(Engine &engine, float delta) {
 		test = false;
 	}
 
-	printf("%f %f %f \n", engine.get<Position>(entity).x, engine.get<Position>(entity).y, engine.get<Position>(entity).z);
-
 	if (test) {
 		
 		auto &input = engine.get<Input>(entity);
