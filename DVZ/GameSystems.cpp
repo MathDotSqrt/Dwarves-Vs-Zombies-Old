@@ -93,13 +93,54 @@ void System::sprint_system(Engine &engine, float delta) {
 	});
 }
 
+void System::collision_test_system(Engine &engine, float delta) {
+	using namespace Component;
+	
+	static bool test = false;
+
+	auto view = engine.view<Player, Position, Rotation, Velocity, Input>();
+	assert(view.begin() != view.end());
+
+	auto &entity = *view.begin();
+
+	if (Window::isPressed('r') && test == false) {
+		test = !test;
+
+		auto &chunk_manager = engine.ctx<Voxel::ChunkManager>();
+		const Voxel::Block AIR(Voxel::BlockType::BLOCK_TYPE_DEFAULT);
+		const Voxel::Block GLASS(Voxel::BlockType::BLOCK_TYPE_GLASS);
+		chunk_manager.setBlock(26, 1, 26, AIR);
+		chunk_manager.setBlock(28, 2, 25, GLASS);
+		engine.get<Position>(entity) = glm::vec3(26.67, 2 + .5f, 26.3);
+		engine.get<Velocity>(entity) = glm::vec3(0);
+
+
+		engine.get<Rotation>(entity) = glm::quat(glm::vec3(0, -glm::pi<float>() / 2.0f + .05f, 0));
+	}
+	else if (Window::isPressed('r') == false && test == true) {
+		test = false;
+	}
+
+	printf("%f %f %f \n", engine.get<Position>(entity).x, engine.get<Position>(entity).y, engine.get<Position>(entity).z);
+
+	if (test) {
+		
+		auto &input = engine.get<Input>(entity);
+		input.up = true;
+		input.space = true;
+	}
+}
+
 void System::input_system(Engine &engine, float delta) {
 	using namespace Component;
 	
+
+
 	engine.view<Input>().each([](auto &input) {
 		input.mousePos[0] = input.mousePos[1];
 
-		if (Window::isFocused()) {
+		//todo remove
+		if (Window::isFocused() && Window::isPressed('r') == false) {
 			double mx = 0;
 			double my = 0;
 			Window::getMousePos(mx, my);
