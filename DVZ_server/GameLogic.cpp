@@ -132,18 +132,30 @@ void GameLogic::voxel_collision_system(EntityAdmin &admin, float delta) {
 		return manager.getBlock(coord);
 	};
 
-
 	auto view = registry.view<Position, Velocity, VoxelCollision>();
 	view.each([&getBlockFunc, delta](auto &pos, auto &vel, auto &collision) {
-		collision.sample 
-			= face_collision_sample(pos, vel, collision, delta, getBlockFunc);
-		vel = handle_collision(pos, vel, collision, delta);
-		collision.sample 
-			= edge_collision_sample(pos, vel, collision, delta, getBlockFunc);
-		vel = handle_collision(pos, vel, collision, delta);
-		collision.sample 
-			= corner_collision_sample(pos, vel, collision, delta, getBlockFunc);
-		vel = handle_collision(pos, vel, collision, delta);
+		const auto new_vel = Physics::sample_terrain_collision(
+			pos,
+			vel,
+			collision.aabb,
+			collision.sample,
+			delta,
+			getBlockFunc
+		);
 
+		vel = new_vel;
 	});
+	//auto view = registry.view<Position, Velocity, VoxelCollision>();
+	//view.each([&getBlockFunc, delta](auto &pos, auto &vel, auto &collision) {
+	//	collision.sample 
+	//		= face_collision_sample(pos, vel, collision, delta, getBlockFunc);
+	//	vel = handle_collision(pos, vel, collision, delta);
+	//	collision.sample 
+	//		= edge_collision_sample(pos, vel, collision, delta, getBlockFunc);
+	//	vel = handle_collision(pos, vel, collision, delta);
+	//	collision.sample 
+	//		= corner_collision_sample(pos, vel, collision, delta, getBlockFunc);
+	//	vel = handle_collision(pos, vel, collision, delta);
+
+	//});
 }

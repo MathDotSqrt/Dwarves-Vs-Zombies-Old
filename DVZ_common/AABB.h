@@ -35,9 +35,11 @@ namespace Physics {
 			case 5: return glm::vec3(max.x, max.y, min.z); break;
 			case 6: return glm::vec3(min.x, max.y, max.z); break;
 			case 7: return glm::vec3(max.x, max.y, max.z); break;
-			default: return glm::vec3(10000000);
+			default: assert(false); return glm::vec3(10000000);
 			}
 
 		}
 	};
+
+	bool intersect(const AABB &a, const AABB &b);
 }

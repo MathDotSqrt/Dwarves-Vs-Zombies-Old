@@ -22,37 +22,15 @@ void System::voxel_collision_system(Engine &engine, float delta) {
 	Util::Performance::Timer timer("Collision");
 	auto view = engine.view<Position, Velocity, VoxelCollision>();
 	view.each([&getBlockFunc, delta](auto &pos, auto &vel, auto &collision) {
-		volatile int x = 0;
-
-		collision.sample 
-			= face_collision_sample(pos, vel, collision, delta, getBlockFunc);
-		vel = handle_collision(pos, vel, collision, delta);
+		const auto new_vel = Physics::sample_terrain_collision(
+			pos, 
+			vel, 
+			collision.aabb, 
+			collision.sample, 
+			delta, 
+			getBlockFunc
+		);
 		
-		collision.sample 
-			= edge_collision_sample(pos, vel, collision, delta, getBlockFunc);
-		vel = handle_collision(pos, vel, collision, delta);
-
-		collision.sample 
-			= corner_collision_sample(pos, vel, collision, delta, getBlockFunc);
-		vel = handle_collision(pos, vel, collision, delta);
-		//{
-		//	const auto vel_sample = face_collision_handling(pos, vel, collision, delta, getBlockFunc);
-		//	vel = vel_sample.first;
-		//	collision.sample = vel_sample.second;
-		//}
-		//{
-		//	const auto vel_sample = edge_collision_handling(pos, vel, collision, delta, getBlockFunc);
-		//	vel = vel_sample.first;
-		//	collision.sample = vel_sample.second;
-		//}
-		//{
-		//	const auto vel_sample = corner_collision_handling(pos, vel, collision, delta, getBlockFunc);
-		//	vel = vel_sample.first;
-		//	collision.sample = vel_sample.second;
-		//}
-
-		//printf(" px %d | py %d | pz %d\n", collision.sample.px.has_value(), collision.sample.py.has_value(), collision.sample.pz.has_value());
-		//printf(" nx %d | ny %d | nz %d\n", collision.sample.nx.has_value(), collision.sample.ny.has_value(), collision.sample.nz.has_value());
-		//printf("----------------------\n");
+		vel = new_vel;
 	});
 }

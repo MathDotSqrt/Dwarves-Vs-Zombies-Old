@@ -27,6 +27,7 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)VoxelCollision.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="$(MSBuildThisFileDirectory)AABB.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Block.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)HandleVoxelCollision.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)VoxelCollision.cpp" />

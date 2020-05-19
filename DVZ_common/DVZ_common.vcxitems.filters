@@ -53,5 +53,8 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)HandleVoxelCollision.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)AABB.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>
