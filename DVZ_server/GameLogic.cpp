@@ -81,7 +81,7 @@ void GameLogic::movement_system(EntityAdmin &admin, float delta) {
 
 void GameLogic::afk_system(EntityAdmin &admin, float delta) {
 	using namespace Component;
-	constexpr float AFK_TIMEOUT = 60 * 5;		//five minutes
+	constexpr float AFK_TIMEOUT = 60 * 20;		//20 minutes
 	
 	entt::registry &registry = admin.registry;
 	auto view = registry.view<Input, AFK, NetClient>();

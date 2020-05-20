@@ -1,5 +1,6 @@
 #include "VoxelCollision.h"
 #include <optional>
+#include "IntersectionTests.h"
 
 using namespace Physics;
 
@@ -34,9 +35,20 @@ FaceOptional sample_collision_z(
 	GetBlockFunc &getBlock
 );
 
+glm::vec<3, FaceOptional> sample_cylinder(
+	const Physics::AABB &worldspace_aabb,
+	const glm::vec3 &vel_delta,
+	GetBlockFunc &func
+);
+
 Physics::AABB testing_aabb(
 	int comp, 
 	float vel, 
+	const Physics::AABB &aabb
+);
+
+Physics::AABB vel_aabb(
+	const glm::vec3 &vel,
 	const Physics::AABB &aabb
 );
 
@@ -49,6 +61,7 @@ void set_sample(
 	Component::VoxelCollisionSample &sample
 );
 float handle_collision(
+	float vel,
 	float target_pos,
 	float current_pos,
 	float delta
@@ -77,59 +90,51 @@ glm::vec3 Physics::sample_terrain_collision(
 	
 	delta = 1 / 60.0f;
 	const auto vel_delta = vel * delta;
-	const Physics::AABB worldspace_aabb(aabb.min + pos, aabb.max + pos);
 
+	const Physics::AABB worldspace_aabb(aabb.min + pos, aabb.max + pos);
+	const auto current_pos = get_current_pos(vel, worldspace_aabb);
 
 	auto new_vel = vel;
 	Component::VoxelCollisionSample new_sample;
-	const auto current_pos = get_current_pos(vel, worldspace_aabb);
-	printf("vel %f %f %f\n", vel.x, vel.y, vel.z);
 	{
-		const auto face_y = sample_collision_y(worldspace_aabb, vel_delta, getBlock);
+		const auto face_y = sample_collision_y(worldspace_aabb, new_vel * delta, getBlock);
 		if (face_y.has_value()) {
 			set_sample(Y, vel_delta.y, face_y, new_sample);
 			const auto target_pos = face_y->first;
-			new_vel.y = handle_collision(target_pos, current_pos.y, delta);
-
-			if (glm::sign(target_pos - current_pos.y) == glm::sign(vel.y)) {
-				new_vel.y -= glm::sign(vel.y) * .001f;
-			}
-			printf("Y target %f current %f \n", target_pos, current_pos.y);
+			new_vel.y = handle_collision(vel.y, target_pos, current_pos.y, delta);
+			//printf("Y target %f current %f \n", target_pos, current_pos.y);
 		}
 	}
 
 	{
-		const auto face_x = sample_collision_x(worldspace_aabb, vel_delta, getBlock);
+		const auto face_x = sample_collision_x(worldspace_aabb, new_vel * delta, getBlock);
 		if (face_x.has_value()) {
 			set_sample(X, vel_delta.x, face_x, new_sample);
 			const auto target_pos = face_x->first;
-			new_vel.x = handle_collision(target_pos, current_pos.x, delta);
-
-			if (glm::sign(target_pos - current_pos.x) == glm::sign(vel.x)) {
-				new_vel.x-= glm::sign(vel.x) * .001f;
-			}
-			printf("X target %f current %f \n", target_pos, current_pos.x);
+			new_vel.x = handle_collision(vel.x, target_pos, current_pos.x, delta);
+			//printf("X target %f current %f \n", target_pos, current_pos.x);
 
 		}
 	}
 
 	{
-		const auto face_z = sample_collision_z(worldspace_aabb, vel_delta, getBlock);
+		const auto face_z = sample_collision_z(worldspace_aabb, new_vel * delta, getBlock);
 		if (face_z.has_value()) {
 			set_sample(Z, vel_delta.z, face_z, new_sample);
 			const auto target_pos = face_z->first;
-			new_vel.z = handle_collision(target_pos, current_pos.z, delta);
-
-			if (glm::sign(target_pos - current_pos.z) == glm::sign(vel.z)) {
-				new_vel.z -= glm::sign(vel.z) * .001f;
-			}
-			printf("Z target %f current %f \n", target_pos, current_pos.z);
+			new_vel.z = handle_collision(vel.z, target_pos, current_pos.z, delta);
+			//printf("Z target %f current %f \n", target_pos, current_pos.z);
 
 		}
 	}
-	printf("------------\n");
-	sample = new_sample;
 
+	{
+		const auto sample = sample_cylinder(worldspace_aabb, new_vel * delta, getBlock);
+		assert(sample.x.has_value());
+		assert(sample.y.has_value() == false);
+	}
+	
+	sample = new_sample;
 	return new_vel;
 }
 
@@ -274,6 +279,18 @@ FaceOptional sample_collision_z(
 	return face;
 }
 
+glm::vec<3, FaceOptional> sample_cylinder(
+	const Physics::AABB &worldspace_aabb,
+	const glm::vec3 &vel_delta,
+	GetBlockFunc &getBlock
+) {
+	glm::vec<3, FaceOptional> samples{std::nullopt, std::nullopt, std::nullopt};
+	
+	const auto sample_box = vel_aabb(vel_delta, worldspace_aabb);
+
+	return samples;
+}
+
 Physics::AABB testing_aabb(
 	int comp, 
 	float vel, 
@@ -291,6 +308,16 @@ Physics::AABB testing_aabb(
 	}
 
 	return Physics::AABB(new_min, new_max);
+}
+
+Physics::AABB vel_aabb(
+	const glm::vec3 &vel_delta,
+	const Physics::AABB &aabb
+) {
+	const auto new_min = glm::min(aabb.min + vel_delta, aabb.min);
+	const auto new_max = glm::max(aabb.max + vel_delta, aabb.max);
+
+	return Physics::AABB{ new_min, new_max };
 }
 
 glm::vec3 get_current_pos(glm::vec3 vel, const Physics::AABB &aabb) {
@@ -320,9 +347,17 @@ void set_sample(
 }
 
 float handle_collision(
+	float vel,
 	float target_pos, 
 	float current_pos, 
 	float delta
 ) {
-	return (target_pos - current_pos) / delta;
+
+	float new_vel = (target_pos - current_pos) / delta;
+
+	if (glm::sign(vel) == glm::sign(target_pos - current_pos)) {
+		return new_vel - glm::sign(vel) * 0.01f;
+	}
+	return new_vel;
+
 }
