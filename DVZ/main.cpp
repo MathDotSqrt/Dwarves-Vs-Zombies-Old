@@ -39,7 +39,8 @@ void run() {
 
 	do {
 		currentTime = glfwGetTime();
-		gsm.update((float)delta);
+		//gsm.update((float)delta);
+		gsm.update(1/60.0f);
 
 		numFrames++;
 		
