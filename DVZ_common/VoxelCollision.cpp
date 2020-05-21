@@ -41,6 +41,14 @@ glm::vec<3, FaceOptional> sample_cylinder(
 	GetBlockFunc &func
 );
 
+glm::vec3 adjust_vel_for_collision(
+	const glm::vec3 &vel,
+	const Physics::AABB &worldspace_aabb,
+	const Physics::AABB &problem,
+	const Voxel::Block block,
+	glm::vec<3, FaceOptional> &samples
+);
+
 Physics::AABB testing_aabb(
 	int comp, 
 	float vel, 
@@ -65,6 +73,11 @@ float handle_collision(
 	float target_pos,
 	float current_pos,
 	float delta
+);
+
+glm::vec3 handle_collision(
+	const Physics::AABB &aabb,
+	const Physics::AABB &problem
 );
 
 template<typename FUNC>
@@ -130,8 +143,6 @@ glm::vec3 Physics::sample_terrain_collision(
 
 	{
 		const auto sample = sample_cylinder(worldspace_aabb, new_vel * delta, getBlock);
-		assert(sample.x.has_value());
-		assert(sample.y.has_value() == false);
 	}
 	
 	sample = new_sample;
@@ -286,9 +297,78 @@ glm::vec<3, FaceOptional> sample_cylinder(
 ) {
 	glm::vec<3, FaceOptional> samples{std::nullopt, std::nullopt, std::nullopt};
 	
-	const auto sample_box = vel_aabb(vel_delta, worldspace_aabb);
+	auto new_vel_delta = vel_delta;
+	auto sample_box = vel_aabb(new_vel_delta, worldspace_aabb);
+	const auto radius = glm::distance(worldspace_aabb.max, worldspace_aabb.min);
+	auto sample_cylinder = Physics::BoundingCylinder(sample_box.min, sample_box.max, radius);
 
+	const BlockCoord minBlock = glm::floor(sample_box.min);
+	const BlockCoord maxBlock = glm::floor(sample_box.max);
+
+	auto sample_lambda = [&](BlockCoord coord) {
+		const auto block = getBlock(coord);
+		if (block.getMeshType() != Voxel::MeshType::MESH_TYPE_BLOCK) {
+			return;
+		}
+
+		const auto block_aabb = Physics::AABB(coord, glm::vec3(coord) + glm::vec3(1));
+
+		if (Physics::intersect(sample_cylinder, block_aabb)) {
+			printf("CYLINDER COLL\n");
+			if (Physics::intersect(sample_box, block_aabb)) {
+				printf("BOX COLL\n");
+
+				new_vel_delta = adjust_vel_for_collision(vel_delta, worldspace_aabb, block_aabb, block, samples);
+				sample_box = vel_aabb(new_vel_delta, worldspace_aabb);
+				sample_cylinder = Physics::BoundingCylinder(sample_box.min, sample_box.max, radius);
+			}
+		}
+	};
+
+	if (samples.x.has_value() || samples.y.has_value() || samples.z.has_value()) {
+		printf("CYLINDER\n");
+	}
+
+	iterate_block_volume(minBlock, maxBlock, sample_lambda);
 	return samples;
+}
+
+glm::vec3 adjust_vel_for_collision(
+	const glm::vec3 &vel,
+	const Physics::AABB &worldspace_aabb,
+	const Physics::AABB &problem,
+	const Voxel::Block block,
+	glm::vec<3, FaceOptional> &samples
+) {
+
+	auto new_vel = vel;
+	auto new_samples = samples;
+	if (vel.x < 0) {
+		new_vel.x = worldspace_aabb.min.x - problem.max.x;
+		new_samples.x = std::make_pair(problem.max.x, block);
+	} 
+	if (vel.x > 0) {
+		new_vel.x = worldspace_aabb.max.x - problem.min.x;
+		new_samples.x = std::make_pair(problem.min.x, block);
+	}
+	if (vel.y < 0) {
+		new_vel.y = worldspace_aabb.min.y - problem.max.y;
+		new_samples.y = std::make_pair(problem.max.y, block);
+	}
+	if (vel.y > 0) {
+		new_vel.y = worldspace_aabb.max.y - problem.min.y;
+		new_samples.y = std::make_pair(problem.min.y, block);
+	}
+	if (vel.z < 0) {
+		new_vel.z = worldspace_aabb.min.z - problem.max.z;
+		new_samples.z = std::make_pair(problem.max.z, block);
+	}
+	if (vel.z > 0) {
+		new_vel.z = worldspace_aabb.max.z - problem.min.z;
+		new_samples.z = std::make_pair(problem.min.z, block);
+	}
+
+	return new_vel;
 }
 
 Physics::AABB testing_aabb(

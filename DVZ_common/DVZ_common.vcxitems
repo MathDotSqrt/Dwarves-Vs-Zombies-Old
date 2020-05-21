@@ -18,9 +18,11 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)AABB.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Block.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)BlockTypeEnum.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)BoundingCylinder.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)ChunkConstants.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Common.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)HandleVoxelCollision.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)IntersectionTests.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)MathUtil.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)RLEncoding.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)SharedComponents.h" />
@@ -29,7 +31,9 @@
   <ItemGroup>
     <ClCompile Include="$(MSBuildThisFileDirectory)AABB.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Block.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)BoundingCylinder.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)HandleVoxelCollision.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)IntersectionTests.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)VoxelCollision.cpp" />
   </ItemGroup>
 </Project>
