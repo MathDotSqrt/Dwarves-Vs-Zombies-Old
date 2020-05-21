@@ -328,7 +328,7 @@ glm::vec3 sample_cylinder(
 		const auto block_aabb = Physics::AABB(coord, glm::vec3(coord) + glm::vec3(1));
 
 		if (Physics::intersect(sample_cylinder, block_aabb)) {
-			if (Physics::intersect(sample_box, block_aabb) && a) {
+			if (Physics::intersect(sample_box, block_aabb)) {
 				printf("TEST\n");
 				new_vel_delta = adjust_vel_for_collision(new_vel_delta, worldspace_aabb, block_aabb, block, samples);
 				sample_box = vel_aabb(new_vel_delta, worldspace_aabb);
@@ -379,7 +379,8 @@ glm::vec3 adjust_vel_for_collision(
 		samples.z = std::make_pair(problem.max.z, block);
 	}
 	if (vel.z > 0) {
-		new_vel.z = worldspace_aabb.max.z - problem.min.z;
+		const auto delta = worldspace_aabb.max.z - problem.min.z;
+		new_vel.z = delta < vel.z ? delta : vel.z;
 		samples.z = std::make_pair(problem.min.z, block);
 	}
 
