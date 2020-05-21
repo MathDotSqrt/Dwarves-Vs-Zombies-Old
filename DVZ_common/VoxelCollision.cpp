@@ -142,6 +142,7 @@ glm::vec3 Physics::sample_terrain_collision(
 
 	{
 		new_vel = sample_cylinder(worldspace_aabb, new_vel * delta, getBlock) / delta;
+		
 		//if (sample.x.has_value()) {
 		//	set_sample(X, vel_delta.x, sample.x, new_sample);
 		//	const auto target_pos = sample.x->first;
@@ -313,12 +314,11 @@ glm::vec3 sample_cylinder(
 	
 	auto new_vel_delta = vel_delta;
 	auto sample_box = vel_aabb(new_vel_delta, worldspace_aabb);
-	const auto radius = glm::distance(worldspace_aabb.max, worldspace_aabb.min);
+	auto radius = glm::distance(sample_box.max, sample_box.min);
 	auto sample_cylinder = Physics::BoundingCylinder(sample_box.min, sample_box.max, radius);
 
 	const BlockCoord minBlock = glm::floor(sample_box.min);
 	const BlockCoord maxBlock = glm::floor(sample_box.max);
-
 	auto sample_lambda = [&](BlockCoord coord) {
 		const auto block = getBlock(coord);
 		if (block.getMeshType() != Voxel::MeshType::MESH_TYPE_BLOCK) {
@@ -328,9 +328,11 @@ glm::vec3 sample_cylinder(
 		const auto block_aabb = Physics::AABB(coord, glm::vec3(coord) + glm::vec3(1));
 
 		if (Physics::intersect(sample_cylinder, block_aabb)) {
-			if (Physics::intersect(sample_box, block_aabb)) {
-				new_vel_delta = adjust_vel_for_collision(vel_delta, worldspace_aabb, block_aabb, block, samples);
+			if (Physics::intersect(sample_box, block_aabb) && a) {
+				printf("TEST\n");
+				new_vel_delta = adjust_vel_for_collision(new_vel_delta, worldspace_aabb, block_aabb, block, samples);
 				sample_box = vel_aabb(new_vel_delta, worldspace_aabb);
+				radius = glm::distance(sample_box.max, sample_box.min);
 				sample_cylinder = Physics::BoundingCylinder(sample_box.min, sample_box.max, radius);
 			}
 		}
