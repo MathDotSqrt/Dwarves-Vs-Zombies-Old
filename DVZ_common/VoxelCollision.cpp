@@ -35,7 +35,7 @@ FaceOptional sample_collision_z(
 	GetBlockFunc &getBlock
 );
 
-glm::vec<3, FaceOptional> sample_cylinder(
+glm::vec3 sample_cylinder(
 	const Physics::AABB &worldspace_aabb,
 	const glm::vec3 &vel_delta,
 	GetBlockFunc &func
@@ -137,12 +137,26 @@ glm::vec3 Physics::sample_terrain_collision(
 			const auto target_pos = face_z->first;
 			new_vel.z = handle_collision(vel.z, target_pos, current_pos.z, delta);
 			//printf("Z target %f current %f \n", target_pos, current_pos.z);
-
 		}
 	}
 
 	{
-		const auto sample = sample_cylinder(worldspace_aabb, new_vel * delta, getBlock);
+		new_vel = sample_cylinder(worldspace_aabb, new_vel * delta, getBlock) / delta;
+		//if (sample.x.has_value()) {
+		//	set_sample(X, vel_delta.x, sample.x, new_sample);
+		//	const auto target_pos = sample.x->first;
+		//	new_vel.x = handle_collision(vel.x, target_pos, current_pos.x, delta);
+		//}
+		//if (sample.y.has_value()) {
+		//	set_sample(Y, vel_delta.y, sample.y, new_sample);
+		//	const auto target_pos = sample.y->first;
+		//	new_vel.y = handle_collision(vel.y, target_pos, current_pos.y, delta);
+		//}
+		//if (sample.z.has_value()) {
+		//	set_sample(Z, vel_delta.z, sample.z, new_sample);
+		//	const auto target_pos = sample.z->first;
+		//	new_vel.z = handle_collision(vel.z, target_pos, current_pos.z, delta);
+		//}
 	}
 	
 	sample = new_sample;
@@ -290,7 +304,7 @@ FaceOptional sample_collision_z(
 	return face;
 }
 
-glm::vec<3, FaceOptional> sample_cylinder(
+glm::vec3 sample_cylinder(
 	const Physics::AABB &worldspace_aabb,
 	const glm::vec3 &vel_delta,
 	GetBlockFunc &getBlock
@@ -314,10 +328,7 @@ glm::vec<3, FaceOptional> sample_cylinder(
 		const auto block_aabb = Physics::AABB(coord, glm::vec3(coord) + glm::vec3(1));
 
 		if (Physics::intersect(sample_cylinder, block_aabb)) {
-			printf("CYLINDER COLL\n");
 			if (Physics::intersect(sample_box, block_aabb)) {
-				printf("BOX COLL\n");
-
 				new_vel_delta = adjust_vel_for_collision(vel_delta, worldspace_aabb, block_aabb, block, samples);
 				sample_box = vel_aabb(new_vel_delta, worldspace_aabb);
 				sample_cylinder = Physics::BoundingCylinder(sample_box.min, sample_box.max, radius);
@@ -325,12 +336,15 @@ glm::vec<3, FaceOptional> sample_cylinder(
 		}
 	};
 
+	
+
+	iterate_block_volume(minBlock, maxBlock, sample_lambda);
+
 	if (samples.x.has_value() || samples.y.has_value() || samples.z.has_value()) {
 		printf("CYLINDER\n");
 	}
 
-	iterate_block_volume(minBlock, maxBlock, sample_lambda);
-	return samples;
+	return new_vel_delta;
 }
 
 glm::vec3 adjust_vel_for_collision(
@@ -342,30 +356,29 @@ glm::vec3 adjust_vel_for_collision(
 ) {
 
 	auto new_vel = vel;
-	auto new_samples = samples;
 	if (vel.x < 0) {
 		new_vel.x = worldspace_aabb.min.x - problem.max.x;
-		new_samples.x = std::make_pair(problem.max.x, block);
+		samples.x = std::make_pair(problem.max.x, block);
 	} 
 	if (vel.x > 0) {
 		new_vel.x = worldspace_aabb.max.x - problem.min.x;
-		new_samples.x = std::make_pair(problem.min.x, block);
+		samples.x = std::make_pair(problem.min.x, block);
 	}
 	if (vel.y < 0) {
 		new_vel.y = worldspace_aabb.min.y - problem.max.y;
-		new_samples.y = std::make_pair(problem.max.y, block);
+		samples.y = std::make_pair(problem.max.y, block);
 	}
 	if (vel.y > 0) {
 		new_vel.y = worldspace_aabb.max.y - problem.min.y;
-		new_samples.y = std::make_pair(problem.min.y, block);
+		samples.y = std::make_pair(problem.min.y, block);
 	}
 	if (vel.z < 0) {
 		new_vel.z = worldspace_aabb.min.z - problem.max.z;
-		new_samples.z = std::make_pair(problem.max.z, block);
+		samples.z = std::make_pair(problem.max.z, block);
 	}
 	if (vel.z > 0) {
 		new_vel.z = worldspace_aabb.max.z - problem.min.z;
-		new_samples.z = std::make_pair(problem.min.z, block);
+		samples.z = std::make_pair(problem.min.z, block);
 	}
 
 	return new_vel;
@@ -435,9 +448,9 @@ float handle_collision(
 
 	float new_vel = (target_pos - current_pos) / delta;
 
-	if (glm::sign(vel) == glm::sign(target_pos - current_pos)) {
-		return new_vel - glm::sign(vel) * 0.01f;
-	}
+	//if (glm::sign(vel) == glm::sign(target_pos - current_pos)) {
+	//	return new_vel - glm::sign(vel) * 0.01f;
+	//}
 	return new_vel;
 
 }

@@ -2,10 +2,20 @@
 #include "IntersectionTests.h"
 
 bool Physics::intersect(const Physics::AABB &a, const Physics::AABB &b) {
-	return
-		(a.min.x <= b.max.x && a.max.x >= b.min.x) &&
-		(a.min.y <= b.max.y && a.max.y >= b.min.y) &&
-		(a.min.z <= b.max.z && a.max.z >= b.min.z);
+	//return
+	//	(a.min.x <= b.max.x && a.max.x >= b.min.x) &&
+	//	(a.min.y <= b.max.y && a.max.y >= b.min.y) &&
+	//	(a.min.z <= b.max.z && a.max.z >= b.min.z);
+
+	if ((a.max.x > b.min.x) && (a.min.x < b.max.x)) {
+		if ((a.max.y < b.min.y) || (a.min.y > b.max.y)) {
+			return false;
+		}
+
+		return (a.max.z > b.min.z) && (a.min.z < b.max.z);
+	}
+
+	return false;
 }
 
 bool Physics::intersect(const Physics::BoundingCylinder &cylinder, const glm::vec3 &point) {
