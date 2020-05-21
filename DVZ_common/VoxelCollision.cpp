@@ -179,7 +179,7 @@ FaceOptional sample_collision_y(
 	const auto sample_box = testing_aabb(Y, vel_delta.y, worldspace_aabb);
 
 	const BlockCoord blockMin = glm::floor(sample_box.min);
-	const BlockCoord blockMax = glm::floor(sample_box.max);
+	const BlockCoord blockMax = glm::ceil(sample_box.max);
 
 
 	auto sample_lambda = [&vel_delta, &sample_box, &face, &getBlock](BlockCoord coord) {
@@ -191,7 +191,7 @@ FaceOptional sample_collision_y(
 
 		const auto block_aabb = Physics::AABB(coord, glm::vec3(coord) + glm::vec3(1));
 
-		if (Physics::intersect(block_aabb, sample_box)) {
+		if (Physics::intersect(sample_box, block_aabb)) {
 			if (vel_delta.y < 0) {
 				if (!face.has_value() || face->first < block_aabb.max.y) {
 					face = std::make_pair(block_aabb.max.y, block);
@@ -226,7 +226,7 @@ FaceOptional sample_collision_x(
 	const auto sample_box = testing_aabb(X, vel_delta.x, worldspace_aabb);
 
 	const BlockCoord blockMin = glm::floor(sample_box.min);
-	const BlockCoord blockMax = glm::floor(sample_box.max);
+	const BlockCoord blockMax = glm::ceil(sample_box.max);
 
 
 	auto sample_lambda = [&vel_delta, &sample_box, &face, &getBlock](BlockCoord coord) {
@@ -238,7 +238,7 @@ FaceOptional sample_collision_x(
 
 		const auto block_aabb = Physics::AABB(coord, glm::vec3(coord) + glm::vec3(1));
 
-		if (Physics::intersect(block_aabb, sample_box)) {
+		if (Physics::intersect(sample_box, block_aabb)) {
 			if (vel_delta.x < 0) {
 				if (!face.has_value() || face->first < block_aabb.max.x) {
 					face = std::make_pair(block_aabb.max.x, block);
@@ -273,7 +273,7 @@ FaceOptional sample_collision_z(
 	const auto sample_box = testing_aabb(Z, vel_delta.z, worldspace_aabb);
 
 	const BlockCoord blockMin = glm::floor(sample_box.min);
-	const BlockCoord blockMax = glm::floor(sample_box.max);
+	const BlockCoord blockMax = glm::ceil(sample_box.max);
 
 
 	auto sample_lambda = [&vel_delta, &sample_box, &face, &getBlock](BlockCoord coord) {
@@ -285,7 +285,7 @@ FaceOptional sample_collision_z(
 
 		const auto block_aabb = Physics::AABB(coord, glm::vec3(coord) + glm::vec3(1));
 
-		if (Physics::intersect(block_aabb, sample_box)) {
+		if (Physics::intersect(sample_box, block_aabb)) {
 			if (vel_delta.z < 0) {
 				if (!face.has_value() || face->first < block_aabb.max.z) {
 					face = std::make_pair(block_aabb.max.z, block);
@@ -318,7 +318,7 @@ glm::vec3 sample_cylinder(
 	auto sample_cylinder = Physics::BoundingCylinder(sample_box.min, sample_box.max, radius);
 
 	const BlockCoord minBlock = glm::floor(sample_box.min);
-	const BlockCoord maxBlock = glm::floor(sample_box.max);
+	const BlockCoord maxBlock = glm::ceil(sample_box.max);
 	auto sample_lambda = [&](BlockCoord coord) {
 		const auto block = getBlock(coord);
 		if (block.getMeshType() != Voxel::MeshType::MESH_TYPE_BLOCK) {
@@ -359,28 +359,34 @@ glm::vec3 adjust_vel_for_collision(
 
 	auto new_vel = vel;
 	if (vel.x < 0) {
-		new_vel.x = worldspace_aabb.min.x - problem.max.x;
+		const auto delta = worldspace_aabb.min.x - problem.max.x;
+		new_vel.x = glm::max(delta + 0.001f, vel.x);
 		samples.x = std::make_pair(problem.max.x, block);
 	} 
 	if (vel.x > 0) {
-		new_vel.x = worldspace_aabb.max.x - problem.min.x;
+		const auto delta = worldspace_aabb.max.x - problem.min.x;
+		new_vel.x = glm::min(delta - 0.001f, vel.x);
 		samples.x = std::make_pair(problem.min.x, block);
 	}
 	if (vel.y < 0) {
-		new_vel.y = worldspace_aabb.min.y - problem.max.y;
+		const auto delta = worldspace_aabb.min.y - problem.max.y;
+		new_vel.y = glm::max(delta + 0.001f, vel.y);
 		samples.y = std::make_pair(problem.max.y, block);
 	}
 	if (vel.y > 0) {
-		new_vel.y = worldspace_aabb.max.y - problem.min.y;
+		const auto delta = worldspace_aabb.max.y - problem.min.y;
+
+		new_vel.y = glm::min(delta - 0.001f, vel.y);
 		samples.y = std::make_pair(problem.min.y, block);
 	}
 	if (vel.z < 0) {
-		new_vel.z = worldspace_aabb.min.z - problem.max.z;
-		samples.z = std::make_pair(problem.max.z, block);
+		const auto delta = worldspace_aabb.min.z - problem.max.z;
+		new_vel.z = glm::max(delta + 0.001f, vel.z);
+		samples.z = std::make_pair(problem.max.z, block);		//todo dont set sample if fail
 	}
 	if (vel.z > 0) {
 		const auto delta = worldspace_aabb.max.z - problem.min.z;
-		new_vel.z = delta < vel.z ? delta : vel.z;
+		new_vel.z = glm::min(delta - 0.001f, vel.z);
 		samples.z = std::make_pair(problem.min.z, block);
 	}
 
