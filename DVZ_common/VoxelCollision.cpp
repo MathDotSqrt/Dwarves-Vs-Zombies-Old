@@ -100,8 +100,6 @@ glm::vec3 Physics::sample_terrain_collision(
 	float delta,
 	GetBlockFunc &getBlock
 ) {	
-	
-	delta = 1 / 60.0f;
 	const auto vel_delta = vel * delta;
 
 	const Physics::AABB worldspace_aabb(aabb.min + pos, aabb.max + pos);
@@ -325,13 +323,15 @@ glm::vec3 sample_cylinder(
 			return;
 		}
 
-		const auto block_aabb = Physics::AABB(glm::vec3(coord) + glm::vec3(0.0001f), glm::vec3(coord) + glm::vec3(.99999f));
+		const auto block_aabb = Physics::AABB(glm::vec3(coord), glm::vec3(coord) + glm::vec3(1.0f));
+		const auto block_aabb_smole = Physics::AABB(glm::vec3(coord) + glm::vec3(0.0001f), glm::vec3(coord) + glm::vec3(.99999f));
+		const auto block_aabb_big = Physics::AABB(glm::vec3(coord) - glm::vec3(0.0001f), glm::vec3(coord) + glm::vec3(1.0001f));
 
-		if (Physics::intersect(sample_cylinder, block_aabb)) {
-			if (Physics::intersect(sample_box, block_aabb)) {
-				new_vel_delta = adjust_vel_for_collision(new_vel_delta, worldspace_aabb, block_aabb, block, samples);
+		if (Physics::intersect(sample_cylinder, block_aabb_smole)) {
+			if (Physics::intersect(sample_box, block_aabb_smole)) {
+				new_vel_delta = adjust_vel_for_collision(new_vel_delta, worldspace_aabb, block_aabb_smole, block, samples);
 				sample_box = vel_aabb(new_vel_delta, worldspace_aabb);
-				radius = glm::distance(sample_box.max, sample_box.min);
+				//radius = glm::distance(sample_box.max, sample_box.min);
 				sample_cylinder = Physics::BoundingCylinder(sample_box.min, sample_box.max, radius);
 			}
 		}
