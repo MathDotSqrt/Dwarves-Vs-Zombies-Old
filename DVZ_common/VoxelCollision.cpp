@@ -142,56 +142,73 @@ float swept_aabb(
 	return entry_time;
 }
 
+std::pair<float, glm::vec3> 
+calc_nearest_swept_aabb(
+	const glm::vec3 &vel_delta,
+	const Physics::AABB &moving_aabb,
+	std::vector<std::pair<BlockCoord, Voxel::Block>> &broadphase
+) {
+
+	int index = 0;
+	std::pair<float, glm::vec3> collision = std::make_pair(0, glm::vec3());
+
+	for (int i = 0; i < broadphase.size(); i++) {
+		const auto &element = broadphase[i];
+		const auto &block_coord = element.first;
+		const auto block_aabb = Physics::AABB(block_coord, glm::vec3(block_coord) + glm::vec3(1));
+
+		
+		glm::vec3 normal;
+		const float collision_time = swept_aabb(vel_delta, moving_aabb, block_aabb, normal);
+
+		if (i == 0 || collision.first > collision_time) {
+			index = i;
+			collision.first = collision_time;
+			collision.second = normal;
+		}
+	}
+
+	if (broadphase.size() > 0) {
+		broadphase.erase(broadphase.begin() + index);
+	}
+
+	return collision;
+}
+
 glm::vec3 Physics::sample_terrain_collision(
 	const glm::vec3 &pos,
 	const glm::vec3 &vel,
 	const Physics::AABB &aabb,
 	float delta,
-	const std::vector<std::pair<BlockCoord, Voxel::Block>> &broadphase,
+	std::vector<std::pair<BlockCoord, Voxel::Block>> &broadphase,
 	Component::VoxelCollisionSample &sample
 
 ) {	
 	
+
 	const auto vel_delta = vel * delta;
+	
 	auto new_pos = pos;
 	auto new_vel_delta = vel_delta;
-
-
-
-	for (const auto pair : broadphase) {
-		if (glm::all(glm::equal(new_vel_delta, glm::vec3(0)))) {
-			break;
-		}
-		
+	bool has_collided = 0;
+	while (broadphase.size()) {
 		const auto worldspace_aabb = Physics::translate_aabb(aabb, new_pos);
-
-		const auto block_coord = pair.first;
-		const auto block = pair.second;
-
-		const auto block_aabb = Physics::AABB(block_coord, glm::vec3(block_coord) + glm::vec3(1));
-		
-		
-		glm::vec3 normal;
-		const float collision_time = swept_aabb(new_vel_delta, worldspace_aabb, block_aabb, normal) * 0.99999f;
+		const auto collision = calc_nearest_swept_aabb(vel_delta, worldspace_aabb, broadphase);
+		const float collision_time = collision.first;
 		new_pos += new_vel_delta * collision_time;
 
-		if (collision_time < 1.0f) {
-
+		
+		if (collision_time < 1) {
 			const float remaining_time = 1 - collision_time;
-			const float dot = glm::dot(new_vel_delta, normal) * remaining_time;
-
-			//new_vel_delta = glm::vec3();
+			const auto &normal = collision.second;
 			if(normal.y != 0)
 				new_vel_delta.y = 0;
-			//new_vel_delta = glm::vec3();
+		}
+		else {
+			new_vel_delta = glm::vec3();
+			break;
 		}
 	}
-
 	new_pos += new_vel_delta;
-	if (broadphase.size()) {
-		return (new_pos - pos) / delta;
-	}
-	else {
-		return vel;
-	}
+	return (new_pos - pos) / delta;
 }

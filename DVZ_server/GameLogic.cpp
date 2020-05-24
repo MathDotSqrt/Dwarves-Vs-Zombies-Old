@@ -135,7 +135,7 @@ void GameLogic::voxel_collision_system(EntityAdmin &admin, float delta) {
 	auto view = registry.view<Position, Velocity, VoxelCollision>();
 	view.each([&getBlockFunc, delta](auto &pos, auto &vel, auto &collision) {
 		const auto worldspace_aabb = Physics::translate_aabb(collision.aabb, pos);
-		const auto broadphase = Physics::broadphase(worldspace_aabb, vel * delta, getBlockFunc);
+		auto broadphase = Physics::broadphase(worldspace_aabb, vel * delta, getBlockFunc);
 		
 		const auto new_vel = Physics::sample_terrain_collision(
 			pos,

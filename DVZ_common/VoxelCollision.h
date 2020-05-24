@@ -20,7 +20,7 @@ namespace Physics {
 		const glm::vec3 &vel,
 		const Physics::AABB &aabb,
 		float delta,
-		const std::vector<std::pair<BlockCoord, Voxel::Block>> &broadphase,
+		std::vector<std::pair<BlockCoord, Voxel::Block>> &broadphase,
 		Component::VoxelCollisionSample &sample
 	);
 }

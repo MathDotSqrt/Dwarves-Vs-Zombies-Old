@@ -23,7 +23,7 @@ void System::voxel_collision_system(Engine &engine, float delta) {
 	auto view = engine.view<Position, Velocity, VoxelCollision>();
 	view.each([&getBlockFunc, delta](auto &pos, auto &vel, auto &collision) {
 		const auto worldspace_aabb = Physics::translate_aabb(collision.aabb, pos);
-		const auto broadphase = Physics::broadphase(worldspace_aabb, vel * delta, getBlockFunc);
+		auto broadphase = Physics::broadphase(worldspace_aabb, vel * delta, getBlockFunc);
 	
 		vel = Physics::sample_terrain_collision(pos, vel, collision.aabb, delta, broadphase, collision.sample);
 	});
