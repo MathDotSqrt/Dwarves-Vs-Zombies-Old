@@ -86,6 +86,7 @@ ChunkRefHandle ChunkManager::getChunk(int cx, int cy, int cz) {
 
 	if (!handle) {
 		std::lock_guard writeLock(chunkSetMutex);
+		//printf("%d %d %d\n", cx, cy, cz);
 		handle = getChunkIfNotMappedInternal(cx, cy, cz);
 	}
 

@@ -45,13 +45,15 @@ std::vector<std::pair<BlockCoord, Voxel::Block>> Physics::broadphase(
 			for (int y = block_min.y; y <= block_max.y; y++) {
 				const BlockCoord block_coord(x, y, z);
 				const auto block = getBlock(block_coord);
-
+				//printf("%d %d %d\n", x, y, z);
 				if (block.getMeshType() == Voxel::MeshType::MESH_TYPE_BLOCK) {
 					potential_collisions.emplace_back(block_coord, block);
 				}
 			}
 		}
 	}
+
+	//printf("----------\n");
 
 	return potential_collisions;
 }
@@ -166,20 +168,19 @@ glm::vec3 Physics::sample_terrain_collision(
 		
 		glm::vec3 normal;
 		const float collision_time = swept_aabb(new_vel_delta, worldspace_aabb, block_aabb, normal);
-
 		new_pos += new_vel_delta * collision_time;
+
 		if (collision_time < 1.0f) {
+
 			const float remaining_time = 1 - collision_time;
 			const float dot = glm::dot(new_vel_delta, normal) * remaining_time;
-			new_vel_delta = glm::vec3();
-			//new_vel_delta.x = dot * (normal.y + normal.z);
-			//new_vel_delta.y = dot * (normal.x + normal.z);
-			//new_vel_delta.z = dot * (normal.x + normal.y);
+			//new_vel_delta = glm::vec3();
+			new_vel_delta.y = 0;
 			//new_vel_delta = glm::vec3();
 		}
 	}
 
 
 
-	return new_vel_delta / delta;
+	return (new_pos - pos ) / delta;
 }

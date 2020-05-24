@@ -91,6 +91,11 @@ public:
 			return back;
 		}
 
+		//static int i = 0;
+
+		//printf("%d\n", i);
+		//i++;
+
 		T* t = Util::Allocator::allocateNew<T>(this->pool, args...);
 		assert(t);
 		this->allocations.push_back(t);

@@ -29,7 +29,7 @@ namespace Voxel {
 
 
 		const static int32 RENDER_RADIUS = 23;
-		//const static int32 RENDER_RADIUS = 10;
+		//const static int32 RENDER_RADIUS = 3;
 		const static int32 RENDER_CHUNK_WIDTH = 2 * RENDER_RADIUS + 1;
 		const static int32 GEOMETRY_ALLOC_SIZE = 5000 * sizeof(ChunkGeometry);
 

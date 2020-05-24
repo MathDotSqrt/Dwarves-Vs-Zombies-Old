@@ -115,6 +115,7 @@
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
       <BasicRuntimeChecks>StackFrameRuntimeCheck</BasicRuntimeChecks>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='DebugSpeed|Win32'">
@@ -137,6 +138,7 @@
       <LanguageStandard>stdcpp17</LanguageStandard>
       <AdditionalIncludeDirectories>$(SolutionDir)zlib\include;$(SolutionDir)RakNet\;$(SolutionDir)STD;$(SolutionDir)GLM\gtx;$(SolutionDir)GLM\gtc;$(SolutionDir)OpenGL\GLEW-win32\include;$(SolutionDir)OpenGL\GLFW-win64\include;$(SolutionDir)GLM;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <BasicRuntimeChecks>StackFrameRuntimeCheck</BasicRuntimeChecks>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <AdditionalDependencies>zlibwapi.lib;opengl32.lib;openGL32.lib;glew32.lib;glfw3.lib;RakNetDLL.lib;%(AdditionalDependencies)</AdditionalDependencies>
@@ -168,6 +170,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
@@ -185,6 +188,7 @@
       <LanguageStandard>stdcpp17</LanguageStandard>
       <AdditionalIncludeDirectories>$(SolutionDir)zlib\include;$(SolutionDir)RakNet\;$(SolutionDir)STD;$(SolutionDir)GLM\gtx;$(SolutionDir)GLM\gtc;$(SolutionDir)OpenGL\GLEW-win32\include;$(SolutionDir)OpenGL\GLFW-win64-static\include;$(SolutionDir)GLM;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
