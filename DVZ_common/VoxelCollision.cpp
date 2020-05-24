@@ -57,6 +57,23 @@ std::vector<std::pair<BlockCoord, Voxel::Block>> Physics::broadphase(
 	return potential_collisions;
 }
 
+float line_to_plane(
+	const glm::vec3 &p, 
+	const glm::vec3 &u, 
+	const glm::vec3 &v, 
+	const glm::vec3 &normal
+) {
+	const float n_dot_u = glm::dot(u, normal);
+
+	if (n_dot_u == 0) return std::numeric_limits<float>::infinity();
+
+	return glm::dot(normal, v - p) / n_dot_u;
+}
+
+bool between(float x, float a, float b) {
+	return x >= a && x <= b;
+}
+
 float swept_aabb(
 	const glm::vec3 &vel_delta,
 	const Physics::AABB &moving_aabb,
@@ -64,82 +81,108 @@ float swept_aabb(
 	glm::vec3 &normal
 ) {
 
-	glm::vec3 inv_entry;
-	glm::vec3 inv_exit;
+	const auto minkowski_min = static_aabb.min - moving_aabb.max;
+	const auto minkowski_width = (moving_aabb.max - moving_aabb.min) + (static_aabb.max - static_aabb.min);
 
-	if (vel_delta.x > 0) {
-		inv_entry.x = static_aabb.min.x - moving_aabb.max.x;
-		inv_exit.x = static_aabb.max.x - moving_aabb.min.x;
-	}
-	else {
-		inv_entry.x = static_aabb.max.x - moving_aabb.min.x;
-		inv_exit.x = static_aabb.min.x - moving_aabb.max.x;
+	const Physics::AABB minkowsi{minkowski_min, minkowski_min + minkowski_width};
+
+	float collision_time = 1;
+	normal = glm::vec3(); 
+
+	//X MIN
+	if(vel_delta.x > 0){
+		constexpr glm::vec3 NEG_X{ -1, 0, 0 };
+		const auto nearest_point = minkowsi.min;
+		const auto s = line_to_plane(glm::vec3(), vel_delta, nearest_point, NEG_X);
+
+		bool a = (s >= 0 && s < collision_time);
+		bool between_y = between(s * vel_delta.y, minkowsi.min.y, minkowsi.max.y);
+		bool between_z = between(s * vel_delta.z, minkowsi.min.z, minkowsi.max.z);
+		if (a && between_y && between_z) {
+			collision_time = s;
+			normal = NEG_X;
+		}
 	}
 
+	//X MAX
+	if(vel_delta.x < 0){
+		constexpr glm::vec3 POS_X{ 1, 0, 0 };
+		const auto nearest_point = glm::vec3(minkowsi.max.x, minkowsi.min.y, minkowsi.min.z);;
+
+		const auto s = line_to_plane(glm::vec3(), vel_delta, nearest_point, POS_X);
+
+		bool a = (s >= 0 && s < collision_time);
+		bool between_y = between(s * vel_delta.y, minkowsi.min.y, minkowsi.max.y);
+		bool between_z = between(s * vel_delta.z, minkowsi.min.z, minkowsi.max.z);
+		if (a && between_y && between_z) {
+			collision_time = s;
+			normal = POS_X;
+		}
+	}
+
+	//Y MIN
 	if (vel_delta.y > 0) {
-		inv_entry.y = static_aabb.min.y - moving_aabb.max.y;
-		inv_exit.y = static_aabb.max.y - moving_aabb.min.y;
-	}
-	else {
-		inv_entry.y = static_aabb.max.y - moving_aabb.min.y;
-		inv_exit.y = static_aabb.min.y - moving_aabb.max.y;
+		constexpr glm::vec3 NEG_Y{ 0, -1, 0 };
+		const auto nearest_point = minkowsi.min;
+		const auto s = line_to_plane(glm::vec3(), vel_delta, nearest_point, NEG_Y);
+
+		bool a = (s >= 0 && s < collision_time);
+		bool between_x = between(s * vel_delta.x, minkowsi.min.x, minkowsi.max.x);
+		bool between_z = between(s * vel_delta.z, minkowsi.min.z, minkowsi.max.z);
+		if (a && between_x && between_z) {
+			collision_time = s;
+			normal = NEG_Y;
+		}
 	}
 
+	//Y MAX
+	if (vel_delta.y < 0) {
+		constexpr glm::vec3 POS_Y{ 0, 1, 0 };
+		const auto nearest_point = glm::vec3(minkowsi.min.x, minkowsi.max.y, minkowsi.min.z);;
+
+		const auto s = line_to_plane(glm::vec3(), vel_delta, nearest_point, POS_Y);
+
+		bool a = (s >= 0 && s < collision_time);
+		bool between_x = between(s * vel_delta.x, minkowsi.min.x, minkowsi.max.x);
+		bool between_z = between(s * vel_delta.z, minkowsi.min.z, minkowsi.max.z);
+		if (a && between_x && between_z) {
+			collision_time = s;
+			normal = POS_Y;
+		}
+	}
+
+	//Z MIN
 	if (vel_delta.z > 0) {
-		inv_entry.z = static_aabb.min.z - moving_aabb.max.z;
-		inv_exit.z = static_aabb.max.z - moving_aabb.min.z;
-	}
-	else {
-		inv_entry.z = static_aabb.max.z - moving_aabb.min.z;
-		inv_exit.z = static_aabb.min.z - moving_aabb.max.z;
+		constexpr glm::vec3 NEG_Z{ 0, 0, -1 };
+		const auto nearest_point = minkowsi.min;
+		const auto s = line_to_plane(glm::vec3(), vel_delta, nearest_point, NEG_Z);
+
+		bool a = (s >= 0 && s < collision_time);
+		bool between_x = between(s * vel_delta.x, minkowsi.min.x, minkowsi.max.x);
+		bool between_y = between(s * vel_delta.y, minkowsi.min.y, minkowsi.max.y);
+		if (a && between_x && between_y) {
+			collision_time = s;
+			normal = NEG_Z;
+		}
 	}
 
-	glm::vec3 entry;
-	glm::vec3 exit;
+	//Z MAX
+	if (vel_delta.z < 0) {
+		constexpr glm::vec3 POS_Z{ 0, 0, 1 };
+		const auto nearest_point = glm::vec3(minkowsi.min.x, minkowsi.min.y, minkowsi.max.z);;
 
-	if (vel_delta.x == 0) {
-		entry.x = -std::numeric_limits<float>::infinity();
-		exit.x = std::numeric_limits<float>::infinity();
-	}
-	else {
-		entry.x = inv_entry.x / vel_delta.x;
-		exit.x = inv_exit.x / vel_delta.x;
-	}
+		const auto s = line_to_plane(glm::vec3(), vel_delta, nearest_point, POS_Z);
 
-	if (vel_delta.y == 0) {
-		entry.y = -std::numeric_limits<float>::infinity();
-		exit.y = std::numeric_limits<float>::infinity();
-	}
-	else {
-		entry.y = inv_entry.y / vel_delta.y;
-		exit.y = inv_exit.y / vel_delta.y;
+		bool a = (s >= 0 && s < collision_time);
+		bool between_x = between(s * vel_delta.x, minkowsi.min.x, minkowsi.max.x);
+		bool between_y = between(s * vel_delta.y, minkowsi.min.y, minkowsi.max.y);
+		if (a && between_x && between_y) {
+			collision_time = s;
+			normal = POS_Z;
+		}
 	}
 
-	if (vel_delta.z == 0) {
-		entry.z = -std::numeric_limits<float>::infinity();
-		exit.z = std::numeric_limits<float>::infinity();
-	}
-	else {
-		entry.z = inv_entry.z / vel_delta.z;
-		exit.z = inv_exit.z / vel_delta.z;
-	}
-
-	const float entry_time = glm::compMax(entry);
-	const float exit_time = glm::compMin(exit);
-	
-	const auto all_negative = glm::all(glm::lessThan(entry, glm::vec3(0)));
-	const auto any_above_one = glm::any(glm::greaterThan(entry, glm::vec3(1)));
-	if (entry_time > exit_time || all_negative || any_above_one) {
-		//no collision
-		normal = glm::vec3(0);
-		return 1.0f;
-	}
-	else {
-		int comp = max_component(entry);
-		normal = glm::vec3(0);
-		normal[comp] = -glm::sign(inv_entry[comp]);
-	}
-	return entry_time;
+	return collision_time;
 }
 
 std::pair<float, glm::vec3> 
@@ -193,22 +236,21 @@ glm::vec3 Physics::sample_terrain_collision(
 	bool has_collided = 0;
 	while (broadphase.size()) {
 		const auto worldspace_aabb = Physics::translate_aabb(aabb, new_pos);
-		const auto collision = calc_nearest_swept_aabb(vel_delta, worldspace_aabb, broadphase);
+		const auto collision = calc_nearest_swept_aabb(new_vel_delta, worldspace_aabb, broadphase);
 		const float collision_time = collision.first;
-		new_pos += new_vel_delta * collision_time - (glm::sign(new_vel_delta)) * 0.001f;
+		const auto &normal = collision.second;
+
+		
+		new_pos += new_vel_delta * collision_time + normal * 0.0001f;
 
 		
 		if (collision_time < 1) {
-			const float remaining_time = 1 - collision_time;
-			const auto &normal = collision.second;
-			if(glm::sign(normal.y) != 0 && glm::sign(normal.y) != glm::sign(new_vel_delta.y))
-				new_vel_delta.y = 0;
-
-			if (glm::sign(normal.x) != 0 && glm::sign(normal.x) != glm::sign(new_vel_delta.x))
-				new_vel_delta.x = 0;
-
-			if (glm::sign(normal.z) != 0 && glm::sign(normal.z) != glm::sign(new_vel_delta.z))
-				new_vel_delta.z = 0;
+			const float n_dot_n = glm::dot(normal, normal);
+			if (n_dot_n != 0) {
+				const float remaining_time = 1 - collision_time;
+				const float a_dot_n = remaining_time * (glm::dot(new_vel_delta, normal));
+				new_vel_delta = remaining_time * new_vel_delta - (a_dot_n/n_dot_n) * normal;
+			}
 		}
 		else {
 			new_vel_delta = glm::vec3();
