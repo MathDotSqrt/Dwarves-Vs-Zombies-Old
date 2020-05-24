@@ -1,5 +1,6 @@
 #include "VoxelCollision.h"
 #include <optional>
+#include <algorithm>
 #include "IntersectionTests.h"
 #include "gtx/component_wise.hpp"
 
@@ -45,7 +46,6 @@ std::vector<std::pair<BlockCoord, Voxel::Block>> Physics::broadphase(
 			for (int y = block_min.y; y <= block_max.y; y++) {
 				const BlockCoord block_coord(x, y, z);
 				const auto block = getBlock(block_coord);
-				//printf("%d %d %d\n", x, y, z);
 				if (block.getMeshType() == Voxel::MeshType::MESH_TYPE_BLOCK) {
 					potential_collisions.emplace_back(block_coord, block);
 				}
@@ -53,7 +53,6 @@ std::vector<std::pair<BlockCoord, Voxel::Block>> Physics::broadphase(
 		}
 	}
 
-	//printf("----------\n");
 
 	return potential_collisions;
 }
@@ -138,7 +137,7 @@ float swept_aabb(
 	else {
 		int comp = max_component(entry);
 		normal = glm::vec3(0);
-		normal[comp] = -glm::sign(inv_entry[comp]);
+		normal[comp] = (inv_entry[comp] <= 0 ? 1 : -1);
 	}
 	return entry_time;
 }
@@ -157,7 +156,13 @@ glm::vec3 Physics::sample_terrain_collision(
 	auto new_pos = pos;
 	auto new_vel_delta = vel_delta;
 
+
+
 	for (const auto pair : broadphase) {
+		if (glm::all(glm::equal(new_vel_delta, glm::vec3(0)))) {
+			break;
+		}
+		
 		const auto worldspace_aabb = Physics::translate_aabb(aabb, new_pos);
 
 		const auto block_coord = pair.first;
@@ -167,20 +172,26 @@ glm::vec3 Physics::sample_terrain_collision(
 		
 		
 		glm::vec3 normal;
-		const float collision_time = swept_aabb(new_vel_delta, worldspace_aabb, block_aabb, normal);
+		const float collision_time = swept_aabb(new_vel_delta, worldspace_aabb, block_aabb, normal) * 0.99999f;
 		new_pos += new_vel_delta * collision_time;
 
 		if (collision_time < 1.0f) {
 
 			const float remaining_time = 1 - collision_time;
 			const float dot = glm::dot(new_vel_delta, normal) * remaining_time;
+
 			//new_vel_delta = glm::vec3();
-			new_vel_delta.y = 0;
+			if(normal.y != 0)
+				new_vel_delta.y = 0;
 			//new_vel_delta = glm::vec3();
 		}
 	}
 
-
-
-	return (new_pos - pos ) / delta;
+	new_pos += new_vel_delta;
+	if (broadphase.size()) {
+		return (new_pos - pos) / delta;
+	}
+	else {
+		return vel;
+	}
 }
