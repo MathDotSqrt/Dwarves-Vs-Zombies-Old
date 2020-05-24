@@ -137,7 +137,7 @@ float swept_aabb(
 	else {
 		int comp = max_component(entry);
 		normal = glm::vec3(0);
-		normal[comp] = (inv_entry[comp] <= 0 ? 1 : -1);
+		normal[comp] = -glm::sign(inv_entry[comp]);
 	}
 	return entry_time;
 }
@@ -195,14 +195,20 @@ glm::vec3 Physics::sample_terrain_collision(
 		const auto worldspace_aabb = Physics::translate_aabb(aabb, new_pos);
 		const auto collision = calc_nearest_swept_aabb(vel_delta, worldspace_aabb, broadphase);
 		const float collision_time = collision.first;
-		new_pos += new_vel_delta * collision_time;
+		new_pos += new_vel_delta * collision_time - (glm::sign(new_vel_delta)) * 0.001f;
 
 		
 		if (collision_time < 1) {
 			const float remaining_time = 1 - collision_time;
 			const auto &normal = collision.second;
-			if(normal.y != 0)
+			if(glm::sign(normal.y) != 0 && glm::sign(normal.y) != glm::sign(new_vel_delta.y))
 				new_vel_delta.y = 0;
+
+			if (glm::sign(normal.x) != 0 && glm::sign(normal.x) != glm::sign(new_vel_delta.x))
+				new_vel_delta.x = 0;
+
+			if (glm::sign(normal.z) != 0 && glm::sign(normal.z) != glm::sign(new_vel_delta.z))
+				new_vel_delta.z = 0;
 		}
 		else {
 			new_vel_delta = glm::vec3();
