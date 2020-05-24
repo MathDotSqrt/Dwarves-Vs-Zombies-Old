@@ -29,3 +29,7 @@ glm::vec3 Physics::AABB::getPoint(int i) const {
 	default: assert(false); return glm::vec3(10000000);
 	}
 }
+
+Physics::AABB Physics::translate_aabb(const Physics::AABB &aabb, glm::vec3 translate) {
+	return Physics::AABB{aabb.min + translate, aabb.max + translate };
+}

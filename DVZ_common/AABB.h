@@ -20,4 +20,6 @@ namespace Physics {
 		glm::vec3 getPoint(int i) const;
 	};
 
+
+	AABB translate_aabb(const AABB &aabb, glm::vec3 translate);
 }

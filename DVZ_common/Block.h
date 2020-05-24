@@ -5,6 +5,8 @@
 #include <vector>
 #include "BlockTypeEnum.h"
 
+typedef glm::i32vec3 BlockCoord;
+
 namespace Voxel {
 	//constexpr float BLOCK_RENDER_SIZE = 1.0f;
 

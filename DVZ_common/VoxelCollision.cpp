@@ -2,471 +2,184 @@
 #include <optional>
 #include "IntersectionTests.h"
 #include "gtx/component_wise.hpp"
+
+
 using namespace Physics;
 
 //Type used for block coord
-typedef glm::i32vec3 BlockCoord;
 typedef Component::VoxelCollisionSample::VoxelSample VoxelSample;
 
 //optional types for all collision strategies
 typedef std::optional<std::pair<float, Voxel::Block>> FaceOptional;
-typedef std::optional<std::pair<glm::vec2, Voxel::Block>> EdgeOptional;
-typedef std::optional<std::pair<glm::vec3, Voxel::Block>> CornerOptional;
 
 constexpr int X = 0;
 constexpr int Y = 1;
 constexpr int Z = 2;
 
-FaceOptional sample_collision_y( 
-	const Physics::AABB &worldspace_aabb, 
-	const glm::vec3 &vel_delta, 
-	GetBlockFunc &getBlock 
-);
+int max_component(const glm::vec3 &vec){
+	return vec.y > vec.x ? (vec.z > vec.y ? 2 : 1) : (vec.z > vec.x ? 2 : 0);
+}
 
-FaceOptional sample_collision_x(
+Physics::AABB get_swept_broadphase_box(const Physics::AABB &aabb, const glm::vec3 &vel) {
+	const auto new_min = glm::min(aabb.min, aabb.min + vel);
+	const auto new_max = glm::max(aabb.max, aabb.max + vel);
+
+	return Physics::AABB{ new_min, new_max };
+}
+
+std::vector<std::pair<BlockCoord, Voxel::Block>> Physics::broadphase(
 	const Physics::AABB &worldspace_aabb,
 	const glm::vec3 &vel_delta,
 	GetBlockFunc &getBlock
-);
+) {
 
-FaceOptional sample_collision_z(
-	const Physics::AABB &worldspace_aabb,
-	const glm::vec3 &vel_delta,
-	GetBlockFunc &getBlock
-);
+	//fine packing because same cache line
+	std::vector<std::pair<BlockCoord, Voxel::Block>> potential_collisions;
 
-glm::vec3 sample_cylinder(
-	const Physics::AABB &worldspace_aabb,
-	const glm::vec3 &vel_delta,
-	GetBlockFunc &func
-);
+	const auto broadphase_box = get_swept_broadphase_box(worldspace_aabb, vel_delta);
 
-glm::vec3 adjust_vel_for_collision(
-	const glm::vec3 &vel,
-	const Physics::AABB &worldspace_aabb,
-	const Physics::AABB &problem,
-	const Voxel::Block block,
-	glm::vec<3, FaceOptional> &samples
-);
+	const BlockCoord block_min = glm::floor(broadphase_box.min);
+	const BlockCoord block_max = glm::floor(broadphase_box.max);
+	for (int x = block_min.x; x <= block_max.x; x++) {
+		for (int z = block_min.z; z <= block_max.z; z++) {
+			for (int y = block_min.y; y <= block_max.y; y++) {
+				const BlockCoord block_coord(x, y, z);
+				const auto block = getBlock(block_coord);
 
-Physics::AABB testing_aabb(
-	int comp, 
-	float vel, 
-	const Physics::AABB &aabb
-);
-
-Physics::AABB vel_aabb(
-	const glm::vec3 &vel,
-	const Physics::AABB &aabb
-);
-
-glm::vec3 get_current_pos(glm::vec3 vel, const Physics::AABB &aabb);
-
-void set_sample(
-	int comp, 
-	float sign, 
-	FaceOptional face, 
-	Component::VoxelCollisionSample &sample
-);
-float handle_collision(
-	float vel,
-	float target_pos,
-	float current_pos,
-	float delta
-);
-
-glm::vec3 handle_collision(
-	const Physics::AABB &aabb,
-	const Physics::AABB &problem
-);
-
-template<typename FUNC>
-void iterate_block_volume(BlockCoord min, BlockCoord max, FUNC lambda) {
-	for (int x = min.x; x <= max.x; x++) {
-		for (int z = min.z; z <= max.z; z++) {
-			for (int y = min.y; y <= max.y; y++) {
-				BlockCoord block_coord(x, y, z);
-				lambda(block_coord);
+				if (block.getMeshType() == Voxel::MeshType::MESH_TYPE_BLOCK) {
+					potential_collisions.emplace_back(block_coord, block);
+				}
 			}
 		}
 	}
+
+	return potential_collisions;
+}
+
+float swept_aabb(
+	const glm::vec3 &vel_delta,
+	const Physics::AABB &moving_aabb,
+	const Physics::AABB &static_aabb,
+	glm::vec3 &normal
+) {
+
+	glm::vec3 inv_entry;
+	glm::vec3 inv_exit;
+
+	if (vel_delta.x > 0) {
+		inv_entry.x = static_aabb.min.x - moving_aabb.max.x;
+		inv_exit.x = static_aabb.max.x - moving_aabb.min.x;
+	}
+	else {
+		inv_entry.x = static_aabb.max.x - moving_aabb.min.x;
+		inv_exit.x = static_aabb.min.x - moving_aabb.max.x;
+	}
+
+	if (vel_delta.y > 0) {
+		inv_entry.y = static_aabb.min.y - moving_aabb.max.y;
+		inv_exit.y = static_aabb.max.y - moving_aabb.min.y;
+	}
+	else {
+		inv_entry.y = static_aabb.max.y - moving_aabb.min.y;
+		inv_exit.y = static_aabb.min.y - moving_aabb.max.y;
+	}
+
+	if (vel_delta.z > 0) {
+		inv_entry.z = static_aabb.min.z - moving_aabb.max.z;
+		inv_exit.z = static_aabb.max.z - moving_aabb.min.z;
+	}
+	else {
+		inv_entry.z = static_aabb.max.z - moving_aabb.min.z;
+		inv_exit.z = static_aabb.min.z - moving_aabb.max.z;
+	}
+
+	glm::vec3 entry;
+	glm::vec3 exit;
+
+	if (vel_delta.x == 0) {
+		entry.x = -std::numeric_limits<float>::infinity();
+		exit.x = std::numeric_limits<float>::infinity();
+	}
+	else {
+		entry.x = inv_entry.x / vel_delta.x;
+		exit.x = inv_exit.x / vel_delta.x;
+	}
+
+	if (vel_delta.y == 0) {
+		entry.y = -std::numeric_limits<float>::infinity();
+		exit.y = std::numeric_limits<float>::infinity();
+	}
+	else {
+		entry.y = inv_entry.y / vel_delta.y;
+		exit.y = inv_exit.y / vel_delta.y;
+	}
+
+	if (vel_delta.z == 0) {
+		entry.z = -std::numeric_limits<float>::infinity();
+		exit.z = std::numeric_limits<float>::infinity();
+	}
+	else {
+		entry.z = inv_entry.z / vel_delta.z;
+		exit.z = inv_exit.z / vel_delta.z;
+	}
+
+	const float entry_time = glm::compMax(entry);
+	const float exit_time = glm::compMin(exit);
+	
+	const auto all_negative = glm::all(glm::lessThan(entry, glm::vec3(0)));
+	const auto any_above_one = glm::any(glm::greaterThan(entry, glm::vec3(1)));
+	if (entry_time > exit_time || all_negative || any_above_one) {
+		//no collision
+		normal = glm::vec3(0);
+		return 1.0f;
+	}
+	else {
+		int comp = max_component(entry);
+		normal = glm::vec3(0);
+		normal[comp] = -glm::sign(inv_entry[comp]);
+	}
+	return entry_time;
 }
 
 glm::vec3 Physics::sample_terrain_collision(
 	const glm::vec3 &pos,
 	const glm::vec3 &vel,
 	const Physics::AABB &aabb,
-	Component::VoxelCollisionSample &sample,
 	float delta,
-	GetBlockFunc &getBlock
-) {	
-	const auto vel_delta = vel * delta;
-
-	const Physics::AABB worldspace_aabb(aabb.min + pos, aabb.max + pos);
-	const auto current_pos = get_current_pos(vel, worldspace_aabb);
-
-	auto new_vel = vel;
-	Component::VoxelCollisionSample new_sample;
-	{
-		const auto face_y = sample_collision_y(worldspace_aabb, new_vel * delta, getBlock);
-		if (face_y.has_value()) {
-			set_sample(Y, vel_delta.y, face_y, new_sample);
-			const auto target_pos = face_y->first;
-			new_vel.y = handle_collision(vel.y, target_pos, current_pos.y, delta);
-			//printf("Y target %f current %f \n", target_pos, current_pos.y);
-		}
-	}
-
-	{
-		const auto face_x = sample_collision_x(worldspace_aabb, new_vel * delta, getBlock);
-		if (face_x.has_value()) {
-			set_sample(X, vel_delta.x, face_x, new_sample);
-			const auto target_pos = face_x->first;
-			new_vel.x = handle_collision(vel.x, target_pos, current_pos.x, delta);
-			//printf("X target %f current %f \n", target_pos, current_pos.x);
-
-		}
-	}
-
-	{
-		const auto face_z = sample_collision_z(worldspace_aabb, new_vel * delta, getBlock);
-		if (face_z.has_value()) {
-			set_sample(Z, vel_delta.z, face_z, new_sample);
-			const auto target_pos = face_z->first;
-			new_vel.z = handle_collision(vel.z, target_pos, current_pos.z, delta);
-			//printf("Z target %f current %f \n", target_pos, current_pos.z);
-		}
-	}
-
-	{
-		new_vel = sample_cylinder(worldspace_aabb, new_vel * delta, getBlock) / delta;
-		
-		//if (sample.x.has_value()) {
-		//	set_sample(X, vel_delta.x, sample.x, new_sample);
-		//	const auto target_pos = sample.x->first;
-		//	new_vel.x = handle_collision(vel.x, target_pos, current_pos.x, delta);
-		//}
-		//if (sample.y.has_value()) {
-		//	set_sample(Y, vel_delta.y, sample.y, new_sample);
-		//	const auto target_pos = sample.y->first;
-		//	new_vel.y = handle_collision(vel.y, target_pos, current_pos.y, delta);
-		//}
-		//if (sample.z.has_value()) {
-		//	set_sample(Z, vel_delta.z, sample.z, new_sample);
-		//	const auto target_pos = sample.z->first;
-		//	new_vel.z = handle_collision(vel.z, target_pos, current_pos.z, delta);
-		//}
-	}
-	
-	sample = new_sample;
-	return new_vel;
-}
-
-FaceOptional sample_collision_y(
-	const Physics::AABB &worldspace_aabb,
-	const glm::vec3 &vel_delta,
-	GetBlockFunc &getBlock
-) {
-
-	FaceOptional face;
-
-	if (vel_delta.y == 0) {
-		return face;
-	}
-
-	const auto sample_box = testing_aabb(Y, vel_delta.y, worldspace_aabb);
-
-	const BlockCoord blockMin = glm::floor(sample_box.min);
-	const BlockCoord blockMax = glm::floor(sample_box.max);
-
-
-	auto sample_lambda = [&vel_delta, &sample_box, &face, &getBlock](BlockCoord coord) {
-		const auto block = getBlock(coord);
-
-		if (block.getMeshType() != Voxel::MeshType::MESH_TYPE_BLOCK) {
-			return;
-		}
-
-		const auto block_aabb = Physics::AABB(coord, glm::vec3(coord) + glm::vec3(1));
-
-		if (Physics::intersect(sample_box, block_aabb)) {
-			if (vel_delta.y < 0) {
-				if (!face.has_value() || face->first < block_aabb.max.y) {
-					face = std::make_pair(block_aabb.max.y, block);
-				}
-			}
-			else { 
-				if (!face.has_value() || face->first > block_aabb.min.y) {
-					face = std::make_pair(block_aabb.min.y, block);
-				}
-			}
-		}
-
-	};
-
-	iterate_block_volume(blockMin, blockMax, sample_lambda);
-
-	return face;
-}
-
-FaceOptional sample_collision_x(
-	const Physics::AABB &worldspace_aabb,
-	const glm::vec3 &vel_delta,
-	GetBlockFunc &getBlock
-) {
-
-	FaceOptional face;
-
-	if (vel_delta.x == 0) {
-		return face;
-	}
-
-	const auto sample_box = testing_aabb(X, vel_delta.x, worldspace_aabb);
-
-	const BlockCoord blockMin = glm::floor(sample_box.min);
-	const BlockCoord blockMax = glm::floor(sample_box.max);
-
-
-	auto sample_lambda = [&vel_delta, &sample_box, &face, &getBlock](BlockCoord coord) {
-		const auto block = getBlock(coord);
-
-		if (block.getMeshType() != Voxel::MeshType::MESH_TYPE_BLOCK) {
-			return;
-		}
-
-		const auto block_aabb = Physics::AABB(coord, glm::vec3(coord) + glm::vec3(1));
-
-		if (Physics::intersect(sample_box, block_aabb)) {
-			if (vel_delta.x < 0) {
-				if (!face.has_value() || face->first < block_aabb.max.x) {
-					face = std::make_pair(block_aabb.max.x, block);
-				}
-			}
-			else {
-				if (!face.has_value() || face->first > block_aabb.min.x) {
-					face = std::make_pair(block_aabb.min.x, block);
-				}
-			}
-		}
-
-	};
-
-	iterate_block_volume(blockMin, blockMax, sample_lambda);
-
-	return face;
-}
-
-FaceOptional sample_collision_z(
-	const Physics::AABB &worldspace_aabb,
-	const glm::vec3 &vel_delta,
-	GetBlockFunc &getBlock
-) {
-
-	FaceOptional face;
-
-	if (vel_delta.z == 0) {
-		return face;
-	}
-
-	const auto sample_box = testing_aabb(Z, vel_delta.z, worldspace_aabb);
-
-	const BlockCoord blockMin = glm::floor(sample_box.min);
-	const BlockCoord blockMax = glm::floor(sample_box.max);
-
-
-	auto sample_lambda = [&vel_delta, &sample_box, &face, &getBlock](BlockCoord coord) {
-		const auto block = getBlock(coord);
-
-		if (block.getMeshType() != Voxel::MeshType::MESH_TYPE_BLOCK) {
-			return;
-		}
-
-		const auto block_aabb = Physics::AABB(coord, glm::vec3(coord) + glm::vec3(1));
-
-		if (Physics::intersect(sample_box, block_aabb)) {
-			if (vel_delta.z < 0) {
-				if (!face.has_value() || face->first < block_aabb.max.z) {
-					face = std::make_pair(block_aabb.max.z, block);
-				}
-			}
-			else {
-				if (!face.has_value() || face->first > block_aabb.min.z) {
-					face = std::make_pair(block_aabb.min.z, block);
-				}
-			}
-		}
-
-	};
-
-	iterate_block_volume(blockMin, blockMax, sample_lambda);
-
-	return face;
-}
-
-glm::vec3 sample_cylinder(
-	const Physics::AABB &worldspace_aabb,
-	const glm::vec3 &vel_delta,
-	GetBlockFunc &getBlock
-) {
-	glm::vec<3, FaceOptional> samples{std::nullopt, std::nullopt, std::nullopt};
-	
-	auto new_vel_delta = vel_delta;
-	auto sample_box = vel_aabb(new_vel_delta, worldspace_aabb);
-	auto radius = glm::distance(sample_box.max, sample_box.min);
-	auto sample_cylinder = Physics::BoundingCylinder(sample_box.min, sample_box.max, radius);
-
-	const BlockCoord minBlock = glm::floor(sample_box.min);
-	const BlockCoord maxBlock = glm::floor(sample_box.max);
-	auto sample_lambda = [&](BlockCoord coord) {
-		const auto block = getBlock(coord);
-		if (block.getMeshType() != Voxel::MeshType::MESH_TYPE_BLOCK) {
-			return;
-		}
-
-		const auto block_aabb = Physics::AABB(glm::vec3(coord), glm::vec3(coord) + glm::vec3(1.0f));
-		const auto block_aabb_smole = Physics::AABB(glm::vec3(coord) + glm::vec3(0.0001f), glm::vec3(coord) + glm::vec3(.99999f));
-		const auto block_aabb_big = Physics::AABB(glm::vec3(coord) - glm::vec3(0.0001f), glm::vec3(coord) + glm::vec3(1.0001f));
-
-		if (Physics::intersect(sample_cylinder, block_aabb_smole)) {
-			if (Physics::intersect(sample_box, block_aabb_smole)) {
-				new_vel_delta = adjust_vel_for_collision(new_vel_delta, worldspace_aabb, block_aabb_smole, block, samples);
-				sample_box = vel_aabb(new_vel_delta, worldspace_aabb);
-				//radius = glm::distance(sample_box.max, sample_box.min);
-				sample_cylinder = Physics::BoundingCylinder(sample_box.min, sample_box.max, radius);
-			}
-		}
-	};
-
-	
-
-	iterate_block_volume(minBlock, maxBlock, sample_lambda);
-
-	return new_vel_delta;
-}
-
-glm::vec3 adjust_vel_for_collision(
-	const glm::vec3 &vel,
-	const Physics::AABB &worldspace_aabb,
-	const Physics::AABB &problem,
-	const Voxel::Block block,
-	glm::vec<3, FaceOptional> &samples
-) {
-
-	auto new_vel = vel;
-	
-	//int comp = glm::compMin(glm::abs(new_vel));
-
-	//if (vel[comp] < 0) {
-	//	const auto delta = worldspace_aabb.min[comp] - problem.max[comp];
-	//	new_vel[comp] = glm::max(delta, vel[comp]);
-	//}
-	//if (vel[comp] > 0) {
-	//	const auto delta = worldspace_aabb.max[comp] - problem.min[comp];
-	//	new_vel[comp] = glm::min(delta, vel[comp]);
-	//}
-
-	if (vel.x < 0) {
-		const auto delta = worldspace_aabb.min.x - problem.max.x;
-		new_vel.x = glm::max(delta, vel.x);
-		samples.x = std::make_pair(problem.max.x, block);
-	} 
-	if (vel.x > 0) {
-		const auto delta = worldspace_aabb.max.x - problem.min.x;
-		new_vel.x = glm::min(delta, vel.x);
-		samples.x = std::make_pair(problem.min.x, block);
-	}
-	if (vel.y < 0) {
-		const auto delta = worldspace_aabb.min.y - problem.max.y;
-		new_vel.y = glm::max(delta, vel.y);
-		samples.y = std::make_pair(problem.max.y, block);
-	}
-	if (vel.y > 0) {
-		const auto delta = worldspace_aabb.max.y - problem.min.y;
-
-		new_vel.y = glm::min(delta, vel.y);
-		samples.y = std::make_pair(problem.min.y, block);
-	}
-	if (vel.z < 0) {
-		const auto delta = worldspace_aabb.min.z - problem.max.z;
-		new_vel.z = glm::max(delta, vel.z);
-		samples.z = std::make_pair(problem.max.z, block);		//todo dont set sample if fail
-	}
-	if (vel.z > 0) {
-		const auto delta = worldspace_aabb.max.z - problem.min.z;
-		new_vel.z = glm::min(delta, vel.z);
-		samples.z = std::make_pair(problem.min.z, block);
-	}
-
-	return new_vel;
-}
-
-Physics::AABB testing_aabb(
-	int comp, 
-	float vel, 
-	const Physics::AABB &aabb
-) {
-	assert(vel != 0);
-	auto new_min = aabb.min;
-	auto new_max = aabb.max;
-
-	if (vel < 0) {
-		new_min[comp] += vel;
-	}
-	else {
-		new_max[comp] += vel;
-	}
-
-	return Physics::AABB(new_min, new_max);
-}
-
-Physics::AABB vel_aabb(
-	const glm::vec3 &vel_delta,
-	const Physics::AABB &aabb
-) {
-	const auto new_min = glm::min(aabb.min + vel_delta, aabb.min);
-	const auto new_max = glm::max(aabb.max + vel_delta, aabb.max);
-
-	return Physics::AABB{ new_min, new_max };
-}
-
-glm::vec3 get_current_pos(glm::vec3 vel, const Physics::AABB &aabb) {
-	const auto &min = aabb.min;
-	const auto &max = aabb.max;
-
-	return glm::vec3(vel.x < 0 ? min.x : max.x, vel.y < 0 ? min.y : max.y, vel.z < 0 ? min.z : max.z);
-}
-
-void set_sample(
-	int comp, 
-	float sign, 
-	FaceOptional face, 
+	const std::vector<std::pair<BlockCoord, Voxel::Block>> &broadphase,
 	Component::VoxelCollisionSample &sample
-) {
-	assert(comp == X || comp == Y || comp == Z);
-	assert(sign != 0);
 
-	switch (comp) {
-	case X:
-		(sign > 0 ? sample.px : sample.nx) = face; break;
-	case Y:
-		(sign > 0 ? sample.py : sample.ny) = face; break;
-	case Z:
-		(sign > 0 ? sample.pz : sample.nz) = face; break;
+) {	
+	
+	const auto vel_delta = vel * delta;
+	auto new_pos = pos;
+	auto new_vel_delta = vel_delta;
+
+	for (const auto pair : broadphase) {
+		const auto worldspace_aabb = Physics::translate_aabb(aabb, new_pos);
+
+		const auto block_coord = pair.first;
+		const auto block = pair.second;
+
+		const auto block_aabb = Physics::AABB(block_coord, glm::vec3(block_coord) + glm::vec3(1));
+		
+		
+		glm::vec3 normal;
+		const float collision_time = swept_aabb(new_vel_delta, worldspace_aabb, block_aabb, normal);
+
+		new_pos += new_vel_delta * collision_time;
+		if (collision_time < 1.0f) {
+			const float remaining_time = 1 - collision_time;
+			const float dot = glm::dot(new_vel_delta, normal) * remaining_time;
+			new_vel_delta = glm::vec3();
+			//new_vel_delta.x = dot * (normal.y + normal.z);
+			//new_vel_delta.y = dot * (normal.x + normal.z);
+			//new_vel_delta.z = dot * (normal.x + normal.y);
+			//new_vel_delta = glm::vec3();
+		}
 	}
-}
 
-float handle_collision(
-	float vel,
-	float target_pos, 
-	float current_pos, 
-	float delta
-) {
 
-	float new_vel = (target_pos - current_pos) / delta;
 
-	//if (glm::sign(vel) == glm::sign(target_pos - current_pos)) {
-	//	return new_vel - glm::sign(vel) * 0.01f;
-	//}
-	return new_vel;
-
+	return new_vel_delta / delta;
 }

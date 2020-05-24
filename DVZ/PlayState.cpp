@@ -139,7 +139,7 @@ void PlayState::update(float delta) {
 		can_update = true;
 	}
 	if (Window::isPressed('t')) {
-		e.replace<Component::Position>(e.getPlayer(), glm::vec3(.5f, 250, .5f));
+		e.replace<Component::Position>(e.getPlayer(), glm::vec3(10, 20, 10));
 		e.replace<Component::Velocity>(e.getPlayer(), glm::vec3(0, 0, 0));
 	}
 	
