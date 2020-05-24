@@ -206,7 +206,7 @@ calc_nearest_swept_aabb(
 ) {
 
 	int index = 0;
-	std::tuple<float, glm::vec3, Voxel::Block> collision{ 0, glm::vec3(), Voxel::Block() };
+	std::tuple<float, glm::vec3, Voxel::Block> collision{ 0.0f, glm::vec3(), Voxel::Block() };
 	for (int i = 0; i < broadphase.size(); i++) {
 		const auto &element = broadphase[i];
 		const auto &block_coord = element.first;
