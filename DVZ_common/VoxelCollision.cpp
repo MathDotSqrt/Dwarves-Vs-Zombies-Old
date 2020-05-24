@@ -17,6 +17,19 @@ constexpr int X = 0;
 constexpr int Y = 1;
 constexpr int Z = 2;
 
+void set_sample(
+	Voxel::Block block, 
+	const glm::vec3 &normal, 
+	Component::VoxelCollisionSample &sample
+) {
+	if (normal.x > 0) sample.nx = block;
+	if (normal.x < 0) sample.px = block;
+	if (normal.y > 0) sample.ny = block;
+	if (normal.y < 0) sample.py = block;
+	if (normal.z > 0) sample.nz = block;
+	if (normal.z < 0) sample.pz = block;
+}
+
 int max_component(const glm::vec3 &vec){
 	return vec.y > vec.x ? (vec.z > vec.y ? 2 : 1) : (vec.z > vec.x ? 2 : 0);
 }
@@ -185,7 +198,7 @@ float swept_aabb(
 	return collision_time;
 }
 
-std::pair<float, glm::vec3> 
+std::tuple<float, glm::vec3, Voxel::Block>
 calc_nearest_swept_aabb(
 	const glm::vec3 &vel_delta,
 	const Physics::AABB &moving_aabb,
@@ -193,21 +206,22 @@ calc_nearest_swept_aabb(
 ) {
 
 	int index = 0;
-	std::pair<float, glm::vec3> collision = std::make_pair(0, glm::vec3());
-
+	std::tuple<float, glm::vec3, Voxel::Block> collision{ 0, glm::vec3(), Voxel::Block() };
 	for (int i = 0; i < broadphase.size(); i++) {
 		const auto &element = broadphase[i];
 		const auto &block_coord = element.first;
+		const auto block = element.second;
 		const auto block_aabb = Physics::AABB(block_coord, glm::vec3(block_coord) + glm::vec3(1));
 
 		
 		glm::vec3 normal;
 		const float collision_time = swept_aabb(vel_delta, moving_aabb, block_aabb, normal);
 
-		if (i == 0 || collision.first > collision_time) {
+		if (i == 0 || std::get<0>(collision) > collision_time) {
 			index = i;
-			collision.first = collision_time;
-			collision.second = normal;
+			std::get<0>(collision) = collision_time;
+			std::get<1>(collision) = normal;
+			std::get<2>(collision) = block;
 		}
 	}
 
@@ -225,24 +239,18 @@ glm::vec3 Physics::sample_terrain_collision(
 	float delta,
 	std::vector<std::pair<BlockCoord, Voxel::Block>> &broadphase,
 	Component::VoxelCollisionSample &sample
-
 ) {	
-	
-
-	const auto vel_delta = vel * delta;
+	sample = Component::VoxelCollisionSample();
 	
 	auto new_pos = pos;
-	auto new_vel_delta = vel_delta;
-	bool has_collided = 0;
+	auto new_vel_delta = vel * delta;
 	while (broadphase.size()) {
 		const auto worldspace_aabb = Physics::translate_aabb(aabb, new_pos);
 		const auto collision = calc_nearest_swept_aabb(new_vel_delta, worldspace_aabb, broadphase);
-		const float collision_time = collision.first;
-		const auto &normal = collision.second;
+		const float collision_time = std::get<0>(collision);
+		const auto &normal = std::get<1>(collision);
 
-		
 		new_pos += new_vel_delta * collision_time + normal * 0.0001f;
-
 		
 		if (collision_time < 1) {
 			const float n_dot_n = glm::dot(normal, normal);
@@ -250,6 +258,9 @@ glm::vec3 Physics::sample_terrain_collision(
 				const float remaining_time = 1 - collision_time;
 				const float a_dot_n = remaining_time * (glm::dot(new_vel_delta, normal));
 				new_vel_delta = remaining_time * new_vel_delta - (a_dot_n/n_dot_n) * normal;
+
+				const Voxel::Block block = std::get<2>(collision);
+				set_sample(block, normal, sample);
 			}
 		}
 		else {

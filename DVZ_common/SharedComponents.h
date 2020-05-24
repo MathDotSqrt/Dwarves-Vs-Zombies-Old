@@ -45,7 +45,8 @@ namespace Component {
 	};
 
 	struct VoxelCollisionSample {
-		typedef std::pair<float, Voxel::Block> VoxelSample;
+		//typedef std::pair<float, Voxel::Block> VoxelSample;
+		typedef Voxel::Block VoxelSample;
 		std::optional<VoxelSample> px;
 		std::optional<VoxelSample> nx;
 		std::optional<VoxelSample> py;
