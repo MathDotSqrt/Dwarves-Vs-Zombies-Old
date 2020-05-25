@@ -252,9 +252,6 @@
     <ClInclude Include="CoordIterator.h">
       <Filter>Header Files\Voxel</Filter>
     </ClInclude>
-    <ClInclude Include="CollisionSystems.h">
-      <Filter>Header Files\Systems</Filter>
-    </ClInclude>
     <ClInclude Include="GameUtil.h">
       <Filter>Header Files\Systems</Filter>
     </ClInclude>

@@ -39,7 +39,6 @@ entt::entity GameUtil::spawn_client_spunk(Engine &engine, glm::vec3 pos) {
 
 	return id;
 }
-
 entt::entity GameUtil::spawn_net_spunk(Engine &engine, glm::vec3 pos, glm::quat rot) {
 	using namespace Component;
 	
@@ -62,10 +61,11 @@ entt::entity GameUtil::spawn_net_spunk(Engine &engine, glm::vec3 pos, glm::quat 
 	return id;
 }
 
+
+
 glm::i32vec3 GameUtil::world_to_block_coord(glm::vec3 vec) {
 	return glm::i32vec3(glm::floor(vec));
 }
-
 bool GameUtil::attempt_place_block_net(Engine &engine, glm::i32vec3 block_coord, Voxel::Block block){
 	using namespace Component;
 	

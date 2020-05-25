@@ -5,7 +5,6 @@
 #include "Components.h"
 #include "StatelessSystem.h"
 #include "GameSystems.h"
-#include "CollisionSystems.h"
 
 #include "Scene.h"
 #include "ModelGeometry.h"
@@ -75,7 +74,6 @@ void PlayState::init() {
 	};
 	auto cameraID = scene.createCameraInstance(sunCamera);
 	scene.setSunCameraID(cameraID);
-	//scene->setMainCamera(cameraID);
 	e.assign<Component::CameraInstance>(sunID, cameraID);
 	e.assign<Component::RenderInstance>(sunID, scene.createRenderInstance(walkerModel, walkerMaterial));
 	/*SUN CAMERA*/

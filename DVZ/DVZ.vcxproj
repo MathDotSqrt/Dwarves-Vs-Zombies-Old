@@ -265,7 +265,6 @@
     <ClInclude Include="ChunkRenderData.h" />
     <ClInclude Include="ChunkRenderDataManager.h" />
     <ClInclude Include="Client.h" />
-    <ClInclude Include="CollisionSystems.h" />
     <ClInclude Include="ColorDepthFBO.h" />
     <ClInclude Include="Components.h" />
     <ClInclude Include="concurrentqueue.h" />
