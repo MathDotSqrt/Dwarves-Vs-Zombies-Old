@@ -23,13 +23,6 @@
 
 using namespace System;
 
-void System::gravity_system(Engine &engine, float delta) {
-	using namespace Component;
-/*	engine.view<Velocity, Acceleration>().each([delta](auto &vel, auto &accel) {
-		accel = glm::vec3(0, -35.0f, 0);
-	})*/;
-}
-
 void System::movement_system(Engine &engine, float delta) {
 	using namespace Component;
 
@@ -53,9 +46,12 @@ void System::movement_system(Engine &engine, float delta) {
 void System::friction_system(Engine &engine, float delta) {
 	using namespace Component;
 
-	auto view = engine.view<Player, Velocity>();
-	view.each([delta](auto &player, auto &vel) {
-		constexpr float FRIC = 0.01f;
+	auto view = engine.view<Player, Velocity, Acceleration>();
+	view.each([delta](auto &player, auto &vel, auto &accel) {
+		constexpr glm::vec3 FRIC(.01f, 0, .01f);
+		constexpr auto FRIC2 = FRIC * FRIC;
+
+		accel -= FRIC2 * vel;
 
 	});
 }

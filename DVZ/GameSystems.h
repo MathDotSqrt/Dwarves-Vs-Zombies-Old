@@ -3,7 +3,6 @@ class Engine;
 
 namespace System {
 
-	void gravity_system(Engine &engine, float delta);
 	void movement_system(Engine &engine, float delta);
 	void friction_system(Engine &engine, float delta);
 
