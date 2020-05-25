@@ -17,8 +17,8 @@ EntityAdmin::EntityAdmin() : peer(SLNet::RakPeerInterface::GetInstance()), alloc
 	//addSystemUpdateFunction(StatelessSystem(GameLogic::input_system));
 	addSystemUpdateFunction(StatelessSystem(GameLogic::afk_system));
 	addSystemUpdateFunction(StatelessSystem(GameLogic::voxel_collision_system));
-	addSystemUpdateFunction(StatelessSystem(GameLogic::movement_system));
 	addSystemUpdateFunction(StatelessSystem(GameLogic::voxel_system));
+	addSystemUpdateFunction(StatelessSystem(GameLogic::movement_system));
 	addSystemUpdateFunction(StatelessSystem(System::net_disconnect));
 	addSystemUpdateFunction(StatelessSystem(System::net_broadcast));
 	addSystemUpdateFunction(StatelessSystem(System::net_voxel, StatelessSystem::FrameTime(.2)));

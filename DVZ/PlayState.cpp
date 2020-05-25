@@ -27,16 +27,14 @@ void PlayState::init() {
 	LOG_STATE("init");
 	auto &scene = e.ctx<Graphics::Scene>();
 	auto &mesh_cache = e.ctx<ResourceManager::MeshCache>();
+	auto model = mesh_cache.load<ResourceManager::MeshLoader>("tree"_hs, "res/tree.xobj");
+	auto walkerModel = mesh_cache.load<ResourceManager::MeshLoader>("SpunkWalker"_hs, "res/SpunkWalker.xobj");
 
 	/*PLAYER*/
 	entt::entity playerID = e.addPlayer(0, 100, 0);
-	unsigned int pointLightInstanceID = scene.createPointLightInstance();
-	e.assign<Component::PointLight>(playerID, pointLightInstanceID, glm::vec3(1, 1, 1), 60.0f);
-	e.assign<Component::VoxelCollision>(playerID, Component::VoxelCollision(Physics::AABB(glm::vec3(-.3f, -1.5f, -.3f), glm::vec3(.3f, .3f, .3f))));
 	/*PLAYER*/
 	
 	/*TREE*/
-	auto model = mesh_cache.load<ResourceManager::MeshLoader>("tree"_hs, "res/tree.xobj");
 	Graphics::NormalMaterial material;
 	unsigned int renderID = scene.createRenderInstance(model, material);
 
@@ -48,10 +46,7 @@ void PlayState::init() {
 	e.assign<Component::RenderInstance>(tree, renderID);
 	/*TREE*/
 
-	//e.getBlockPlaceBuffer().push_back(std::make_pair(glm::vec3(0), Voxel::Block(Voxel::BlockType::BLOCK_TYPE_GLASS)));
-
 	/*WALKER*/
-	auto walkerModel = mesh_cache.load<ResourceManager::MeshLoader>("SpunkWalker"_hs, "res/SpunkWalker.xobj");
 	Graphics::BasicLitMaterial walkerMaterial = { {1, 0, 1}, {1, 1, 1}, 10};
 	uint32 walkerRenderID = scene.createRenderInstance(walkerModel, walkerMaterial);
 

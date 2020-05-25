@@ -11,6 +11,8 @@
 
 #include "ChunkManager.h"
 
+#include "GameUtil.h"
+
 #include "Mesh.h"
 #include "Scene.h"
 #include <unordered_map>
@@ -36,20 +38,7 @@ void update_player(Engine &engine, SLNet::Packet *packet) {
 	auto iter = map.find(netID);
 	if (iter == map.end()) {
 		LOG_NET("NEW ENT");
-
-		auto &scene = engine.ctx<Graphics::Scene>();
-		auto &mesh_cache = engine.ctx<ResourceManager::MeshCache>();
-
-		playerID = engine.create();
-		engine.assign<Position>(playerID, pos);
-		//engine.assign<Velocity>(playerID, glm::vec3(0));
-		engine.assign<Rotation>(playerID, rot);
-		engine.assign<Scale>(playerID, glm::vec3(1, 1, 1));
-		engine.assign<VoxelCollision>(playerID, VoxelCollision(Physics::AABB(glm::vec3(-.3f, -1.5f, -.3f), glm::vec3(.3f, .3f, .3f))));
-		
-		auto instanceID = scene.createRenderInstance(mesh_cache.handle("SpunkWalker"_hs), Graphics::NormalMaterial());
-		engine.assign<RenderInstance>(playerID, instanceID, glm::vec3(0, 10, 0));
-
+		playerID = GameUtil::spawn_net_spunk(engine, pos, rot);
 		map[netID] = playerID;
 	}
 	else if(playerID = iter->second; playerID != engine.getPlayer()){

@@ -40,7 +40,7 @@ unsigned int Scene::createCameraInstance(Camera camera) {
 	return this->cameraCache.insert(camera);
 }
 
-unsigned int Scene::createPointLightInstance(PointLight &p) {
+unsigned int Scene::createPointLightInstance(const PointLight &p) {
 	return this->pointLightCache.insert(p);
 }
 

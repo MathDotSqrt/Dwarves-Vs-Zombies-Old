@@ -2,6 +2,65 @@
 #include "Engine.h"
 #include "ChunkManager.h"
 #include "Components.h"
+#include "Scene.h"
+
+entt::entity GameUtil::spawn_client_spunk(Engine &engine, glm::vec3 pos) {
+	using namespace Component;
+
+	auto &scene = engine.ctx<Graphics::Scene>();
+	auto &mesh_cache = engine.ctx<ResourceManager::MeshCache>();
+
+	const glm::vec3 FORWARD(0, 0, -1);
+	const glm::vec3 UP(0, 1, 0);
+	const glm::vec3 RIGHT(1, 0, 0);
+
+	const Physics::AABB aabb(glm::vec3(-.3f, -1.5f, -.3f), glm::vec3(.3f, .3f, .3f));
+	//const auto instanceID = scene.createRenderInstance(mesh_cache.handle("SpunkWalker"_hs), Graphics::NormalMaterial());
+	const auto lightID = scene.createPointLightInstance(Graphics::Scene::PointLight());
+
+	const auto cameraID = scene.getMainCameraID();
+
+	const auto id = engine.create();
+	engine.assign<Player>(id);
+
+	engine.assign<Position>(id, pos);
+	engine.assign<Rotation>(id, glm::quat(1, 0, 0, 0));
+	engine.assign<Scale>(id, glm::vec3(1));
+	engine.assign<Velocity>(id, glm::vec3(0));
+	engine.assign<Acceleration>(id, glm::vec3(0));
+	engine.assign<RotationalVelocity>(id, glm::vec3(0));
+	engine.assign<Input>(id);
+	engine.assign<Dir>(id, FORWARD, UP, RIGHT);
+	
+	engine.assign<CameraInstance>(id, cameraID);
+	engine.assign<PointLight>(id, lightID, glm::vec3(1), 60.0f);
+
+	engine.assign<VoxelCollision>(id, VoxelCollision(aabb));
+
+	return id;
+}
+
+entt::entity GameUtil::spawn_net_spunk(Engine &engine, glm::vec3 pos, glm::quat rot) {
+	using namespace Component;
+	
+	auto &scene = engine.ctx<Graphics::Scene>();
+	auto &mesh_cache = engine.ctx<ResourceManager::MeshCache>();
+
+	const Physics::AABB aabb(glm::vec3(-.3f, -1.5f, -.3f), glm::vec3(.3f, .3f, .3f));
+	const auto instanceID = scene.createRenderInstance(mesh_cache.handle("SpunkWalker"_hs), Graphics::NormalMaterial());
+	const glm::vec3 offset(0, -1.3, 0);
+	const glm::vec3 scale(.3f);
+
+
+	const auto id = engine.create();
+	engine.assign<Position>(id, pos);
+	engine.assign<Rotation>(id, rot);
+	engine.assign<Scale>(id, glm::vec3(1));
+	engine.assign<VoxelCollision>(id, VoxelCollision(aabb));
+	engine.assign<RenderInstance>(id, instanceID, offset, scale);
+
+	return id;
+}
 
 glm::i32vec3 GameUtil::world_to_block_coord(glm::vec3 vec) {
 	return glm::i32vec3(glm::floor(vec));

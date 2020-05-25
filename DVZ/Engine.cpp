@@ -16,6 +16,7 @@
 
 #include "ResourceManager.h"
 #include "Mesh.h"
+#include "GameUtil.h"
 
 //#define LINEAR_ALLOC_SIZE 100
 
@@ -97,19 +98,9 @@ entt::entity Engine::addPlayer(float x, float y, float z) {
 		return this->main;
 	}
 
-	entt::entity id = this->create();
-	this->assign<Player>(id);
-	this->assign<Position>(id, glm::vec3(x, y, z));
-	this->assign<Rotation>(id, glm::quat(1, 0, 0, 0));
-	this->assign<Velocity>(id, glm::vec3(0, 0, 0));
-	this->assign<Acceleration>(id, glm::vec3(0, -1, 0));
-	this->assign<RotationalVelocity>(id, glm::vec3(0, 0, 0));
-	this->assign<Dir>(id, glm::vec3(0, 0, -1), glm::vec3(0, 1, 0), glm::vec3(1, 0, 0));
-	this->assign<Input>(id);
-	this->assign<CameraInstance>(id, this->ctx<Graphics::Scene>().getMainCameraID());
-
+	const glm::vec3 pos(x, y, z);
+	const entt::entity id = GameUtil::spawn_client_spunk(*this, pos);
 	this->main = id;
-
 	return id;
 }
 

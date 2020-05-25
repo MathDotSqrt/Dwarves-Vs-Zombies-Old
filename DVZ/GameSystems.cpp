@@ -309,7 +309,7 @@ void System::render_system(Engine &engine, float delta) {
 
 		transformation.position = pos + instance.offset;
 		transformation.rotation = glm::eulerAngles(rot);
-		transformation.scale = scale;
+		transformation.scale = scale * instance.scale;
 	});
 
 	engine.group<PointLight>(entt::get<Position>)

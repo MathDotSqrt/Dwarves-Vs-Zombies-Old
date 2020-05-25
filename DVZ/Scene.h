@@ -106,7 +106,7 @@ public:
 
 	unsigned int createCameraInstance(Camera camera);
 
-	unsigned int createPointLightInstance(PointLight &p);
+	unsigned int createPointLightInstance(const PointLight &p);
 	unsigned int createPointLightInstance();
 
 	void removeMaterialInstance(MaterialID materialType, unsigned int materialID);

@@ -69,18 +69,18 @@ void GameLogic::movement_system(EntityAdmin &admin, float delta) {
 	using namespace Component;
 	
 	entt::registry &registry = admin.registry;
-	registry.view<Velocity, Acceleration>().each([delta](auto &vel, auto &accel) {
-		accel += glm::vec3(0, -35.0f, 0);
-		vel += accel * delta * .05f;
-	});
+	//registry.view<Velocity, Acceleration>().each([delta](auto &vel, auto &accel) {
+	//	accel += glm::vec3(0, -35.0f, 0);
+	//	vel += accel * delta * .05f;
+	//});
 
 	registry.group<Position, Velocity>().each([delta](auto &pos, auto &vel) {
 		pos += delta * vel;
 	});
 
-	registry.view<Velocity, Acceleration>().each([delta](auto &vel, auto &accel) {
-		vel += accel * delta * .05f;
-	});
+	//registry.view<Velocity, Acceleration>().each([delta](auto &vel, auto &accel) {
+	//	vel += accel * delta * .05f;
+	//});
 
 }
 
@@ -102,6 +102,7 @@ void GameLogic::afk_system(EntityAdmin &admin, float delta) {
 				printf("ENTITY AFK TOO LONG\n");
 				registry.destroy(e);
 				closeClientConnection(admin, client.guid);
+				break;
 			}
 		}
 		else {
