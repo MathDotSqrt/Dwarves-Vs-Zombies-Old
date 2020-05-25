@@ -25,17 +25,28 @@ using namespace System;
 
 void System::gravity_system(Engine &engine, float delta) {
 	using namespace Component;
-	engine.view<Velocity, Acceleration>().each([delta](auto &vel, auto &accel) {
+/*	engine.view<Velocity, Acceleration>().each([delta](auto &vel, auto &accel) {
 		accel = glm::vec3(0, -35.0f, 0);
-		vel += accel * delta;
-	});
+	})*/;
 }
 
 void System::movement_system(Engine &engine, float delta) {
 	using namespace Component;
 
+	engine.view<Velocity, Acceleration>().each([delta](auto &vel, auto &accel) {
+		accel += glm::vec3(0, -35.0f * 10, 0);
+		vel += accel * delta * .05f;
+	});
+
+	System::voxel_collision_system(engine, delta);
+
 	engine.group<Position, Velocity>().each([delta](auto &pos, auto &vel) {
-		pos += vel * delta;
+		pos += delta * vel;
+	});
+
+	engine.view<Velocity, Acceleration>().each([delta](auto &vel, auto &accel) {
+		vel += accel * delta * .05f;
+		accel = glm::vec3();
 	});
 }
 
@@ -154,8 +165,8 @@ void System::input_system(Engine &engine, float delta) {
 
 	});
 
-	engine.group<Input>(entt::get<Dir, Rotation, Velocity, Player>)
-		.each([delta](auto &input, auto &dir, auto &rot, auto &vel, auto &player) {
+	engine.group<Input>(entt::get<Dir, Rotation, Velocity, Acceleration, Player>)
+		.each([delta](auto &input, auto &dir, auto &rot, auto &vel, auto &acel, auto &player) {
 
 		/*CONSTANTS*/
 		const float SPEED = 8.0f * 60;
@@ -196,7 +207,11 @@ void System::input_system(Engine &engine, float delta) {
 			new_rot = q_yaw * rot;
 			move_dir = remove_pitch_rot(new_rot);
 		}
+		
+		rot = new_rot;
 		/*Camera rotation code*/
+
+
 
 		/*Actual velocity vectors*/
 		const glm::vec3 move_forward = move_dir * user_forward;
@@ -211,7 +226,6 @@ void System::input_system(Engine &engine, float delta) {
 		else
 			vel = glm::vec3(input_vel.x, vel.y, input_vel.z);
 
-		rot = new_rot;
 
 	});
 

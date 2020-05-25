@@ -62,19 +62,24 @@ void GameLogic::input_system(EntityAdmin &admin, float delta) {
 void GameLogic::gravity_system(EntityAdmin &admin, float delta) {
 	using namespace Component;
 
-	entt::registry &registry = admin.registry;
-	registry.view<Velocity, Acceleration>().each([delta](auto &vel, auto &accel) {
-		accel = glm::vec3(0, -35.0f, 0);
-		vel += accel * delta;
-	});
+	
 }
 
 void GameLogic::movement_system(EntityAdmin &admin, float delta) {
 	using namespace Component;
 	
 	entt::registry &registry = admin.registry;
+	registry.view<Velocity, Acceleration>().each([delta](auto &vel, auto &accel) {
+		accel += glm::vec3(0, -35.0f, 0);
+		vel += accel * delta * .05f;
+	});
+
 	registry.group<Position, Velocity>().each([delta](auto &pos, auto &vel) {
 		pos += delta * vel;
+	});
+
+	registry.view<Velocity, Acceleration>().each([delta](auto &vel, auto &accel) {
+		vel += accel * delta * .05f;
 	});
 
 }

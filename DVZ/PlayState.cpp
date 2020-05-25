@@ -108,7 +108,7 @@ void PlayState::entered() {
 	e.addSystem(StatelessSystem(System::friction_system));
 	e.addSystem(StatelessSystem(System::collision_test_system));
 	e.addSystem(StatelessSystem(System::input_system));
-	e.addSystem(StatelessSystem(System::voxel_collision_system));
+	//e.addSystem(StatelessSystem(System::voxel_collision_system));
 
 	e.addSystem(StatelessSystem(System::player_state_system));
 	e.addSystem(StatelessSystem(System::sprint_system));
