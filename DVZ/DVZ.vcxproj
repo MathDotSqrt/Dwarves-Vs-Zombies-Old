@@ -212,6 +212,7 @@
     <ClCompile Include="Client.cpp" />
     <ClCompile Include="CollisionSystems.cpp" />
     <ClCompile Include="ColorDepthFBO.cpp" />
+    <ClCompile Include="Components.cpp" />
     <ClCompile Include="CoordIterator.cpp" />
     <ClCompile Include="CubeGeometry.cpp" />
     <ClCompile Include="DemoState.cpp" />

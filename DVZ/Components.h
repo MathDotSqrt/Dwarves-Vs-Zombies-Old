@@ -20,6 +20,11 @@ namespace Component {
 
 	struct RenderInstance {
 		uint32 instanceID;
+		glm::vec3 offset;
+
+
+		RenderInstance(uint32 instanceID);
+		RenderInstance(uint32 instanceID, glm::vec3 offset);
 	};
 
 	struct PointLight {

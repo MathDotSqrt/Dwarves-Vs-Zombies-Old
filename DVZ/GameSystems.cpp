@@ -299,17 +299,17 @@ void System::render_system(Engine &engine, float delta) {
 	auto &scene = engine.ctx<Graphics::Scene>();
 
 	engine.group<RenderInstance>(entt::get<Position, Rotation, Scale>)
-		.each([&scene](auto &instanceComponent, auto &positionComponent, auto &rotationComponent, auto &scaleComponent)
+		.each([&scene](auto &instance, auto &pos, auto &rot, auto &scale)
 	{
-		auto transformationID = scene.instanceCache[instanceComponent.instanceID].transformationID;
+		auto transformationID = scene.instanceCache[instance.instanceID].transformationID;
 		auto &transformation = scene.transformationCache[transformationID];
 
-		glm::vec3 a = glm::eulerAngles(rotationComponent);
+		glm::vec3 a = glm::eulerAngles(rot);
 		//LOG_INFO("%f %f %f", a.x, a.y, a.z);
 
-		transformation.position = positionComponent;
-		transformation.rotation = glm::eulerAngles(rotationComponent);
-		transformation.scale = scaleComponent;
+		transformation.position = pos + instance.offset;
+		transformation.rotation = glm::eulerAngles(rot);
+		transformation.scale = scale;
 	});
 
 	engine.group<PointLight>(entt::get<Position>)

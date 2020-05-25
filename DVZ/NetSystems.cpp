@@ -48,7 +48,7 @@ void update_player(Engine &engine, SLNet::Packet *packet) {
 		engine.assign<VoxelCollision>(playerID, VoxelCollision(Physics::AABB(glm::vec3(-.3f, -1.5f, -.3f), glm::vec3(.3f, .3f, .3f))));
 		
 		auto instanceID = scene.createRenderInstance(mesh_cache.handle("SpunkWalker"_hs), Graphics::NormalMaterial());
-		engine.assign<RenderInstance>(playerID, instanceID);
+		engine.assign<RenderInstance>(playerID, instanceID, glm::vec3(0, 10, 0));
 
 		map[netID] = playerID;
 	}
