@@ -27,8 +27,8 @@ void System::movement_system(Engine &engine, float delta) {
 	using namespace Component;
 
 	engine.view<Velocity, Acceleration>().each([delta](auto &vel, auto &accel) {
-		accel += glm::vec3(0, -35.0f * 10, 0);
-		vel += accel * delta * .05f;
+		accel += glm::vec3(0, -35.0f * 5, 0);
+		vel += accel * delta * .5f;
 	});
 
 	System::voxel_collision_system(engine, delta);
@@ -37,9 +37,14 @@ void System::movement_system(Engine &engine, float delta) {
 		pos += delta * vel;
 	});
 
-	engine.view<Velocity, Acceleration>().each([delta](auto &vel, auto &accel) {
-		vel += accel * delta * .05f;
+	engine.view<Velocity, Acceleration>().each([delta](glm::vec3 &vel, auto &accel) {
 		accel = glm::vec3();
+		vel += accel * delta * .5f;
+
+		/*constexpr float MAX_SPEED = 100.0f;
+		const auto current_speed = glm::length(vel);
+		const auto clamped_speed = glm::min(current_speed, MAX_SPEED);
+		vel = glm::normalize(vel) * clamped_speed;*/
 	});
 }
 
@@ -48,10 +53,10 @@ void System::friction_system(Engine &engine, float delta) {
 
 	auto view = engine.view<Player, Velocity, Acceleration>();
 	view.each([delta](auto &player, auto &vel, auto &accel) {
-		constexpr glm::vec3 FRIC(.01f, 0, .01f);
-		constexpr auto FRIC2 = FRIC * FRIC;
+		constexpr glm::vec3 FRIC(100.0f * 30, 0, 100.0f * 30);
+		constexpr glm::vec3 AIR_FRIC(0);
 
-		accel -= FRIC2 * vel;
+		accel -= (player.is_grounded ? FRIC : AIR_FRIC) * vel * delta;
 
 	});
 }
@@ -160,16 +165,23 @@ void System::input_system(Engine &engine, float delta) {
 		}
 
 	});
-
 	engine.group<Input>(entt::get<Dir, Rotation, Velocity, Acceleration, Player>)
-		.each([delta](auto &input, auto &dir, auto &rot, auto &vel, auto &acel, auto &player) {
+		.each([delta](auto &input, auto &dir, auto &rot, auto &vel, auto &accel, auto &player) {
 
 		/*CONSTANTS*/
+		//const float SPEED = 8.0f * 60;
+		//const float RIGHT_SPEED = 6.0f * 60;
+		//const float FAST_SPEED = 13.0f * 60;
+
+		//const float JUMP_FORCE = 10.0f * 60;
+		//const float TURN_SPEED = .5f;
+		//const float LOOK_DOWN_CONSTANT = .01f;
 		const float SPEED = 8.0f * 60;
 		const float RIGHT_SPEED = 6.0f * 60;
 		const float FAST_SPEED = 13.0f * 60;
+		const float AIR_SPEED = .5f;
 
-		const float JUMP_FORCE = 10.0f * 60;
+		const float JUMP_FORCE = 35 * 10 * 10;
 		const float TURN_SPEED = .5f;
 		const float LOOK_DOWN_CONSTANT = .01f;
 		/*CONSTANTS*/
@@ -189,8 +201,8 @@ void System::input_system(Engine &engine, float delta) {
 		/*Movement scalars*/
 
 		/*Movement input vectors/quaternions*/
-		const glm::vec3 user_forward = dir.forward * forward * (player.is_sprinting ? FAST_SPEED : SPEED);
-		const glm::vec3 user_right = dir.right * right * RIGHT_SPEED;
+		const glm::vec3 user_forward = dir.forward * forward;
+		const glm::vec3 user_right = dir.right * right;
 
 		const glm::quat q_yaw = glm::angleAxis((float)-mouse_delta.x * TURN_SPEED / 100.0f, (glm::vec3)dir.up);
 		const glm::quat q_pitch = glm::angleAxis((float)-mouse_delta.y * TURN_SPEED / 100.0f, (glm::vec3)dir.right);
@@ -210,17 +222,24 @@ void System::input_system(Engine &engine, float delta) {
 
 
 		/*Actual velocity vectors*/
-		const glm::vec3 move_forward = move_dir * user_forward;
-		const glm::vec3 move_right = move_dir * user_right;
-		const glm::vec3 move_up = glm::vec3(0, up * JUMP_FORCE, 0);
+		const glm::vec3 move_forward = move_dir * user_forward * (player.is_sprinting ? FAST_SPEED : SPEED) * (player.is_grounded ? 1.0f : AIR_SPEED);
+		const glm::vec3 move_right = move_dir * user_right * RIGHT_SPEED * (player.is_grounded ? 1.0f : AIR_SPEED);
+		const glm::vec3 move_up = glm::vec3(0, player.is_grounded ? (up * JUMP_FORCE) : 0, 0);
 
-		const glm::vec3 input_vel = (move_forward + move_right + move_up) * delta;
+		const glm::vec3 input_accel = (move_forward + move_right + move_up);
+
+		//vel += input_accel;
+		if (player.is_grounded && up != 0) {
+			vel.y = 0;
+		}
+		accel += input_accel;
+
 		/*Actual velocity vectors*/
 
-		if(up > 0 && player.is_grounded)
+		/*if(up > 0 && player.is_grounded)
 			vel = input_vel;
 		else
-			vel = glm::vec3(input_vel.x, vel.y, input_vel.z);
+			vel = glm::vec3(input_vel.x, vel.y, input_vel.z);*/
 
 
 	});
@@ -232,6 +251,8 @@ void System::input_system(Engine &engine, float delta) {
 		comp.x = 0;
 		comp.z = 0;
 	}
+
+
 }
 
 void System::voxel_system(Engine &engine, float delta) {

@@ -105,10 +105,12 @@ void PlayState::entered() {
 	e.addSystem(StatelessSystem(System::netword_system));
 
 	e.addSystem(StatelessSystem(System::collision_test_system));
-	e.addSystem(StatelessSystem(System::input_system));
+	
+	e.addSystem(StatelessSystem(System::movement_system));
 	e.addSystem(StatelessSystem(System::friction_system));
 
-	e.addSystem(StatelessSystem(System::movement_system));
+	e.addSystem(StatelessSystem(System::input_system));
+
 	e.addSystem(StatelessSystem(System::player_state_system));
 	e.addSystem(StatelessSystem(System::sprint_system));
 
