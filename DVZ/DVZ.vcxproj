@@ -229,6 +229,7 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MainState.cpp" />
     <ClCompile Include="ModelGeometry.cpp" />
+    <ClCompile Include="MovementSystems.cpp" />
     <ClCompile Include="NetSystems.cpp" />
     <ClCompile Include="OpenGLRenderer.cpp" />
     <ClCompile Include="PlayState.cpp" />
