@@ -27,7 +27,7 @@ void System::movement_system(Engine &engine, float delta) {
 	using namespace Component;
 
 	engine.view<Velocity, Acceleration>().each([delta](auto &vel, auto &accel) {
-		accel += glm::vec3(0, -35.0f * 5, 0);
+		accel += glm::vec3(0, -35.0f * 4, 0);
 		vel += accel * delta * .5f;
 	});
 
@@ -52,12 +52,12 @@ void System::friction_system(Engine &engine, float delta) {
 	using namespace Component;
 
 	auto view = engine.view<Player, Velocity, Acceleration>();
-	view.each([delta](auto &player, auto &vel, auto &accel) {
-		constexpr glm::vec3 FRIC(100.0f * 30, 0, 100.0f * 30);
+	view.each([delta](auto &player, glm::vec3 &vel, auto &accel) {
+		constexpr glm::vec3 FRIC(.6f, 1, .6f);
 		constexpr glm::vec3 AIR_FRIC(0);
 
-		accel -= (player.is_grounded ? FRIC : AIR_FRIC) * vel * delta;
-
+		//accel -= (player.is_grounded ? FRIC : AIR_FRIC) * vel;
+		vel *= FRIC;
 	});
 }
 
@@ -68,7 +68,7 @@ void System::player_state_system(Engine &engine, float delta) {
 	});
 
 	engine.view<Player, Velocity>().each([](auto &player, auto &vel) {
-		constexpr float SPRINT_THRESH = 60.0f;
+		constexpr float SPRINT_THRESH = 30.0f;
 
 		const float speed_2 = glm::length2(static_cast<glm::vec3>(vel));
 		if (player.is_sprinting || player.is_grounded) {
@@ -176,12 +176,12 @@ void System::input_system(Engine &engine, float delta) {
 		//const float JUMP_FORCE = 10.0f * 60;
 		//const float TURN_SPEED = .5f;
 		//const float LOOK_DOWN_CONSTANT = .01f;
-		const float SPEED = 8.0f * 60;
-		const float RIGHT_SPEED = 6.0f * 60;
-		const float FAST_SPEED = 13.0f * 60;
-		const float AIR_SPEED = .5f;
+		const float SPEED = 8.0f * 30 * 2;
+		const float RIGHT_SPEED = 5.0f * 30 * 2;
+		const float FAST_SPEED = 13.0f * 30 * 2;
+		const float AIR_SPEED = .8f;
 
-		const float JUMP_FORCE = 35 * 10 * 10;
+		const float JUMP_FORCE = 35 * 10 * 5.5;
 		const float TURN_SPEED = .5f;
 		const float LOOK_DOWN_CONSTANT = .01f;
 		/*CONSTANTS*/
